@@ -4,9 +4,7 @@
 
 ## Tech Stack
 
-**Client:** React, Vite, Polotno SDK
-
-**Server:** 
+React, Vite, Polotno SDK
 
 
 ## Run Locally
