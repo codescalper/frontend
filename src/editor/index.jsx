@@ -5,7 +5,7 @@ import { createProject, ProjectContext } from "./project";
 
 import Editor from "./Editor";
 
-const store = createStore({ key: "nFA5H9elEytDyPyvKL7T" });
+const store = createStore({ key: import.meta.env.VITE_POLOTNO_API_KEY });
 window.store = store;
 store.addPage();
 

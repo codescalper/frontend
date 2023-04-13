@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { observer } from "mobx-react-lite";
 import {
 	Button,
@@ -20,6 +20,9 @@ import { FileMenu } from "./file-menu";
 import { DownloadButton } from "./download-button";
 import { UserMenu } from "./user-menu";
 
+import { useDisconnect } from "wagmi";
+import { LensContext } from "../../App";
+
 const NavbarContainer = styled("div")`
 	@media screen and (max-width: 500px) {
 		overflow-x: auto;
@@ -38,6 +41,9 @@ export default observer(({ store }) => {
 	const project = useProject();
 
 	const [modalVisible, setModalVisible] = React.useState(false);
+
+	const { disconnect } = useDisconnect();
+	const { session, setSession } = useContext(LensContext);
 
 	return (
 		<NavbarContainer className="bp4-navbar">
@@ -143,6 +149,16 @@ export default observer(({ store }) => {
 						store={store}
 						project={project}
 					/>
+					<button
+						onClick={() => {
+							console.log("session before:", session);
+							setSession(null);
+							console.log("session after:", session);
+							localStorage.removeItem("lens-auth-token");
+							disconnect();
+						}}>
+						Disconnect
+					</button>
 					{/* <NavbarHeading>Polotno Studio</NavbarHeading> */}
 				</Navbar.Group>
 			</NavInner>
