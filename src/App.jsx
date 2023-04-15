@@ -1,42 +1,44 @@
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { useEffect, useState, createContext } from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { client, challenge, authenticate, getDefaultProfile } from "../api";
 import { App as Editor } from "./editor";
 
+import { useSigner, useAccount } from "wagmi";
+
+export const LensContext = createContext();
+
 export default function App() {
-	const [address, setAddress] = useState();
+	// const [address, setAddress] = useState();
 	const [session, setSession] = useState(null);
 	const [profileId, setProfileId] = useState("");
 	const [handle, setHandle] = useState("");
 	const [token, setToken] = useState("");
+
+	const { address, isConnecting, isConnected, isDisconnected } = useAccount();
+
+	const { data: signer, isError, isLoading } = useSigner();
+
 	useEffect(() => {
 		checkConnection();
 	}, []);
+
 	async function checkConnection() {
-		const provider = new ethers.providers.Web3Provider(window.ethereum);
-		const accounts = await provider.listAccounts();
-		if (accounts.length) {
-			setAddress(accounts[0]);
-			const response = await client.query({
-				query: getDefaultProfile,
-				variables: { address: accounts[0] },
-			});
-			setProfileId(response.data.defaultProfile?.id);
-			setHandle(response.data.defaultProfile?.handle);
-		}
+		const response = await client.query({
+			query: getDefaultProfile,
+			variables: { address: address },
+		});
+		setProfileId(response.data.defaultProfile?.id);
+		setHandle(response.data.defaultProfile?.handle);
 	}
 	async function connect() {
-		const account = await window.ethereum.send("eth_requestAccounts");
-		if (account.result.length) {
-			setAddress(account.result[0]);
-			const response = await client.query({
-				query: getDefaultProfile,
-				variables: { address: account[0] },
-			});
-			setProfileId(response.data.defaultProfile.id);
-			setHandle(response.data.defaultProfile.handle);
-		}
+		const response = await client.query({
+			query: getDefaultProfile,
+			variables: { address: address },
+		});
+		setProfileId(response.data.defaultProfile.id);
+		setHandle(response.data.defaultProfile.handle);
 	}
+
 	async function login() {
 		try {
 			const challengeInfo = await client.query({
@@ -45,8 +47,7 @@ export default function App() {
 					address,
 				},
 			});
-			const provider = new ethers.providers.Web3Provider(window.ethereum);
-			const signer = provider.getSigner();
+
 			const signature = await signer.signMessage(
 				challengeInfo.data.challenge.text
 			);
@@ -72,14 +73,18 @@ export default function App() {
 	}
 
 	return (
-		<div>
-			{!address && <button onClick={connect}>Connect</button>}
-			{address && !session && (
-				<div onClick={login}>
-					<button>Login</button>
+		<LensContext.Provider value={{ session, setSession }}>
+			{isDisconnected && <ConnectButton />}
+			{isConnected && !session && (
+				<div
+					onClick={() => {
+						connect();
+						login();
+					}}>
+					<button>Sign in with Lens</button>
 				</div>
 			)}
-			{address && session && <Editor />}
-		</div>
+			{isConnected && session && <Editor />}
+		</LensContext.Provider>
 	);
 }
