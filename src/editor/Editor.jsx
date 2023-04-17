@@ -9,6 +9,7 @@ import { loadFile } from "./file";
 import { QrSection } from "./sections/qr-section";
 // import { ThenounprojectSection } from './thenounproject-section';
 import { QuotesSection } from "./sections/quotes-section";
+import { CustomSizesPanel } from "./sections/resize-section";
 import { IconsSection } from "./sections/icons-section";
 import { ShapesSection } from "./sections/shapes-section";
 import { StableDiffusionSection } from "./sections/stable-diffusion-section";
@@ -25,6 +26,8 @@ DEFAULT_SECTIONS.splice(3, 1, ShapesSection);
 // DEFAULT_SECTIONS.splice(2, 0, StableDiffusionSection);
 // add icons
 DEFAULT_SECTIONS.splice(3, 0, IconsSection);
+DEFAULT_SECTIONS.push(CustomSizesPanel);
+
 // add two more sections
 DEFAULT_SECTIONS.push(QuotesSection, QrSection);
 DEFAULT_SECTIONS.unshift(MyDesignsSection);
