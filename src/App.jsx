@@ -9,7 +9,9 @@ export const LensContext = createContext();
 
 export default function App() {
 	// const [address, setAddress] = useState();
-	const [session, setSession] = useState(null);
+	const [session, setSession] = useState(
+		localStorage.getItem("lens-auth-token") || null
+	);
 	const [profileId, setProfileId] = useState("");
 	const [handle, setHandle] = useState("");
 	const [token, setToken] = useState("");
