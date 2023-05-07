@@ -4,6 +4,7 @@ import { Button, Position, Menu, HTMLSelect, Slider } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import * as unit from "polotno/utils/unit";
 import { t } from "polotno/utils/l10n";
+import { ExportIcon } from "../editor-icon";
 
 export const DownloadButton = observer(({ store }) => {
 	const [saving, setSaving] = React.useState(false);
@@ -130,16 +131,23 @@ export const DownloadButton = observer(({ store }) => {
 				</Menu>
 			}
 			position={Position.BOTTOM_RIGHT}>
-			<Button
-				className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+			{/* <Button
+				className="inline-flex w-full justify-center border-none px-4 py-2 text-sm font-medium"
 				// icon="import"
-				text={t("toolbar.download")}
+				// text={t("toolbar.download")}
 				// intent="primary"
+				loading={saving}
+				onClick={() => {
+					setQuality(1);
+				}}> */}
+			<ExportIcon
+				className="inline-flex w-full justify-center border-none px-4 py-2 text-sm font-medium "
 				loading={saving}
 				onClick={() => {
 					setQuality(1);
 				}}
 			/>
+			{/* </Button> */}
 		</Popover2>
 	);
 });

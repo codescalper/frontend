@@ -70,3 +70,25 @@ export const AIIcon = () => {
 		/>
 	);
 };
+export const ExportIcon = () => {
+	return (
+		<div className="flex flex-col justify-center items-center cursor-pointer">
+			<img
+				src="/topbar-icons/export.svg"
+				alt="export"
+			/>
+			<p className="text-md ">Export</p>
+		</div>
+	);
+};
+export const ShareIcon = () => {
+	return (
+		<div className="flex flex-col items-center justify-center cursor-pointer">
+			<img
+				src="/topbar-icons/share.svg"
+				alt="share"
+			/>
+			<p className="text-md mt-1">Share</p>
+		</div>
+	);
+};

@@ -3,6 +3,7 @@ import { DownloadButton } from "./download-button";
 import { useDisconnect, useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Menu } from "@headlessui/react";
+import RightDrawer from "./rightdrawer";
 
 export default observer(({ store }) => {
 	const { disconnect } = useDisconnect();
@@ -21,7 +22,8 @@ export default observer(({ store }) => {
 				</div>
 				{isDisconnected && <ConnectButton />}
 				{isConnected && (
-					<div className="flex space-x-4">
+					<div className="flex items-center justify-center space-x-6">
+						<RightDrawer />
 						<DownloadButton store={store} />
 						<button
 							onClick={() => {
