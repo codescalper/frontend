@@ -46,6 +46,7 @@ const sections = [
 	TemplatesSection,
 	NFTSection,
 	TextSection,
+	MyDesignsSection,
 	IconsSection,
 	BackgroundSection,
 	UploadSection,
