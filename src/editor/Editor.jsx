@@ -19,6 +19,7 @@ import { useProject } from "./project";
 import { ImageRemoveBackground } from "./background-remover";
 
 import Topbar from "./topbar/topbar";
+import { uploadCanvasToIpfs } from "../services/backendApi";
 
 // DEFAULT_SECTIONS.splice(3, 0, IllustrationsSection);
 // replace elements section with just shapes
@@ -35,74 +36,72 @@ DEFAULT_SECTIONS.unshift(MyDesignsSection);
 DEFAULT_SECTIONS.push(StableDiffusionSection);
 
 const useHeight = () => {
-	const [height, setHeight] = React.useState(window.innerHeight);
-	React.useEffect(() => {
-		window.addEventListener("resize", () => {
-			setHeight(window.innerHeight);
-		});
-	}, []);
-	return height;
+  const [height, setHeight] = React.useState(window.innerHeight);
+  React.useEffect(() => {
+    window.addEventListener("resize", () => {
+      setHeight(window.innerHeight);
+    });
+  }, []);
+  return height;
 };
 
 const Editor = ({ store }) => {
-	const project = useProject();
-	const height = useHeight();
+  const project = useProject();
+  const height = useHeight();
 
-	const load = () => {
-		let url = new URL(window.location.href);
-		// url example https://studio.polotno.com/design/5f9f1b0b
-		const reg = new RegExp("design/([a-zA-Z0-9_-]+)").exec(url.pathname);
-		const designId = (reg && reg[1]) || "local";
-		project.loadById(designId);
-	};
+  const load = () => {
+    let url = new URL(window.location.href);
+    // url example https://studio.polotno.com/design/5f9f1b0b
+    const reg = new RegExp("design/([a-zA-Z0-9_-]+)").exec(url.pathname);
+    const designId = (reg && reg[1]) || "local";
+    project.loadById(designId);
+  };
 
-	const handleDrop = (ev) => {
-		// Prevent default behavior (Prevent file from being opened)
-		ev.preventDefault();
+  const handleDrop = (ev) => {
+    // Prevent default behavior (Prevent file from being opened)
+    ev.preventDefault();
 
-		// skip the case if we dropped DOM element from side panel
-		// in that case Safari will have more data in "items"
-		if (ev.dataTransfer.files.length !== ev.dataTransfer.items.length) {
-			return;
-		}
-		// Use DataTransfer interface to access the file(s)
-		for (let i = 0; i < ev.dataTransfer.files.length; i++) {
-			loadFile(ev.dataTransfer.files[i], store);
-		}
-	};
+    // skip the case if we dropped DOM element from side panel
+    // in that case Safari will have more data in "items"
+    if (ev.dataTransfer.files.length !== ev.dataTransfer.items.length) {
+      return;
+    }
+    // Use DataTransfer interface to access the file(s)
+    for (let i = 0; i < ev.dataTransfer.files.length; i++) {
+      loadFile(ev.dataTransfer.files[i], store);
+    }
+  };
 
-	return (
-		<div
-			style={{
-				width: "100vw",
-				height: height + "px",
-				display: "flex",
-				flexDirection: "column",
-			}}
-			onDrop={handleDrop}>
-			<Topbar store={store} />
-			<div style={{ height: "calc(100% - 50px)" }}>
-				<PolotnoContainer className="polotno-app-container">
-					<SidePanelWrap>
-						<SidePanel
-							store={store}
-							sections={DEFAULT_SECTIONS}
-						/>
-					</SidePanelWrap>
-					<WorkspaceWrap>
-						<Toolbar
-							store={store}
-							components={{
-								ImageRemoveBackground,
-							}}
-						/>
-						<Workspace store={store} />
-						<ZoomButtons store={store} />
-					</WorkspaceWrap>
-				</PolotnoContainer>
-			</div>
-		</div>
-	);
+  return (
+    <div
+      style={{
+        width: "100vw",
+        height: height + "px",
+        display: "flex",
+        flexDirection: "column",
+      }}
+      onDrop={handleDrop}
+    >
+      <Topbar store={store} />
+      <div style={{ height: "calc(100% - 50px)" }}>
+        <PolotnoContainer className="polotno-app-container">
+          <SidePanelWrap>
+            <SidePanel store={store} sections={DEFAULT_SECTIONS} />
+          </SidePanelWrap>
+          <WorkspaceWrap>
+            <Toolbar
+              store={store}
+              components={{
+                ImageRemoveBackground,
+              }}
+            />
+            <Workspace store={store} />
+            <ZoomButtons store={store} />
+          </WorkspaceWrap>
+        </PolotnoContainer>
+      </div>
+    </div>
+  );
 };
 
 export default Editor;
