@@ -3,6 +3,7 @@ import { SectionTab } from "polotno/side-panel";
 import { Button } from "@blueprintjs/core";
 import { GiResize } from "react-icons/gi";
 import { useEffect, useState } from "react";
+import { ResizeIcon } from "../editor-icon";
 
 const AVAILABLE_SIZES = [
 	{ width: 500, height: 500 },
@@ -17,7 +18,7 @@ export const CustomSizesPanel = {
 		<SectionTab
 			name="Sizes"
 			{...props}>
-			<GiResize icon="new-text-box" />
+			<ResizeIcon />
 		</SectionTab>
 	),
 	// we need observer to update component automatically on any store changes
