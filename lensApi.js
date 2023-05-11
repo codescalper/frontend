@@ -8,6 +8,7 @@ import { utils, ethers } from "ethers";
 import { setContext } from "@apollo/client/link/context";
 import omitDeep from "omit-deep";
 import LENS_HUB_ABI from "./ABI.json";
+import request from "graphql-request";
 
 // export const LENS_HUB_CONTRACT = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d";// mainnet
 export const LENS_HUB_CONTRACT = "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"; // mumbai
@@ -142,7 +143,7 @@ export const CreateSetProfileImageURITypedData = gql`
 	}
 `;
 
-export const challenge = gql`
+export const challengeQuery = gql`
 	query Challenge($address: EthereumAddress!) {
 		challenge(request: { address: $address }) {
 			text
@@ -230,3 +231,9 @@ export const signSetProfileImageURITypedData = async (request, token) => {
 	);
 	return { result, signature };
 };
+
+export const lensChallenge = async (address) => {
+	const variables = { address };
+	let resp = await request(API_URL, challengeQuery, variables);
+	return resp.challenge.text;
+  }
