@@ -1,67 +1,35 @@
-import { SectionTab } from "polotno/side-panel";
-import { NFTIcon } from "../editor-icon";
+import React from "react";
 import { observer } from "mobx-react-lite";
-import { useState, useEffect } from "react";
-import { getImageSize } from "polotno/utils/image";
-import { InputGroup } from "@blueprintjs/core";
+import { useInfiniteAPI } from "polotno/utils/use-api";
+
+import { SectionTab } from "polotno/side-panel";
+
 import { ImagesGrid } from "polotno/side-panel/images-grid";
+import { TemplatesIcon } from "../editor-icon";
 
-const MyDesignsPanel = observer(({ store }) => {
-	const [images, setImages] = useState([]);
-
-	async function loadImages() {
-		// here we should implement your own API requests
-		setImages([]);
-		await new Promise((resolve) => setTimeout(resolve, 3000));
-
-		// for demo images are hard coded
-		// in real app here will be something like JSON structure
-		setImages([{ url: "/one.gif" }, { url: "/two.jpg" }]);
-	}
-
-	useEffect(() => {
-		loadImages();
-	}, []);
+export const MyDesignsPanel = observer(({ store }) => {
+	// load data
+	const { data, isLoading } = useInfiniteAPI({
+		getAPI: ({ page }) => `templates/page${page}.json`,
+	});
 
 	return (
-		<div
-			style={{
-				height: "100%",
-				display: "flex",
-				flexDirection: "column",
-			}}>
-			<InputGroup
-				leftIcon="search"
-				placeholder="Search..."
-				onChange={(e) => {
-					loadImages();
-				}}
-				style={{
-					marginBottom: "20px",
-				}}
-			/>
-			<p>Demo images: </p>
-			{/* you can create yur own custom component here */}
-			{/* but we will use built-in grid component */}
+		<div className="h-full flex flex-col">
+			<h1 className="text-lg">My Designs</h1>
+
 			<ImagesGrid
-				images={images}
-				getPreview={(image) => image.url}
-				onSelect={async (image, pos) => {
-					const { width, height } = await getImageSize(image.url);
-					store.activePage.addElement({
-						type: "image",
-						src: image.url,
-						width,
-						height,
-						// if position is available, show image on dropped place
-						// or just show it in the center
-						x: pos ? pos.x : store.width / 2 - width / 2,
-						y: pos ? pos.y : store.height / 2 - height / 2,
-					});
+				shadowEnabled={false}
+				images={data?.map((data) => data.items).flat()}
+				getPreview={(item) => `/templates/${item.preview}`}
+				isLoading={isLoading}
+				onSelect={async (item) => {
+					// download selected json
+					const req = await fetch(`/templates/${item.json}`);
+					const json = await req.json();
+					// just inject it into store
+					store.loadJSON(json);
 				}}
-				rowsNumber={2}
-				isLoading={!images.length}
-				loadMore={false}
+				rowsNumber={1}
 			/>
 		</div>
 	);
@@ -74,7 +42,7 @@ export const MyDesignsSection = {
 		<SectionTab
 			name="My Designs"
 			{...props}>
-			<NFTIcon />
+			<TemplatesIcon />
 		</SectionTab>
 	),
 	// we need observer to update component automatically on any store changes
