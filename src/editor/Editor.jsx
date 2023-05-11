@@ -2,7 +2,15 @@ import React from "react";
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from "polotno";
 import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
-import { SidePanel, DEFAULT_SECTIONS } from "polotno/side-panel";
+import {
+	SidePanel,
+	DEFAULT_SECTIONS,
+	TemplatesSection,
+	TextSection,
+	BackgroundSection,
+	UploadSection,
+	LayersSection,
+} from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 
 import { loadFile } from "./file";
@@ -11,7 +19,7 @@ import { QrSection } from "./sections/qr-section";
 import { QuotesSection } from "./sections/quotes-section";
 import { CustomSizesPanel } from "./sections/resize-section";
 import { IconsSection } from "./sections/icons-section";
-import { ShapesSection } from "./sections/shapes-section";
+import { NFTSection } from "./sections/nft-section";
 import { StableDiffusionSection } from "./sections/stable-diffusion-section";
 import { MyDesignsSection } from "./sections/my-designs-section";
 import { useProject } from "./project";
@@ -19,21 +27,33 @@ import { useProject } from "./project";
 import { ImageRemoveBackground } from "./background-remover";
 
 import Topbar from "./topbar/topbar";
-import { uploadCanvasToIpfs } from "../services/backendApi";
 
 // DEFAULT_SECTIONS.splice(3, 0, IllustrationsSection);
 // replace elements section with just shapes
-DEFAULT_SECTIONS.splice(3, 1, ShapesSection);
-// DEFAULT_SECTIONS.splice(2, 0, StableDiffusionSection);
-// add icons
-DEFAULT_SECTIONS.splice(3, 0, IconsSection);
-DEFAULT_SECTIONS.push(CustomSizesPanel);
+// DEFAULT_SECTIONS.splice(3, 1, ShapesSection);
+// // DEFAULT_SECTIONS.splice(2, 0, StableDiffusionSection);
+// // add icons
+// DEFAULT_SECTIONS.splice(3, 0, IconsSection);
+// DEFAULT_SECTIONS.push(CustomSizesPanel);
 
-// add two more sections
-DEFAULT_SECTIONS.push(QuotesSection, QrSection);
-DEFAULT_SECTIONS.unshift(MyDesignsSection);
+// // add two more sections
+// DEFAULT_SECTIONS.push(QuotesSection, QrSection);
+// DEFAULT_SECTIONS.unshift(MyDesignsSection);
 
-DEFAULT_SECTIONS.push(StableDiffusionSection);
+// DEFAULT_SECTIONS.push(StableDiffusionSection);
+
+const sections = [
+	TemplatesSection,
+	NFTSection,
+	TextSection,
+	MyDesignsSection,
+	IconsSection,
+	BackgroundSection,
+	UploadSection,
+	LayersSection,
+	CustomSizesPanel,
+	StableDiffusionSection,
+];
 
 const useHeight = () => {
   const [height, setHeight] = React.useState(window.innerHeight);
@@ -72,36 +92,35 @@ const Editor = ({ store }) => {
     }
   };
 
-  return (
-    <div
-      style={{
-        width: "100vw",
-        height: height + "px",
-        display: "flex",
-        flexDirection: "column",
-      }}
-      onDrop={handleDrop}
-    >
-      <Topbar store={store} />
-      <div style={{ height: "calc(100% - 50px)" }}>
-        <PolotnoContainer className="polotno-app-container">
-          <SidePanelWrap>
-            <SidePanel store={store} sections={DEFAULT_SECTIONS} />
-          </SidePanelWrap>
-          <WorkspaceWrap>
-            <Toolbar
-              store={store}
-              components={{
-                ImageRemoveBackground,
-              }}
-            />
-            <Workspace store={store} />
-            <ZoomButtons store={store} />
-          </WorkspaceWrap>
-        </PolotnoContainer>
-      </div>
-    </div>
-  );
+	return (
+		<>
+			<div
+				style={{
+					width: "100vw",
+					height: height + "px",
+					display: "flex",
+					flexDirection: "column",
+				}}
+				onDrop={handleDrop}>
+				<div style={{ height: "calc(100% - 75px)" }}>
+					<Topbar store={store} />
+					<PolotnoContainer>
+						<SidePanelWrap>
+							<SidePanel
+								store={store}
+								sections={sections}
+							/>
+						</SidePanelWrap>
+						<WorkspaceWrap>
+							<Toolbar store={store} />
+							<Workspace store={store} />
+							<ZoomButtons store={store} />
+						</WorkspaceWrap>
+					</PolotnoContainer>
+				</div>
+			</div>
+		</>
+	);
 };
 
 export default Editor;
