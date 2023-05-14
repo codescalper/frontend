@@ -5,7 +5,13 @@ import { useState, useEffect } from "react";
 import { getImageSize } from "polotno/utils/image";
 import { InputGroup } from "@blueprintjs/core";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
-import { getNFTs, getNFTsById } from "../../services/backendApi";
+import {
+  getAllCollection,
+  getNFTs,
+  getNftById,
+  getNftByCollection,
+  getCollectionNftById,
+} from "../../services/backendApi";
 import { useAccount } from "wagmi";
 
 const NFTPanel = observer(({ store }) => {
@@ -52,17 +58,44 @@ export const NFTSection = {
 
 const LenspostNFT = () => {
   const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [collection, setCollection] = useState([]);
+  const [contractAddress, setContractAddress] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [nftId, setNftId] = useState("");
+
+  const searchNFT = async () => {
+    const res = await getCollectionNftById(nftId, contractAddress);
+    console.log("res", res);
+
+    if (!nftId) {
+      getNftByContractAddress();
+    }
+  };
+
+  const getNftByContractAddress = async () => {
+    const res = await getNftByCollection(contractAddress);
+    // setLenspostNFTImages(res);
+    // console.log("res", res);
+  };
 
   async function loadImages() {
     // here we should implement your own API requests
-    setLenspostNFTImages([]);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const getCollections = await getAllCollection();
+    setCollection(getCollections);
+    // console.log("getCollections", getCollections);
 
     // for demo images are hard coded
     // in real app here will be something like JSON structure
     setLenspostNFTImages([{ url: "/one.gif" }, { url: "/two.jpg" }]);
   }
+
+  useEffect(() => {
+    searchNFT();
+  }, [nftId]);
+
+  useEffect(() => {
+    getNftByContractAddress();
+  }, [contractAddress]);
 
   useEffect(() => {
     loadImages();
@@ -73,38 +106,63 @@ const LenspostNFT = () => {
         className="mb-4 border px-2 py-1 rounded-md"
         placeholder="Search"
         onChange={(e) => {
-          loadImages();
+          setNftId(e.target.value);
         }}
+        value={nftId}
       />
       {/* you can create yur own custom component here */}
       {/* but we will use built-in grid component */}
 
-      <ImagesGrid
-        images={lenspostNFTImages}
-        getPreview={(image) => image.url}
-        onSelect={async (image, pos) => {
-          const { width, height } = await getImageSize(image.url);
-          store.activePage.addElement({
-            type: "image",
-            src: image.url,
-            width,
-            height,
-            // if position is available, show image on dropped place
-            // or just show it in the center
-            x: pos ? pos.x : store.width / 2 - width / 2,
-            y: pos ? pos.y : store.height / 2 - height / 2,
-          });
-        }}
-        rowsNumber={2}
-        isLoading={!lenspostNFTImages.length}
-        loadMore={false}
-      />
+      {!visible &&
+        collection.length > 0 &&
+        collection.map((item, index) => (
+          <div
+            key={item?.id}
+            onClick={() => {
+              setContractAddress(item?.address);
+              setVisible(true);
+            }}
+            className="flex items-center gap-6 w-full cursor-pointer"
+          >
+            <img
+              src="https://i.seadn.io/gcs/files/8c0ddbb72f2c23a894218174c8272b72.gif?auto=format&dpr=1&w=384"
+              alt="title"
+              className="w-1/2 rounded-md"
+            />
+
+            <p className="text-lg">{item?.name}</p>
+          </div>
+        ))}
+
+      {visible && lenspostNFTImages?.length > 0 && (
+        <ImagesGrid
+          images={lenspostNFTImages}
+          getPreview={(image) => image.url}
+          onSelect={async (image, pos) => {
+            const { width, height } = await getImageSize(image.url);
+            store.activePage.addElement({
+              type: "image",
+              src: image.url,
+              width,
+              height,
+              // if position is available, show image on dropped place
+              // or just show it in the center
+              x: pos ? pos.x : store.width / 2 - width / 2,
+              y: pos ? pos.y : store.height / 2 - height / 2,
+            });
+          }}
+          rowsNumber={2}
+          isLoading={!lenspostNFTImages.length}
+          loadMore={false}
+        />
+      )}
     </>
   );
 };
+
 const WalletNFT = () => {
   const [walletNFTImages, setWalletNFTImages] = useState([]);
-  const [text, setText] = useState("");
+  const [nftId, setNftId] = useState("");
   const { address } = useAccount();
 
   const convertIPFSUrl = (ipfsUrl) => {
@@ -115,16 +173,15 @@ const WalletNFT = () => {
   const searchNFT = async () => {
     let obj = {};
     let arr = [];
-    const nftById = await getNFTsById(text);
+    const nftById = await getNftById(nftId);
     if (nftById) {
       nftById.permaLink = convertIPFSUrl(nftById.permaLink);
       obj = { url: nftById.permaLink };
       arr.push(obj);
     }
     setWalletNFTImages(arr);
-    console.log("nftById", arr);
 
-    if (!text) {
+    if (!nftId) {
       loadImages();
     }
   };
@@ -146,7 +203,7 @@ const WalletNFT = () => {
 
   useEffect(() => {
     searchNFT();
-  }, [text]);
+  }, [nftId]);
 
   useEffect(() => {
     loadImages();
@@ -156,8 +213,8 @@ const WalletNFT = () => {
       <input
         className="mb-4 border px-2 py-1 rounded-md"
         placeholder="Search"
-        onChange={(e) => setText(e.target.value)}
-        value={text}
+        onChange={(e) => setNftId(e.target.value)}
+        value={nftId}
       />
       {/* you can create yur own custom component here */}
       {/* but we will use built-in grid component */}
