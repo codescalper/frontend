@@ -275,3 +275,14 @@ export const getCollectionNftById = async (id, contractAddress) => {
 //     console.log("error", error);
 //   }
 // };
+
+// template apis
+export const getAllTemplates = async () => {
+  try {
+    const result = await api.get(`${API}/template`);
+
+    return result.data;
+  } catch (error) {
+    return error;
+  }
+}

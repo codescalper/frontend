@@ -57,6 +57,7 @@ export const NFTSection = {
 };
 
 const LenspostNFT = () => {
+  const { address, isDisconnected } = useAccount();
   const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
   const [collection, setCollection] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
@@ -90,16 +91,30 @@ const LenspostNFT = () => {
   }
 
   useEffect(() => {
+    if (isDisconnected) return;
     searchNFT();
   }, [nftId]);
 
   useEffect(() => {
+    if (isDisconnected) return;
+
     getNftByContractAddress();
   }, [contractAddress]);
 
   useEffect(() => {
+    if (isDisconnected) return;
+
     loadImages();
-  }, []);
+  }, [address]);
+
+  if (isDisconnected) {
+    return (
+      <>
+        <p>Please connect the wallet</p>
+      </>
+    );
+  }
+
   return (
     <>
       <input
@@ -163,7 +178,7 @@ const LenspostNFT = () => {
 const WalletNFT = () => {
   const [walletNFTImages, setWalletNFTImages] = useState([]);
   const [nftId, setNftId] = useState("");
-  const { address } = useAccount();
+  const { address, isDisconnected } = useAccount();
 
   const convertIPFSUrl = (ipfsUrl) => {
     const cid = ipfsUrl.replace("ipfs://", ""); // Remove 'ipfs://' prefix
@@ -202,12 +217,23 @@ const WalletNFT = () => {
   }
 
   useEffect(() => {
+    if (isDisconnected) return;
     searchNFT();
   }, [nftId]);
 
   useEffect(() => {
+    if (isDisconnected) return;
     loadImages();
   }, [address]);
+
+  if (isDisconnected) {
+    return (
+      <>
+        <p>Please connect the wallet</p>
+      </>
+    );
+  }
+
   return (
     <>
       <input
@@ -219,6 +245,7 @@ const WalletNFT = () => {
       {/* you can create yur own custom component here */}
       {/* but we will use built-in grid component */}
       {/* {walletNFTImages.length > 0 && ( */}
+
       <ImagesGrid
         images={walletNFTImages}
         key={walletNFTImages}
