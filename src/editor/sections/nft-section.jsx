@@ -5,142 +5,185 @@ import { useState, useEffect } from "react";
 import { getImageSize } from "polotno/utils/image";
 import { InputGroup } from "@blueprintjs/core";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
+import { getNFTs, getNFTsById } from "../../services/backendApi";
+import { useAccount } from "wagmi";
 
 const NFTPanel = observer(({ store }) => {
-	const [tab, setTab] = useState("lenspost");
+  const [tab, setTab] = useState("lenspost");
 
-	return (
-		<div className="h-full flex flex-col">
-			<h1 className="text-lg">NFT</h1>
-			<div className="flex items-center justify-center space-x-2 my-4">
-				<button
-					className="w-1/2 border px-2 py-1 rounded-md bg-[#1B1A1D] text-white"
-					onClick={() => setTab("lenspost")}>
-					Lenspost NFT Library
-				</button>
-				<button
-					className="w-1/2 border border-black px-2 py-1 rounded-md"
-					onClick={() => setTab("wallet")}>
-					My Wallet NFTs
-				</button>
-			</div>
-			{tab === "lenspost" && <LenspostNFT />}
-			{tab === "wallet" && <WalletNFT />}
-		</div>
-	);
+  return (
+    <div className="h-full flex flex-col">
+      <h1 className="text-lg">NFT</h1>
+      <div className="flex items-center justify-center space-x-2 my-4">
+        <button
+          className={`w-1/2 border px-2 py-1 border-black rounded-md ${
+            tab === "lenspost" && "bg-[#1B1A1D]"
+          } ${tab === "lenspost" && "text-white"}`}
+          onClick={() => setTab("lenspost")}
+        >
+          Lenspost NFT Library
+        </button>
+        <button
+          className={`w-1/2 border border-black px-2 py-1 rounded-md ${
+            tab === "wallet" && "bg-[#1B1A1D]"
+          } ${tab === "wallet" && "text-white"}`}
+          onClick={() => setTab("wallet")}
+        >
+          My Wallet NFTs
+        </button>
+      </div>
+      {tab === "lenspost" && <LenspostNFT />}
+      {tab === "wallet" && <WalletNFT />}
+    </div>
+  );
 });
 
 // define the new custom section
 export const NFTSection = {
-	name: "NFT",
-	Tab: (props) => (
-		<SectionTab
-			name="NFT"
-			{...props}>
-			<NFTIcon />
-		</SectionTab>
-	),
-	// we need observer to update component automatically on any store changes
-	Panel: NFTPanel,
+  name: "NFT",
+  Tab: (props) => (
+    <SectionTab name="NFT" {...props}>
+      <NFTIcon />
+    </SectionTab>
+  ),
+  // we need observer to update component automatically on any store changes
+  Panel: NFTPanel,
 };
 
 const LenspostNFT = () => {
-	const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
+  const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
-	async function loadImages() {
-		// here we should implement your own API requests
-		setLenspostNFTImages([]);
-		await new Promise((resolve) => setTimeout(resolve, 3000));
+  async function loadImages() {
+    // here we should implement your own API requests
+    setLenspostNFTImages([]);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-		// for demo images are hard coded
-		// in real app here will be something like JSON structure
-		setLenspostNFTImages([{ url: "/one.gif" }, { url: "/two.jpg" }]);
-	}
+    // for demo images are hard coded
+    // in real app here will be something like JSON structure
+    setLenspostNFTImages([{ url: "/one.gif" }, { url: "/two.jpg" }]);
+  }
 
-	useEffect(() => {
-		loadImages();
-	}, []);
-	return (
-		<>
-			<input
-				className="mb-4 border px-2 py-1 rounded-md"
-				placeholder="Search"
-				onChange={(e) => {
-					loadImages();
-				}}
-			/>
-			{/* you can create yur own custom component here */}
-			{/* but we will use built-in grid component */}
-			<ImagesGrid
-				images={lenspostNFTImages}
-				getPreview={(image) => image.url}
-				onSelect={async (image, pos) => {
-					const { width, height } = await getImageSize(image.url);
-					store.activePage.addElement({
-						type: "image",
-						src: image.url,
-						width,
-						height,
-						// if position is available, show image on dropped place
-						// or just show it in the center
-						x: pos ? pos.x : store.width / 2 - width / 2,
-						y: pos ? pos.y : store.height / 2 - height / 2,
-					});
-				}}
-				rowsNumber={2}
-				isLoading={!lenspostNFTImages.length}
-				loadMore={false}
-			/>
-		</>
-	);
+  useEffect(() => {
+    loadImages();
+  }, []);
+  return (
+    <>
+      <input
+        className="mb-4 border px-2 py-1 rounded-md"
+        placeholder="Search"
+        onChange={(e) => {
+          loadImages();
+        }}
+      />
+      {/* you can create yur own custom component here */}
+      {/* but we will use built-in grid component */}
+
+      <ImagesGrid
+        images={lenspostNFTImages}
+        getPreview={(image) => image.url}
+        onSelect={async (image, pos) => {
+          const { width, height } = await getImageSize(image.url);
+          store.activePage.addElement({
+            type: "image",
+            src: image.url,
+            width,
+            height,
+            // if position is available, show image on dropped place
+            // or just show it in the center
+            x: pos ? pos.x : store.width / 2 - width / 2,
+            y: pos ? pos.y : store.height / 2 - height / 2,
+          });
+        }}
+        rowsNumber={2}
+        isLoading={!lenspostNFTImages.length}
+        loadMore={false}
+      />
+    </>
+  );
 };
 const WalletNFT = () => {
-	const [walletNFTImages, setWalletNFTImages] = useState([]);
+  const [walletNFTImages, setWalletNFTImages] = useState([]);
+  const [text, setText] = useState("");
+  const { address } = useAccount();
 
-	async function loadImages() {
-		// here we should implement your own API requests
-		setWalletNFTImages([]);
-		await new Promise((resolve) => setTimeout(resolve, 3000));
+  const convertIPFSUrl = (ipfsUrl) => {
+    const cid = ipfsUrl.replace("ipfs://", ""); // Remove 'ipfs://' prefix
+    return `https://ipfs.io/ipfs/${cid}`;
+  };
 
-		// for demo images are hard coded
-		// in real app here will be something like JSON structure
-		setWalletNFTImages([{ url: "/two.jpg" }, { url: "/one.gif" }]);
-	}
+  const searchNFT = async () => {
+    let obj = {};
+    let arr = [];
+    const nftById = await getNFTsById(text);
+    if (nftById) {
+      nftById.permaLink = convertIPFSUrl(nftById.permaLink);
+      obj = { url: nftById.permaLink };
+      arr.push(obj);
+    }
+    setWalletNFTImages(arr);
+    console.log("nftById", arr);
 
-	useEffect(() => {
-		loadImages();
-	}, []);
-	return (
-		<>
-			<input
-				className="mb-4 border px-2 py-1 rounded-md"
-				placeholder="Search"
-				onChange={(e) => {
-					loadImages();
-				}}
-			/>
-			{/* you can create yur own custom component here */}
-			{/* but we will use built-in grid component */}
-			<ImagesGrid
-				images={walletNFTImages}
-				getPreview={(image) => image.url}
-				onSelect={async (image, pos) => {
-					const { width, height } = await getImageSize(image.url);
-					store.activePage.addElement({
-						type: "image",
-						src: image.url,
-						width,
-						height,
-						// if position is available, show image on dropped place
-						// or just show it in the center
-						x: pos ? pos.x : store.width / 2 - width / 2,
-						y: pos ? pos.y : store.height / 2 - height / 2,
-					});
-				}}
-				rowsNumber={2}
-				isLoading={!walletNFTImages.length}
-				loadMore={false}
-			/>
-		</>
-	);
+    if (!text) {
+      loadImages();
+    }
+  };
+
+  async function loadImages() {
+    // here we should implement your own API requests
+    const res = await getNFTs(address);
+    let obj = {};
+    let arr = [];
+    for (let i = 0; i < res.length; i++) {
+      if (res[i].permaLink.includes("ipfs://")) {
+        res[i].permaLink = convertIPFSUrl(res[i].permaLink);
+        obj = { url: res[i].permaLink };
+        arr.push(obj);
+      }
+    }
+    setWalletNFTImages(arr);
+  }
+
+  useEffect(() => {
+    searchNFT();
+  }, [text]);
+
+  useEffect(() => {
+    loadImages();
+  }, [address]);
+  return (
+    <>
+      <input
+        className="mb-4 border px-2 py-1 rounded-md"
+        placeholder="Search"
+        onChange={(e) => setText(e.target.value)}
+        value={text}
+      />
+      {/* you can create yur own custom component here */}
+      {/* but we will use built-in grid component */}
+      {/* {walletNFTImages.length > 0 && ( */}
+      <ImagesGrid
+        images={walletNFTImages}
+        key={walletNFTImages}
+        getPreview={(image) => image.url}
+        onSelect={async (image, pos) => {
+          const { width, height } = await getImageSize(image.url);
+          store.activePage.addElement({
+            type: "image",
+            src: image.url,
+            width,
+            height,
+            // if position is available, show image on dropped place
+            // or just show it in the center
+            x: pos ? pos.x : store.width / 2 - width / 2,
+            y: pos ? pos.y : store.height / 2 - height / 2,
+          });
+        }}
+        rowsNumber={2}
+        isLoading={!walletNFTImages.length}
+        loadMore={false}
+      />
+      {/* )} */}
+    </>
+  );
 };
