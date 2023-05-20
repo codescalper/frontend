@@ -31,9 +31,11 @@ export default function App() {
   const [token, setToken] = useState("");
   const [session, setSession] = useState("");
 
+  // Check if jwt-token and associated address are in localStorage
+
   const genarateSignature = () => {
-    if (getFromLocalStorage("jwt-token") !== undefined)
-      return setSession(getFromLocalStorage("jwt-token"));
+    if (getFromLocalStorage("jwt") != undefined)
+      return setSession(getFromLocalStorage("jwt"));
 
     if (isConnected && !session) {
       signMessage({
@@ -47,7 +49,7 @@ export default function App() {
       const res = await login(address, signature, message);
 
       if (res.jwt) {
-        saveToLocalStorage("jwt-token", res.jwt);
+        saveToLocalStorage("jwt", res.jwt);
         setSession(res.jwt);
 
         const challegeText = await lensChallenge(address);
@@ -61,12 +63,11 @@ export default function App() {
   };
 
   const lensAuth = async () => {
-    if (isSuccess && getFromLocalStorage("lens-auth") === undefined) {
+    if (isSuccess) {
       const lensAuth = await authenticate(address, signature);
       if (lensAuth.status === "success") {
         saveToLocalStorage("lens-auth", true);
         setSign("3");
-        console.log("lensAuth", lensAuth);
       }
     }
   };
@@ -91,7 +92,7 @@ export default function App() {
 
   useEffect(() => {
     genarateSignature();
-  }, [isConnected]);
+  }, [isConnected, address]);
 
   return (
     <LensContext.Provider

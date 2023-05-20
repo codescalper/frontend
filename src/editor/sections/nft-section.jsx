@@ -13,6 +13,7 @@ import {
   getCollectionNftById,
 } from "../../services/backendApi";
 import { useAccount } from "wagmi";
+import { convertIPFSUrl, getImageUrl } from "../../services/imageUrl";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -66,7 +67,15 @@ const LenspostNFT = () => {
 
   const searchNFT = async () => {
     const res = await getCollectionNftById(nftId, contractAddress);
-    console.log("res", res);
+    let obj = {};
+    let arr = [];
+    if (res) {
+      res.ipfsLink = convertIPFSUrl(res.ipfsLink);
+      obj = { url: res.ipfsLink };
+      arr.push(obj);
+    }
+    setLenspostNFTImages(arr);
+    console.log("image", arr);
 
     if (!nftId) {
       getNftByContractAddress();
@@ -74,10 +83,12 @@ const LenspostNFT = () => {
   };
 
   const getNftByContractAddress = async () => {
+    if (!contractAddress) return;
     const res = await getNftByCollection(contractAddress);
-    // setLenspostNFTImages(res);
-    // console.log("res", res);
+    const images = getImageUrl(res);
+    setLenspostNFTImages(images);
   };
+  // console.log("res", lenspostNFTImages);
 
   async function loadImages() {
     // here we should implement your own API requests
@@ -87,7 +98,7 @@ const LenspostNFT = () => {
 
     // for demo images are hard coded
     // in real app here will be something like JSON structure
-    setLenspostNFTImages([{ url: "/one.gif" }, { url: "/two.jpg" }]);
+    // setLenspostNFTImages([{ url: "/one.gif" }, { url: "/two.jpg" }]);
   }
 
   useEffect(() => {
@@ -128,26 +139,29 @@ const LenspostNFT = () => {
       {/* you can create yur own custom component here */}
       {/* but we will use built-in grid component */}
 
-      {!visible &&
-        collection.length > 0 &&
-        collection.map((item, index) => (
-          <div
-            key={item?.id}
-            onClick={() => {
-              setContractAddress(item?.address);
-              setVisible(true);
-            }}
-            className="flex items-center gap-6 w-full cursor-pointer"
-          >
-            <img
-              src="https://i.seadn.io/gcs/files/8c0ddbb72f2c23a894218174c8272b72.gif?auto=format&dpr=1&w=384"
-              alt="title"
-              className="w-1/2 rounded-md"
-            />
+      {!visible && (
+        <div className="overflow-y-auto">
+          {collection.length > 0 &&
+            collection.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => {
+                  setContractAddress(item?.address);
+                  setVisible(true);
+                }}
+                className="flex items-center gap-6 w-full cursor-pointer"
+              >
+                <img
+                  src={item?.image}
+                  alt="title"
+                  className="w-1/2 rounded-md mb-4"
+                />
 
-            <p className="text-lg">{item?.name}</p>
-          </div>
-        ))}
+                <p className="text-lg">{item?.name}</p>
+              </div>
+            ))}
+        </div>
+      )}
 
       {visible && lenspostNFTImages?.length > 0 && (
         <ImagesGrid
@@ -180,11 +194,6 @@ const WalletNFT = () => {
   const [nftId, setNftId] = useState("");
   const { address, isDisconnected } = useAccount();
 
-  const convertIPFSUrl = (ipfsUrl) => {
-    const cid = ipfsUrl.replace("ipfs://", ""); // Remove 'ipfs://' prefix
-    return `https://ipfs.io/ipfs/${cid}`;
-  };
-
   const searchNFT = async () => {
     let obj = {};
     let arr = [];
@@ -204,16 +213,8 @@ const WalletNFT = () => {
   async function loadImages() {
     // here we should implement your own API requests
     const res = await getNFTs(address);
-    let obj = {};
-    let arr = [];
-    for (let i = 0; i < res.length; i++) {
-      if (res[i].permaLink.includes("ipfs://")) {
-        res[i].permaLink = convertIPFSUrl(res[i].permaLink);
-        obj = { url: res[i].permaLink };
-        arr.push(obj);
-      }
-    }
-    setWalletNFTImages(arr);
+    const images = getImageUrl(res);
+    setWalletNFTImages(images);
   }
 
   useEffect(() => {

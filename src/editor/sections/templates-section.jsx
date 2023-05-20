@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 
@@ -8,6 +8,7 @@ import MdPhotoLibrary from "@meronex/icons/md/MdPhotoLibrary";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { TemplatesIcon } from "../editor-icon";
 import { getAllTemplates } from "../../services/backendApi";
+import { useAccount } from "wagmi";
 
 export const TemplatesPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -40,16 +41,26 @@ export const TemplatesPanel = observer(({ store }) => {
 });
 
 const LenspostTemplates = observer(({ store }) => {
+  const { isDisconnected } = useAccount();
+  const res = async () => {
+    await getAllTemplates().then((res) => {
+      console.log("res", res);
+    });
+  };
+
+  res();
   // load data
   const { data, isLoading } = useInfiniteAPI({
     getAPI: ({ page }) => `templates/page${page}.json`,
   });
 
-  const res = async () => {
-    await getAllTemplates().then((res) => console.log("res", res));
-  };
-
-  res();
+  if (isDisconnected) {
+    return (
+      <>
+        <p>Please connect the wallet</p>
+      </>
+    );
+  }
 
   return (
     <div style={{ height: "100%" }}>
@@ -73,10 +84,19 @@ const LenspostTemplates = observer(({ store }) => {
 });
 
 const UserTemplates = observer(({ store }) => {
+  const { isDisconnected } = useAccount();
   // load data
   const { data, isLoading } = useInfiniteAPI({
     getAPI: ({ page }) => `templates/page${page}.json`,
   });
+
+  if (isDisconnected) {
+    return (
+      <>
+        <p>Please connect the wallet</p>
+      </>
+    );
+  }
 
   return (
     <div style={{ height: "100%" }}>

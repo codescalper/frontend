@@ -23,7 +23,7 @@ const api = axios.create();
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    const jwtToken = getFromLocalStorage("jwt-token");
+    const jwtToken = getFromLocalStorage("jwt");
 
     // Exclude the login API from adding the default header
     if (config.url !== "/auth/login") {
@@ -249,11 +249,7 @@ export const getCollectionNftById = async (id, contractAddress) => {
   if (!id || !contractAddress) return console.log("missing params");
 
   try {
-    const result = await api.get(
-      `${API}/collection/${contractAddress}/${id}`
-    );
-
-    console.log("result", result);
+    const result = await api.get(`${API}/collection/${contractAddress}/${id}`);
     return result.data;
   } catch (error) {
     console.log("error", error);
@@ -285,4 +281,4 @@ export const getAllTemplates = async () => {
   } catch (error) {
     return error;
   }
-}
+};
