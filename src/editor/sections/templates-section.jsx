@@ -34,25 +34,32 @@ export const TemplatesPanel = observer(({ store }) => {
           User Templates
         </button>
       </div>
-      {tab === "lenspost" && <LenspostTemplates />}
-      {tab === "user" && <UserTemplates />}
+      {tab === "lenspost" && <LenspostTemplates store={store} />}
+      {tab === "user" && <UserTemplates store={store} />}
     </div>
   );
 });
 
-const LenspostTemplates = observer(({ store }) => {
+const LenspostTemplates = ({ store }) => {
   const { isDisconnected } = useAccount();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const res = async () => {
+    setIsLoading(true);
     await getAllTemplates().then((res) => {
-      console.log("res", res);
+      setData(res);
+      setIsLoading(false);
     });
   };
 
-  res();
+  useEffect(() => {
+    res();
+  }, []);
+  // res();
   // load data
-  const { data, isLoading } = useInfiniteAPI({
-    getAPI: ({ page }) => `templates/page${page}.json`,
-  });
+  // const { data, isLoading } = useInfiniteAPI({
+  //   getAPI: () => "https://lenspost-development.up.railway.app/templates",
+  // });
 
   if (isDisconnected) {
     return (
@@ -64,16 +71,15 @@ const LenspostTemplates = observer(({ store }) => {
 
   return (
     <div style={{ height: "100%" }}>
-      <p>lenspost templates -- remove later</p>
       <ImagesGrid
         shadowEnabled={false}
-        images={data?.map((data) => data.items).flat()}
-        getPreview={(item) => `/templates/${item.preview}`}
+        images={data}
+        getPreview={(item) => item.image}
         isLoading={isLoading}
         onSelect={async (item) => {
           // download selected json
-          const req = await fetch(`/templates/${item.json}`);
-          const json = await req.json();
+          const json = item.data;
+          // const json = req.json();
           // just inject it into store
           store.loadJSON(json);
         }}
@@ -81,9 +87,9 @@ const LenspostTemplates = observer(({ store }) => {
       />
     </div>
   );
-});
+};
 
-const UserTemplates = observer(({ store }) => {
+const UserTemplates = ({ store }) => {
   const { isDisconnected } = useAccount();
   // load data
   const { data, isLoading } = useInfiniteAPI({
@@ -118,7 +124,7 @@ const UserTemplates = observer(({ store }) => {
       />
     </div>
   );
-});
+};
 
 // define the new custom section
 export const TemplatesSection = {
