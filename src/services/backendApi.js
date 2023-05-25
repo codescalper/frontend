@@ -3,7 +3,7 @@ import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import axios from "axios";
 import { getFromLocalStorage } from "./localStorage";
 
-const API = BACKEND_LOCAL_URL;
+const API = BACKEND_DEV_URL;
 
 /**
  * @param walletAddress string
@@ -23,7 +23,7 @@ const api = axios.create();
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    const jwtToken = getFromLocalStorage("jwt-token");
+    const jwtToken = getFromLocalStorage("jwt");
 
     // Exclude the login API from adding the default header
     if (config.url !== "/auth/login") {
@@ -124,7 +124,7 @@ export const getNFTs = async (walletAddress) => {
   }
 };
 
-export const getNFTsById = async (id) => {
+export const getNftById = async (id) => {
   if (!id) return console.log("missing id");
 
   try {
@@ -221,45 +221,40 @@ export const getNFTsById = async (id) => {
 // };
 
 // collection apis
-// export const getAllCollection = async () => {
-//   try {
-//     const result = await axios.get(`${API}/collection`);
+export const getAllCollection = async () => {
+  try {
+    const result = await api.get(`${API}/collection`);
 
-//     return result.data;
-//   } catch (error) {
-//     return error;
-//   }
-// };
+    return result.data;
+  } catch (error) {
+    return error;
+  }
+};
 
-// export const getNftByCollection = async (contractAddress) => {
-//   if (!contractAddress) return console.log("missing contractAddress");
+export const getNftByCollection = async (contractAddress) => {
+  if (!contractAddress) return console.log("missing contractAddress");
 
-//   try {
-//     const result = await axios.get(
-//       `${API}/collection/${contractAddress}?limit=100&offset=200`
-//     );
+  try {
+    const result = await api.get(
+      `${API}/collection/${contractAddress}?limit=100&offset=200`
+    );
 
-//     console.log("result", result);
-//     return result.data;
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+    return result.data;
+  } catch (error) {
+    return error;
+  }
+};
 
-// export const getNftById = async (id, contractAddress) => {
-//   if (!id || !contractAddress) return console.log("missing params");
+export const getCollectionNftById = async (id, contractAddress) => {
+  if (!id || !contractAddress) return console.log("missing params");
 
-//   try {
-//     const result = await axios.get(
-//       `${API}/collection/${contractAddress}/${id}`
-//     );
-
-//     console.log("result", result);
-//     return result.data;
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+  try {
+    const result = await api.get(`${API}/collection/${contractAddress}/${id}`);
+    return result.data;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
 
 // utils apis
 // export const checkDispatcher = async (profileId) => {
@@ -276,3 +271,14 @@ export const getNFTsById = async (id) => {
 //     console.log("error", error);
 //   }
 // };
+
+// template apis
+export const getAllTemplates = async () => {
+  try {
+    const result = await api.get(`${API}/template`);
+
+    return result.data;
+  } catch (error) {
+    return error;
+  }
+};
