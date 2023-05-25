@@ -31,7 +31,33 @@ export default function App() {
   const [token, setToken] = useState("");
   const [session, setSession] = useState("");
 
-  // Check if jwt-token and associated address are in localStorage
+  // remove jwt/lens-auth from localstorage
+  useEffect(() => {
+    const clearLocalStorage = () => {
+      const jwtExpiration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const jwtTimestamp = localStorage.getItem("jwt-timestamp");
+      const lensAuthTimestamp = localStorage.getItem("lens-auth-timestamp");
+
+      const currentTimestamp = new Date().getTime();
+
+      if (jwtTimestamp && currentTimestamp - jwtTimestamp > jwtExpiration) {
+        localStorage.removeItem("jwt");
+        localStorage.removeItem("jwt-timestamp");
+      }
+
+      if (
+        lensAuthTimestamp &&
+        currentTimestamp - lensAuthTimestamp > jwtExpiration
+      ) {
+        localStorage.removeItem("lensAuth");
+        localStorage.removeItem("lens-auth-timestamp");
+      }
+    };
+
+    const interval = setInterval(clearLocalStorage, 60 * 60 * 1000); // Run every hour
+
+    return () => clearInterval(interval);
+  }, []);
 
   const genarateSignature = () => {
     if (getFromLocalStorage("jwt") != undefined)
@@ -50,6 +76,7 @@ export default function App() {
 
       if (res.jwt) {
         saveToLocalStorage("jwt", res.jwt);
+        saveToLocalStorage("jwt-timestamp", new Date().getTime());
         setSession(res.jwt);
 
         const challegeText = await lensChallenge(address);
@@ -67,6 +94,7 @@ export default function App() {
       const lensAuth = await authenticate(address, signature);
       if (lensAuth.status === "success") {
         saveToLocalStorage("lens-auth", true);
+        saveToLocalStorage("lens-auth-timestamp", new Date().getTime());
         setSign("3");
       }
     }
