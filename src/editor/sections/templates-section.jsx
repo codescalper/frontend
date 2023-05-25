@@ -70,7 +70,7 @@ const LenspostTemplates = ({ store }) => {
   }
 
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: "100%" }} className="overflow-y-auto">
       <ImagesGrid
         shadowEnabled={false}
         images={data}

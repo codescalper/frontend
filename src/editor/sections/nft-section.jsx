@@ -17,7 +17,7 @@ import { convertIPFSUrl, getImageUrl } from "../../services/imageUrl";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
-
+  const { isConnected } = useAccount();
   return (
     <div className="h-full flex flex-col">
       <h1 className="text-lg">NFT</h1>
@@ -40,7 +40,12 @@ const NFTPanel = observer(({ store }) => {
         </button>
       </div>
       {tab === "lenspost" && <LenspostNFT />}
-      {tab === "wallet" && <WalletNFT />}
+      {tab === "wallet" && isConnected && <WalletNFT />}
+      {tab === "wallet" && !isConnected && (
+        <div className="flex items-center justify-center h-full">
+          <p>Please Connect your Wallet to see your NFTs</p>
+        </div>
+      )}
     </div>
   );
 });
@@ -62,24 +67,29 @@ const LenspostNFT = () => {
   const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
   const [collection, setCollection] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
-  const [visible, setVisible] = useState(false);
   const [nftId, setNftId] = useState("");
+//   const CATEGORIES = ["Nouns", "Moonbirds", "CryptoPunks", "QQL"];
+  const [activeCat, setActiveCat] = useState(null);
 
   const searchNFT = async () => {
+    if (!activeCat) return;
     const res = await getCollectionNftById(nftId, contractAddress);
     let obj = {};
     let arr = [];
-    if (res) {
+    if (res.ipfsLink?.includes("ipfs://")) {
       res.ipfsLink = convertIPFSUrl(res.ipfsLink);
+      obj = { url: res[i].ipfsLink };
+      arr.push(obj);
+    } else {
       obj = { url: res.ipfsLink };
       arr.push(obj);
     }
     setLenspostNFTImages(arr);
     console.log("image", arr);
 
-    if (!nftId) {
-      getNftByContractAddress();
-    }
+    // if (!nftId) {
+    //   getNftByContractAddress();
+    // }
   };
 
   const getNftByContractAddress = async () => {
@@ -103,6 +113,7 @@ const LenspostNFT = () => {
 
   useEffect(() => {
     if (isDisconnected) return;
+
     searchNFT();
   }, [nftId]);
 
@@ -126,44 +137,35 @@ const LenspostNFT = () => {
     );
   }
 
-  return (
-    <>
-      <input
-        className="mb-4 border px-2 py-1 rounded-md"
-        placeholder="Search"
-        onChange={(e) => {
-          setNftId(e.target.value);
-        }}
-        value={nftId}
-      />
-      {/* you can create yur own custom component here */}
-      {/* but we will use built-in grid component */}
-
-      {!visible && (
-        <div className="overflow-y-auto">
-          {collection.length > 0 &&
-            collection.map((item, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  setContractAddress(item?.address);
-                  setVisible(true);
-                }}
-                className="flex items-center gap-6 w-full cursor-pointer"
-              >
-                <img
-                  src={item?.image}
-                  alt="title"
-                  className="w-1/2 rounded-md mb-4"
-                />
-
-                <p className="text-lg">{item?.name}</p>
-              </div>
-            ))}
+  function RenderCategories() {
+    return collection.map((item, index) => {
+      return (
+        <div className="" key={index}>
+          <div
+            className="flex items-center space-x-4 p-2 mb-4 cursor-pointer"
+            onClick={() => (
+              setContractAddress(item.address), setActiveCat(item.name)
+            )}
+          >
+            <img
+              src={item.image}
+              alt={`${item}`}
+              className="h-24 w-24 rounded-md"
+            />
+            <p className="text-lg font-normal">{item.name}</p>
+          </div>
         </div>
-      )}
+      );
+    });
+  }
 
-      {visible && lenspostNFTImages?.length > 0 && (
+  function RenderImages() {
+    return (
+      <div className="">
+        <div className="">
+          <button onClick={() => goBack()}>go back</button>
+          <h1 className="text-lg font-bold">{activeCat}</h1>
+        </div>
         <ImagesGrid
           images={lenspostNFTImages}
           getPreview={(image) => image.url}
@@ -184,7 +186,35 @@ const LenspostNFT = () => {
           isLoading={!lenspostNFTImages.length}
           loadMore={false}
         />
-      )}
+      </div>
+    );
+  }
+
+  function goBack() {
+    setActiveCat(null);
+  }
+
+  useEffect(() => {
+    loadImages();
+  }, []);
+
+  return (
+    <>
+      <input
+        className="mb-4 border px-2 py-1 rounded-md"
+        placeholder="Search"
+        onChange={(e) => {
+          setNftId(e.target.value);
+        }}
+        value={nftId}
+      />
+	  <div className="overflow-y-auto">
+
+      {activeCat === null ? <RenderCategories /> : <RenderImages />}
+	  </div>
+
+      {/* <RenderCategories />
+			<RenderImages /> */}
     </>
   );
 };
