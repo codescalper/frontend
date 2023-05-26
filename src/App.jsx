@@ -3,12 +3,13 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import { App as Editor } from "./editor";
 
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import { authenticate, login, refreshNFT } from "./services/backendApi";
 import axios from "axios";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
+  removeFromLocalStorage,
 } from "./services/localStorage";
 import { lensChallenge } from "../lensApi";
 export const LensContext = createContext();
@@ -19,6 +20,7 @@ export default function App() {
   );
   const [sign, setSign] = useState("");
   const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   const {
     data: signature,
     isError,
@@ -35,22 +37,30 @@ export default function App() {
   useEffect(() => {
     const clearLocalStorage = () => {
       const jwtExpiration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-      const jwtTimestamp = localStorage.getItem("jwt-timestamp");
-      const lensAuthTimestamp = localStorage.getItem("lens-auth-timestamp");
+      const jwtTimestamp = getFromLocalStorage("jwt-timestamp");
+      const lensAuthTimestamp = getFromLocalStorage("lens-auth-timestamp");
 
       const currentTimestamp = new Date().getTime();
 
       if (jwtTimestamp && currentTimestamp - jwtTimestamp > jwtExpiration) {
-        localStorage.removeItem("jwt");
-        localStorage.removeItem("jwt-timestamp");
+        removeFromLocalStorage("jwt");
+        removeFromLocalStorage("jwt-timestamp");
       }
 
       if (
         lensAuthTimestamp &&
         currentTimestamp - lensAuthTimestamp > jwtExpiration
       ) {
-        localStorage.removeItem("lensAuth");
-        localStorage.removeItem("lens-auth-timestamp");
+        removeFromLocalStorage("lensAuth");
+        removeFromLocalStorage("lens-auth-timestamp");
+      }
+
+      if (
+        getFromLocalStorage("jwt") != undefined &&
+        getFromLocalStorage("lens-auth") != undefined &&
+        isConnected
+      ) {
+        disconnect();
       }
     };
 

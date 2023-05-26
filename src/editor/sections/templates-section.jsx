@@ -55,11 +55,6 @@ const LenspostTemplates = ({ store }) => {
   useEffect(() => {
     res();
   }, []);
-  // res();
-  // load data
-  // const { data, isLoading } = useInfiniteAPI({
-  //   getAPI: () => "https://lenspost-development.up.railway.app/templates",
-  // });
 
   if (isDisconnected) {
     return (
