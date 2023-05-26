@@ -18,3 +18,12 @@ export const getFromLocalStorage = (key) => {
     return undefined;
   }
 };
+
+// remove data from local storage
+export const removeFromLocalStorage = (key) => {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) {
+    console.log(e);
+  }
+}

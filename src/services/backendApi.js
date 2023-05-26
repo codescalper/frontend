@@ -1,6 +1,6 @@
 import { Store } from "polotno/model/store";
 import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
-import axios from "axios";
+import axios, { all } from "axios";
 import { getFromLocalStorage } from "./localStorage";
 
 const API = BACKEND_DEV_URL;
@@ -137,23 +137,27 @@ export const getNftById = async (id) => {
 };
 
 // canvas apis
-// export const createCanvas = async (jsonCanvasData, params, isPublic) => {
-//   if (!data || !params || !isPublic) return console.log("missing params");
+export const createCanvas = async (
+  jsonCanvasData,
+  followCollectModule,
+  isPublic
+) => {
+  try {
+    const result = await api.post(`${API}/user/canvas/create`, {
+      canvasData: {
+        data: jsonCanvasData,
+        params: {
+          followCollectModule: followCollectModule,
+        },
+        isPublic: isPublic,
+      },
+    });
 
-//   try {
-//     const result = await axios.post(`${API}/user/canvas/create`, {
-//       canvasData: {
-//         data: jsonCanvasData,
-//         params: params,
-//         isPublic: isPublic,
-//       },
-//     });
-
-//     console.log("result", result);
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+    return result.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 // export const updateCanvas = async (id, jsonCanvasData, params, isPublic) => {
 //   if (!data || !params || !isPublic) return console.log("missing params");
@@ -191,18 +195,26 @@ export const getNftById = async (id) => {
 //   }
 // };
 
-// export const getCanvasById = async (id) => {
-//   if (!id) return console.log("missing id");
+export const getCanvasById = async (id) => {
+  try {
+    const result = await api.get(`${API}/user/canvas/${id}`);
 
-//   try {
-//     const result = await axios.get(`${API}/user/canvas/get${id}`);
+    return result.data;
+  } catch (error) {
+    return error;
+  }
+};
 
-//     console.log("result", result);
-//     return result.data;
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+export const deleteCanvasById = async (id) => {
+
+  try {
+    const result = await api.delete(`${API}/user/canvas/delete/${id}`);
+
+    return result.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 // export const publishCanvasToLens = async (id, name, content) => {
 //   if (!id || !name || !content) return console.log("missing params");
@@ -279,6 +291,7 @@ export const getAllTemplates = async () => {
 
     return result.data;
   } catch (error) {
-    return error;
+    console.log("error", error);
+    alert("error", error);
   }
 };

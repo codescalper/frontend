@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from "polotno";
 import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
 import {
-	SidePanel,
-	DEFAULT_SECTIONS,
-	// TemplatesSection,
-	TextSection,
-	BackgroundSection,
-	UploadSection,
-	LayersSection,
+  SidePanel,
+  DEFAULT_SECTIONS,
+  // TemplatesSection,
+  TextSection,
+  BackgroundSection,
+  UploadSection,
+  LayersSection,
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 import { loadFile } from "./file";
@@ -23,18 +23,24 @@ import { useProject } from "./project";
 import Topbar from "./topbar/topbar";
 
 import { TemplatesSection } from "./sections/templates-section";
+import { useAccount } from "wagmi";
+import {
+  createCanvas,
+  deleteCanvasById,
+  getCanvasById,
+} from "../services/backendApi";
 
 const sections = [
-	TemplatesSection,
-	NFTSection,
-	TextSection,
-	MyDesignsSection,
-	IconsSection,
-	BackgroundSection,
-	UploadSection,
-	LayersSection,
-	CustomSizesPanel,
-	StableDiffusionSection,
+  TemplatesSection,
+  NFTSection,
+  TextSection,
+  MyDesignsSection,
+  IconsSection,
+  BackgroundSection,
+  UploadSection,
+  LayersSection,
+  CustomSizesPanel,
+  StableDiffusionSection,
 ];
 
 const useHeight = () => {
@@ -50,6 +56,7 @@ const useHeight = () => {
 const Editor = ({ store }) => {
   const project = useProject();
   const height = useHeight();
+  const { address } = useAccount();
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -74,35 +81,56 @@ const Editor = ({ store }) => {
     }
   };
 
-	return (
-		<>
-			<div
-				style={{
-					width: "100vw",
-					height: height + "px",
-					display: "flex",
-					flexDirection: "column",
-				}}
-				onDrop={handleDrop}>
-				<div style={{ height: "calc(100% - 75px)" }}>
-					<Topbar store={store} />
-					<PolotnoContainer>
-						<SidePanelWrap>
-							<SidePanel
-								store={store}
-								sections={sections}
-							/>
-						</SidePanelWrap>
-						<WorkspaceWrap>
-							<Toolbar store={store} />
-							<Workspace store={store} />
-							<ZoomButtons store={store} />
-						</WorkspaceWrap>
-					</PolotnoContainer>
-				</div>
-			</div>
-		</>
-	);
+  const saveCanvas = async () => {
+    const res = await createCanvas(store.toJSON(), "hello", false);
+    console.log(res);
+  };
+
+  const getCanvas = async () => {
+    const res = await getCanvasById("3");
+    console.log(res);
+  };
+
+  const deleteCanvas = async () => {
+
+	const res = await deleteCanvasById("");
+    console.log("deleted");
+  };
+
+  return (
+    <>
+      <div
+        style={{
+          width: "100vw",
+          height: height + "px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+        onDrop={handleDrop}
+      >
+        <div style={{ height: "calc(100% - 75px)" }}>
+          <Topbar store={store} />
+          <button onClick={saveCanvas} className="mr-5">
+            Save
+          </button>
+          <button onClick={getCanvas} className="mr-5">
+            Get
+          </button>
+          <button onClick={deleteCanvas}>Delete</button>
+          <PolotnoContainer>
+            <SidePanelWrap>
+              <SidePanel store={store} sections={sections} />
+            </SidePanelWrap>
+            <WorkspaceWrap>
+              <Toolbar store={store} />
+              <Workspace store={store} />
+              <ZoomButtons store={store} />
+            </WorkspaceWrap>
+          </PolotnoContainer>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Editor;
