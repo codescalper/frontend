@@ -155,28 +155,35 @@ export const createCanvas = async (
 
     return result.data;
   } catch (error) {
-    return error;
+    console.log("error", error);
+    alert(error);
   }
 };
 
-// export const updateCanvas = async (id, jsonCanvasData, params, isPublic) => {
-//   if (!data || !params || !isPublic) return console.log("missing params");
+export const updateCanvas = async (
+  id,
+  jsonCanvasData,
+  followCollectModule,
+  isPublic
+) => {
+  try {
+    const result = await api.put(`${API}/user/canvas/update`, {
+      canvasData: {
+        id: id,
+        data: jsonCanvasData,
+        params: {
+          followCollectModule: followCollectModule,
+        },
+        isPublic: isPublic,
+      },
+    });
 
-//   try {
-//     const result = await axios.put(`${API}/user/canvas/update`, {
-//       canvasData: {
-//         id: id,
-//         data: jsonCanvasData,
-//         params: params,
-//         isPublic: isPublic,
-//       },
-//     });
-
-//     console.log("result", result);
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+    return result.data;
+  } catch (error) {
+    console.log("error", error);
+    alert(error);
+  }
+};
 
 // export const changeCanvasVisibility = async (id, visibility) => {
 //   if (!id || !visibility) return console.log("missing params");
@@ -206,7 +213,6 @@ export const getCanvasById = async (id) => {
 };
 
 export const deleteCanvasById = async (id) => {
-
   try {
     const result = await api.delete(`${API}/user/canvas/delete/${id}`);
 

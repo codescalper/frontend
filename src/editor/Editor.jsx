@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from "polotno";
 import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
@@ -28,6 +28,7 @@ import {
   createCanvas,
   deleteCanvasById,
   getCanvasById,
+  updateCanvas,
 } from "../services/backendApi";
 
 const sections = [
@@ -57,6 +58,8 @@ const Editor = ({ store }) => {
   const project = useProject();
   const height = useHeight();
   const { address } = useAccount();
+  const [canvasId, setCanvasId] = useState();
+  const canvasIdRef = useRef(null);
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -81,19 +84,58 @@ const Editor = ({ store }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      // Place the async logic here
+      const storeData = store.toJSON();
+      const canvasChildren = storeData.pages[0].children;
+
+      // console.log("children", canvasChildren.length)
+      // return
+      if (canvasChildren.length === 0) {
+        canvasIdRef.current = null;
+      }
+
+      if (canvasChildren.length > 0) {
+        if (!canvasIdRef.current) {
+          const res = await createCanvas(storeData, "hello", false);
+          canvasIdRef.current = res.canvasId;
+          // setCanvasId(res.canvasId);
+          console.log("create canvas", res.canvasId);
+        }
+
+        if (canvasIdRef.current) {
+          const res = await updateCanvas(
+            canvasIdRef.current,
+            storeData,
+            "hello",
+            false
+          );
+          console.log("update canvas", res);
+        }
+      }
+    };
+
+    const interval = setInterval(fetchData, 3000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   const saveCanvas = async () => {
+    console.log(store.toJSON());
     const res = await createCanvas(store.toJSON(), "hello", false);
     console.log(res);
   };
 
   const getCanvas = async () => {
-    const res = await getCanvasById("3");
+    const res = await getCanvasById("40");
     console.log(res);
   };
 
   const deleteCanvas = async () => {
-
-	const res = await deleteCanvasById("");
+    const res = await deleteCanvasById("");
     console.log("deleted");
   };
 
