@@ -12,10 +12,10 @@ store.addPage();
 const project = createProject({ store });
 window.project = project;
 
-export function App() {
-	return (
-		<ProjectContext.Provider value={project}>
-			<Editor store={store} />
-		</ProjectContext.Provider>
-	);
+export function App({ isLoading, text }) {
+  return (
+    <ProjectContext.Provider value={project}>
+      <Editor store={store} isLoading={isLoading} text={text} />
+    </ProjectContext.Provider>
+  );
 }

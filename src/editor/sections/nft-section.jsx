@@ -41,11 +41,6 @@ const NFTPanel = observer(({ store }) => {
       </div>
       {tab === "lenspost" && <LenspostNFT />}
       {tab === "wallet" && isConnected && <WalletNFT />}
-      {tab === "wallet" && !isConnected && (
-        <div className="flex items-center justify-center h-full">
-          <p>Please Connect your Wallet to see your NFTs</p>
-        </div>
-      )}
     </div>
   );
 });
@@ -68,7 +63,7 @@ const LenspostNFT = () => {
   const [collection, setCollection] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
   const [nftId, setNftId] = useState("");
-//   const CATEGORIES = ["Nouns", "Moonbirds", "CryptoPunks", "QQL"];
+  //   const CATEGORIES = ["Nouns", "Moonbirds", "CryptoPunks", "QQL"];
   const [activeCat, setActiveCat] = useState(null);
 
   const searchNFT = async () => {
@@ -132,7 +127,7 @@ const LenspostNFT = () => {
   if (isDisconnected) {
     return (
       <>
-        <p>Please connect the wallet</p>
+        <p>Please connect your wallet</p>
       </>
     );
   }
@@ -208,10 +203,9 @@ const LenspostNFT = () => {
         }}
         value={nftId}
       />
-	  <div className="overflow-y-auto">
-
-      {activeCat === null ? <RenderCategories /> : <RenderImages />}
-	  </div>
+      <div className="overflow-y-auto">
+        {activeCat === null ? <RenderCategories /> : <RenderImages />}
+      </div>
 
       {/* <RenderCategories />
 			<RenderImages /> */}
@@ -260,11 +254,11 @@ const WalletNFT = () => {
   if (isDisconnected) {
     return (
       <>
-        <p>Please connect the wallet</p>
+        <p>Please connect your wallet</p>
       </>
     );
   }
-
+  
   return (
     <>
       <input

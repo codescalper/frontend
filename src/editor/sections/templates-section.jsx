@@ -59,7 +59,7 @@ const LenspostTemplates = ({ store }) => {
   if (isDisconnected) {
     return (
       <>
-        <p>Please connect the wallet</p>
+        <p>Please connect your wallet</p>
       </>
     );
   }
@@ -94,7 +94,7 @@ const UserTemplates = ({ store }) => {
   if (isDisconnected) {
     return (
       <>
-        <p>Please connect the wallet</p>
+        <p>Please connect your wallet</p>
       </>
     );
   }

@@ -2,6 +2,7 @@ import { Store } from "polotno/model/store";
 import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import axios, { all } from "axios";
 import { getFromLocalStorage } from "./localStorage";
+import { toast } from "react-hot-toast";
 
 const API = BACKEND_DEV_URL;
 
@@ -51,9 +52,6 @@ api.interceptors.request.use(
 
 // authentication apis
 export const login = async (walletAddress, signature, message) => {
-  if (!walletAddress || !signature || !message)
-    return console.log("missing params");
-
   try {
     const result = await api.post(`${API}/auth/login`, {
       address: walletAddress,
@@ -61,9 +59,21 @@ export const login = async (walletAddress, signature, message) => {
       message: message,
     });
 
-    return result.data;
+    if (result.status === 200) {
+      if (result.data.status === "success") {
+        // toast.success("Login successful");
+        return result.data;
+      } else if (result.data.status === "failed") {
+        return toast.error(result.data.message);
+      }
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
@@ -89,9 +99,19 @@ export const authenticate = async (walletAddress, signature) => {
       signature: signature,
     });
 
-    return result.data;
+    if (result.status === 200) {
+      toast.success("Authentication successful");
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
