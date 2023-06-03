@@ -68,7 +68,7 @@ const LenspostNFT = () => {
 
   const searchNFT = async () => {
     if (!activeCat) return;
-    const res = await getCollectionNftById(nftId, contractAddress);
+    const res = await getCollectionNftById(nftId, contractAddress, address);
     let obj = {};
     let arr = [];
     if (res.ipfsLink?.includes("ipfs://")) {
@@ -89,7 +89,7 @@ const LenspostNFT = () => {
 
   const getNftByContractAddress = async () => {
     if (!contractAddress) return;
-    const res = await getNftByCollection(contractAddress);
+    const res = await getNftByCollection(contractAddress, address);
     const images = getImageUrl(res);
     setLenspostNFTImages(images);
   };
@@ -97,7 +97,7 @@ const LenspostNFT = () => {
 
   async function loadImages() {
     // here we should implement your own API requests
-    const getCollections = await getAllCollection();
+    const getCollections = await getAllCollection(address);
     setCollection(getCollections);
     // console.log("getCollections", getCollections);
 
@@ -221,7 +221,7 @@ const WalletNFT = () => {
   const searchNFT = async () => {
     let obj = {};
     let arr = [];
-    const nftById = await getNftById(nftId);
+    const nftById = await getNftById(nftId, address);
     if (nftById) {
       nftById.permaLink = convertIPFSUrl(nftById.permaLink);
       obj = { url: nftById.permaLink };

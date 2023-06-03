@@ -85,6 +85,8 @@ const Editor = ({ store, isLoading, text }) => {
   };
 
   useEffect(() => {
+    if (!address) return;
+
     const fetchData = async () => {
       // Place the async logic here
       const storeData = store.toJSON();
@@ -98,7 +100,7 @@ const Editor = ({ store, isLoading, text }) => {
 
       if (canvasChildren.length > 0) {
         if (!canvasIdRef.current) {
-          const res = await createCanvas(storeData, "hello", false);
+          const res = await createCanvas(storeData, "hello", false, address);
           canvasIdRef.current = res.canvasId;
           // setCanvasId(res.canvasId);
           console.log("create canvas", res.canvasId);
@@ -109,7 +111,8 @@ const Editor = ({ store, isLoading, text }) => {
             canvasIdRef.current,
             storeData,
             "hello",
-            false
+            false,
+            address
           );
           console.log("update canvas", res);
         }
@@ -121,7 +124,7 @@ const Editor = ({ store, isLoading, text }) => {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [address]);
 
   return (
     <>

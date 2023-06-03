@@ -41,12 +41,13 @@ export const TemplatesPanel = observer(({ store }) => {
 });
 
 const LenspostTemplates = ({ store }) => {
-  const { isDisconnected } = useAccount();
+  const { isDisconnected, address } = useAccount();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
   const res = async () => {
     setIsLoading(true);
-    await getAllTemplates().then((res) => {
+    await getAllTemplates(address).then((res) => {
       setData(res);
       setIsLoading(false);
     });
