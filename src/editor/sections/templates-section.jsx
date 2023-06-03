@@ -41,12 +41,13 @@ export const TemplatesPanel = observer(({ store }) => {
 });
 
 const LenspostTemplates = ({ store }) => {
-  const { isDisconnected } = useAccount();
+  const { isDisconnected, address } = useAccount();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
   const res = async () => {
     setIsLoading(true);
-    await getAllTemplates().then((res) => {
+    await getAllTemplates(address).then((res) => {
       setData(res);
       setIsLoading(false);
     });
@@ -59,7 +60,7 @@ const LenspostTemplates = ({ store }) => {
   if (isDisconnected) {
     return (
       <>
-        <p>Please connect the wallet</p>
+        <p>Please connect your wallet</p>
       </>
     );
   }
@@ -94,7 +95,7 @@ const UserTemplates = ({ store }) => {
   if (isDisconnected) {
     return (
       <>
-        <p>Please connect the wallet</p>
+        <p>Please connect your wallet</p>
       </>
     );
   }

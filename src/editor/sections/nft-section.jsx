@@ -41,11 +41,6 @@ const NFTPanel = observer(({ store }) => {
       </div>
       {tab === "lenspost" && <LenspostNFT />}
       {tab === "wallet" && isConnected && <WalletNFT />}
-      {tab === "wallet" && !isConnected && (
-        <div className="flex items-center justify-center h-full">
-          <p>Please Connect your Wallet to see your NFTs</p>
-        </div>
-      )}
     </div>
   );
 });
@@ -68,12 +63,12 @@ const LenspostNFT = () => {
   const [collection, setCollection] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
   const [nftId, setNftId] = useState("");
-//   const CATEGORIES = ["Nouns", "Moonbirds", "CryptoPunks", "QQL"];
+  //   const CATEGORIES = ["Nouns", "Moonbirds", "CryptoPunks", "QQL"];
   const [activeCat, setActiveCat] = useState(null);
 
   const searchNFT = async () => {
     if (!activeCat) return;
-    const res = await getCollectionNftById(nftId, contractAddress);
+    const res = await getCollectionNftById(nftId, contractAddress, address);
     let obj = {};
     let arr = [];
     if (res.ipfsLink?.includes("ipfs://")) {
@@ -94,7 +89,7 @@ const LenspostNFT = () => {
 
   const getNftByContractAddress = async () => {
     if (!contractAddress) return;
-    const res = await getNftByCollection(contractAddress);
+    const res = await getNftByCollection(contractAddress, address);
     const images = getImageUrl(res);
     setLenspostNFTImages(images);
   };
@@ -102,7 +97,7 @@ const LenspostNFT = () => {
 
   async function loadImages() {
     // here we should implement your own API requests
-    const getCollections = await getAllCollection();
+    const getCollections = await getAllCollection(address);
     setCollection(getCollections);
     // console.log("getCollections", getCollections);
 
@@ -132,7 +127,7 @@ const LenspostNFT = () => {
   if (isDisconnected) {
     return (
       <>
-        <p>Please connect the wallet</p>
+        <p>Please connect your wallet</p>
       </>
     );
   }
@@ -208,10 +203,9 @@ const LenspostNFT = () => {
         }}
         value={nftId}
       />
-	  <div className="overflow-y-auto">
-
-      {activeCat === null ? <RenderCategories /> : <RenderImages />}
-	  </div>
+      <div className="overflow-y-auto">
+        {activeCat === null ? <RenderCategories /> : <RenderImages />}
+      </div>
 
       {/* <RenderCategories />
 			<RenderImages /> */}
@@ -227,7 +221,7 @@ const WalletNFT = () => {
   const searchNFT = async () => {
     let obj = {};
     let arr = [];
-    const nftById = await getNftById(nftId);
+    const nftById = await getNftById(nftId, address);
     if (nftById) {
       nftById.permaLink = convertIPFSUrl(nftById.permaLink);
       obj = { url: nftById.permaLink };
@@ -260,11 +254,11 @@ const WalletNFT = () => {
   if (isDisconnected) {
     return (
       <>
-        <p>Please connect the wallet</p>
+        <p>Please connect your wallet</p>
       </>
     );
   }
-
+  
   return (
     <>
       <input

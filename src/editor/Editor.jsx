@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from "polotno";
 import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
@@ -28,6 +28,7 @@ import {
   createCanvas,
   deleteCanvasById,
   getCanvasById,
+  updateCanvas,
 } from "../services/backendApi";
 
 const sections = [
@@ -53,10 +54,12 @@ const useHeight = () => {
   return height;
 };
 
-const Editor = ({ store }) => {
+const Editor = ({ store, isLoading, text }) => {
   const project = useProject();
   const height = useHeight();
   const { address } = useAccount();
+  const [canvasId, setCanvasId] = useState();
+  const canvasIdRef = useRef(null);
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -81,24 +84,66 @@ const Editor = ({ store }) => {
     }
   };
 
-  const saveCanvas = async () => {
-    const res = await createCanvas(store.toJSON(), "hello", false);
-    console.log(res);
-  };
+  useEffect(() => {
+    if (!address) return;
 
-  const getCanvas = async () => {
-    const res = await getCanvasById("3");
-    console.log(res);
-  };
+    const fetchData = async () => {
+      // Place the async logic here
+      const storeData = store.toJSON();
+      const canvasChildren = storeData.pages[0].children;
 
-  const deleteCanvas = async () => {
+      // console.log("children", canvasChildren.length)
+      // return
+      if (canvasChildren.length === 0) {
+        canvasIdRef.current = null;
+      }
 
-	const res = await deleteCanvasById("");
-    console.log("deleted");
-  };
+      if (canvasChildren.length > 0) {
+        if (!canvasIdRef.current) {
+          const res = await createCanvas(storeData, "hello", false, address);
+          canvasIdRef.current = res.canvasId;
+          // setCanvasId(res.canvasId);
+          console.log("create canvas", res.canvasId);
+        }
+
+        if (canvasIdRef.current) {
+          const res = await updateCanvas(
+            canvasIdRef.current,
+            storeData,
+            "hello",
+            false,
+            address
+          );
+          console.log("update canvas", res);
+        }
+      }
+    };
+
+    const interval = setInterval(fetchData, 3000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [address]);
 
   return (
     <>
+      {isLoading && (
+        // <div className="absolute w-full h-full z-40 bg-black opacity-30 flex items-center justify-center">
+        //   {/* create a box to show loading */}
+        //   <div className="flex flex-col justify-center items-center gap-5">
+        //     <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+        //     <h1 className="font-bold text-2xl text-white">{text}</h1>
+        //   </div>
+
+        // </div>
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-40">
+          <div className="w-max h-max px-8 py-8 bg-white rounded-lg flex flex-col gap-5 items-center justify-center shadow-xl">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-black"></div>
+            <h1 className="font-bold text-2xl text-black">{text}</h1>
+          </div>
+        </div>
+      )}
       <div
         style={{
           width: "100vw",
@@ -110,13 +155,6 @@ const Editor = ({ store }) => {
       >
         <div style={{ height: "calc(100% - 75px)" }}>
           <Topbar store={store} />
-          <button onClick={saveCanvas} className="mr-5">
-            Save
-          </button>
-          <button onClick={getCanvas} className="mr-5">
-            Get
-          </button>
-          <button onClick={deleteCanvas}>Delete</button>
           <PolotnoContainer>
             <SidePanelWrap>
               <SidePanel store={store} sections={sections} />

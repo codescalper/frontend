@@ -2,6 +2,7 @@ import { Store } from "polotno/model/store";
 import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import axios, { all } from "axios";
 import { getFromLocalStorage } from "./localStorage";
+import { toast } from "react-hot-toast";
 
 const API = BACKEND_DEV_URL;
 
@@ -51,8 +52,7 @@ api.interceptors.request.use(
 
 // authentication apis
 export const login = async (walletAddress, signature, message) => {
-  if (!walletAddress || !signature || !message)
-    return console.log("missing params");
+  if (!walletAddress || !signature || !message) return;
 
   try {
     const result = await api.post(`${API}/auth/login`, {
@@ -61,9 +61,21 @@ export const login = async (walletAddress, signature, message) => {
       message: message,
     });
 
-    return result.data;
+    if (result.status === 200) {
+      if (result.data.status === "success") {
+        // toast.success("Login successful");
+        return result.data;
+      } else if (result.data.status === "failed") {
+        return toast.error(result.data.message);
+      }
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
@@ -83,56 +95,95 @@ export const login = async (walletAddress, signature, message) => {
 // };
 
 export const authenticate = async (walletAddress, signature) => {
+  if (!walletAddress || !signature) return;
+
   try {
     const result = await api.post(`${API}/auth/lens/authenticate`, {
       address: walletAddress,
       signature: signature,
     });
 
-    return result.data;
+    if (result.status === 200) {
+      toast.success("Authentication successful");
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
 // NFT apis
 export const refreshNFT = async (walletAddress) => {
-  if (!walletAddress) return console.log("missing walletAddress");
+  if (!walletAddress) return;
 
   try {
     const result = await api.post(`${API}/user/nft/update`, {
       address: walletAddress,
     });
 
-    return result.data;
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
 export const getNFTs = async (walletAddress) => {
-  if (!walletAddress) return console.log("missing walletAddress");
+  if (!walletAddress) return;
 
   try {
     const result = await api.get(`${API}/user/nft/owned`, {
       address: walletAddress,
     });
 
-    return result.data;
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
-export const getNftById = async (id) => {
-  if (!id) return console.log("missing id");
+export const getNftById = async (id, walletAddress) => {
+  if (!id || !walletAddress) return;
 
   try {
     const result = await api.get(`${API}/user/nft/${id}`);
 
-    return result.data;
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
@@ -140,8 +191,11 @@ export const getNftById = async (id) => {
 export const createCanvas = async (
   jsonCanvasData,
   followCollectModule,
-  isPublic
+  isPublic,
+  walletAddress
 ) => {
+  if (!walletAddress) return;
+
   try {
     const result = await api.post(`${API}/user/canvas/create`, {
       canvasData: {
@@ -154,29 +208,57 @@ export const createCanvas = async (
     });
 
     return result.data;
+
+    // if (result.status === 200) {
+    //   return result.data;
+    // } else if (result.status === 400) {
+    //   return toast.error(result.data.message);
+    // } else if (result.status === 500) {
+    //   return toast.error(result.data.message);
+    // } else if (result.status === 401) {
+    //   return toast.error(result.data.message);
+    // }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
-// export const updateCanvas = async (id, jsonCanvasData, params, isPublic) => {
-//   if (!data || !params || !isPublic) return console.log("missing params");
+export const updateCanvas = async (
+  id,
+  jsonCanvasData,
+  followCollectModule,
+  isPublic,
+  walletAddress
+) => {
+  if (!walletAddress) return;
 
-//   try {
-//     const result = await axios.put(`${API}/user/canvas/update`, {
-//       canvasData: {
-//         id: id,
-//         data: jsonCanvasData,
-//         params: params,
-//         isPublic: isPublic,
-//       },
-//     });
+  try {
+    const result = await api.put(`${API}/user/canvas/update`, {
+      canvasData: {
+        id: id,
+        data: jsonCanvasData,
+        params: {
+          followCollectModule: followCollectModule,
+        },
+        isPublic: isPublic,
+      },
+    });
 
-//     console.log("result", result);
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
+  } catch (error) {
+    // code 404
+    return toast.error("Something went wrong, please try again later");
+  }
+};
 
 // export const changeCanvasVisibility = async (id, visibility) => {
 //   if (!id || !visibility) return console.log("missing params");
@@ -195,24 +277,67 @@ export const createCanvas = async (
 //   }
 // };
 
-export const getCanvasById = async (id) => {
-  try {
-    const result = await api.get(`${API}/user/canvas/${id}`);
+export const getAllCanvas = async (walletAddress) => {
+  if (!walletAddress) return;
 
-    return result.data;
+  try {
+    const result = await api.get(`${API}/user/canvas`);
+
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
-export const deleteCanvasById = async (id) => {
+export const getCanvasById = async (id, walletAddress) => {
+  if (!id || !walletAddress) return;
+
+  try {
+    const result = await api.get(`${API}/user/canvas/${id}`);
+
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
+  } catch (error) {
+    // code 404
+    return toast.error("Something went wrong, please try again later");
+  }
+};
+
+export const deleteCanvasById = async (id, walletAddress) => {
+  if (!id || !walletAddress) return;
 
   try {
     const result = await api.delete(`${API}/user/canvas/delete/${id}`);
 
-    return result.data;
+    if (result.status === 200) {
+      result.data;
+      return toast.success(result.data.message);
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
@@ -233,38 +358,72 @@ export const deleteCanvasById = async (id) => {
 // };
 
 // collection apis
-export const getAllCollection = async () => {
+export const getAllCollection = async (walletAddress) => {
+  if (!walletAddress) return;
+
   try {
     const result = await api.get(`${API}/collection`);
 
-    return result.data;
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
-export const getNftByCollection = async (contractAddress) => {
-  if (!contractAddress) return console.log("missing contractAddress");
+export const getNftByCollection = async (contractAddress, walletAddress) => {
+  if (!contractAddress || !walletAddress) return;
 
   try {
     const result = await api.get(
       `${API}/collection/${contractAddress}?limit=100&offset=200`
     );
 
-    return result.data;
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    return error;
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
-export const getCollectionNftById = async (id, contractAddress) => {
-  if (!id || !contractAddress) return console.log("missing params");
+export const getCollectionNftById = async (
+  id,
+  contractAddress,
+  walletAddress
+) => {
+  if (!id || !contractAddress || !walletAddress) return;
 
   try {
     const result = await api.get(`${API}/collection/${contractAddress}/${id}`);
-    return result.data;
+
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    console.log("error", error);
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };
 
@@ -285,13 +444,44 @@ export const getCollectionNftById = async (id, contractAddress) => {
 // };
 
 // template apis
-export const getAllTemplates = async () => {
+export const getAllTemplates = async (walletAddress) => {
+  if (!walletAddress) return;
+
   try {
     const result = await api.get(`${API}/template`);
 
-    return result.data;
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
   } catch (error) {
-    console.log("error", error);
-    alert("error", error);
+    // code 404
+    return toast.error("Something went wrong, please try again later");
+  }
+};
+
+export const twitterAuth = async (walletAddress) => {
+  if (!walletAddress) return;
+
+  try {
+    const result = await api.get(`${API}/auth/twitter/authenticate`);
+
+    if (result.status === 200) {
+      return result.data;
+    } else if (result.status === 400) {
+      return toast.error(result.data.message);
+    } else if (result.status === 500) {
+      return toast.error(result.data.message);
+    } else if (result.status === 401) {
+      return toast.error(result.data.message);
+    }
+  } catch (error) {
+    // code 404
+    return toast.error("Something went wrong, please try again later");
   }
 };

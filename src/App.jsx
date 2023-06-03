@@ -12,6 +12,7 @@ import {
   removeFromLocalStorage,
 } from "./services/localStorage";
 import { lensChallenge } from "../lensApi";
+import { Toaster, toast } from "react-hot-toast";
 export const LensContext = createContext();
 
 export default function App() {
@@ -24,14 +25,16 @@ export default function App() {
   const {
     data: signature,
     isError,
-    isLoading,
     isSuccess,
+    error,
     signMessage,
   } = useSignMessage();
   const [profileId, setProfileId] = useState("");
   const [handle, setHandle] = useState("");
   const [token, setToken] = useState("");
   const [session, setSession] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [text, setText] = useState("");
 
   // remove jwt/lens-auth from localstorage
   useEffect(() => {
@@ -70,42 +73,65 @@ export default function App() {
   }, []);
 
   const genarateSignature = () => {
-    if (getFromLocalStorage("jwt") != undefined)
+    if (
+      getFromLocalStorage("jwt") != undefined &&
+      getFromLocalStorage("lens-auth")
+    )
       return setSession(getFromLocalStorage("jwt"));
 
     if (isConnected && !session) {
+      setIsLoading(true);
       signMessage({
         message,
       });
+      setText("Please sign the message to login");
     }
   };
 
   const userLogin = async () => {
     if (isSuccess && !session) {
+      setIsLoading(true);
+      setText("Logging in...");
       const res = await login(address, signature, message);
 
       if (res.jwt) {
+        setText("");
+        setIsLoading(false);
         saveToLocalStorage("jwt", res.jwt);
         saveToLocalStorage("jwt-timestamp", new Date().getTime());
         setSession(res.jwt);
 
         const challegeText = await lensChallenge(address);
+        setIsLoading(true);
+        setText("Please sign the message to authenticate");
         signMessage({
           message: challegeText,
         });
 
         setSign("sign2");
+      } else {
+        disconnect();
+        setText("");
+        setIsLoading(false);
       }
     }
   };
 
   const lensAuth = async () => {
     if (isSuccess) {
+      setIsLoading(true);
+      setText("Authenticating...");
       const lensAuth = await authenticate(address, signature);
       if (lensAuth.status === "success") {
+        setText("");
+        setIsLoading(false);
         saveToLocalStorage("lens-auth", true);
         saveToLocalStorage("lens-auth-timestamp", new Date().getTime());
         setSign("3");
+      } else {
+        disconnect();
+        setText("");
+        setIsLoading(false);
       }
     }
   };
@@ -113,6 +139,14 @@ export default function App() {
   const updateNft = async () => {
     await refreshNFT(address);
   };
+
+  useEffect(() => {
+    if (isError) {
+      disconnect();
+      setIsLoading(false);
+      toast.error("User rejected the signature request");
+    }
+  }, [isError]);
 
   useEffect(() => {
     if (sign === "3") {
@@ -157,7 +191,8 @@ export default function App() {
 			)}
 			{isConnected && session && <Editor />} */}
       {/* <ConnectModal /> */}
-      <Editor />
+      <Editor isLoading={isLoading} text={text} />
+      <Toaster />
     </LensContext.Provider>
   );
 }
