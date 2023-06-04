@@ -122,15 +122,15 @@ const LenspostNFT = () => {
     if (isDisconnected) return;
 
     loadImages();
-  }, [address]);
+  }, []);
 
-  if (isDisconnected) {
-    return (
-      <>
-        <p>Please connect your wallet</p>
-      </>
-    );
-  }
+  // if (isDisconnected) {
+  //   return (
+  //     <>
+  //       <p>Please connect your wallet</p>
+  //     </>
+  //   );
+  // }
 
   function RenderCategories() {
     return collection.map((item, index) => {
@@ -258,7 +258,7 @@ const WalletNFT = () => {
       </>
     );
   }
-  
+
   return (
     <>
       <input
@@ -271,27 +271,34 @@ const WalletNFT = () => {
       {/* but we will use built-in grid component */}
       {/* {walletNFTImages.length > 0 && ( */}
 
-      <ImagesGrid
-        images={walletNFTImages}
-        key={walletNFTImages}
-        getPreview={(image) => image.url}
-        onSelect={async (image, pos) => {
-          const { width, height } = await getImageSize(image.url);
-          store.activePage.addElement({
-            type: "image",
-            src: image.url,
-            width,
-            height,
-            // if position is available, show image on dropped place
-            // or just show it in the center
-            x: pos ? pos.x : store.width / 2 - width / 2,
-            y: pos ? pos.y : store.height / 2 - height / 2,
-          });
-        }}
-        rowsNumber={2}
-        isLoading={!walletNFTImages.length}
-        loadMore={false}
-      />
+      {walletNFTImages.length === 0 ? (
+        <div>
+          <p>No NFTs found</p>
+        </div>
+      ) : (
+        <ImagesGrid
+          images={walletNFTImages}
+          key={walletNFTImages}
+          getPreview={(image) => image.url}
+          onSelect={async (image, pos) => {
+            const { width, height } = await getImageSize(image.url);
+            store.activePage.addElement({
+              type: "image",
+              src: image.url,
+              width,
+              height,
+              // if position is available, show image on dropped place
+              // or just show it in the center
+              x: pos ? pos.x : store.width / 2 - width / 2,
+              y: pos ? pos.y : store.height / 2 - height / 2,
+            });
+          }}
+          rowsNumber={2}
+          isLoading={!walletNFTImages.length}
+          loadMore={false}
+        />
+      )}
+
       {/* )} */}
     </>
   );

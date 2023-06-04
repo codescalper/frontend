@@ -36,12 +36,11 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
 
-  // remove jwt/lens-auth from localstorage
+  // remove jwt from localstorage if it is expired (24hrs)
   useEffect(() => {
     const clearLocalStorage = () => {
       const jwtExpiration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
       const jwtTimestamp = getFromLocalStorage("jwt-timestamp");
-      const lensAuthTimestamp = getFromLocalStorage("lens-auth-timestamp");
 
       const currentTimestamp = new Date().getTime();
 
@@ -50,19 +49,8 @@ export default function App() {
         removeFromLocalStorage("jwt-timestamp");
       }
 
-      if (
-        lensAuthTimestamp &&
-        currentTimestamp - lensAuthTimestamp > jwtExpiration
-      ) {
-        removeFromLocalStorage("lensAuth");
-        removeFromLocalStorage("lens-auth-timestamp");
-      }
-
-      if (
-        getFromLocalStorage("jwt") != undefined &&
-        getFromLocalStorage("lens-auth") != undefined &&
-        isConnected
-      ) {
+      if (getFromLocalStorage("jwt") != undefined && isConnected) {
+        // befire logout show user a message that he is going to logout because of session expiration
         disconnect();
       }
     };
@@ -73,10 +61,7 @@ export default function App() {
   }, []);
 
   const genarateSignature = () => {
-    if (
-      getFromLocalStorage("jwt") != undefined &&
-      getFromLocalStorage("lens-auth")
-    )
+    if (getFromLocalStorage("jwt"))
       return setSession(getFromLocalStorage("jwt"));
 
     if (isConnected && !session) {
@@ -100,34 +85,6 @@ export default function App() {
         saveToLocalStorage("jwt", res.jwt);
         saveToLocalStorage("jwt-timestamp", new Date().getTime());
         setSession(res.jwt);
-
-        const challegeText = await lensChallenge(address);
-        setIsLoading(true);
-        setText("Please sign the message to authenticate");
-        signMessage({
-          message: challegeText,
-        });
-
-        setSign("sign2");
-      } else {
-        disconnect();
-        setText("");
-        setIsLoading(false);
-      }
-    }
-  };
-
-  const lensAuth = async () => {
-    if (isSuccess) {
-      setIsLoading(true);
-      setText("Authenticating...");
-      const lensAuth = await authenticate(address, signature);
-      if (lensAuth.status === "success") {
-        setText("");
-        setIsLoading(false);
-        saveToLocalStorage("lens-auth", true);
-        saveToLocalStorage("lens-auth-timestamp", new Date().getTime());
-        setSign("3");
       } else {
         disconnect();
         setText("");
@@ -149,17 +106,13 @@ export default function App() {
   }, [isError]);
 
   useEffect(() => {
-    if (sign === "3") {
+    if (session) {
       updateNft();
     }
-  }, [sign]);
+  }, [address, session]);
 
   useEffect(() => {
     userLogin();
-
-    if (sign === "sign2") {
-      lensAuth();
-    }
   }, [isSuccess]);
 
   useEffect(() => {

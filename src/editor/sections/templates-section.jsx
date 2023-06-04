@@ -41,13 +41,12 @@ export const TemplatesPanel = observer(({ store }) => {
 });
 
 const LenspostTemplates = ({ store }) => {
-  const { isDisconnected, address } = useAccount();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const res = async () => {
     setIsLoading(true);
-    await getAllTemplates(address).then((res) => {
+    await getAllTemplates().then((res) => {
       setData(res);
       setIsLoading(false);
     });
@@ -56,14 +55,6 @@ const LenspostTemplates = ({ store }) => {
   useEffect(() => {
     res();
   }, []);
-
-  if (isDisconnected) {
-    return (
-      <>
-        <p>Please connect your wallet</p>
-      </>
-    );
-  }
 
   return (
     <div style={{ height: "100%" }} className="overflow-y-auto">
@@ -86,19 +77,10 @@ const LenspostTemplates = ({ store }) => {
 };
 
 const UserTemplates = ({ store }) => {
-  const { isDisconnected } = useAccount();
   // load data
   const { data, isLoading } = useInfiniteAPI({
     getAPI: ({ page }) => `templates/page${page}.json`,
   });
-
-  if (isDisconnected) {
-    return (
-      <>
-        <p>Please connect your wallet</p>
-      </>
-    );
-  }
 
   return (
     <div style={{ height: "100%" }}>

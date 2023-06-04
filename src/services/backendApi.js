@@ -51,6 +51,7 @@ api.interceptors.request.use(
 // };
 
 // authentication apis
+// no need auth token (jwt)
 export const login = async (walletAddress, signature, message) => {
   if (!walletAddress || !signature || !message) return;
 
@@ -63,7 +64,7 @@ export const login = async (walletAddress, signature, message) => {
 
     if (result.status === 200) {
       if (result.data.status === "success") {
-        // toast.success("Login successful");
+        toast.success("Login successful");
         return result.data;
       } else if (result.data.status === "failed") {
         return toast.error(result.data.message);
@@ -94,6 +95,7 @@ export const login = async (walletAddress, signature, message) => {
 //   }
 // };
 
+// need auth token (jwt)
 export const authenticate = async (walletAddress, signature) => {
   if (!walletAddress || !signature) return;
 
@@ -120,6 +122,7 @@ export const authenticate = async (walletAddress, signature) => {
 };
 
 // NFT apis
+// need auth token (jwt)
 export const refreshNFT = async (walletAddress) => {
   if (!walletAddress) return;
 
@@ -143,6 +146,7 @@ export const refreshNFT = async (walletAddress) => {
   }
 };
 
+// need auth token (jwt)
 export const getNFTs = async (walletAddress) => {
   if (!walletAddress) return;
 
@@ -166,6 +170,7 @@ export const getNFTs = async (walletAddress) => {
   }
 };
 
+// need auth token (jwt)
 export const getNftById = async (id, walletAddress) => {
   if (!id || !walletAddress) return;
 
@@ -188,6 +193,7 @@ export const getNftById = async (id, walletAddress) => {
 };
 
 // canvas apis
+// need auth token (jwt)
 export const createCanvas = async (
   jsonCanvasData,
   followCollectModule,
@@ -224,6 +230,7 @@ export const createCanvas = async (
   }
 };
 
+// need auth token (jwt)
 export const updateCanvas = async (
   id,
   jsonCanvasData,
@@ -260,6 +267,7 @@ export const updateCanvas = async (
   }
 };
 
+// need auth token (jwt)
 // export const changeCanvasVisibility = async (id, visibility) => {
 //   if (!id || !visibility) return console.log("missing params");
 
@@ -277,6 +285,7 @@ export const updateCanvas = async (
 //   }
 // };
 
+// need auth token (jwt)
 export const getAllCanvas = async (walletAddress) => {
   if (!walletAddress) return;
 
@@ -298,6 +307,7 @@ export const getAllCanvas = async (walletAddress) => {
   }
 };
 
+// need auth token (jwt)
 export const getCanvasById = async (id, walletAddress) => {
   if (!id || !walletAddress) return;
 
@@ -319,6 +329,7 @@ export const getCanvasById = async (id, walletAddress) => {
   }
 };
 
+// need auth token (jwt)
 export const deleteCanvasById = async (id, walletAddress) => {
   if (!id || !walletAddress) return;
 
@@ -341,6 +352,7 @@ export const deleteCanvasById = async (id, walletAddress) => {
   }
 };
 
+// need auth token (jwt)
 // export const publishCanvasToLens = async (id, name, content) => {
 //   if (!id || !name || !content) return console.log("missing params");
 
@@ -358,6 +370,7 @@ export const deleteCanvasById = async (id, walletAddress) => {
 // };
 
 // collection apis
+// need auth token (jwt)
 export const getAllCollection = async (walletAddress) => {
   if (!walletAddress) return;
 
@@ -379,6 +392,7 @@ export const getAllCollection = async (walletAddress) => {
   }
 };
 
+// need auth token (jwt)
 export const getNftByCollection = async (contractAddress, walletAddress) => {
   if (!contractAddress || !walletAddress) return;
 
@@ -402,6 +416,7 @@ export const getNftByCollection = async (contractAddress, walletAddress) => {
   }
 };
 
+// need auth token (jwt)
 export const getCollectionNftById = async (
   id,
   contractAddress,
@@ -444,8 +459,8 @@ export const getCollectionNftById = async (
 // };
 
 // template apis
-export const getAllTemplates = async (walletAddress) => {
-  if (!walletAddress) return;
+// no need auth token (jwt)
+export const getAllTemplates = async () => {
 
   try {
     const result = await api.get(`${API}/template`);
@@ -465,6 +480,7 @@ export const getAllTemplates = async (walletAddress) => {
   }
 };
 
+// need auth token (jwt)
 export const twitterAuth = async (walletAddress) => {
   if (!walletAddress) return;
 
