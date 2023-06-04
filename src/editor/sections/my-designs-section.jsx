@@ -33,7 +33,8 @@ export const MyDesignsPanel = observer(({ store }) => {
   };
 
   const deleteCanvas = async (id) => {
-    const res = await deleteCanvasById("80")
+    const res = await getCanvasById("450", address)
+    console.log("res", res);
   };
 
   const twitterAuthentication = async () => {
