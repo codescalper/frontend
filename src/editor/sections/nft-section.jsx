@@ -124,13 +124,13 @@ const LenspostNFT = () => {
     loadImages();
   }, []);
 
-  // if (isDisconnected) {
-  //   return (
-  //     <>
-  //       <p>Please connect your wallet</p>
-  //     </>
-  //   );
-  // }
+  if (isDisconnected) {
+    return (
+      <>
+        <p>Please connect your wallet</p>
+      </>
+    );
+  }
 
   function RenderCategories() {
     return collection.map((item, index) => {
@@ -217,8 +217,10 @@ const WalletNFT = () => {
   const [walletNFTImages, setWalletNFTImages] = useState([]);
   const [nftId, setNftId] = useState("");
   const { address, isDisconnected } = useAccount();
+  const [isLoading, setIsLoading] = useState(false);
 
   const searchNFT = async () => {
+    if (walletNFTImages.length === 0) return;
     let obj = {};
     let arr = [];
     const nftById = await getNftById(nftId, address);
@@ -235,10 +237,12 @@ const WalletNFT = () => {
   };
 
   async function loadImages() {
+    setIsLoading(true);
     // here we should implement your own API requests
     const res = await getNFTs(address);
     const images = getImageUrl(res);
     setWalletNFTImages(images);
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -271,33 +275,27 @@ const WalletNFT = () => {
       {/* but we will use built-in grid component */}
       {/* {walletNFTImages.length > 0 && ( */}
 
-      {walletNFTImages.length === 0 ? (
-        <div>
-          <p>No NFTs found</p>
-        </div>
-      ) : (
-        <ImagesGrid
-          images={walletNFTImages}
-          key={walletNFTImages}
-          getPreview={(image) => image.url}
-          onSelect={async (image, pos) => {
-            const { width, height } = await getImageSize(image.url);
-            store.activePage.addElement({
-              type: "image",
-              src: image.url,
-              width,
-              height,
-              // if position is available, show image on dropped place
-              // or just show it in the center
-              x: pos ? pos.x : store.width / 2 - width / 2,
-              y: pos ? pos.y : store.height / 2 - height / 2,
-            });
-          }}
-          rowsNumber={2}
-          isLoading={!walletNFTImages.length}
-          loadMore={false}
-        />
-      )}
+      <ImagesGrid
+        images={walletNFTImages}
+        key={walletNFTImages}
+        getPreview={(image) => image.url}
+        onSelect={async (image, pos) => {
+          const { width, height } = await getImageSize(image.url);
+          store.activePage.addElement({
+            type: "image",
+            src: image.url,
+            width,
+            height,
+            // if position is available, show image on dropped place
+            // or just show it in the center
+            x: pos ? pos.x : store.width / 2 - width / 2,
+            y: pos ? pos.y : store.height / 2 - height / 2,
+          });
+        }}
+        rowsNumber={2}
+        isLoading={isLoading}
+        loadMore={false}
+      />
 
       {/* )} */}
     </>
