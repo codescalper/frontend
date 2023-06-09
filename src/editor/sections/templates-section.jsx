@@ -43,18 +43,28 @@ export const TemplatesPanel = observer(({ store }) => {
 const LenspostTemplates = ({ store }) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const res = async () => {
     setIsLoading(true);
     await getAllTemplates().then((res) => {
-      setData(res);
-      setIsLoading(false);
+      if (res.data) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        setIsError(true);
+        setIsLoading(false);
+      }
     });
   };
 
   useEffect(() => {
     res();
   }, []);
+
+  if (isError) {
+    return <div>Can't fetch at the moments...</div>;
+  }
 
   return (
     <div style={{ height: "100%" }} className="overflow-y-auto">

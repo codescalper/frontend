@@ -2,9 +2,9 @@ import { Store } from "polotno/model/store";
 import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import axios, { all } from "axios";
 import { getFromLocalStorage } from "./localStorage";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 
-const API = BACKEND_DEV_URL;
+const API = BACKEND_LOCAL_URL;
 
 /**
  * @param walletAddress string
@@ -24,7 +24,7 @@ const api = axios.create();
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    const jwtToken = getFromLocalStorage("jwt");
+    const jwtToken = getFromLocalStorage("userAuthToken");
 
     // Exclude the login API from adding the default header
     if (config.url !== "/auth/login") {
@@ -39,22 +39,9 @@ api.interceptors.request.use(
   }
 );
 
-// test apis
-// export const test = async () => {
-//   try {
-//     const result = await api.get(`${API}/test`);
-
-//     console.log("result", result);
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
-
 // authentication apis
 // no need auth token (jwt)
 export const login = async (walletAddress, signature, message) => {
-  if (!walletAddress || !signature || !message) return;
-
   try {
     const result = await api.post(`${API}/auth/login`, {
       address: walletAddress,
@@ -62,21 +49,25 @@ export const login = async (walletAddress, signature, message) => {
       message: message,
     });
 
-    if (result.status === 200) {
-      if (result.data.status === "success") {
-        toast.success("Login successful");
-        return result.data;
-      } else if (result.data.status === "failed") {
-        return toast.error(result.data.message);
+    if (result?.status === 200) {
+      if (result?.data?.status === "success") {
+        return result?.data;
+      } else if (result?.data?.status === "failed") {
+        return result?.data?.message;
       }
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
+    } else if (result?.status === 400) {
+      return result?.data?.message;
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({ InternalServerError: error?.response?.data?.message });
+      return "Internal Server Error, please try again later";
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return "Something went wrong, please try again later";
+    } else {
+      return "Something went wrong, please try again later";
+    }
   }
 };
 
@@ -461,12 +452,11 @@ export const getCollectionNftById = async (
 // template apis
 // no need auth token (jwt)
 export const getAllTemplates = async () => {
-
   try {
     const result = await api.get(`${API}/template`);
 
     if (result.status === 200) {
-      return result.data;
+      return result;
     } else if (result.status === 400) {
       return toast.error(result.data.message);
     } else if (result.status === 500) {
@@ -476,7 +466,7 @@ export const getAllTemplates = async () => {
     }
   } catch (error) {
     // code 404
-    return toast.error("Something went wrong, please try again later");
+    toast.error("Something went wrong, please try again later");
   }
 };
 

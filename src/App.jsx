@@ -1,19 +1,15 @@
-import { useEffect, useState, createContext } from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-
+import { useEffect, useState } from "react";
 import { App as Editor } from "./editor";
-
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
-import { authenticate, login, refreshNFT } from "./services/backendApi";
-import axios from "axios";
+import { login, refreshNFT } from "./services/backendApi";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   removeFromLocalStorage,
 } from "./services/localStorage";
-import { lensChallenge } from "../lensApi";
-import { Toaster, toast } from "react-hot-toast";
-export const LensContext = createContext();
+import CheckInternetConnection from "./elements/CheckInternetConnection";
+import LoadingComponent from "./elements/LoadingComponent";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function App() {
   const [message, setMessage] = useState(
@@ -29,9 +25,6 @@ export default function App() {
     error,
     signMessage,
   } = useSignMessage();
-  const [profileId, setProfileId] = useState("");
-  const [handle, setHandle] = useState("");
-  const [token, setToken] = useState("");
   const [session, setSession] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
@@ -39,30 +32,34 @@ export default function App() {
   // remove jwt from localstorage if it is expired (24hrs)
   useEffect(() => {
     const clearLocalStorage = () => {
+      if (getFromLocalStorage("userAuthToken") === undefined) return;
+
+      console.log("checking session");
       const jwtExpiration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-      const jwtTimestamp = getFromLocalStorage("jwt-timestamp");
+      const jwtTimestamp = getFromLocalStorage("usertAuthTmestamp");
 
       const currentTimestamp = new Date().getTime();
 
       if (jwtTimestamp && currentTimestamp - jwtTimestamp > jwtExpiration) {
-        removeFromLocalStorage("jwt");
-        removeFromLocalStorage("jwt-timestamp");
-      }
-
-      if (getFromLocalStorage("jwt") != undefined && isConnected) {
-        // befire logout show user a message that he is going to logout because of session expiration
+        removeFromLocalStorage("userAuthToken");
+        removeFromLocalStorage("usertAuthTmestamp");
+        removeFromLocalStorage("userAddress");
+        setSession("");
         disconnect();
+        console.log("session expired");
+        toast.error("Session expired");
       }
     };
 
-    const interval = setInterval(clearLocalStorage, 60 * 60 * 1000); // Run every hour
+    const interval = setInterval(clearLocalStorage, 1 * 60 * 1000); // Run every minutes
 
     return () => clearInterval(interval);
   }, []);
 
-  const genarateSignature = () => {
-    if (getFromLocalStorage("jwt"))
-      return setSession(getFromLocalStorage("jwt"));
+  // generate signature
+  const genarateSignature = async () => {
+    if (getFromLocalStorage("userAuthToken"))
+      return setSession(getFromLocalStorage("userAuthToken"));
 
     if (isConnected && !session) {
       setIsLoading(true);
@@ -73,43 +70,47 @@ export default function App() {
     }
   };
 
+  // login user
   const userLogin = async () => {
     if (isSuccess && !session) {
       setIsLoading(true);
       setText("Logging in...");
       const res = await login(address, signature, message);
 
-      if (res.jwt) {
+      if (res?.jwt) {
         setText("");
         setIsLoading(false);
-        saveToLocalStorage("jwt", res.jwt);
-        saveToLocalStorage("jwt-timestamp", new Date().getTime());
+        toast.success("Login successful");
+        saveToLocalStorage("userAuthToken", res.jwt);
+        saveToLocalStorage("usertAuthTmestamp", new Date().getTime());
+        saveToLocalStorage("userAddress", address);
         setSession(res.jwt);
       } else {
         disconnect();
         setText("");
         setIsLoading(false);
+        toast.error(res);
       }
     }
   };
 
-  const updateNft = async () => {
-    await refreshNFT(address);
-  };
+  // const updateNft = async () => {
+  //   await refreshNFT(address);
+  // };
 
   useEffect(() => {
-    if (isError) {
+    if (isError && error?.name === "UserRejectedRequestError") {
       disconnect();
       setIsLoading(false);
       toast.error("User rejected the signature request");
     }
   }, [isError]);
 
-  useEffect(() => {
-    if (session) {
-      updateNft();
-    }
-  }, [address, session]);
+  // useEffect(() => {
+  //   if (session) {
+  //     updateNft();
+  //   }
+  // }, [address, session]);
 
   useEffect(() => {
     userLogin();
@@ -117,35 +118,26 @@ export default function App() {
 
   useEffect(() => {
     genarateSignature();
-  }, [isConnected, address]);
+  }, [isConnected]);
 
   return (
-    <LensContext.Provider
-      value={{
-        session,
-        setSession,
-        token,
-        setToken,
-        handle,
-        setHandle,
-        profileId,
-        setProfileId,
-      }}
-    >
-      {/* {isDisconnected && <ConnectButton />}
-			{isConnected && !session && (
-				<div
-					onClick={() => {
-						connect();
-						login();
-					}}>
-					<button>Sign in with Lens</button>
-				</div>
-			)}
-			{isConnected && session && <Editor />} */}
-      {/* <ConnectModal /> */}
-      <Editor isLoading={isLoading} text={text} />
-      <Toaster />
-    </LensContext.Provider>
+    <>
+      <Editor />
+      <CheckInternetConnection />
+      {isLoading && <LoadingComponent text={text} />}
+      {/* <Toaster /> */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </>
   );
 }
