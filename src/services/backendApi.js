@@ -27,7 +27,7 @@ api.interceptors.request.use(
     const jwtToken = getFromLocalStorage("userAuthToken");
 
     // Exclude the login API from adding the default header
-    if (config.url !== "/auth/login") {
+    if (config.url !== "/auth/login" || config.url !== "/template") {
       // Add your default header here
       config.headers["Authorization"] = `Bearer ${jwtToken}`;
       config.headers["Content-Type"] = "application/json";
@@ -60,7 +60,7 @@ export const login = async (walletAddress, signature, message) => {
     }
   } catch (error) {
     if (error?.response?.status === 500) {
-      console.log({ InternalServerError: error?.response?.data?.message });
+      console.log({ InternalServerError: error?.response?.data?.message || error?.response?.data?.name });
       return "Internal Server Error, please try again later";
     } else if (error?.response?.status === 404) {
       console.log({ 404: error?.response?.statusText });
@@ -455,18 +455,21 @@ export const getAllTemplates = async () => {
   try {
     const result = await api.get(`${API}/template`);
 
-    if (result.status === 200) {
-      return result;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return result?.data;
+    } else if (result?.status === 400) {
+      return result?.data?.message;
     }
   } catch (error) {
-    // code 404
-    toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({ InternalServerError: error?.response?.data?.message || error?.response?.data?.name });
+      return "Internal Server Error, please try again later";
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return "Something went wrong, please try again later";
+    } else {
+      return "Something went wrong, please try again later";
+    }
   }
 };
 

@@ -125,7 +125,6 @@ export default function App() {
       <Editor />
       <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
-      {/* <Toaster /> */}
       <ToastContainer
         position="top-center"
         autoClose={5000}

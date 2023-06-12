@@ -43,16 +43,17 @@ export const TemplatesPanel = observer(({ store }) => {
 const LenspostTemplates = ({ store }) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isError, setIsError] = useState("");
 
   const res = async () => {
     setIsLoading(true);
     await getAllTemplates().then((res) => {
-      if (res.data) {
-        setData(res.data);
+      // console.log("Res", typeof res, res);
+      if (typeof res === "object") {
+        setData(res);
         setIsLoading(false);
       } else {
-        setIsError(true);
+        setIsError(res);
         setIsLoading(false);
       }
     });
@@ -63,7 +64,7 @@ const LenspostTemplates = ({ store }) => {
   }, []);
 
   if (isError) {
-    return <div>Can't fetch at the moments...</div>;
+    return <div>{isError}</div>;
   }
 
   return (
