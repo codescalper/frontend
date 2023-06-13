@@ -1,7 +1,7 @@
 import { SectionTab } from "polotno/side-panel";
 import { NFTIcon } from "../editor-icon";
 import { observer } from "mobx-react-lite";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { getImageSize } from "polotno/utils/image";
 import { InputGroup } from "@blueprintjs/core";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
@@ -11,9 +11,12 @@ import {
   getNftById,
   getNftByCollection,
   getCollectionNftById,
+  refreshNFT,
 } from "../../services/backendApi";
 import { useAccount } from "wagmi";
 import { convertIPFSUrl, getImageUrl } from "../../services/imageUrl";
+import { toast } from "react-toastify";
+import { Context } from "../../context/ContextProvider";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -58,59 +61,76 @@ export const NFTSection = {
 };
 
 const LenspostNFT = () => {
-  const { address, isDisconnected } = useAccount();
-  const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
-  const [collection, setCollection] = useState([]);
-  const [contractAddress, setContractAddress] = useState("");
-  const [nftId, setNftId] = useState("");
-  //   const CATEGORIES = ["Nouns", "Moonbirds", "CryptoPunks", "QQL"];
-  const [activeCat, setActiveCat] = useState(null);
+  const {
+    lenspostNFTImages,
+    setLenspostNFTImages,
+    collection,
+    setCollection,
+    contractAddress,
+    setContractAddress,
+    activeCat,
+    setActiveCat,
+  } = useContext(Context);
+  const { address, isDisconnected, isConnected } = useAccount();
+  const [isError, setIsError] = useState("");
+  const [isNftsError, setIsNftsError] = useState("");
+  const [searchId, setSearchId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const searchNFT = async () => {
     if (!activeCat) return;
-    const res = await getCollectionNftById(nftId, contractAddress, address);
+    setIsLoading(true);
+    const res = await getCollectionNftById(searchId, contractAddress);
     let obj = {};
     let arr = [];
-    if (res.ipfsLink?.includes("ipfs://")) {
-      res.ipfsLink = convertIPFSUrl(res.ipfsLink);
-      obj = { url: res[i].ipfsLink };
-      arr.push(obj);
-    } else {
-      obj = { url: res.ipfsLink };
-      arr.push(obj);
-    }
-    setLenspostNFTImages(arr);
-    console.log("image", arr);
 
-    // if (!nftId) {
-    //   getNftByContractAddress();
-    // }
+    if (res?.data) {
+      if (res?.data?.ipfsLink?.includes("ipfs://")) {
+        res.data.ipfsLink = convertIPFSUrl(res?.data?.ipfsLink);
+        obj = { url: res?.data[i].ipfsLink };
+        arr.push(obj);
+      } else {
+        obj = { url: res?.data?.ipfsLink };
+        arr.push(obj);
+      }
+      setLenspostNFTImages(arr);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsNftsError(res?.error);
+      setIsLoading(false);
+    }
+
+    if (!searchId) {
+      getNftByContractAddress();
+    }
   };
 
   const getNftByContractAddress = async () => {
     if (!contractAddress) return;
-    const res = await getNftByCollection(contractAddress, address);
-    const images = getImageUrl(res);
-    setLenspostNFTImages(images);
+    setIsLoading(true);
+    const res = await getNftByCollection(contractAddress);
+    if (res?.data) {
+      const images = getImageUrl(res?.data);
+      setLenspostNFTImages(images);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsNftsError(res?.error);
+      setIsLoading(false);
+    }
   };
-  // console.log("res", lenspostNFTImages);
 
   async function loadImages() {
     // here we should implement your own API requests
-    const getCollections = await getAllCollection(address);
-    setCollection(getCollections);
-    // console.log("getCollections", getCollections);
-
-    // for demo images are hard coded
-    // in real app here will be something like JSON structure
-    // setLenspostNFTImages([{ url: "/one.gif" }, { url: "/two.jpg" }]);
+    setIsLoading(true);
+    const res = await getAllCollection();
+    if (res?.data) {
+      setCollection(res?.data);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsError(res?.error);
+      setIsLoading(false);
+    }
   }
-
-  useEffect(() => {
-    if (isDisconnected) return;
-
-    searchNFT();
-  }, [nftId]);
 
   useEffect(() => {
     if (isDisconnected) return;
@@ -122,7 +142,7 @@ const LenspostNFT = () => {
     if (isDisconnected) return;
 
     loadImages();
-  }, []);
+  }, [isConnected]);
 
   if (isDisconnected) {
     return (
@@ -133,54 +153,75 @@ const LenspostNFT = () => {
   }
 
   function RenderCategories() {
-    return collection.map((item, index) => {
-      return (
-        <div className="" key={index}>
-          <div
-            className="flex items-center space-x-4 p-2 mb-4 cursor-pointer"
-            onClick={() => (
-              setContractAddress(item.address), setActiveCat(item.name)
-            )}
-          >
-            <img
-              src={item.image}
-              alt={`${item}`}
-              className="h-24 w-24 rounded-md"
-            />
-            <p className="text-lg font-normal">{item.name}</p>
-          </div>
-        </div>
-      );
-    });
+    return isError ? (
+      <p>{isError}</p>
+    ) : (
+      <>
+        {collection.length > 0 ? (
+          collection.map((item, index) => (
+            <div className="" key={index}>
+              <div
+                className="flex items-center space-x-4 p-2 mb-4 cursor-pointer"
+                onClick={() => {
+                  setContractAddress(item.address);
+                  setActiveCat(item.name);
+                }}
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="h-24 w-24 rounded-md"
+                />
+                <p className="text-lg font-normal">{item.name}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No results</p>
+        )}
+      </>
+    );
   }
 
   function RenderImages() {
     return (
       <div className="">
         <div className="">
-          <button onClick={() => goBack()}>go back</button>
+          <button
+            onClick={() => {
+              goBack();
+            }}
+          >
+            go back
+          </button>
           <h1 className="text-lg font-bold">{activeCat}</h1>
         </div>
-        <ImagesGrid
-          images={lenspostNFTImages}
-          getPreview={(image) => image.url}
-          onSelect={async (image, pos) => {
-            const { width, height } = await getImageSize(image.url);
-            store.activePage.addElement({
-              type: "image",
-              src: image.url,
-              width,
-              height,
-              // if position is available, show image on dropped place
-              // or just show it in the center
-              x: pos ? pos.x : store.width / 2 - width / 2,
-              y: pos ? pos.y : store.height / 2 - height / 2,
-            });
-          }}
-          rowsNumber={2}
-          isLoading={!lenspostNFTImages.length}
-          loadMore={false}
-        />
+        {isNftsError ? (
+          <div>{isNftsError}</div>
+        ) : (
+          isConnected && (
+            <ImagesGrid
+              images={lenspostNFTImages}
+              getPreview={(image) => image.url}
+              onSelect={async (image, pos) => {
+                const { width, height } = await getImageSize(image.url);
+                store.activePage.addElement({
+                  type: "image",
+                  src: image.url,
+                  width,
+                  height,
+                  // if position is available, show image on dropped place
+                  // or just show it in the center
+                  x: pos ? pos.x : store.width / 2 - width / 2,
+                  y: pos ? pos.y : store.height / 2 - height / 2,
+                });
+              }}
+              rowsNumber={2}
+              isLoading={isLoading}
+              loadMore={false}
+            />
+          )
+        )}
       </div>
     );
   }
@@ -189,49 +230,76 @@ const LenspostNFT = () => {
     setActiveCat(null);
   }
 
-  useEffect(() => {
-    loadImages();
-  }, []);
-
   return (
     <>
       <input
         className="mb-4 border px-2 py-1 rounded-md"
         placeholder="Search"
         onChange={(e) => {
-          setNftId(e.target.value);
+          setSearchId(e.target.value);
         }}
-        value={nftId}
+        value={searchId}
       />
+      <button onClick={() => searchNFT(searchId)}>Search</button>
       <div className="overflow-y-auto">
         {activeCat === null ? <RenderCategories /> : <RenderImages />}
       </div>
-
-      {/* <RenderCategories />
-			<RenderImages /> */}
     </>
   );
 };
 
 const WalletNFT = () => {
-  const [walletNFTImages, setWalletNFTImages] = useState([]);
-  const [nftId, setNftId] = useState("");
-  const { address, isDisconnected } = useAccount();
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    walletNFTImages,
+    setWalletNFTImages,
+    isLoading,
+    setIsLoading,
+    searchId,
+    setSearchId,
+  } = useContext(Context);
+  const { isConnected, isDisconnected } = useAccount();
+  const [isError, setIsError] = useState("");
 
-  const searchNFT = async () => {
+  const refreshNFTs = async () => {
+    const id = toast.loading("Updating NFTs...");
+    const res = await refreshNFT();
+    if (res?.data) {
+      toast.update(id, {
+        render: res?.data,
+        type: "success",
+        isLoading: false,
+        autoClose: 5000,
+        closeButton: true,
+      });
+      console.log("res", res?.data);
+    } else if (res?.error) {
+      toast.update(id, {
+        render: res?.error,
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+        closeButton: true,
+      });
+    }
+  };
+
+  const searchNFT = async (searchId) => {
     if (walletNFTImages.length === 0) return;
     let obj = {};
     let arr = [];
-    const nftById = await getNftById(nftId, address);
-    if (nftById) {
-      nftById.permaLink = convertIPFSUrl(nftById.permaLink);
-      obj = { url: nftById.permaLink };
+    const res = await getNftById(searchId);
+    if (res?.data) {
+      res.data.permaLink = convertIPFSUrl(res?.data?.permaLink);
+      obj = { url: res?.data?.permaLink };
       arr.push(obj);
+      setWalletNFTImages(arr);
+    } else if (res?.data === "") {
+      setIsError("NFT not found");
+    } else if (res?.error) {
+      setIsError(res?.error);
     }
-    setWalletNFTImages(arr);
 
-    if (!nftId) {
+    if (!searchId) {
       loadImages();
     }
   };
@@ -239,21 +307,21 @@ const WalletNFT = () => {
   async function loadImages() {
     setIsLoading(true);
     // here we should implement your own API requests
-    const res = await getNFTs(address);
-    const images = getImageUrl(res);
-    setWalletNFTImages(images);
-    setIsLoading(false);
+    const res = await getNFTs();
+    if (res?.data) {
+      const images = getImageUrl(res?.data);
+      setWalletNFTImages(images);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsError(res?.error);
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {
     if (isDisconnected) return;
-    searchNFT();
-  }, [nftId]);
-
-  useEffect(() => {
-    if (isDisconnected) return;
     loadImages();
-  }, [address]);
+  }, [isConnected]);
 
   if (isDisconnected) {
     return (
@@ -263,17 +331,30 @@ const WalletNFT = () => {
     );
   }
 
+  if (isError) {
+    return (
+      <>
+        <div>{isError}</div>
+      </>
+    );
+  }
+
   return (
     <>
       <input
         className="mb-4 border px-2 py-1 rounded-md"
         placeholder="Search"
-        onChange={(e) => setNftId(e.target.value)}
-        value={nftId}
+        onChange={(e) => setSearchId(e.target.value)}
+        value={searchId}
       />
+      <button onClick={() => searchNFT(searchId)}>Search</button>
       {/* you can create yur own custom component here */}
       {/* but we will use built-in grid component */}
       {/* {walletNFTImages.length > 0 && ( */}
+
+      <div>
+        <button onClick={refreshNFTs}>Refresh</button>
+      </div>
 
       <ImagesGrid
         images={walletNFTImages}

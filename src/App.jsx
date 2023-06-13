@@ -10,13 +10,14 @@ import {
 import CheckInternetConnection from "./elements/CheckInternetConnection";
 import LoadingComponent from "./elements/LoadingComponent";
 import { ToastContainer, toast } from "react-toastify";
+import ContextProvider from "./context/ContextProvider";
 
 export default function App() {
   const [message, setMessage] = useState(
     "This message is to login you into lenspost dapp."
   );
   const [sign, setSign] = useState("");
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isDisconnected } = useAccount();
   const { disconnect } = useDisconnect();
   const {
     data: signature,
@@ -28,11 +29,14 @@ export default function App() {
   const [session, setSession] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
+  const getUserAuthToken = getFromLocalStorage("userAuthToken");
+  const getUserAddress = getFromLocalStorage("userAddress");
+  const getUsertAuthTmestamp = getFromLocalStorage("usertAuthTmestamp");
 
   // remove jwt from localstorage if it is expired (24hrs)
   useEffect(() => {
     const clearLocalStorage = () => {
-      if (getFromLocalStorage("userAuthToken") === undefined) return;
+      if (getUserAuthToken === undefined) return;
 
       console.log("checking session");
       const jwtExpiration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
@@ -58,34 +62,41 @@ export default function App() {
 
   // generate signature
   const genarateSignature = async () => {
-    if (getFromLocalStorage("userAuthToken"))
-      return setSession(getFromLocalStorage("userAuthToken"));
+    if (isDisconnected) return;
 
-    if (isConnected && !session) {
+    if (
+      getUserAuthToken &&
+      getUserAddress &&
+      getUsertAuthTmestamp &&
+      address === getUserAddress
+    ) {
+      return setSession(getUserAuthToken);
+    } else if (isConnected) {
       setIsLoading(true);
       signMessage({
         message,
       });
-      setText("Please sign the message to login");
+      setText("Sign the message to login");
     }
   };
 
   // login user
   const userLogin = async () => {
-    if (isSuccess && !session) {
+    console.log("login", isSuccess && address !== getUserAddress);
+    if (isSuccess && address !== getUserAddress) {
       setIsLoading(true);
       setText("Logging in...");
       const res = await login(address, signature, message);
 
-      if (res?.jwt) {
+      if (res?.data) {
         setText("");
         setIsLoading(false);
         toast.success("Login successful");
-        saveToLocalStorage("userAuthToken", res.jwt);
+        saveToLocalStorage("userAuthToken", res.data);
         saveToLocalStorage("usertAuthTmestamp", new Date().getTime());
         saveToLocalStorage("userAddress", address);
-        setSession(res.jwt);
-      } else {
+        setSession(res.data);
+      } else if (res?.error) {
         disconnect();
         setText("");
         setIsLoading(false);
@@ -94,9 +105,14 @@ export default function App() {
     }
   };
 
-  // const updateNft = async () => {
-  //   await refreshNFT(address);
-  // };
+  const updateNft = async () => {
+    const res = await refreshNFT(address);
+    if (res?.data) {
+      console.log(res.data);
+    } else if (res?.error) {
+      console.log(res.error);
+    }
+  };
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
@@ -106,22 +122,24 @@ export default function App() {
     }
   }, [isError]);
 
-  // useEffect(() => {
-  //   if (session) {
-  //     updateNft();
-  //   }
-  // }, [address, session]);
+  useEffect(() => {
+    if (session) {
+      updateNft();
+    }
+  }, [session]);
 
   useEffect(() => {
+    console.log({ isSuccess });
     userLogin();
   }, [isSuccess]);
 
   useEffect(() => {
+    console.log({ address });
     genarateSignature();
-  }, [isConnected]);
+  }, [isConnected, address]);
 
   return (
-    <>
+    <ContextProvider>
       <Editor />
       <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
@@ -137,6 +155,6 @@ export default function App() {
         pauseOnHover
         theme="light"
       />
-    </>
+    </ContextProvider>
   );
 }

@@ -45,22 +45,20 @@ const LenspostTemplates = ({ store }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState("");
 
-  const res = async () => {
+  const loadImages = async () => {
     setIsLoading(true);
-    await getAllTemplates().then((res) => {
-      // console.log("Res", typeof res, res);
-      if (typeof res === "object") {
-        setData(res);
-        setIsLoading(false);
-      } else {
-        setIsError(res);
-        setIsLoading(false);
-      }
-    });
+    const res = await getAllTemplates();
+    if (res?.data) {
+      setData(res?.data);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsError(res?.error);
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    res();
+    loadImages();
   }, []);
 
   if (isError) {

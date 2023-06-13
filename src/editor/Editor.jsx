@@ -30,7 +30,7 @@ import {
   getCanvasById,
   updateCanvas,
 } from "../services/backendApi";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 const sections = [
   TemplatesSection,
@@ -85,12 +85,11 @@ const Editor = ({ store }) => {
     }
   };
 
-  useEffect(() => {
-    if (!address) return;
-
     const fetchData = async () => {
+      console.log("fetchData running");
       // Place the async logic here
       const storeData = store.toJSON();
+      // console.log("storeData", storeData);
       const canvasChildren = storeData.pages[0].children;
 
       // console.log("children", canvasChildren.length)
@@ -102,30 +101,28 @@ const Editor = ({ store }) => {
       if (canvasChildren.length > 0) {
         if (!canvasIdRef.current) {
           const res = await createCanvas(storeData, "hello", false, address);
-          canvasIdRef.current = res.canvasId;
-          // setCanvasId(res.canvasId);
-          console.log("create canvas", res.canvasId);
+          if(res?.data) {
+            canvasIdRef.current = res?.data?.canvasId;
+            // setCanvasId(res.canvasId);
+            console.log("create canvas", res?.data?.canvasId);
+          } else if(res?.error) {
+            console.log(res?.error);
+            toast.error(res?.error);
+          }
         }
 
-        if (canvasIdRef.current) {
-          const res = await updateCanvas(
-            canvasIdRef.current,
-            storeData,
-            "hello",
-            false,
-            address
-          );
-          console.log("update canvas", res);
-        }
+        // if (canvasIdRef.current) {
+        //   const res = await updateCanvas(
+        //     canvasIdRef.current,
+        //     storeData,
+        //     "hello",
+        //     false,
+        //     address
+        //   );
+        //   console.log("update canvas", res);
+        // }
       }
     };
-
-    const interval = setInterval(fetchData, 3000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [address]);
 
   return (
     <>
@@ -138,6 +135,7 @@ const Editor = ({ store }) => {
         }}
         onDrop={handleDrop}
       >
+        <button onClick={fetchData}>Save canva</button>
         <div style={{ height: "calc(100% - 75px)" }}>
           <Topbar store={store} />
           <PolotnoContainer>

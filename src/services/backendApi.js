@@ -51,22 +51,41 @@ export const login = async (walletAddress, signature, message) => {
 
     if (result?.status === 200) {
       if (result?.data?.status === "success") {
-        return result?.data;
+        return {
+          data: result?.data?.jwt,
+        };
       } else if (result?.data?.status === "failed") {
-        return result?.data?.message;
+        return {
+          error: result?.data?.message,
+        };
       }
     } else if (result?.status === 400) {
-      return result?.data?.message;
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
     if (error?.response?.status === 500) {
-      console.log({ InternalServerError: error?.response?.data?.message || error?.response?.data?.name });
-      return "Internal Server Error, please try again later";
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
     } else if (error?.response?.status === 404) {
       console.log({ 404: error?.response?.statusText });
-      return "Something went wrong, please try again later";
+      return {
+        error: "Something went wrong, please try again later",
+      };
     } else {
-      return "Something went wrong, please try again later";
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   }
 };
@@ -114,72 +133,142 @@ export const authenticate = async (walletAddress, signature) => {
 
 // NFT apis
 // need auth token (jwt)
-export const refreshNFT = async (walletAddress) => {
-  if (!walletAddress) return;
-
+export const refreshNFT = async () => {
   try {
-    const result = await api.post(`${API}/user/nft/update`, {
-      address: walletAddress,
-    });
-
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    const result = await api.post(`${API}/user/nft/update`);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log(error);
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
 // need auth token (jwt)
-export const getNFTs = async (walletAddress) => {
-  if (!walletAddress) return;
-
+export const getNFTs = async () => {
   try {
-    const result = await api.get(`${API}/user/nft/owned`, {
-      address: walletAddress,
-    });
+    const result = await api.get(`${API}/user/nft/owned?limit=100&offset=0`);
 
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 500) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
 // need auth token (jwt)
-export const getNftById = async (id, walletAddress) => {
-  if (!id || !walletAddress) return;
-
+export const getNftById = async (id) => {
   try {
     const result = await api.get(`${API}/user/nft/${id}`);
 
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 500) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
@@ -188,11 +277,8 @@ export const getNftById = async (id, walletAddress) => {
 export const createCanvas = async (
   jsonCanvasData,
   followCollectModule,
-  isPublic,
-  walletAddress
+  isPublic
 ) => {
-  if (!walletAddress) return;
-
   try {
     const result = await api.post(`${API}/user/canvas/create`, {
       canvasData: {
@@ -204,20 +290,46 @@ export const createCanvas = async (
       },
     });
 
-    return result.data;
+    console.log("result", result);
 
-    // if (result.status === 200) {
-    //   return result.data;
-    // } else if (result.status === 400) {
-    //   return toast.error(result.data.message);
-    // } else if (result.status === 500) {
-    //   return toast.error(result.data.message);
-    // } else if (result.status === 401) {
-    //   return toast.error(result.data.message);
-    // }
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message ||
+          error?.response?.data?.name ||
+          error?.response?.data,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
@@ -243,18 +355,44 @@ export const updateCanvas = async (
       },
     });
 
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    console.log("result", result);
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
@@ -277,24 +415,48 @@ export const updateCanvas = async (
 // };
 
 // need auth token (jwt)
-export const getAllCanvas = async (walletAddress) => {
-  if (!walletAddress) return;
-
+export const getAllCanvas = async () => {
   try {
-    const result = await api.get(`${API}/user/canvas`);
+    const result = await api.get(`${API}/user/canvas?limit=100&offset=0`);
 
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    // console.log("result", result);
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
@@ -305,18 +467,42 @@ export const getCanvasById = async (id, walletAddress) => {
   try {
     const result = await api.get(`${API}/user/canvas/${id}`);
 
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
@@ -327,19 +513,42 @@ export const deleteCanvasById = async (id, walletAddress) => {
   try {
     const result = await api.delete(`${API}/user/canvas/delete/${id}`);
 
-    if (result.status === 200) {
-      result.data;
-      return toast.success(result.data.message);
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
@@ -362,74 +571,136 @@ export const deleteCanvasById = async (id, walletAddress) => {
 
 // collection apis
 // need auth token (jwt)
-export const getAllCollection = async (walletAddress) => {
-  if (!walletAddress) return;
-
+export const getAllCollection = async () => {
   try {
     const result = await api.get(`${API}/collection`);
 
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
 // need auth token (jwt)
-export const getNftByCollection = async (contractAddress, walletAddress) => {
-  if (!contractAddress || !walletAddress) return;
-
+export const getNftByCollection = async (contractAddress) => {
   try {
     const result = await api.get(
-      `${API}/collection/${contractAddress}?limit=100&offset=200`
+      `${API}/collection/${contractAddress}?limit=100&offset=0`
     );
 
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
 // need auth token (jwt)
-export const getCollectionNftById = async (
-  id,
-  contractAddress,
-  walletAddress
-) => {
-  if (!id || !contractAddress || !walletAddress) return;
-
+export const getCollectionNftById = async (id, contractAddress) => {
   try {
     const result = await api.get(`${API}/collection/${contractAddress}/${id}`);
 
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
@@ -456,19 +727,36 @@ export const getAllTemplates = async () => {
     const result = await api.get(`${API}/template`);
 
     if (result?.status === 200) {
-      return result?.data;
+      return {
+        data: result?.data,
+      };
     } else if (result?.status === 400) {
-      return result?.data?.message;
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
     if (error?.response?.status === 500) {
-      console.log({ InternalServerError: error?.response?.data?.message || error?.response?.data?.name });
-      return "Internal Server Error, please try again later";
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
     } else if (error?.response?.status === 404) {
       console.log({ 404: error?.response?.statusText });
-      return "Something went wrong, please try again later";
+      return {
+        error: "Something went wrong, please try again later",
+      };
     } else {
-      return "Something went wrong, please try again later";
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   }
 };
