@@ -19,33 +19,28 @@ import {
 } from "../../services/backendApi";
 
 export const MyDesignsPanel = observer(({ store }) => {
-  const { isDisconnected, address } = useAccount();
+  const { isDisconnected, address, isConnected } = useAccount();
   const [stMoreBtn, setStMoreBtn] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState("");
 
-  const res = async () => {
+  const loadImages = async () => {
     setIsLoading(true);
-    await getAllCanvas(address).then((res) => {
-        setData(res);
+    const res = await getAllCanvas();
+    if (res?.data) {
+      setData(res?.data);
       setIsLoading(false);
-    });
+    } else if (res?.error) {
+      setIsError(res?.error);
+      setIsLoading(false);
+    }
   };
 
-  const deleteCanvas = async (id) => {
-    const res = await getCanvasById("450", address)
-    console.log("res", res);
-  };
-
-  const twitterAuthentication = async () => {
-    // console.log("twitter auth");
-    const res = await twitterAuth()
-	// console.log("res", res);
-  };
-
-  // useEffect(() => {
-  //   res();
-  // }, []);
+  useEffect(() => {
+    if (isDisconnected) return;
+    loadImages();
+  }, [isConnected]);
 
   if (isDisconnected) {
     return (
@@ -53,6 +48,10 @@ export const MyDesignsPanel = observer(({ store }) => {
         <p>Please connect your wallet</p>
       </>
     );
+  }
+
+  if (isError) {
+    return <div>{isError}</div>;
   }
 
   return (
@@ -77,10 +76,7 @@ export const MyDesignsPanel = observer(({ store }) => {
         content={
           <div>
             <Button icon="document-open"> Open </Button>
-            <Button icon="trash" onClick={deleteCanvas}>
-              {" "}
-              Delete{" "}
-            </Button>
+            <Button icon="trash"> Delete </Button>
           </div>
         }
       />
@@ -95,6 +91,7 @@ export const MyDesignsPanel = observer(({ store }) => {
           // const json = req.json();
           // just inject it into store
           store.loadJSON(json);
+          isLoading(isLoading);
         }}
         rowsNumber={1}
       />

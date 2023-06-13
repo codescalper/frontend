@@ -43,18 +43,27 @@ export const TemplatesPanel = observer(({ store }) => {
 const LenspostTemplates = ({ store }) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState("");
 
-  const res = async () => {
+  const loadImages = async () => {
     setIsLoading(true);
-    await getAllTemplates().then((res) => {
-      setData(res);
+    const res = await getAllTemplates();
+    if (res?.data) {
+      setData(res?.data);
       setIsLoading(false);
-    });
+    } else if (res?.error) {
+      setIsError(res?.error);
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    res();
+    loadImages();
   }, []);
+
+  if (isError) {
+    return <div>{isError}</div>;
+  }
 
   return (
     <div style={{ height: "100%" }} className="overflow-y-auto">
