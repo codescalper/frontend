@@ -4,7 +4,7 @@ import axios, { all } from "axios";
 import { getFromLocalStorage } from "./localStorage";
 import { toast } from "react-toastify";
 
-const API = BACKEND_LOCAL_URL;
+const API = BACKEND_DEV_URL;
 
 /**
  * @param walletAddress string
