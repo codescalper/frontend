@@ -9,7 +9,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
 const { chains, provider } = configureChains(
-  [polygonMumbai],
+  [polygon],
   [
     // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),
