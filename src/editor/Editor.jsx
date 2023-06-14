@@ -135,7 +135,7 @@ const Editor = ({ store }) => {
         }}
         onDrop={handleDrop}
       >
-        <button onClick={fetchData}>Save canva</button>
+        {/* <button onClick={fetchData}>Save canva</button> */}
         <div style={{ height: "calc(100% - 75px)" }}>
           <Topbar store={store} />
           <PolotnoContainer>
