@@ -145,7 +145,7 @@ const Editor = ({ store }) => {
         { 	
           headers: {
             
-            'APIKEY': 'c7142c6dfccc49c68a06dd24df3d3a8a'
+            // 'APIKEY': 'c7142c6dfccc49c68a06dd24df3d3a8a'
         //  Backup API Keys : 
         // 'APIKEY': 'c136635d69324c99942639424feea81a'
         // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
@@ -171,7 +171,7 @@ const Editor = ({ store }) => {
         x: 0.5 * store.width,
         y: 0.5 * store.height,
         // width: "auto",
-          height: 240,
+          // height: 240,
         src: response.data.data.imageUrl,
         selectable: true,
         draggable: true,
@@ -181,7 +181,8 @@ const Editor = ({ store }) => {
 
       })
       setRemovedBgImageUrl(response.data.data.imageUrl); 
-      
+      return response.data.data.imageUrl;
+
     } catch (error) {
       console.error(error);
       }
@@ -191,18 +192,30 @@ const Editor = ({ store }) => {
 
   // Cutout pro API end 
     //  Toast Setup
-    
-    // Want to change to react-toastify
-
-    // const fnToast = () => toast.promise(
-    //   handleRemoveBg(),
-    //   {
-    //   loading: 'Removing Background',
-    //   success: <b> Removed Background </b>,
-    //   error: <b> Could not remove background </b>,
-    //   })
-
-  // ------
+    const fnCallToast = async () => {
+      const id = toast.loading("Removing Background", {autoClose: 4000,});
+      const res = await handleRemoveBg();
+      if (res?.data) {
+        toast.update(id, {
+          render: res?.data,
+          type: "success",
+          isLoading: false,
+          autoClose: 4000,
+          closeButton: true,
+        });
+        console.log("res", res?.data);
+      } else if (res?.error) {
+        toast.update(id, {
+          render: res?.error,
+          type: "error",
+          isLoading: false,
+          autoClose: 4000,
+          closeButton: true,
+        });
+      }
+  
+    }
+// ----------
 
     const fetchData = async () => {
       console.log("fetchData running");
@@ -268,7 +281,7 @@ const Editor = ({ store }) => {
               {/* ai_integration Start */}
                 <div className="rf">
                   <ZoomButtons store={store} /> 
-                  <Button icon="clean" onClick={handleRemoveBg} className="m-2 ml-6"> Remove background </Button>
+                  <Button icon="clean" onClick={fnCallToast} className="m-2 ml-6"> Remove background </Button>
                 </div>
               
               {/* ai_integration End */}
