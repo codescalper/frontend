@@ -30,7 +30,11 @@ import {
   getCanvasById,
   updateCanvas,
 } from "../services/backendApi";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
+
+// New Imports : 
+import {Button} from "@blueprintjs/core"
+import axios from "axios";
 
 const sections = [
   TemplatesSection,
@@ -84,6 +88,121 @@ const Editor = ({ store }) => {
       loadFile(ev.dataTransfer.files[i], store);
     }
   };
+// ------ ai_integration branch 
+      // Cutout pro API start
+    
+      const [file, setFile] = useState(null);
+      const [imgResponse, setImgResponse] = useState(null); 
+      const [removedBgImageUrl, setRemovedBgImageUrl] = useState(""); 
+      const [stActivePageNo, setStActivePageNo] = useState(0); 
+      const [stShowRemoveBgBtn, setStShowRemoveBgBtn] = useState(false)
+
+      //   const handleFileChange = (event) => {
+      // 		setFile(event.target.files[0]);
+      // 		setFile(event.target.files[0]);
+      //   };
+      
+      const handleRemoveBg = async () => {
+      var varActivePageNo = 0;
+      console.log("Handle upload START")
+
+
+      //Fetch Image URL from the canvas
+      // setFile(store.selectedElements[0].src);
+      // console.log(file);
+
+      // if (!file) return;  
+      
+    
+      const formData = new FormData();
+      // formData.append('file', file); 
+      formData.append('url', store.selectedElements[0].src); 
+      
+      // 03June2023
+      // Find the index of the page for which thee removed background image needs to be placed
+      store.pages.map(page => {
+        page.identifier == store._activePageId;	
+        
+        console.log("Index of the Page is ")
+        console.log(store.pages.indexOf(page));
+        setStActivePageNo(store.pages.indexOf(page));
+        varActivePageNo = store.pages.indexOf(page);
+
+      })
+      try {  
+        const response = await axios.get(  
+
+        // BG REMOVE from Cutout.pro,
+        // For File use this Endpoint
+        // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
+
+        // For Image `src` URL as parameter , use this Endpoint
+        `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`, 
+
+        // 'https://www.cutout.pro/api/v1/text2imageAsync',
+
+        // formData, 
+        { 	
+          headers: {
+            
+            'APIKEY': 'c7142c6dfccc49c68a06dd24df3d3a8a'
+        //  Backup API Keys : 
+        // 'APIKEY': 'c136635d69324c99942639424feea81a'
+        // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
+        // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
+          },
+        // For File type Input
+        //	responseType: 'arraybuffer',
+        // 	body:{ 
+        //   		'prompt' : "Football world cup" 
+        // 	} 
+        }
+        );   
+    
+      // Handle the response here
+      console.log(response);
+      // This is the Image URL for removed background
+      console.log("The removed background URL is :");
+      // console.log(response.data.data.imageUrl);
+      
+      // Add the new removed Bg Image to the Page
+      store.pages[stActivePageNo || varActivePageNo].addElement({
+        type: 'image',
+        x: 0.5 * store.width,
+        y: 0.5 * store.height,
+        // width: "auto",
+          height: 240,
+        src: response.data.data.imageUrl,
+        selectable: true,
+        draggable: true,
+        removable: true,
+        resizable: true,
+        showInExport: true,
+
+      })
+      setRemovedBgImageUrl(response.data.data.imageUrl); 
+      
+    } catch (error) {
+      console.error(error);
+      }
+
+      console.log("Handle upload END")
+      };
+
+  // Cutout pro API end 
+    //  Toast Setup
+    
+    // Want to change to react-toastify
+
+    // const fnToast = () => toast.promise(
+    //   handleRemoveBg(),
+    //   {
+    //   loading: 'Removing Background',
+    //   success: <b> Removed Background </b>,
+    //   error: <b> Could not remove background </b>,
+    //   })
+
+  // ------
 
     const fetchData = async () => {
       console.log("fetchData running");
@@ -145,7 +264,16 @@ const Editor = ({ store }) => {
             <WorkspaceWrap>
               <Toolbar store={store} />
               <Workspace store={store} />
-              <ZoomButtons store={store} />
+
+              {/* ai_integration Start */}
+                <div className="rf">
+                  <ZoomButtons store={store} /> 
+                  <Button icon="clean" onClick={handleRemoveBg} className="m-2 ml-6"> Remove background </Button>
+                </div>
+              
+              {/* ai_integration End */}
+
+              {/* <ZoomButtons store={store} /> */}
             </WorkspaceWrap>
           </PolotnoContainer>
         </div>
