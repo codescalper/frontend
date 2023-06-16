@@ -18,6 +18,9 @@ import { convertIPFSUrl, getImageUrl } from "../../services/imageUrl";
 import { toast } from "react-toastify";
 import { Context } from "../../context/ContextProvider";
 
+// New Imports: 
+import { Button } from "@blueprintjs/core"
+
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
   const { isConnected } = useAccount();
@@ -186,15 +189,9 @@ const LenspostNFT = () => {
   function RenderImages() {
     return (
       <div className="">
-        <div className="">
-          <button
-            onClick={() => {
-              goBack();
-            }}
-          >
-            go back
-          </button>
-          <h1 className="text-lg font-bold">{activeCat}</h1>
+        <div className="flex flex-row align-middle">
+          <Button icon="arrow-left" onClick={() => { goBack() }}></Button>
+          <h1 className="ml-4 align-middle text-lg font-bold">{activeCat}</h1>
         </div>
         {isNftsError ? (
           <div>{isNftsError}</div>
@@ -232,15 +229,17 @@ const LenspostNFT = () => {
 
   return (
     <>
-      <input
-        className="mb-4 border px-2 py-1 rounded-md"
-        placeholder="Search"
-        onChange={(e) => {
-          setSearchId(e.target.value);
-        }}
-        value={searchId}
-      />
-      <button onClick={() => searchNFT(searchId)}>Search</button>
+    <div className="flex flex-row justify-normal mb-4">
+          <input
+            className="border px-2 py-1 rounded-md w-full"
+            placeholder="Search by Token ID"
+            onChange={(e) => {
+              setSearchId(e.target.value);
+            }}
+            value={searchId}
+            />
+            <Button icon="search" className="ml-4" onClick={() => searchNFT(searchId)} ></Button>
+      </div>
       <div className="overflow-y-auto">
         {activeCat === null ? <RenderCategories /> : <RenderImages />}
       </div>
@@ -341,19 +340,19 @@ const WalletNFT = () => {
 
   return (
     <>
-      <input
-        className="mb-4 border px-2 py-1 rounded-md"
-        placeholder="Search"
-        onChange={(e) => setSearchId(e.target.value)}
-        value={searchId}
-      />
-      <button onClick={() => searchNFT(searchId)}>Search</button>
-      {/* you can create yur own custom component here */}
-      {/* but we will use built-in grid component */}
-      {/* {walletNFTImages.length > 0 && ( */}
+      <div className="flex flex-row justify-normal">
+            <input
+              className="border px-2 py-1 rounded-md w-full"
+              placeholder="Search by Token ID"
+              onChange={(e) => setSearchId(e.target.value)}
+              value={searchId}
+            />
+            <Button className="ml-4" icon="search" onClick={() => searchNFT(searchId)}></Button>
+            {/* you can create yur own custom component here */}
+            {/* but we will use built-in grid component */}
+            {/* {walletNFTImages.length > 0 && ( */}
 
-      <div>
-        <button onClick={refreshNFTs}>Refresh</button>
+            <Button  className="ml-4" icon="refresh" onClick={refreshNFTs}></Button>
       </div>
 
       <ImagesGrid
