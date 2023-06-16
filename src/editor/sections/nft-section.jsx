@@ -240,6 +240,7 @@ const LenspostNFT = () => {
             />
             <Button icon="search" className="ml-4" onClick={() => searchNFT(searchId)} ></Button>
       </div>
+      
       <div className="overflow-y-auto">
         {activeCat === null ? <RenderCategories /> : <RenderImages />}
       </div>
@@ -258,6 +259,7 @@ const WalletNFT = () => {
   } = useContext(Context);
   const { isConnected, isDisconnected } = useAccount();
   const [isError, setIsError] = useState("");
+  const [stShowBackBtn, setStShowBackBtn] = useState(false);
 
   const refreshNFTs = async () => {
     const id = toast.loading("Updating NFTs...");
@@ -292,6 +294,7 @@ const WalletNFT = () => {
       obj = { url: res?.data?.permaLink };
       arr.push(obj);
       setWalletNFTImages(arr);
+      setStShowBackBtn(true)
     } else if (res?.data === "") {
       setIsError("NFT not found");
     } else if (res?.error) {
@@ -354,6 +357,8 @@ const WalletNFT = () => {
 
             <Button  className="ml-4" icon="refresh" onClick={refreshNFTs}></Button>
       </div>
+
+      {stShowBackBtn && <Button className="mt-4 mb-4 w-1" icon="arrow-left" onClick={() => { loadImages(); setSearchId("");setStShowBackBtn(false); }}></Button> }
 
       <ImagesGrid
         images={walletNFTImages}
