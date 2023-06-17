@@ -83,7 +83,7 @@ export const MyDesignsPanel = observer(({ store }) => {
       <ImagesGrid
         shadowEnabled={false}
         images={data}
-        getPreview={(item) => item?.imageLink}
+        getPreview={(item) => item?.imageLink != null && item?.imageLink[0]}
         isLoading={isLoading}
         onSelect={async (item) => {
           // download selected json
@@ -91,7 +91,6 @@ export const MyDesignsPanel = observer(({ store }) => {
           // const json = req.json();
           // just inject it into store
           store.loadJSON(json);
-          isLoading(isLoading);
         }}
         rowsNumber={1}
       />
