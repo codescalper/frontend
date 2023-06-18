@@ -15,8 +15,8 @@ import {
   deleteCanvasById,
   getAllCanvas,
   getCanvasById,
-  twitterAuth,
 } from "../../services/backendApi";
+import { toast } from "react-toastify";
 
 export const MyDesignsPanel = observer(({ store }) => {
   const { isDisconnected, address, isConnected } = useAccount();
@@ -34,6 +34,15 @@ export const MyDesignsPanel = observer(({ store }) => {
     } else if (res?.error) {
       setIsError(res?.error);
       setIsLoading(false);
+    }
+  };
+
+  const deleteCanvas = async (canvasId) => {
+    const res = await deleteCanvasById(canvasId);
+    if (res?.data) {
+      toast.success(res?.data?.message);
+    } else if (res?.error) {
+      toast.error(res?.error);
     }
   };
 
@@ -75,8 +84,11 @@ export const MyDesignsPanel = observer(({ store }) => {
         )}
         content={
           <div>
-            <Button icon="document-open"> Open </Button>
-            <Button icon="trash"> Delete </Button>
+            <Button icon="document-open"> Share </Button>
+            <Button onClick={() => deleteCanvas("4")} icon="trash">
+              {" "}
+              Delete{" "}
+            </Button>
           </div>
         }
       />

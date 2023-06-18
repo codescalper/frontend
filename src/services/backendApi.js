@@ -39,7 +39,7 @@ api.interceptors.request.use(
   }
 );
 
-// authentication apis
+// authentication apis start
 // no need auth token (jwt)
 export const login = async (walletAddress, signature, message) => {
   try {
@@ -106,32 +106,148 @@ export const login = async (walletAddress, signature, message) => {
 // };
 
 // need auth token (jwt)
-export const authenticate = async (walletAddress, signature) => {
-  if (!walletAddress || !signature) return;
-
+export const lensAuthenticate = async (signature) => {
   try {
     const result = await api.post(`${API}/auth/lens/authenticate`, {
-      address: walletAddress,
       signature: signature,
     });
 
-    if (result.status === 200) {
-      toast.success("Authentication successful");
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
     }
   } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else if (error?.response?.status === 400) {
+      console.log({ 400: error?.response?.data?.message });
+      return {
+        error: error?.response?.statusText,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
   }
 };
 
-// NFT apis
+// need auth token (jwt)
+export const twitterAuthenticate = async () => {
+  try {
+    const result = await api.get(`${API}/auth/twitter/authenticate`);
+
+    console.log("result", result);
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else if (error?.response?.status === 400) {
+      console.log({ 400: error?.response?.data?.message });
+      return {
+        error: error?.response?.statusText,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
+
+// need auth token (jwt)
+export const twitterAuthenticateCallback = async (state, code) => {
+  try {
+    const result = await api.get(`${API}/auth/twitter/callback?state=${state}&code=${code}`);
+
+    console.log("result", result);
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else if (error?.response?.status === 400) {
+      console.log({ 400: error?.response?.data?.message });
+      return {
+        error: error?.response?.statusText,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
+// authentication apis end
+
+// NFT apis start
 // need auth token (jwt)
 export const refreshNFT = async () => {
   try {
@@ -271,8 +387,9 @@ export const getNftById = async (id) => {
     }
   }
 };
+// NFT apis end
 
-// canvas apis
+// canvas apis satrt
 // need auth token (jwt)
 export const createCanvas = async (
   jsonCanvasData,
@@ -282,6 +399,66 @@ export const createCanvas = async (
   try {
     const result = await api.post(`${API}/user/canvas/create`, {
       canvasData: {
+        data: jsonCanvasData,
+        params: {
+          followCollectModule: followCollectModule,
+        },
+        isPublic: isPublic,
+      },
+    });
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message ||
+          error?.response?.data?.name ||
+          error?.response?.data,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
+
+// need auth token (jwt)
+export const updateCanvas = async (
+  id,
+  jsonCanvasData,
+  followCollectModule,
+  isPublic
+) => {
+  try {
+    const result = await api.put(`${API}/user/canvas/update`, {
+      canvasData: {
+        id: id,
         data: jsonCanvasData,
         params: {
           followCollectModule: followCollectModule,
@@ -334,28 +511,16 @@ export const createCanvas = async (
 };
 
 // need auth token (jwt)
-export const updateCanvas = async (
-  id,
-  jsonCanvasData,
-  followCollectModule,
-  isPublic,
-  walletAddress
-) => {
-  if (!walletAddress) return;
+export const changeCanvasVisibility = async (id, visibility) => {
+  if (!id || !visibility) return console.log("missing params");
 
   try {
-    const result = await api.put(`${API}/user/canvas/update`, {
+    const result = await axios.put(`${API}/user/canvas/visibility`, {
       canvasData: {
         id: id,
-        data: jsonCanvasData,
-        params: {
-          followCollectModule: followCollectModule,
-        },
-        isPublic: isPublic,
+        visibility: visibility,
       },
     });
-
-    console.log("result", result);
 
     if (result?.status === 200) {
       return {
@@ -397,29 +562,9 @@ export const updateCanvas = async (
 };
 
 // need auth token (jwt)
-// export const changeCanvasVisibility = async (id, visibility) => {
-//   if (!id || !visibility) return console.log("missing params");
-
-//   try {
-//     const result = await axios.put(`${API}/user/canvas/visibility`, {
-//       canvasData: {
-//         id: id,
-//         visibility: visibility,
-//       },
-//     });
-
-//     console.log("result", result);
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
-
-// need auth token (jwt)
 export const getAllCanvas = async () => {
   try {
     const result = await api.get(`${API}/user/canvas?limit=100&offset=0`);
-
-    // console.log("result", result);
 
     if (result?.status === 200) {
       return {
@@ -507,9 +652,7 @@ export const getCanvasById = async (id, walletAddress) => {
 };
 
 // need auth token (jwt)
-export const deleteCanvasById = async (id, walletAddress) => {
-  if (!id || !walletAddress) return;
-
+export const deleteCanvasById = async (id) => {
   try {
     const result = await api.delete(`${API}/user/canvas/delete/${id}`);
 
@@ -552,24 +695,60 @@ export const deleteCanvasById = async (id, walletAddress) => {
   }
 };
 
-// need auth token (jwt)
-// export const publishCanvasToLens = async (id, name, content) => {
-//   if (!id || !name || !content) return console.log("missing params");
+export const shareOnLens = async (canvasId, name, content) => {
+  try {
+    const result = await api.post(`${API}/user/canvas/publish`, {
+      canvasData: {
+        id: canvasId,
+        name: name,
+        content: content,
+      },
+      platform: "lens",
+    });
 
-//   try {
-//     const result = await axios.post(`${API}/user/canvas/publish`, {
-//       id,
-//       name,
-//       content,
-//     });
+    console.log("result", result);
 
-//     console.log("result", result);
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    } else if (result?.status === 400) {
+      return {
+        error: result?.data?.message,
+      };
+    } else if (result?.status === 404) {
+      return {
+        error: result?.data?.message,
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
+// canvas apis end
 
-// collection apis
+// collection apis start
 // need auth token (jwt)
 export const getAllCollection = async () => {
   try {
@@ -703,6 +882,7 @@ export const getCollectionNftById = async (id, contractAddress) => {
     }
   }
 };
+// collection apis start
 
 // utils apis
 // export const checkDispatcher = async (profileId) => {
@@ -720,7 +900,7 @@ export const getCollectionNftById = async (id, contractAddress) => {
 //   }
 // };
 
-// template apis
+// template apis start
 // no need auth token (jwt)
 export const getAllTemplates = async () => {
   try {
@@ -760,25 +940,4 @@ export const getAllTemplates = async () => {
     }
   }
 };
-
-// need auth token (jwt)
-export const twitterAuth = async (walletAddress) => {
-  if (!walletAddress) return;
-
-  try {
-    const result = await api.get(`${API}/auth/twitter/authenticate`);
-
-    if (result.status === 200) {
-      return result.data;
-    } else if (result.status === 400) {
-      return toast.error(result.data.message);
-    } else if (result.status === 500) {
-      return toast.error(result.data.message);
-    } else if (result.status === 401) {
-      return toast.error(result.data.message);
-    }
-  } catch (error) {
-    // code 404
-    return toast.error("Something went wrong, please try again later");
-  }
-};
+// template apis end
