@@ -95,7 +95,7 @@ export const MyDesignsPanel = observer(({ store }) => {
       <ImagesGrid
         shadowEnabled={false}
         images={data}
-        getPreview={(item) => item.imageLink !== null && item.imageLink[0]}
+        getPreview={(item) => item?.imageLink != null && item?.imageLink[0]}
         isLoading={isLoading}
         onSelect={async (item) => {
           // download selected json

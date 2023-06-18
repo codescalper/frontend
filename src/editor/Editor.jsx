@@ -229,7 +229,6 @@ const Editor = ({ store }) => {
           } else if (res?.error) {
             console.log("Canvas creation error", { error: res?.error });
           }
-        }
 
         if (canvasIdRef.current) {
           const res = await updateCanvas(
