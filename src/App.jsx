@@ -82,7 +82,6 @@ export default function App() {
 
   // login user
   const userLogin = async () => {
-    console.log("login", isSuccess && address !== getUserAddress);
     if (isSuccess && address !== getUserAddress) {
       setIsLoading(true);
       setText("Logging in...");
@@ -129,12 +128,10 @@ export default function App() {
   }, [session]);
 
   useEffect(() => {
-    console.log({ isSuccess });
     userLogin();
   }, [isSuccess]);
 
   useEffect(() => {
-    console.log({ address });
     genarateSignature();
   }, [isConnected, address]);
 

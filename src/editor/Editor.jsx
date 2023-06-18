@@ -231,16 +231,14 @@ const Editor = ({ store }) => {
       }
 
       if (canvasChildren.length > 0) {
-        if (!canvasIdRef.current) {
-          const res = await createCanvas(storeData, "hello", false, address);
-          if(res?.data) {
-            canvasIdRef.current = res?.data?.canvasId;
-            // setCanvasId(res.canvasId);
-            console.log("create canvas", res?.data?.canvasId);
-          } else if(res?.error) {
-            console.log(res?.error);
-            toast.error(res?.error);
-          }
+        const res = await createCanvas(storeData, "hello", false, address);
+        if(res?.data) {
+          canvasIdRef.current = res?.data?.canvasId;
+          // setCanvasId(res.canvasId);
+          console.log("create canvas", res?.data?.canvasId);
+        } else if(res?.error) {
+          console.log(res?.error);
+          toast.error(res?.error);
         }
 
         // if (canvasIdRef.current) {
@@ -267,7 +265,7 @@ const Editor = ({ store }) => {
         }}
         onDrop={handleDrop}
       >
-        {/* <button onClick={fetchData}>Save canva</button> */}
+        <button onClick={fetchData}>Save canva</button>
         <div style={{ height: "calc(100% - 75px)" }}>
           <Topbar store={store} />
           <PolotnoContainer>
