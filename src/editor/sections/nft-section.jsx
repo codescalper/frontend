@@ -18,8 +18,8 @@ import { convertIPFSUrl, getImageUrl } from "../../services/imageUrl";
 import { toast } from "react-toastify";
 import { Context } from "../../context/ContextProvider";
 
-// New Imports: 
-import { Button } from "@blueprintjs/core"
+// New Imports:
+import { Button } from "@blueprintjs/core";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -64,16 +64,10 @@ export const NFTSection = {
 };
 
 const LenspostNFT = () => {
-  const {
-    lenspostNFTImages,
-    setLenspostNFTImages,
-    collection,
-    setCollection,
-    contractAddress,
-    setContractAddress,
-    activeCat,
-    setActiveCat,
-  } = useContext(Context);
+  const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
+  const [contractAddress, setContractAddress] = useState("");
+  const [activeCat, setActiveCat] = useState("");
+  const [collection, setCollection] = useState([]);
   const { address, isDisconnected, isConnected } = useAccount();
   const [isError, setIsError] = useState("");
   const [isNftsError, setIsNftsError] = useState("");
@@ -98,9 +92,14 @@ const LenspostNFT = () => {
       }
       setLenspostNFTImages(arr);
       setIsLoading(false);
+      setSearchId("");
+    } else if (res?.data === "") {
+      setIsNftsError("NFT not found");
+      setSearchId("");
     } else if (res?.error) {
       setIsNftsError(res?.error);
       setIsLoading(false);
+      setSearchId("");
     }
 
     if (!searchId) {
@@ -190,7 +189,13 @@ const LenspostNFT = () => {
     return (
       <div className="">
         <div className="flex flex-row align-middle">
-          <Button icon="arrow-left" onClick={() => { goBack() }}></Button>
+          <Button
+            icon="arrow-left"
+            onClick={() => {
+              goBack();
+              setIsNftsError("");
+            }}
+          ></Button>
           <h1 className="ml-4 align-middle text-lg font-bold">{activeCat}</h1>
         </div>
         {isNftsError ? (
@@ -229,18 +234,22 @@ const LenspostNFT = () => {
 
   return (
     <>
-    <div className="flex flex-row justify-normal mb-4">
-          <input
-            className="border px-2 py-1 rounded-md w-full"
-            placeholder="Search by Token ID"
-            onChange={(e) => {
-              setSearchId(e.target.value);
-            }}
-            value={searchId}
-            />
-            <Button icon="search" className="ml-4" onClick={() => searchNFT(searchId)} ></Button>
+      <div className="flex flex-row justify-normal mb-4">
+        <input
+          className="border px-2 py-1 rounded-md w-full"
+          placeholder="Search by Token ID"
+          onChange={(e) => {
+            setSearchId(e.target.value);
+          }}
+          value={searchId}
+        />
+        <Button
+          icon="search"
+          className="ml-4"
+          onClick={() => searchNFT(searchId)}
+        ></Button>
       </div>
-      
+
       <div className="overflow-y-auto">
         {activeCat === null ? <RenderCategories /> : <RenderImages />}
       </div>
@@ -249,17 +258,13 @@ const LenspostNFT = () => {
 };
 
 const WalletNFT = () => {
-  const {
-    walletNFTImages,
-    setWalletNFTImages,
-    isLoading,
-    setIsLoading,
-    searchId,
-    setSearchId,
-  } = useContext(Context);
   const { isConnected, isDisconnected } = useAccount();
+  const [walletNFTImages, setWalletNFTImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchId, setSearchId] = useState("");
   const [isError, setIsError] = useState("");
   const [stShowBackBtn, setStShowBackBtn] = useState(false);
+  const [isNftsError, setIsNftsError] = useState("");
 
   const refreshNFTs = async () => {
     const id = toast.loading("Updating NFTs...");
@@ -272,7 +277,6 @@ const WalletNFT = () => {
         autoClose: 5000,
         closeButton: true,
       });
-      console.log("res", res?.data);
     } else if (res?.error) {
       toast.update(id, {
         render: res?.error,
@@ -294,11 +298,16 @@ const WalletNFT = () => {
       obj = { url: res?.data?.permaLink };
       arr.push(obj);
       setWalletNFTImages(arr);
-      setStShowBackBtn(true)
+      setStShowBackBtn(true);
+      setSearchId("");
     } else if (res?.data === "") {
-      setIsError("NFT not found");
+      setIsNftsError("NFT not found");
+      setSearchId("");
+      setStShowBackBtn(true);
     } else if (res?.error) {
-      setIsError(res?.error);
+      setIsNftsError(res?.error);
+      setSearchId("");
+      setStShowBackBtn(true);
     }
 
     if (!searchId) {
@@ -344,43 +353,62 @@ const WalletNFT = () => {
   return (
     <>
       <div className="flex flex-row justify-normal">
-            <input
-              className="border px-2 py-1 rounded-md w-full"
-              placeholder="Search by Token ID"
-              onChange={(e) => setSearchId(e.target.value)}
-              value={searchId}
-            />
-            <Button className="ml-4" icon="search" onClick={() => searchNFT(searchId)}></Button>
-            {/* you can create yur own custom component here */}
-            {/* but we will use built-in grid component */}
-            {/* {walletNFTImages.length > 0 && ( */}
+        <input
+          className="border px-2 py-1 rounded-md w-full"
+          placeholder="Search by Token ID"
+          onChange={(e) => setSearchId(e.target.value)}
+          value={searchId}
+        />
+        <Button
+          className="ml-4"
+          icon="search"
+          onClick={() => searchNFT(searchId)}
+        ></Button>
+        {/* you can create yur own custom component here */}
+        {/* but we will use built-in grid component */}
+        {/* {walletNFTImages.length > 0 && ( */}
 
-            <Button  className="ml-4" icon="refresh" onClick={refreshNFTs}></Button>
+        <Button className="ml-4" icon="refresh" onClick={refreshNFTs}></Button>
       </div>
 
-      {stShowBackBtn && <Button className="mt-4 mb-4 w-1" icon="arrow-left" onClick={() => { loadImages(); setSearchId("");setStShowBackBtn(false); }}></Button> }
+      {stShowBackBtn && (
+        <Button
+          className="mt-4 mb-4 w-1"
+          icon="arrow-left"
+          onClick={() => {
+            loadImages();
+            setSearchId("");
+            setStShowBackBtn(false);
+            setIsNftsError("");
+          }}
+        ></Button>
+      )}
 
-      <ImagesGrid
-        images={walletNFTImages}
-        key={walletNFTImages}
-        getPreview={(image) => image.url}
-        onSelect={async (image, pos) => {
-          const { width, height } = await getImageSize(image.url);
-          store.activePage.addElement({
-            type: "image",
-            src: image.url,
-            width,
-            height,
-            // if position is available, show image on dropped place
-            // or just show it in the center
-            x: pos ? pos.x : store.width / 2 - width / 2,
-            y: pos ? pos.y : store.height / 2 - height / 2,
-          });
-        }}
-        rowsNumber={2}
-        isLoading={isLoading}
-        loadMore={false}
-      />
+      {isNftsError ? (
+        <div>{isNftsError}</div>
+      ) : (
+        <ImagesGrid
+          images={walletNFTImages}
+          key={walletNFTImages}
+          getPreview={(image) => image.url}
+          onSelect={async (image, pos) => {
+            const { width, height } = await getImageSize(image.url);
+            store.activePage.addElement({
+              type: "image",
+              src: image.url,
+              width,
+              height,
+              // if position is available, show image on dropped place
+              // or just show it in the center
+              x: pos ? pos.x : store.width / 2 - width / 2,
+              y: pos ? pos.y : store.height / 2 - height / 2,
+            });
+          }}
+          rowsNumber={2}
+          isLoading={isLoading}
+          loadMore={false}
+        />
+      )}
 
       {/* )} */}
     </>

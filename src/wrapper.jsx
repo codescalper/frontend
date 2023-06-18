@@ -7,6 +7,7 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { polygon, polygonMumbai } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import ContextProvider from "./context/ContextProvider";
 
 const { chains, provider } = configureChains(
   [polygon],
@@ -31,7 +32,9 @@ export const Wrapper = () => {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
+        <ContextProvider>
         <App />
+        </ContextProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

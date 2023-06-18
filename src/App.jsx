@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { App as Editor } from "./editor";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import { login, refreshNFT } from "./services/backendApi";
@@ -10,9 +10,10 @@ import {
 import CheckInternetConnection from "./elements/CheckInternetConnection";
 import LoadingComponent from "./elements/LoadingComponent";
 import { ToastContainer, toast } from "react-toastify";
-import ContextProvider from "./context/ContextProvider";
+import ContextProvider, { Context } from "./context/ContextProvider";
 
 export default function App() {
+  const { isLoading, setIsLoading, text, setText } = useContext(Context);
   const [message, setMessage] = useState(
     "This message is to login you into lenspost dapp."
   );
@@ -27,8 +28,6 @@ export default function App() {
     signMessage,
   } = useSignMessage();
   const [session, setSession] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [text, setText] = useState("");
   const getUserAuthToken = getFromLocalStorage("userAuthToken");
   const getUserAddress = getFromLocalStorage("userAddress");
   const getUsertAuthTmestamp = getFromLocalStorage("usertAuthTmestamp");
@@ -55,13 +54,13 @@ export default function App() {
       }
     };
 
-    const interval = setInterval(clearLocalStorage, 1 * 60 * 1000); // Run every minutes
+    const interval = setInterval(clearLocalStorage, 30 * 1000); // check every 30 seconds
 
     return () => clearInterval(interval);
   }, []);
 
   // generate signature
-  const genarateSignature = async () => {
+  const genarateSignature = () => {
     if (isDisconnected) return;
 
     if (
@@ -82,7 +81,6 @@ export default function App() {
 
   // login user
   const userLogin = async () => {
-    console.log("login", isSuccess && address !== getUserAddress);
     if (isSuccess && address !== getUserAddress) {
       setIsLoading(true);
       setText("Logging in...");
@@ -129,17 +127,15 @@ export default function App() {
   }, [session]);
 
   useEffect(() => {
-    console.log({ isSuccess });
     userLogin();
   }, [isSuccess]);
 
   useEffect(() => {
-    console.log({ address });
     genarateSignature();
   }, [isConnected, address]);
 
   return (
-    <ContextProvider>
+    <>
       <Editor />
       <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
@@ -155,6 +151,6 @@ export default function App() {
         pauseOnHover
         theme="light"
       />
-    </ContextProvider>
+    </>
   );
 }
