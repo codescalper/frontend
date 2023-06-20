@@ -2,10 +2,16 @@ import { observer } from "mobx-react-lite";
 import { DownloadButton } from "./download-button";
 import { useDisconnect, useAccount, useNetwork } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Menu } from "@headlessui/react";
 import RightDrawer from "./rightdrawer";
 
+// New imports:
+import { ShareIcon } from "../editor-icon";
+import { useState } from "react";
+
 export default observer(({ store }) => {
+  
+  // 18Jun2023
+  const [stIsDrawOpen, setStIsDrawOpen ] = useState(false);
   const { disconnect } = useDisconnect();
   
   const { address, isConnecting, isConnected, isDisconnected } = useAccount();
@@ -22,13 +28,22 @@ export default observer(({ store }) => {
         </div>
         {isDisconnected && (
           <ConnectButton
+            label="Connect Wallet"
             chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
             showBalance={{ smallScreen: false, largeScreen: true }}
           />
         )}
         {isConnected && (
           <div className="flex items-center justify-center space-x-6">
-            <RightDrawer />
+            
+            {/* <div onClick={()=> setStIsDrawOpen(!stIsDrawOpen) }> 
+              <ShareIcon/>
+            </div> */}
+            <RightDrawer/>
+            {/* <Drawer classNames={{"inner": "mantine-Drawer-inner"}} position='right' onClose={()=> setStIsDrawOpen(!stIsDrawOpen)} opened={stIsDrawOpen}> 
+                <RightDrawerNew/>
+            </Drawer> */}
+
             <DownloadButton store={store} />
             {/* <button
 							onClick={() => {
@@ -46,8 +61,3 @@ export default observer(({ store }) => {
     </div>
   );
 });
-
-// console.log("session before:", session);
-// setSession(null);
-// console.log("session after:", session);
-// localStorage.removeItem("lens-auth-token");
