@@ -1,10 +1,25 @@
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import BiChevronRight from "@meronex/icons/bi/BiChevronRight";
 import { ShareIcon } from "../editor-icon";
 import MdcCalendarClock from "@meronex/icons/mdc/MdcCalendarClock";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import { Switch } from "@headlessui/react";
+import {
+  lensAuthenticate,
+  shareOnLens,
+  twitterAuthenticate,
+  twitterAuthenticateCallback,
+} from "../../services/backendApi";
+import { useAccount, useSignMessage } from "wagmi";
+import { lensChallenge } from "../../../lensApi";
+import LoadingComponent from "../../elements/LoadingComponent";
+import { Context } from "../../context/ContextProvider";
+import { toast } from "react-toastify";
+import {
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from "../../services/localStorage";
 
 // New Imports :
 // import { DatePicker, Space } from "antd"
