@@ -6,22 +6,22 @@ import MdcCalendarClock from "@meronex/icons/mdc/MdcCalendarClock";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import { Switch } from "@headlessui/react";
 
+// New Imports :
+// import { DatePicker, Space } from "antd"
+import { DateTimePicker } from "@atlaskit/datetime-picker";
+
 export default function RightDrawer({}) {
 	const [open, setOpen] = useState(false);
 	const [menu, setMenu] = useState("share");
+	const [stIsActive, setStIsActive] = useState("false")
 
 	return (
 		<>
 			<button onClick={() => setOpen(!open)}>
 				<ShareIcon />
 			</button>
-			<Transition.Root
-				show={open}
-				as={Fragment}>
-				<Dialog
-					as="div"
-					className="relative z-10"
-					onClose={setOpen}>
+			<Transition.Root show={open} as={Fragment}>
+				<Dialog	as="div" className="relative z-10" onClose={setOpen}>
 					<Transition.Child
 						as={Fragment}
 						enter="ease-in-out duration-500"
@@ -34,8 +34,8 @@ export default function RightDrawer({}) {
 					</Transition.Child>
 
 					<div className="fixed inset-0 overflow-hidden">
-						<div className="absolute inset-0 overflow-hidden">
-							<div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 top-[13.5%]">
+						<div className="absolute inset-0 overflow-scroll">
+							<div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 top-20">
 								<Transition.Child
 									as={Fragment}
 									enter="transform transition ease-in-out duration-500 sm:duration-700"
@@ -44,7 +44,7 @@ export default function RightDrawer({}) {
 									leave="transform transition ease-in-out duration-500 sm:duration-700"
 									leaveFrom="translate-x-0"
 									leaveTo="translate-x-full">
-									<Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
+									<Dialog.Panel className="pointer-events-auto relative w-screen max-w-sm">
 										<Transition.Child
 											as={Fragment}
 											enter="ease-in-out duration-500"
@@ -57,36 +57,35 @@ export default function RightDrawer({}) {
 												<div className="absolute left-0 top-0  flex flex-col items-center justify-center">
 													<div
 														className="-ml-32 flex items-center justify-center flex-col"
-														onClick={() =>
-															setMenu("share")
-														}>
-														<button className="bg-white h-12 w-12 rounded-full outline-none">
-															<ShareIcon />
+														onClick={() =>{
+															setMenu("share");
+														}}>
+														<button className={`${menu == "share" ? "bg-black" : "bg-white"} h-12 w-12 rounded-full outline-none`}>
+															{/* <ShareIcon /> */}
 														</button>
 														<p>Share</p>
 													</div>
 													<div
 														className="-ml-32 flex items-center justify-center flex-col"
-														onClick={() =>
-															setMenu(
-																"monetization"
-															)
+														onClick={() =>{ 
+															setMenu("monetization"); setStIsActive(!stIsActive)
+														} 
+															
 														}>
-														<button className="bg-white h-12 w-12 rounded-full outline-none">
-															<ShareIcon />
+														<button className={`${ menu== "monetization"? "bg-black" : "bg-white"} h-12 w-12 rounded-full outline-none`}>
+															{/* <ShareIcon /> */}
 														</button>
 														<p className="w-20 text-center">
 															Monetization
-															settings
+															
 														</p>
 													</div>
-													<div
-														className="-ml-32 flex items-center justify-center flex-col"
-														onClick={() =>
-															setMenu("post")
-														}>
-														<button className="bg-white h-12 w-12 rounded-full outline-none">
-															<ShareIcon />
+													<div className="-ml-32 flex items-center justify-center flex-col"
+														onClick={() =>{
+															setMenu("post"); 
+														}}>
+														<button className={`${menu == "post" ? "bg-[#E1F26C]" : "bg-white"} h-12 w-12 rounded-full outline-none`}>
+															{/* <ShareIcon /> */}
 														</button>
 														<p className="w-20 text-center">
 															Comment & Mirror
@@ -110,7 +109,7 @@ export default function RightDrawer({}) {
 											<Monetization />
 										)}
 										{/* {menu === "post" && <Post />} */}
-										{menu === "post" && <Share />}
+										{menu === "post" && <Post />} 
 									</Dialog.Panel>
 								</Transition.Child>
 							</div>
@@ -123,38 +122,93 @@ export default function RightDrawer({}) {
 }
 
 const Share = () => {
+	
+	const [stShareClicked, setStShareClicked] = useState(false)
+	const [stCalendarClicked, setStCalendarClicked] = useState(false)
+	const [stSelectedDateTime, setStSelectedDateTime] = useState()
+	const [stFormattedDate , setStFormattedDate] = useState("")
+	const [stFormattedTime , setStFormattedTime] = useState("")
+
+
+	// Calendar Functions: 
+	const onCalChange = (value, dateString) => {
+		console.log("Selected Time: ", value)
+		console.log("Formatted Selected Time: ", dateString)
+		setStSelectedDateTime(value)
+
+		const dateTime = new Date(stSelectedDateTime);
+
+		// Format the date
+		const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+		setStFormattedDate(dateTime.toLocaleDateString(undefined, dateOptions));
+	
+		// Format the time
+		const timeOptions = { hour: 'numeric', minute: 'numeric', timeZoneName: 'short' };
+		setStFormattedTime(dateTime.toLocaleTimeString(undefined, timeOptions));
+	
+	  }
+	
+
+		
+
 	return (
-		<div className="flex h-screen flex-col overflow-y-scroll bg-white shadow-xl">
+		<div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
 			<div className="">
-				<Dialog.Title className="text-xl leading-6 bg-gray-900 text-white p-6">
-					Share this design
+				<Dialog.Title className="w-full text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10">
+					Share this Design
 				</Dialog.Title>
 			</div>
-			<div className="relative mt-6 px-4 pt-2 pb-4 sm:px-6 ">
+			<div className="relative mt-16 px-4 pt-2 pb-1 sm:px-6">
 				<div className="space-y-4">
 					<div className="flex items-center justify-between"></div>
 					<div className="space-x-4">
 						<textarea className="border border-b-8 w-full h-40" />
 					</div>
 					<div className="flex items-center justify-between ">
-						<div className="flex items-center justify-center w-full text-md bg-[#E1F26C]  py-2 h-10 rounded-md">
-							<BsLink45Deg />
-							Share
+						<div onClick={() => {setStShareClicked(!stShareClicked); setStCalendarClicked(false);}} className="flex items-center justify-center w-full text-md bg-[#E1F26C]  py-2 h-10 rounded-md cursor-pointer">
+							<BsLink45Deg className="m-2"/>
+							Share Now
 						</div>
-						<div className="py-2 rounded-md">
-							<MdcCalendarClock className="h-10 w-10 " />
+						<div onClick={()=> {setStCalendarClicked(!stCalendarClicked); setStShareClicked(true);}} className=" ml-4 py-2 rounded-md cursor-pointer">
+							<MdcCalendarClock className="h-10 w-10" />
 						</div>
 					</div>
 				</div>
 			</div>
+			
+			{/* Calender For Schedule - 18Jun2023 */}
+			<div className={`${stCalendarClicked? "visible" : "collapse"} ml-6 mr-6 mb-4`}>
+				<div className="m-1">
+					Choose schedule time and date
+				</div>
+				<DateTimePicker className="m-4" onChange={onCalChange}/> 
+			</div>
+
+			<div className={`${stCalendarClicked? "visible" : "collapse"} flex flex-col m-2 ml-8`}>
+				<div className="mt-3 mb-3">Scheduled</div>
+				<div className="flex flex-row border-l-8 border-l-[#E1F26C] p-4"> 
+					<div className="flex flex-col">
+						<div className="text-4xl text-[#E699D9]">{stFormattedDate.slice(0,2)}</div>
+						<div className="text-lg text-[#2D346C]">{stFormattedDate.slice(2)}</div>
+					</div> 
+					
+					<div className="flex flex-col ml-4">
+						<div className="m-2"><input type="text" className="border" placeholder="Canvas name"/></div>
+						<div className="ml-2 mt-2">{stFormattedTime}</div>
+					</div>
+				</div>
+			</div>
+
+			{/* Share - Icons - 18Jun2023 */}
 			<hr />
-			<div className="relative mt-6 px-4 sm:px-6 ">
+			<div className={`relative mt-6 px-4 sm:px-6 ${stShareClicked == true? "visible": "collapse" }`}>
 				<p className="text-lg">Share on socials</p>
 				<div className="flex items-center justify-center space-x-12 py-5">
+					<div> <img className="w-10 cursor-pointer" src="/other-icons/iconLens.png" alt="Lens" /> </div>
+					<div> <img className="w-10 cursor-pointer" src="/other-icons/iconTwitter.png" alt="Twitter" /> </div>
+					{/* <div>Lens</div>
 					<div>Lens</div>
-					<div>Lens</div>
-					<div>Lens</div>
-					<div>Lens</div>
+					<div>Lens</div> */}
 				</div>
 			</div>
 			<hr />
@@ -165,15 +219,15 @@ const Share = () => {
 const Monetization = () => {
 	const [enabled, setEnabled] = useState(false);
 	return (
-		<div className="flex h-screen flex-col overflow-y-scroll bg-white shadow-xl">
+		<div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
 			<div className="">
-				<Dialog.Title className="text-xl leading-6 p-6">
+				<Dialog.Title className="w-full text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10">
 					Monetization Settings
 				</Dialog.Title>
 			</div>
-			<div className="relative px-4 pt-2 pb-4 sm:px-6 ">
+			<div className="relative px-4 pt-2 pb-4 sm:px-6 mt-24">
 				<div className="">
-					<div className="flex flex-col justify-between">
+					<div className="flex flex-col justify-between">	
 						<Switch.Group>
 							<div className="flex items-center mb-4">
 								<Switch
@@ -382,5 +436,19 @@ const Monetization = () => {
 };
 
 const Post = () => {
-	return <p>post</p>;
+	return <>
+		<div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl"> 
+
+			<Dialog.Title className="w-full text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10">
+				Comment and Mirror
+			</Dialog.Title>
+
+			Under DEV
+			<div className="mt-24">
+			
+
+			</div> 
+
+		</div>
+	</>;
 };

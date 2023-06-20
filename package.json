@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.11",
+    "@atlaskit/datetime-picker": "^12.7.1",
     "@blueprintjs/docs-theme": "^4.5.16",
     "@headlessui/react": "^1.7.14",
     "@meronex/icons": "^4.0.0",

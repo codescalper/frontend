@@ -372,6 +372,7 @@ const DesignifyTab = observer(({ store }) => {
 
 // 07e9340b97c84afeb46b83899d64701f
 
+// Yet to be completed - 21Jun2023 -----
 // New Tab - Text to Image Start
 const TextToImageTab = observer(({ store }) => { 
 
@@ -382,24 +383,22 @@ const TextToImageTab = observer(({ store }) => {
 	const [stStatusCode, setStStatusCode] = useState(0);
 	const [stLoading, setStLoading] = useState(false);
 
-	const varApiKey = '313643402a8146568d9c8f2d730356a1';
-	// cbc8f827de974acd8d19d03b0db6c627
-	// 313643402a8146568d9c8f2d730356a1
-
+	const varApiKey = '182b5d78366f4bdb9ba093c0be608afa';	
+	var varTaskId ;
 	const fnHandleText = (evt) => { 
 		setStTextInput(evt.target.value)
 		console.log(stTextInput);
 	}
 
 	const fnCallApi = async () =>{
-		setStLoading(true)
-		
 		console.log(`Handling the API Start - ${stTextInput}`);
 		
 		const varApiUrl = 'https://www.cutout.pro/api/v1/text2imageAsync';
 
 		const requestData = {
 			prompt: `${stTextInput}`,
+			height:480,
+			width:480
 		};
 
 		const config = {
@@ -418,61 +417,58 @@ const TextToImageTab = observer(({ store }) => {
 
 			console.log(`The Task Id is: `)
 			setStTaskId(res.data.data)
+			varTaskId = res?.data.data;
 			setStStatusCode(res.data.code)
 			console.log(res.data.data)
 			console.log("The Query API execution START")
 
-			//--------------- Generate the Image API - GET Start ---------------
+			// //--------------- Generate the Image API - GET Start ---------------
 			
-			const apiUrl = 'https://www.cutout.pro/api/v1/getText2imageResult';
-			const taskId = `${res.data.data}`; 
+			// const apiUrl = 'https://www.cutout.pro/api/v1/getText2imageResult';
+			// const taskId = `${res.data.data}`; 
 			
-			const config = {
-				headers: {
-					'APIKEY': varApiKey,
-					"Access-Control-Allow-Origin": "https://localhost:5173", 
-				},
-				params: {
-					taskId: taskId,
-				},
-			};
+			// const config = {
+			// 	headers: {
+			// 		'APIKEY': varApiKey,
+			// 		"Access-Control-Allow-Origin": "https://localhost:5173", 
+			// 	},
+			// 	params: {
+			// 		taskId: taskId,
+			// 	},
+			// };
 			
-			axios.get(apiUrl, config)
-				.then(response => {
-				console.log('Get text to image result successful!');
-				console.log("GET Response is: ");
-				console.log(response);
-				// Handle the response data here
-					setStImageUrl(response.data.data.resultUrl)
-					setStImageLoadStatus(response.data.data.status)
-				})
-				.catch(error => {
-				console.error('Error getting text to image result:', error);
-				// Handle errors here
-				});
+			// axios.get(apiUrl, config)
+			// 	.then(response => {
+			// 	console.log('Get text to image result successful!');
+			// 	console.log("GET Response is: ");
+			// 	console.log(response);
+			// 	// Handle the response data here
+			// 		setStImageUrl(response.data.data.resultUrl)
+			// 		setStImageLoadStatus(response.data.data.status)
+			// 	})
+			// 	.catch(error => {
+			// 	console.error('Error getting text to image result:', error);
+			// 	// Handle errors here
+			// 	});
 			
-			//--------------- Generate the Image API - GET End ---------------
+			// //--------------- Generate the Image API - GET End ---------------
 
 			console.log("The Query API execution END")
 		})
 		.catch( err => console.log(err))	
-
-		setStLoading(false)
 		console.log("Handling the API End");
 	}
 	const fnGetImageAPI = () => {
-
-		const taskId = `${stTaskId}`; 
 		const apiUrl = 'https://www.cutout.pro/api/v1/getText2imageResult';
-		
+
 		const config = {
 			headers: {
 				'APIKEY': varApiKey,
 				"Access-Control-Allow-Origin": "https://localhost:5173", 
 			},
 			params: {
-				// taskId: 369316216628389, //For Test
-				taskId: taskId,
+				taskId: varTaskId,
+				// taskId: 369316216640539,
 			},
 		};
 		
@@ -482,8 +478,9 @@ const TextToImageTab = observer(({ store }) => {
 			console.log("GET Response is: ");
 			console.log(response);
 			// Handle the response data here
-				setStImageUrl(response.data.data.resultUrl)
-				setStImageLoadStatus(response.data.data.status)
+				setStImageUrl(response.data.data.resultUrl);
+				setStImageLoadStatus(response.data.data.percentage);
+				setStStatusCode(response.data.data.code)
 			})
 			.catch(error => {
 			console.error('Error getting text to image result:', error);
@@ -491,7 +488,15 @@ const TextToImageTab = observer(({ store }) => {
 			})	
 	}
 
-	useEffect(()=>{fnGetImageAPI}, [stImageLoadStatus, stTaskId, stStatusCode])
+	// useEffect(()=>{fnGetImageAPI}, [stImageLoadStatus, stTaskId, stStatusCode, stImageUrl])
+	useEffect(() => {
+    const intervalId = setInterval(fnGetImageAPI, 2000); // Run every 5 seconds
+    
+    // Clear the interval when the component is unmounted or changed
+    return () => {
+      clearInterval(intervalId);
+    };
+  },[])
 
 
 	return ( 
@@ -499,27 +504,39 @@ const TextToImageTab = observer(({ store }) => {
 		<div className="flex flex-row justify-normal align-bottom">
 
 			<textarea rows="4" 
-				className="mb-4 border px-2 py-1 rounded-md" 
-				placeholder="Description of the Image"
+				value={`${stTextInput}`}
+				className="m-2 border px-2 py-1 rounded-md" 
 				onChange={(e) => { fnHandleText(e) }}
+				placeholder="Description of the Image"
 			> </textarea>
-			<Button icon="search" className="ml-4 border px-2 py-1 h-8 rounded-md" onClick={fnCallApi}></Button> 
-			<Button icon="refresh" className="ml-4 border px-2 py-1 h-8 rounded-md" onClick={fnGetImageAPI}></Button> 
+			<Button icon="search" className="m-2 ml-2 border px-2 py-1 h-8 rounded-md" onClick={fnCallApi}></Button> 
+			<Button icon="refresh" className="m-2 ml-2 border px-2 py-1 h-8 rounded-md" onClick={fnGetImageAPI}></Button> 
 		</div>
 		
-		{stTextInput && `Showing Search results for ${stTextInput}`}
+		<div className="mt-4"> 
+			<div className="bg-[#e0f26c54] hover:bg-[#e0f26c8f] cursor-pointer m-1 pl-2 pr-2 rounded-2xl w-fit text-start text-xs" onClick={()=> setStTextInput("An ancient, mystical forest filled with towering trees")}> An ancient, mystical forest filled with towering trees </div>
+			<div className="bg-[#e0f26c54] hover:bg-[#e0f26c8f] cursor-pointer m-1 pl-2 pr-2 rounded-2xl text-start text-xs" onClick={()=> setStTextInput("A peaceful lakeside scene with a vibrant sunset reflecting off the calm waters.")}> A peaceful lakeside scene with a vibrant sunset reflecting off the calm waters. </div>
+		</div>
+		
+		<hr className="mt-4 mb-4"/>
+		<div className="m-2 text-[#565656]">
+			{stStatusCode != 5010 && stTextInput && `Showing Search results for : ${stTextInput}`}
+		</div> 
+
 		{stStatusCode == 5010
-			? <div className="p-2 m-2" title="Server Error" color="red">
+			? <div className="p-2 m-2 bg-red-100 rounded-md">
+					<div className="flex justify-center mb-2">Server Error</div>
 					The server is at capacity, Please try again later
 				</div>
 			: ""
-		}
-		{stLoading && "Loading" }
-
-		{stImageUrl && <img src={stImageUrl} alt="Searched Image"/> }
+		} 
+		
+		{stImageLoadStatus != 100 && `Loading ${stImageLoadStatus}%`}
+		
+		{stImageLoadStatus == 100 && <img className="m-2 p-2" src={stImageUrl} alt="Searched Image"/> }
 
 		{/* Image Grid */}
-
+ 
 		{/* <ImagesGrid
 				images={stImageUrl}
 				key={stImageUrl}
@@ -546,7 +563,7 @@ const TextToImageTab = observer(({ store }) => {
 })
 
 // New Tab - Text to Image End
-
+// Yet to be completed - 21Jun2023 -----
 
 // define the new custom section
 export const StableDiffusionSection = {

@@ -145,7 +145,8 @@ const Editor = ({ store }) => {
         { 	
           headers: {
             
-            // 'APIKEY': 'c7142c6dfccc49c68a06dd24df3d3a8a'
+        'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' 
+
         //  Backup API Keys : 
         // 'APIKEY': 'c136635d69324c99942639424feea81a'
         // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
@@ -170,8 +171,8 @@ const Editor = ({ store }) => {
         type: 'image',
         x: 0.5 * store.width,
         y: 0.5 * store.height,
-        // width: "auto",
-          // height: 240,
+        width: store.selectedElements[0].width,
+        height: store.selectedElements[0].height,
         src: response.data.data.imageUrl,
         selectable: true,
         draggable: true,
@@ -195,18 +196,18 @@ const Editor = ({ store }) => {
     const fnCallToast = async () => {
       const id = toast.loading("Removing Background", {autoClose: 4000,});
       const res = await handleRemoveBg();
-      if (res?.data) {
+      if (res) {
         toast.update(id, {
-          render: res?.data,
+          render: "Removed Background", //Check if The toast is working 
           type: "success",
           isLoading: false,
           autoClose: 4000,
           closeButton: true,
         });
         console.log("res", res?.data);
-      } else if (res?.error) {
+      } else if (!res) {
         toast.update(id, {
-          render: res?.error,
+          render: "Error in removing background",
           type: "error",
           isLoading: false,
           autoClose: 4000,
@@ -256,6 +257,10 @@ const Editor = ({ store }) => {
       }
     };
 
+      // For Testing
+      useEffect(()=> {
+        console.log(store)
+      },[store.selectedElements])
   return (
     <>
       <div
