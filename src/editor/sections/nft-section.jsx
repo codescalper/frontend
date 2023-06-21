@@ -256,7 +256,7 @@ const LenspostNFT = () => {
 };
 
 const WalletNFT = () => {
-  const { isConnected, isDisconnected } = useAccount();
+  const { isConnected, isDisconnected, address } = useAccount();
   const [walletNFTImages, setWalletNFTImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchId, setSearchId] = useState("");
