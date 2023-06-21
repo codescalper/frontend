@@ -51,7 +51,7 @@ export const MyDesignsPanel = observer(({ store }) => {
     loadImages();
   }, [isConnected]);
 
-  if (isDisconnected) {
+  if (isDisconnected || !address) {
     return (
       <>
         <p>Please connect your wallet</p>

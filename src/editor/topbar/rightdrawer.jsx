@@ -205,8 +205,10 @@ const Share = () => {
     }
   };
 
-  const state = "wqCZ8fFHkTIs_a-oKYPmEgtA48tk3%7EvX"
-  const code = "LU90VzRMbkM3M0h3T0VVOF9OOXM3bHg5VGZxLUl0ZVBBSkdZVnc2Zkw4dVBOOjE2ODcxMjYwNTc5NDU6MToxOmFjOjE"
+// http://localhost:5173/?state=&code=
+
+  const state = "S3I7MHMNkrBXMnynJuRW3P0te90%7E9KHp"
+  const code = "c2VGMFJEYTFPNjZKRV9KZlFOd2V2RzFZQUdaN0p0cVIxT0xQRTkya09iRVdzOjE2ODcxODM4NDI2MjY6MToxOmFjOjE"
 
   const twitterAuthCallback = async () => {
     const res = await twitterAuthenticateCallback(state, code);

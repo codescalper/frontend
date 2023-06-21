@@ -66,7 +66,7 @@ export const NFTSection = {
 const LenspostNFT = () => {
   const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
-  const [activeCat, setActiveCat] = useState("");
+  const [activeCat, setActiveCat] = useState(null);
   const [collection, setCollection] = useState([]);
   const { address, isDisconnected, isConnected } = useAccount();
   const [isError, setIsError] = useState("");
@@ -146,7 +146,7 @@ const LenspostNFT = () => {
     loadImages();
   }, [isConnected]);
 
-  if (isDisconnected) {
+  if (isDisconnected || !address) {
     return (
       <>
         <p>Please connect your wallet</p>
@@ -201,28 +201,26 @@ const LenspostNFT = () => {
         {isNftsError ? (
           <div>{isNftsError}</div>
         ) : (
-          isConnected && (
-            <ImagesGrid
-              images={lenspostNFTImages}
-              getPreview={(image) => image.url}
-              onSelect={async (image, pos) => {
-                const { width, height } = await getImageSize(image.url);
-                store.activePage.addElement({
-                  type: "image",
-                  src: image.url,
-                  width,
-                  height,
-                  // if position is available, show image on dropped place
-                  // or just show it in the center
-                  x: pos ? pos.x : store.width / 2 - width / 2,
-                  y: pos ? pos.y : store.height / 2 - height / 2,
-                });
-              }}
-              rowsNumber={2}
-              isLoading={isLoading}
-              loadMore={false}
-            />
-          )
+          <ImagesGrid
+            images={lenspostNFTImages}
+            getPreview={(image) => image.url}
+            onSelect={async (image, pos) => {
+              const { width, height } = await getImageSize(image.url);
+              store.activePage.addElement({
+                type: "image",
+                src: image.url,
+                width,
+                height,
+                // if position is available, show image on dropped place
+                // or just show it in the center
+                x: pos ? pos.x : store.width / 2 - width / 2,
+                y: pos ? pos.y : store.height / 2 - height / 2,
+              });
+            }}
+            rowsNumber={2}
+            isLoading={isLoading}
+            loadMore={false}
+          />
         )}
       </div>
     );
@@ -334,7 +332,7 @@ const WalletNFT = () => {
     loadImages();
   }, [isConnected]);
 
-  if (isDisconnected) {
+  if (isDisconnected || !address) {
     return (
       <>
         <p>Please connect your wallet</p>
