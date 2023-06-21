@@ -168,13 +168,8 @@ const Editor = ({ store }) => {
         type: "image",
         x: 0.5 * store.width,
         y: 0.5 * store.height,
-<<<<<<< HEAD
-        width: store.selectedElements[0].width,
-        height: store.selectedElements[0].height,
-=======
         // width: "auto",
         // height: 240,
->>>>>>> 47f10879066ebb0ba000a0775a500f599cfa176a
         src: response.data.data.imageUrl,
         selectable: true,
         draggable: true,
@@ -186,38 +181,6 @@ const Editor = ({ store }) => {
       return response.data.data.imageUrl;
     } catch (error) {
       console.error(error);
-<<<<<<< HEAD
-      }
-
-      console.log("Handle upload END")
-      };
-
-  // Cutout pro API end 
-    //  Toast Setup
-    const fnCallToast = async () => {
-      const id = toast.loading("Removing Background", {autoClose: 4000,});
-      const res = await handleRemoveBg();
-      if (res) {
-        toast.update(id, {
-          render: "Removed Background", //Check if The toast is working 
-          type: "success",
-          isLoading: false,
-          autoClose: 4000,
-          closeButton: true,
-        });
-        console.log("res", res?.data);
-      } else if (!res) {
-        toast.update(id, {
-          render: "Error in removing background",
-          type: "error",
-          isLoading: false,
-          autoClose: 4000,
-          closeButton: true,
-        });
-      }
-  
-=======
->>>>>>> 47f10879066ebb0ba000a0775a500f599cfa176a
     }
 
     console.log("Handle upload END");
@@ -286,12 +249,6 @@ const Editor = ({ store }) => {
       }
     };
 
-<<<<<<< HEAD
-      // For Testing
-      useEffect(()=> {
-        console.log(store)
-      },[store.selectedElements])
-=======
     if (isConnected) {
       main(); // Fetch data initially
 
@@ -303,7 +260,6 @@ const Editor = ({ store }) => {
     }
   }, [isConnected, store, address]);
 
->>>>>>> 47f10879066ebb0ba000a0775a500f599cfa176a
   return (
     <>
       <div
