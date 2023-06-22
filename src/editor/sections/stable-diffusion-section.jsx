@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { InputGroup, Button } from "@blueprintjs/core";
+import { InputGroup, Button, Icon } from "@blueprintjs/core";
 import { Tab, Tabs,} from "@blueprintjs/core";
 
 import { SectionTab } from "polotno/side-panel";
@@ -18,6 +18,8 @@ import { AIIcon } from "../editor-icon";
 
 // New imports: 
 import axios from "axios";
+import { Popover2 } from "@blueprintjs/popover2";
+
 
 const API = "https://api.polotno.dev/api";
 
@@ -382,6 +384,7 @@ const TextToImageTab = observer(({ store }) => {
 	const [stImageLoadStatus, setStImageLoadStatus] = useState(0);
 	const [stStatusCode, setStStatusCode] = useState(0);
 	const [stLoading, setStLoading] = useState(false);
+	const [stMoreBtn, setStMoreBtn] = useState(false);
 
 	const varApiKey = '182b5d78366f4bdb9ba093c0be608afa';	
 	var varTaskId ;
@@ -490,7 +493,7 @@ const TextToImageTab = observer(({ store }) => {
 
 	// useEffect(()=>{fnGetImageAPI}, [stImageLoadStatus, stTaskId, stStatusCode, stImageUrl])
 	useEffect(() => {
-    const intervalId = setInterval(fnGetImageAPI, 2000); // Run every 5 seconds
+    const intervalId = setInterval(()=> {}, 2000); // Run every 5 seconds
     
     // Clear the interval when the component is unmounted or changed
     return () => {
@@ -498,6 +501,8 @@ const TextToImageTab = observer(({ store }) => {
     };
   },[])
 
+//   New Array of Images:
+var imgArray = [{url: "https://picsum.photos/300", },{url: "https://picsum.photos/400", }]
 
 	return ( 
 	<>
@@ -536,28 +541,104 @@ const TextToImageTab = observer(({ store }) => {
 		{stImageLoadStatus == 100 && <img className="m-2 p-2" src={stImageUrl} alt="Searched Image"/> }
 
 		{/* Image Grid */}
- 
+		
+		{/* { imgArray.map( (x) => { */}
+			<div className="">
+
+			{/* Popover here */}
+			<Popover2
+			className="z-10 relative left-40 top-8"
+			interactionKind="click"
+			isOpen={stMoreBtn}
+			renderTarget={({ isOpen, ref, ...targetProps }) => (
+			<Button
+				{...targetProps}
+				elementRef={ref}
+				onClick={() => setStMoreBtn(!stMoreBtn)}
+				intent="none"
+			>
+				{" "}
+				<Icon icon="more" />{" "}
+			</Button>
+			)}
+			content={
+			<div>
+				<Button icon="share"> Share </Button>
+				<Button onClick={() => deleteCanvas("4")} icon="trash">
+				{" "}
+				Delete{" "}
+				</Button>
+			</div>
+			}
+		/>
+		<div className="" onClick={()=> {
+
+			const width = 100;
+			const height = 100;
+			store.activePage?.addElement({
+			type: 'image',
+			src: "https://picsum.photos/200",
+			width,
+			height, 
+			});
+			}
+		}>
+			<img src = "https://picsum.photos/200" width={200} height={150} /> 
+		</div>
+	</div>  
+		
+	{/* })} */}
+	{/* End Map Images */}
+
 		{/* <ImagesGrid
-				images={stImageUrl}
-				key={stImageUrl}
-				getPreview={(image) => image.url}
-				onSelect={async (image, pos) => {
-					const { width, height } = await getImageSize(image.url);
-					store.activePage.addElement({
-						type: "image",
-						src: "",
-						width,
-						height,
-						// if position is available, show image on dropped place
-						// or just show it in the center
-						x: pos ? pos.x : store.width / 2 - width / 2,
-						y: pos ? pos.y : store.height / 2 - height / 2,
-					});
-				}}
-				rowsNumber={2}
-				isLoading={""} //How many images to Load .length
-				loadMore={false}
-			/> */}
+		// pass an array of items that have any image information
+		images={[{ url: 'https://picsum.photos/200' }, { url: 'https://picsum.photos/200' }]}
+		// a function to get image URL from an item of the array
+		getPreview={(item) => item.url}
+		// this function will be called when user is clicked on image or dragged it into canvas
+		onSelect={async (image, pos, element, event) => {
+			// image - an item from your array
+			// pos - relative mouse position on drop. undefined if user just clicked on image
+			// element - model from your store if images was dropped on an element.
+			//    Can be useful if you want to change some props on existing element instead of creating a new one
+			// event - will have additional data such as
+			//      elements - list of all elements under the mouse
+			//      page - page where user dropped the image
+			const width = 100;
+			const height = 100;
+			console.log(element)
+
+			const x = (pos?.x || store.width / 2) - width / 2;
+			const y = (pos?.y || store.height / 2) - height / 2;
+			store.activePage?.addElement({
+			type: 'image',
+			src: image.url,
+			width,
+			height,
+			x,
+			y,
+			});
+		}}
+		// should we show a loading indicator at the end of the grid?
+		isLoading={false}
+		// load more will be called when user scrolled to the bottom of the list
+		// you can request new data from your API there.
+		// pass false if more data is not available
+		loadMore={() => {}}
+		// optional show special component at the bottom of every image element
+
+		// how many columns do we need? It actually should be called "columnsNumber"
+		// we will rename it later
+		rowsNumber={2}
+		// optionally pass crossOrigin param for images
+		crossOrigin="anonymous"
+		// optionally pass height size of the image, by default it is "auto"
+		itemHeight={'100px'}
+		// if "error" is not falsy, grid will display an error message
+		error={true}
+		/>;
+	 */}
+	{/* Image Grid End */}
 	</>
 	)
 })

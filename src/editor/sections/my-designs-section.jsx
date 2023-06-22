@@ -104,11 +104,10 @@ export const MyDesignsPanel = observer(({ store }) => {
           // just inject it into store
           store.loadJSON(json);
         }}
-        rowsNumber={1}
-      />
+        rowsNumber={1}/>    
     </div>
   );
-});
+ });
 
 // define the new custom section
 export const MyDesignsSection = {
