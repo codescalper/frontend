@@ -168,13 +168,8 @@ const Editor = ({ store }) => {
         type: "image",
         x: 0.5 * store.width,
         y: 0.5 * store.height,
-<<<<<<< HEAD
         width: store.selectedElements[0].width,
         height: store.selectedElements[0].height,
-=======
-        // width: "auto",
-        // height: 240,
->>>>>>> 47f10879066ebb0ba000a0775a500f599cfa176a
         src: response.data.data.imageUrl,
         selectable: true,
         draggable: true,
@@ -186,7 +181,6 @@ const Editor = ({ store }) => {
       return response.data.data.imageUrl;
     } catch (error) {
       console.error(error);
-<<<<<<< HEAD
       }
 
       console.log("Handle upload END")
@@ -216,38 +210,10 @@ const Editor = ({ store }) => {
         });
       }
   
-=======
->>>>>>> 47f10879066ebb0ba000a0775a500f599cfa176a
     }
 
-    console.log("Handle upload END");
-  };
-
-  // Cutout pro API end
-  //  Toast Setup
-  const fnCallToast = async () => {
-    const id = toast.loading("Removing Background", { autoClose: 4000 });
-    const res = await handleRemoveBg();
-    if (res?.data) {
-      toast.update(id, {
-        render: res?.data,
-        type: "success",
-        isLoading: false,
-        autoClose: 4000,
-        closeButton: true,
-      });
-      console.log("res", res?.data);
-    } else if (res?.error) {
-      toast.update(id, {
-        render: res?.error,
-        type: "error",
-        isLoading: false,
-        autoClose: 4000,
-        closeButton: true,
-      });
-    }
-  };
-  // ----------
+   console.log("Handle upload END");
+  
 
   // create canvas 
   useEffect(() => {
@@ -284,31 +250,17 @@ const Editor = ({ store }) => {
         }
       }
     };
-
-<<<<<<< HEAD
+  }})
       // For Testing
-      useEffect(()=> {
-        console.log(store)
-      },[store.selectedElements])
-=======
-    if (isConnected) {
-      main(); // Fetch data initially
-
-      intervalRef.current = setInterval(main, 5000); // Fetch data at regular intervals
-
-      return () => {
-        clearInterval(intervalRef.current); // Clear the interval when the component is unmounted
-      };
-    }
-  }, [isConnected, store, address]);
-
->>>>>>> 47f10879066ebb0ba000a0775a500f599cfa176a
+      // useEffect(()=> {
+      //   console.log(store)
+      // },[store.selectedElements])
   return (
     <>
       <div
         style={{
           width: "100vw",
-          height: height + "px",
+          height: height + "px",                        
           display: "flex",
           flexDirection: "column",
         }}
