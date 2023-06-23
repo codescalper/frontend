@@ -275,6 +275,7 @@ const WalletNFT = () => {
         autoClose: 5000,
         closeButton: true,
       });
+      loadImages();
     } else if (res?.error) {
       toast.update(id, {
         render: res?.error,

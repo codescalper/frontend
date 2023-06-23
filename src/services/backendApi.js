@@ -1,10 +1,8 @@
-import { Store } from "polotno/model/store";
 import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
-import axios, { all } from "axios";
+import axios from "axios";
 import { getFromLocalStorage } from "./localStorage";
-import { toast } from "react-toastify";
 
-const API = BACKEND_DEV_URL;
+const API = BACKEND_LOCAL_URL;
 
 /**
  * @param walletAddress string
@@ -89,21 +87,6 @@ export const login = async (walletAddress, signature, message) => {
     }
   }
 };
-
-// export const getChallenge = async (walletAddress) => {
-//   if (!walletAddress) return console.log("missing walletAddress");
-
-//   try {
-//     const result = await api.get(`${API}/auth/lens/challenge`, {
-//       address: walletAddress,
-//     });
-
-//     console.log("result", result);
-//     return result.data;
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
 
 // need auth token (jwt)
 export const lensAuthenticate = async (signature) => {
@@ -202,7 +185,9 @@ export const twitterAuthenticate = async () => {
 // need auth token (jwt)
 export const twitterAuthenticateCallback = async (state, code) => {
   try {
-    const result = await api.get(`${API}/auth/twitter/callback?state=${state}&code=${code}`);
+    const result = await api.get(
+      `${API}/auth/twitter/callback?state=${state}&code=${code}`
+    );
 
     console.log("result", result);
 
@@ -467,8 +452,6 @@ export const updateCanvas = async (
       },
     });
 
-    console.log("result", result);
-
     if (result?.status === 200) {
       return {
         data: result?.data,
@@ -512,10 +495,8 @@ export const updateCanvas = async (
 
 // need auth token (jwt)
 export const changeCanvasVisibility = async (id, visibility) => {
-  if (!id || !visibility) return console.log("missing params");
-
   try {
-    const result = await axios.put(`${API}/user/canvas/visibility`, {
+    const result = await api.put(`${API}/user/canvas/visibility`, {
       canvasData: {
         id: id,
         visibility: visibility,
@@ -552,6 +533,10 @@ export const changeCanvasVisibility = async (id, visibility) => {
       console.log({ 404: error?.response?.statusText });
       return {
         error: "Something went wrong, please try again later",
+      };
+    } else if (error?.response?.status === 401) {
+      return {
+        error: error?.response?.data?.message,
       };
     } else {
       return {
@@ -606,9 +591,7 @@ export const getAllCanvas = async () => {
 };
 
 // need auth token (jwt)
-export const getCanvasById = async (id, walletAddress) => {
-  if (!id || !walletAddress) return;
-
+export const getCanvasById = async (id) => {
   try {
     const result = await api.get(`${API}/user/canvas/${id}`);
 
@@ -927,6 +910,11 @@ export const getAllTemplates = async () => {
       });
       return {
         error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 401) {
+      console.log({ 401: error?.response?.statusText });
+      return {
+        error: error?.response?.data?.message,
       };
     } else if (error?.response?.status === 404) {
       console.log({ 404: error?.response?.statusText });

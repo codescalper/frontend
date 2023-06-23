@@ -13,7 +13,7 @@ import {
 } from "../../services/backendApi";
 import { useAccount, useSignMessage } from "wagmi";
 import { lensChallenge } from "../../../lensApi";
-import { Context } from "../../context/ContextProvider";
+import ContextProvider, { Context } from "../../context/ContextProvider";
 import { toast } from "react-toastify";
 import {
   getFromLocalStorage,
@@ -146,12 +146,14 @@ export default function RightDrawer({}) {
 }
 
 const Share = () => {
+  const { canvasId, setCanvasId } = useContext(Context);
   const [stShareClicked, setStShareClicked] = useState(false);
   const [stCalendarClicked, setStCalendarClicked] = useState(false);
   const [stSelectedDateTime, setStSelectedDateTime] = useState();
   const [stFormattedDate, setStFormattedDate] = useState("");
   const [stFormattedTime, setStFormattedTime] = useState("");
   const { address, isConnected } = useAccount();
+  const [description, setDescription] = useState("");
   const { isLoading, setIsLoading, text, setText } = useContext(Context);
   const {
     data: signature,
@@ -193,12 +195,20 @@ const Share = () => {
 
   // share post on lens
   const sharePost = async () => {
+    console.log("canvasId", canvasId);
+    // check if canvasId is provided
+    if (!canvasId) {
+      toast.error("Please select a design");
+      return;
+    }
+    // check if description is provided
+    if (!description) {
+      toast.error("Please provide a description");
+      return;
+    }
+
     const id = toast.loading("Sharing on Lens...");
-    const res = await shareOnLens(
-      6,
-      "Monkey",
-      "This is my first post from lenspost"
-    );
+    const res = await shareOnLens(canvasId, "post", description);
     if (res?.data) {
       toast.update(id, {
         render: "Successfully shared on Lens",
@@ -207,6 +217,8 @@ const Share = () => {
         autoClose: 5000,
         closeButton: true,
       });
+      setCanvasId("");
+      setDescription("");
     } else if (res?.error) {
       toast.update(id, {
         render: res?.error,
@@ -297,7 +309,11 @@ const Share = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between"></div>
           <div className="space-x-4">
-            <textarea className="border border-b-8 w-full h-40" />
+            <textarea
+              onChange={(e) => setDescription(e.target.value)}
+              value={description}
+              className="border border-b-8 w-full h-40"
+            />
           </div>
           <div className="flex items-center justify-between ">
             <div
