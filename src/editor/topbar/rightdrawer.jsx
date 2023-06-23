@@ -197,7 +197,7 @@ const Share = () => {
     const res = await shareOnLens(
       6,
       "Monkey",
-      "This is my first post from lespost"
+      "This is my first post from lenspost"
     );
     if (res?.data) {
       toast.update(id, {
