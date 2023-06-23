@@ -215,7 +215,7 @@ const Editor = ({ store }) => {
    console.log("Handle upload END");
   
 
-  // create canvas 
+  // create canvas
   useEffect(() => {
     const main = async () => {
       const storeData = store.toJSON();
@@ -234,6 +234,7 @@ const Editor = ({ store }) => {
           } else if (res?.error) {
             console.log("Canvas creation error", { error: res?.error });
           }
+        }
 
         if (canvasIdRef.current) {
           const res = await updateCanvas(
@@ -250,11 +251,18 @@ const Editor = ({ store }) => {
         }
       }
     };
-  }})
-      // For Testing
-      // useEffect(()=> {
-      //   console.log(store)
-      // },[store.selectedElements])
+
+    if (isConnected) {
+      main(); // Fetch data initially
+
+      intervalRef.current = setInterval(main, 5000); // Fetch data at regular intervals
+
+      return () => {
+        clearInterval(intervalRef.current); // Clear the interval when the component is unmounted
+      };
+    }
+  }, [isConnected, store, address]);
+
   return (
     <>
       <div
