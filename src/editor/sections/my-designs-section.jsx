@@ -12,6 +12,7 @@ import { Icon, IconSize, Button } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { useAccount } from "wagmi";
 import {
+  changeCanvasVisibility,
   deleteCanvasById,
   getAllCanvas,
   getCanvasById,
@@ -43,6 +44,28 @@ export const MyDesignsPanel = observer(({ store }) => {
       toast.success(res?.data?.message);
     } else if (res?.error) {
       toast.error(res?.error);
+    }
+  };
+
+  const changeVisibility = async (canvasId) => {
+    const res = await changeCanvasVisibility(canvasId, "public");
+    if (res?.data) {
+      toast.success(res?.data);
+    } else if (res?.error) {
+      toast.error(res?.error);
+    }
+  };
+
+  const getSpecipifCanvas = async (id) => {
+    setIsLoading(true);
+    const res = await getCanvasById(id);
+    if (res?.data) {
+      // setData(res?.data);
+      console.log(res?.data);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsError(res?.error);
+      setIsLoading(false);
     }
   };
 
@@ -85,7 +108,7 @@ export const MyDesignsPanel = observer(({ store }) => {
         content={
           <div>
             <Button icon="document-open"> Share </Button>
-            <Button onClick={() => deleteCanvas("4")} icon="trash">
+            <Button onClick={() => deleteCanvas("10")} icon="trash">
               {" "}
               Delete{" "}
             </Button>

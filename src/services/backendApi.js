@@ -1,8 +1,7 @@
 import { Store } from "polotno/model/store";
 import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
-import axios, { all } from "axios";
+import axios from "axios";
 import { getFromLocalStorage } from "./localStorage";
-import { toast } from "react-toastify";
 
 const API = BACKEND_LOCAL_URL;
 
@@ -512,10 +511,9 @@ export const updateCanvas = async (
 
 // need auth token (jwt)
 export const changeCanvasVisibility = async (id, visibility) => {
-  if (!id || !visibility) return console.log("missing params");
 
   try {
-    const result = await axios.put(`${API}/user/canvas/visibility`, {
+    const result = await api.put(`${API}/user/canvas/visibility`, {
       canvasData: {
         id: id,
         visibility: visibility,
@@ -553,7 +551,12 @@ export const changeCanvasVisibility = async (id, visibility) => {
       return {
         error: "Something went wrong, please try again later",
       };
-    } else {
+    }else if(error?.response?.status === 401){
+      return {
+        error: error?.response?.data?.message,
+      };
+    }
+     else {
       return {
         error: "Something went wrong, please try again later",
       };
@@ -606,8 +609,7 @@ export const getAllCanvas = async () => {
 };
 
 // need auth token (jwt)
-export const getCanvasById = async (id, walletAddress) => {
-  if (!id || !walletAddress) return;
+export const getCanvasById = async (id) => {
 
   try {
     const result = await api.get(`${API}/user/canvas/${id}`);
