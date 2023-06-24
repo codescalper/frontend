@@ -281,9 +281,13 @@ const StableDiffusionPanel = observer(({ store }) => {
 					id="designify"
 					title="Designify"
 				/> */}
-				<Tab
+				{/* <Tab
 					id="textToImage"
 					title="Text to Image"
+				/> */}
+				<Tab
+					id="textToImage2"
+					title="Text to Image 2"
 				/>
 			</Tabs>
 			<div
@@ -296,7 +300,8 @@ const StableDiffusionPanel = observer(({ store }) => {
 				{selectedTabId === "search" && <SearchTab store={store} />}
 				{/* {selectedTabId === "generate" && <GenerateTab store={store} />}
 				{selectedTabId === "designify" && <DesignifyTab store={store} />} */}
-				{selectedTabId === "textToImage" && <TextToImageTab store={store} />}
+				{/* {selectedTabId === "textToImage" && <TextToImageTab store={store} />} */}
+				{selectedTabId === "textToImage2" && <TextToImage2Tab store={store} />}
 			</div>
 		</div>
 	);
@@ -376,7 +381,7 @@ const DesignifyTab = observer(({ store }) => {
 
 // Yet to be completed - 21Jun2023 -----
 // New Tab - Text to Image Start
-const TextToImageTab = observer(({ store }) => { 
+const TextToImageTab2 = observer(({ store }) => { 
 
 	const [stTextInput, setStTextInput] = useState(""); 
 	const [stImageUrl, setStImageUrl] = useState("");
@@ -586,65 +591,81 @@ var imgArray = [{url: "https://picsum.photos/300", },{url: "https://picsum.photo
 			<img src = "https://picsum.photos/200" width={200} height={150} /> 
 		</div>
 	</div>  
-		
-	{/* })} */}
-	{/* End Map Images */}
-
-		{/* <ImagesGrid
-		// pass an array of items that have any image information
-		images={[{ url: 'https://picsum.photos/200' }, { url: 'https://picsum.photos/200' }]}
-		// a function to get image URL from an item of the array
-		getPreview={(item) => item.url}
-		// this function will be called when user is clicked on image or dragged it into canvas
-		onSelect={async (image, pos, element, event) => {
-			// image - an item from your array
-			// pos - relative mouse position on drop. undefined if user just clicked on image
-			// element - model from your store if images was dropped on an element.
-			//    Can be useful if you want to change some props on existing element instead of creating a new one
-			// event - will have additional data such as
-			//      elements - list of all elements under the mouse
-			//      page - page where user dropped the image
-			const width = 100;
-			const height = 100;
-			console.log(element)
-
-			const x = (pos?.x || store.width / 2) - width / 2;
-			const y = (pos?.y || store.height / 2) - height / 2;
-			store.activePage?.addElement({
-			type: 'image',
-			src: image.url,
-			width,
-			height,
-			x,
-			y,
-			});
-		}}
-		// should we show a loading indicator at the end of the grid?
-		isLoading={false}
-		// load more will be called when user scrolled to the bottom of the list
-		// you can request new data from your API there.
-		// pass false if more data is not available
-		loadMore={() => {}}
-		// optional show special component at the bottom of every image element
-
-		// how many columns do we need? It actually should be called "columnsNumber"
-		// we will rename it later
-		rowsNumber={2}
-		// optionally pass crossOrigin param for images
-		crossOrigin="anonymous"
-		// optionally pass height size of the image, by default it is "auto"
-		itemHeight={'100px'}
-		// if "error" is not falsy, grid will display an error message
-		error={true}
-		/>;
-	 */}
-	{/* Image Grid End */}
 	</>
 	)
 })
 
 // New Tab - Text to Image End
 // Yet to be completed - 21Jun2023 -----
+
+// New Tab - Text to Image Start 23Jun2023
+const TextToImage2Tab = observer(({ store }) => { 
+
+	const [stTextInput, setStTextInput] = useState("")
+
+	const varApiKey = '';	
+	var varTaskId ;
+	const fnHandleText = (evt) => { 
+		setStTextInput(evt.target.value)
+		console.log(stTextInput);
+	}
+
+	const fnCallApi = async () =>{
+		console.log(`Handling the API Start - ${stTextInput}`);
+		
+		const varApiUrl = 'https://api.hotpot.ai/make-art';
+
+		const requestData = {
+			inputText: `${stTextInput}`,
+			styleId:"23",
+			// width:480
+		};
+
+		const config = {
+			headers: {
+				'Authorization': 'yMHw4UidZM1Hha82AZtMjI50bYCfC3sdX7vvB'
+			},
+		};
+
+		axios.post(varApiUrl, requestData, config)
+		.then(  res => {
+			console.log('Image generation successful!');
+			console.log(`The response is: `);
+			console.log(res);
+		})
+		.catch( err => console.log(err))	
+		console.log("Handling the API End");
+	}
+	
+	return ( 
+	<>
+		<div className="flex flex-row justify-normal align-bottom">
+
+			<textarea rows="4" 
+				value={`${stTextInput}`}
+				className="m-2 border px-2 py-1 rounded-md" 
+				onChange={(e) => { fnHandleText(e) }}
+				placeholder="Description of the image"
+			> </textarea>
+			<Button icon="search" className="m-2 ml-2 border px-2 py-1 h-8 rounded-md" onClick={fnCallApi}></Button> 
+			{/* <Button icon="refresh" className="m-2 ml-2 border px-2 py-1 h-8 rounded-md" onClick={""}></Button>  */}
+		</div>
+		
+		<div className="mt-4"> 
+			<div className="bg-[#e0f26c54] hover:bg-[#e0f26c8f] cursor-pointer m-1 pl-2 pr-2 rounded-2xl w-fit text-start text-xs" onClick={()=> setStTextInput("An ancient, mystical forest filled with towering trees")}> An ancient, mystical forest filled with towering trees </div>
+			<div className="bg-[#e0f26c54] hover:bg-[#e0f26c8f] cursor-pointer m-1 pl-2 pr-2 rounded-2xl text-start text-xs" onClick={()=> setStTextInput("A peaceful lakeside scene with a vibrant sunset reflecting off the calm waters.")}> A peaceful lakeside scene with a vibrant sunset reflecting off the calm waters. </div>
+		</div>
+		
+		<hr className="mt-4 mb-4"/>
+		<div className="m-2 text-[#565656]">
+			{stTextInput && `Showing Search results for : ${stTextInput}`}
+		</div> 
+
+	</>
+	)
+})
+
+// New Tab - Text to Image End 23Jun2023
 
 // define the new custom section
 export const StableDiffusionSection = {
