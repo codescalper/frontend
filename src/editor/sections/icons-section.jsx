@@ -218,6 +218,20 @@ export const IconFinderPanel = observer(({ store, query }) => {
 	);
 });
 
+// New Tab NFT Elements/Stickers Start - 24Jun2023
+export const NFTIcons = observer(({ store, query }) => {
+
+	return(<>
+		
+		In NFT Icons
+		{/* Code for NFT ELEMENTS here */}
+
+	</>)
+})
+
+// New Tab NFT Elements/Stickers End - 24Jun2023
+
+
 export const IconsPanel = ({ store }) => {
 	const requestTimeout = React.useRef();
 	const [query, setQuery] = React.useState("");
@@ -240,38 +254,33 @@ export const IconsPanel = ({ store }) => {
 				display: "flex",
 				flexDirection: "column",
 			}}>
-			<InputGroup
-				leftIcon="search"
-				placeholder={t("sidePanel.searchPlaceholder")}
-				onChange={(e) => {
-					setQuery(e.target.value);
-				}}
-				type="search"
-				style={{
-					marginBottom: "20px",
-				}}
-			/>
+			
 			<div
 				style={{
 					display: "flex",
-					justifyContent: "space-between",
+					justifyContent: "",
 					paddingBottom: "10px",
+					margin: "4px"
 				}}>
 				<Button
+					className="m-2 rounded-md"
 					onClick={() => {
 						setService("iconfinder");
 					}}
 					active={service === "iconfinder"}
-					icon={
-						<img
-							src="/iconfinder.svg"
-							alt="IconFinder"
-							width="15"
-						/>
-					}>
-					IconFinder
+					icon="social-media">
+						Icons
 				</Button>
 				<Button
+					className="m-2 rounded-md"
+					onClick={() => {
+						setService("servNFTIcons");
+					}}
+					active={service === "servNFTIcons"}
+					icon="build" >
+						NFTs
+				</Button>
+				{/* <Button
 					onClick={() => {
 						setService("nounproject");
 					}}
@@ -299,26 +308,45 @@ export const IconsPanel = ({ store }) => {
 						/>
 					}>
 					FlatIcon
-				</Button>
+				</Button> */}
 			</div>
-			{service === "flaticon" && (
-				<FlatIconPanel
-					query={delayedQuery}
-					store={store}
-				/>
-			)}
-			{service === "nounproject" && (
-				<NounprojectPanel
-					query={delayedQuery}
-					store={store}
-				/>
-			)}
+			<input
+				leftIcon="search"
+				placeholder={t("sidePanel.searchPlaceholder")}
+				onChange={(e) => {
+					setQuery(e.target.value);
+				}}
+				className="border-2 rounded-md p-2 m-2 mt-0"
+				type="search"
+				style={{
+					marginBottom: "20px",
+				}}
+			/>
 			{service === "iconfinder" && (
 				<IconFinderPanel
 					query={delayedQuery}
 					store={store}
 				/>
 			)}
+			{service === "servNFTIcons" && (
+				<NFTIcons
+					query={delayedQuery}
+					store={store}
+				/>
+			)}
+			{/* {service === "nounproject" && (
+				<NounprojectPanel
+					query={delayedQuery}
+					store={store}
+				/>
+			)} */}
+			{/* {service === "flaticon" && (
+				<FlatIconPanel
+					query={delayedQuery}
+					store={store}
+			/>
+		)} */}
+
 		</div>
 	);
 };
@@ -336,3 +364,4 @@ export const IconsSection = {
 	// we need observer to update component automatically on any store changes
 	Panel: IconsPanel,
 };
+	
