@@ -15,6 +15,7 @@ import { Workspace } from "polotno/canvas/workspace";
 import { loadFile } from "./file";
 import { CustomSizesPanel } from "./sections/resize-section";
 import { BackgroundSection2 } from "./sections/backgrounds-section";
+import { ShapesSection } from "./sections/shapes-section";
 import { IconsSection } from "./sections/icons-section";
 import { NFTSection } from "./sections/nft-section";
 import { StableDiffusionSection } from "./sections/stable-diffusion-section";
@@ -45,6 +46,7 @@ const sections = [
   IconsSection,
   BackgroundSection,
   BackgroundSection2,
+  ShapesSection,
   UploadSection,
   LayersSection,
   CustomSizesPanel,

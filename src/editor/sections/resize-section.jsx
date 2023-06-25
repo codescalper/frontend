@@ -37,18 +37,19 @@ export const CustomSizesPanel = {
 		const [width, setWidth] = useState(1000);
 		const [height, setHeight] = useState(1000);
 
-		useEffect(() => {
-			store.setSize(width, height);
-		}, [width, height]);
+		// useEffect(() => {
+		// 	store.setSize(width, height);
+		// }, [width, height]);
 
 		return (	
 				<div className="flex flex-col overflow-y-scroll overflow-x-hidden h-full">
 				{/* <label htmlFor="width">Width (px)</label> */}
 				<div className="sticky top-0 bg-white">
 					<div className="m-2 p-1">Set custom size</div>
-					<div className="flex flex-row justify-center">
+					<div className="flex flex-row justify-center text-center">
 						<input
 						className="border-2 rounded-md p-2 m-2 w-32"
+						placeholder="width"
 						name="width"
 						type="number"
 						min="0"
@@ -56,9 +57,11 @@ export const CustomSizesPanel = {
 						onChange={(e) => setWidth(Number(e.target.value))}
 						/>
 						{/* <br /> */}
+						<div className="m-2 mt-4 mb-4">X</div>
 						{/* <label htmlFor="height">Height (px)</label> */}
 						<input
 						className="border-2 rounded-md p-2 m-2 w-32"
+						placeholder="height"
 						name="height"
 						type="number"
 						min="0"

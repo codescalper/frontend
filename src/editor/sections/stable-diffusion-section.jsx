@@ -602,9 +602,9 @@ var imgArray = [{url: "https://picsum.photos/300", },{url: "https://picsum.photo
 const TextToImage2Tab = observer(({ store }) => { 
 
 	const [stTextInput, setStTextInput] = useState("")
+	const [stImageData, setStImageData] = useState()
 
-	const varApiKey = '';	
-	var varTaskId ;
+	// const varApiKey = "ukZtES93idpHMCid3bk8oCESxaQ0xMiJZByjk4igvfLSYy0mak";	
 	const fnHandleText = (evt) => { 
 		setStTextInput(evt.target.value)
 		console.log(stTextInput);
@@ -615,15 +615,21 @@ const TextToImage2Tab = observer(({ store }) => {
 		
 		const varApiUrl = 'https://api.hotpot.ai/make-art';
 
-		const requestData = {
-			inputText: `${stTextInput}`,
-			styleId:"23",
-			// width:480
-		};
+		// const requestData = {
+		// 	inputText: `${stTextInput}`,
+		// 	styleId:"23",
+		// 	// width:480
+		// };
+
+		const requestData = new FormData();
+			requestData.append('inputText', stTextInput);
+			requestData.append('styleId', '23');
 
 		const config = {
 			headers: {
-				'Authorization': 'yMHw4UidZM1Hha82AZtMjI50bYCfC3sdX7vvB'
+				"Access-Control-Allow-Origin": "*",
+				"Content-Type": "application/x-www-form-urlencoded",
+				"Authorization": "ukZtES93idpHMCid3bk8oCESxaQ0xMiJZByjk4igvfLSYy0mak",
 			},
 		};
 
@@ -632,6 +638,10 @@ const TextToImage2Tab = observer(({ store }) => {
 			console.log('Image generation successful!');
 			console.log(`The response is: `);
 			console.log(res);
+			const imageData = Buffer.from(res.data, 'binary');
+			const base64Image = imageData.toString('base64');
+			setStImageData(`data:image/png;base64,${base64Image}`);
+			
 		})
 		.catch( err => console.log(err))	
 		console.log("Handling the API End");
@@ -639,7 +649,7 @@ const TextToImage2Tab = observer(({ store }) => {
 	
 	return ( 
 	<>
-		<div className="flex flex-row justify-normal align-bottom">
+		<div className="flex flex-col justify-normal align-bottom">
 
 			<textarea rows="4" 
 				value={`${stTextInput}`}
@@ -647,7 +657,7 @@ const TextToImage2Tab = observer(({ store }) => {
 				onChange={(e) => { fnHandleText(e) }}
 				placeholder="Description of the image"
 			> </textarea>
-			<Button icon="search" className="m-2 ml-2 border px-2 py-1 h-8 rounded-md" onClick={fnCallApi}></Button> 
+			<Button icon="search" className="bg-[#e0f26c] m-2 ml-2 border px-2 py-1 h-8 rounded-md" onClick={fnCallApi}>Generate Image</Button> 
 			{/* <Button icon="refresh" className="m-2 ml-2 border px-2 py-1 h-8 rounded-md" onClick={""}></Button>  */}
 		</div>
 		
@@ -659,6 +669,8 @@ const TextToImage2Tab = observer(({ store }) => {
 		<hr className="mt-4 mb-4"/>
 		<div className="m-2 text-[#565656]">
 			{stTextInput && `Showing Search results for : ${stTextInput}`}
+
+			<img src={stImageData} alt="" />
 		</div> 
 
 	</>

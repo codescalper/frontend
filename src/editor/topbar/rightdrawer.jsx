@@ -5,6 +5,7 @@ import { ShareIcon } from "../editor-icon";
 import MdcCalendarClock from "@meronex/icons/mdc/MdcCalendarClock";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import { Switch } from "@headlessui/react";
+import {Icon} from "@blueprintjs/core"
 import {
   lensAuthenticate,
   shareOnLens,
@@ -80,10 +81,11 @@ export default function RightDrawer({}) {
                           >
                             <button
                               className={`${
-                                menu == "share" ? "bg-black" : "bg-white"
+                                menu == "share" ? "bg-[#E1F26C]" : "bg-white"
                               } h-12 w-12 rounded-full outline-none`}
                             >
-                              {/* <ShareIcon /> */}
+                              {/* Share Icon */}
+                              <Icon icon="share" size={16} />
                             </button>
                             <p>Share</p>
                           </div>
@@ -96,10 +98,10 @@ export default function RightDrawer({}) {
                           >
                             <button
                               className={`${
-                                menu == "monetization" ? "bg-black" : "bg-white"
+                                menu == "monetization" ? "bg-[#E1F26C]" : "bg-white"
                               } h-12 w-12 rounded-full outline-none`}
                             >
-                              {/* <ShareIcon /> */}
+                              <Icon icon="dollar" size={16} />
                             </button>
                             <p className="w-20 text-center">Monetization</p>
                           </div>
@@ -114,7 +116,8 @@ export default function RightDrawer({}) {
                                 menu == "post" ? "bg-[#E1F26C]" : "bg-white"
                               } h-12 w-12 rounded-full outline-none`}
                             >
-                              {/* <ShareIcon /> */}
+                              {/* Comment and mirror Icon  */}
+                              <Icon icon="settings" size={16} />
                             </button>
                             <p className="w-20 text-center">Comment & Mirror</p>
                           </div>
@@ -130,10 +133,12 @@ export default function RightDrawer({}) {
                         </div>
                       </div>
                     </Transition.Child>
+
                     {menu === "share" && <Share />}
                     {menu === "monetization" && <Monetization />}
                     {/* {menu === "post" && <Post />} */}
                     {menu === "post" && <Post />}
+
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
@@ -258,7 +263,7 @@ const Share = () => {
     console.log("Formatted Selected Time: ", dateString);
     setStSelectedDateTime(value);
 
-    const dateTime = new Date(stSelectedDateTime);
+    const dateTime = new Date(value);
 
     // Format the date
     const dateOptions = { year: "numeric", month: "long", day: "numeric" };
@@ -338,8 +343,8 @@ const Share = () => {
           stCalendarClicked ? "visible" : "collapse"
         } flex flex-col m-2 ml-8`}
       >
-        <div className="mt-3 mb-3">Scheduled</div>
-        <div className="flex flex-row border-l-8 border-l-[#E1F26C] p-4">
+        <div className="mt-1 mb-3">Schedule</div>
+        <div className="flex flex-row border-l-8 border-l-[#E1F26C] p-4 rounded-md">
           <div className="flex flex-col">
             <div className="text-4xl text-[#E699D9]">
               {stFormattedDate.slice(0, 2)}
@@ -371,7 +376,7 @@ const Share = () => {
             {" "}
             <img
               className="w-10 cursor-pointer"
-              src="/other-icons/iconLens.png"
+              src="/other-icons/share-section/iconLens.png"
               alt="Lens"
             />{" "}
           </div>
@@ -379,7 +384,7 @@ const Share = () => {
             {" "}
             <img
               className="w-10 cursor-pointer"
-              src="/other-icons/iconTwitter.png"
+              src="/other-icons/share-section/iconTwitter.png"
               alt="Twitter"
             />{" "}
           </div>

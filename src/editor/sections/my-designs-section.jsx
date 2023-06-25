@@ -8,7 +8,7 @@ import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { TemplatesIcon } from "../editor-icon";
 
 //Icons Import
-import { Icon, IconSize, Button, Card, Menu, MenuItem, Position} from "@blueprintjs/core";
+import { Icon, IconSize, Button, Card, Menu, MenuItem, Position, Dialog, DialogBody, DialogFooter} from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { useAccount } from "wagmi";
 import {
@@ -119,6 +119,8 @@ export const MyDesignsPanel = observer(({ store, design, project, onDelete, json
   
   const arrMyDesigns = useRef()
   const [arrData, setArrData] = useState([]);
+  const [stOpenedModal, setStOpenedModal] = useState(false);
+  const [stConfirmNew, setStConfirmNew] = useState("");
   
   const loadImages = async () => {
     setIsLoading(true);
@@ -167,51 +169,51 @@ export const MyDesignsPanel = observer(({ store, design, project, onDelete, json
   // Test - 23Jun2023
   const arrDesign = [{design_id: 12, preview: "https://picsum.photos/300"}, {design_id: 23, preview: "https://picsum.photos/400"}]
   // console.log(arrDesign)
-  
+
+  // Function to delete all the canvas on confirmation - 25Jun2023
+    const fnDeleteCanvas = () =>{
+      const pagesIds = store.pages.map((p) => p.id);
+      store.deletePages(pagesIds);
+      store.addPage();
+      // project.id = '';
+      // project.save();
+    
+      // close the Modal/Dialog
+      setStOpenedModal(!stOpenedModal);
+    }
+
   return (
     <div className="h-full flex flex-col">
       <h1 className="text-lg">My Designs</h1>
-      <Button> Create new design </Button>
 
-      <Popover2
-        interactionKind="click"
-        isOpen={stMoreBtn}
-        renderTarget={({ isOpen, ref, ...targetProps }) => (
-          <Button
-            {...targetProps}
-            elementRef={ref}
-            onClick={() => setStMoreBtn(!stMoreBtn)}
-            intent="none"
-          >
-            {" "}
-            <Icon icon="more" />{" "}
-          </Button>
-        )}
-        content={
-          <div>
-            <Button icon="document-open"> Share </Button>
-            <Button onClick={() => deleteCanvas("4")} icon="trash">
-              {" "}
-              Delete{" "}
-            </Button>
-          </div>
+      <Button onClick={() => {
+        const ids = store.pages
+          .map((page) => page.children.map((child) => child.id))
+          .flat();
+        const hasObjects = ids?.length;
+
+        if (hasObjects) {
+          setStOpenedModal(true)
+          if(stConfirmNew){
+            return;
+          }
         }
-      />
-      {/* <ImagesGrid
-        shadowEnabled={false}
-        images={data}
-        getPreview={(item) => item?.imageLink != null && item?.imageLink[0]}
-        isLoading={isLoading}
-        onSelect={async (item) => {
-          // download selected json
-          const json = item.data;
-          // const json = req.json();
-          // just inject it into store
-          store.loadJSON(json);
-        }}
-        rowsNumber={1}/>   */}
-
-        
+      }}> Create new design </Button>
+    
+    {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
+  
+    <Dialog title="Are you sure to create a new design?" icon="info-sign" isOpen={stOpenedModal} canOutsideClickClose="true" onClose={()=> {setStOpenedModal(!stOpenedModal)}}>
+      <DialogBody>
+        This will remove all the content.
+      </DialogBody>
+      <DialogFooter actions={
+          <div>
+            <Button intent="danger" text="Yes" onClick={()=> { fnDeleteCanvas() }} />  
+            <Button  text="No" onClick={()=> { setStOpenedModal(false) }} />   
+          </div>
+      } />
+    </Dialog>
+         
     {/* New Design card start - 23Jun2023 */} 
     {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
     {/* Pass these onto Line 25 */}
