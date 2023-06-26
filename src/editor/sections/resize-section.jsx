@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { SectionTab } from "polotno/side-panel";
 import { Button } from "@blueprintjs/core";
-import { GiResize } from "react-icons/gi";
 import { useEffect, useState } from "react";
 import { ResizeIcon } from "../editor-icon";
 
@@ -29,17 +28,13 @@ export const CustomSizesPanel = {
 			<ResizeIcon />
 		</SectionTab>
 	),
-	// we need observer to update component automatically on any store changes
 	Panel: observer(({ store }) => {
-		// we will just render buttons for each size
-		// but you also can add your own controls
-		// size inputs, etc
 		const [width, setWidth] = useState(1000);
 		const [height, setHeight] = useState(1000);
 
-		// useEffect(() => {
-		// 	store.setSize(width, height);
-		// }, [width, height]);
+		useEffect(() => {
+			store.setSize(width, height);
+		}, [width, height]);
 
 		return (	
 				<div className="flex flex-col overflow-y-scroll overflow-x-hidden h-full">
@@ -78,7 +73,6 @@ export const CustomSizesPanel = {
 						onClick={() => {
 							store.setSize(width, height); 
 						}}>
-							{/* {width}x{height} */}
 							<img src={imgUrl} alt="" />
 						</div>
 					))}

@@ -107,6 +107,11 @@ const Editor = ({ store }) => {
   // 		setFile(event.target.files[0]);
   //   };
 
+  const fnDeletePrevImage = () =>{
+    console.log("In Delete previous image function")
+    store.deleteElements(store.selectedElements.map(x => x.id))
+  }
+
   const handleRemoveBg = async () => {
     var varActivePageNo = 0;
     console.log("Handle upload START");
@@ -146,7 +151,7 @@ const Editor = ({ store }) => {
         {
           headers: {
             
-        'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' 
+        'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' 
 
         //  Backup API Keys : 
         // 'APIKEY': 'c136635d69324c99942639424feea81a'
@@ -159,8 +164,8 @@ const Editor = ({ store }) => {
           //   		'prompt' : "Football world cup"
           // 	}
         }
-      );
-
+      )  
+      .then((response)=>{    
       // Handle the response here
       console.log(response);
       // This is the Image URL for removed background
@@ -180,8 +185,13 @@ const Editor = ({ store }) => {
         removable: true,
         resizable: true,
         showInExport: true,
-      });
-      setRemovedBgImageUrl(response.data.data.imageUrl);
+      })
+      // delete the Previous Image: - 26Jun2023
+      // store.deleteElements(store.selectedElements.map(x => x.id))
+    })
+
+      setRemovedBgImageUrl(response.data.data.imageUrl)
+
       return response.data.data.imageUrl;
     } catch (error) {
       console.error(error);
@@ -202,7 +212,8 @@ const Editor = ({ store }) => {
           isLoading: false,
           autoClose: 4000,
           closeButton: true,
-        });
+        })
+          // fnDeletePrevImage();
         console.log("res", res?.data);
       } else if (!res) {
         toast.update(id, {
@@ -218,7 +229,6 @@ const Editor = ({ store }) => {
 
    console.log("Handle upload END");
   
-
   // create canvas
   useEffect(() => {
     const main = async () => {
@@ -295,6 +305,7 @@ const Editor = ({ store }) => {
                   {" "}
                   Remove background{" "}
                 </Button>
+                {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
               </div>
 
               {/* ai_integration End */}
