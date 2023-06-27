@@ -73,10 +73,7 @@ const LenspostTemplates = ({ store }) => {
         getPreview={(item) => item.image}
         isLoading={isLoading}
         onSelect={async (item) => {
-          // download selected json
           const json = item.data;
-          // const json = req.json();
-          // just inject it into store
           store.loadJSON(json);
         }}
         rowsNumber={1}
