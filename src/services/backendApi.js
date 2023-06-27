@@ -2,7 +2,7 @@ import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import axios from "axios";
 import { getFromLocalStorage } from "./localStorage";
 
-const API = BACKEND_DEV_URL;
+const API = BACKEND_LOCAL_URL;
 
 /**
  * @param walletAddress string
@@ -929,3 +929,43 @@ export const getAllTemplates = async () => {
   }
 };
 // template apis end
+
+// asset apis start
+// need auth token (jwt)
+export const getAssetByQuery = async (query) => {
+  try {
+    const result = await api.get(`${API}/asset/?query=${query}`);
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 401) {
+      console.log({ 401: error?.response?.statusText });
+      return {
+        error: error?.response?.data?.message,
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
+
+// asset apis end
