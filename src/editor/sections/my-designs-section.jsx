@@ -5,15 +5,9 @@ import { SectionTab } from "polotno/side-panel";
 import { TemplatesIcon } from "../editor-icon";
 
 //Icons Import
-import {
-  Icon,
-  IconSize,
-  Button,
-  Card,
-  Menu,
-  MenuItem,
-  Position,
-} from "@blueprintjs/core";
+
+import { Icon, IconSize, Button, Card, Menu, MenuItem, Position, Dialog, DialogBody, DialogFooter} from "@blueprintjs/core";
+
 import { Popover2 } from "@blueprintjs/popover2";
 import { useAccount } from "wagmi";
 import {
@@ -110,74 +104,34 @@ const DesignCard = observer(
 
 // Design card component end - 23Jun2023
 
-export const MyDesignsPanel = observer(
-  ({ store, design, project, onDelete, json }) => {
-    const { isDisconnected, address, isConnected } = useAccount();
-    const [stMoreBtn, setStMoreBtn] = useState(false);
-    const [data, setData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isError, setIsError] = useState("");
 
-    const arrMyDesigns = useRef();
-    const [arrData, setArrData] = useState([]);
+export const MyDesignsPanel = observer(({ store, design, project, onDelete, json }) => {
+  const { isDisconnected, address, isConnected } = useAccount();
+  const [stMoreBtn, setStMoreBtn] = useState(false);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState("");
+  
+  const arrMyDesigns = useRef()
+  const [arrData, setArrData] = useState([]);
+  const [stOpenedModal, setStOpenedModal] = useState(false);
+  const [stConfirmNew, setStConfirmNew] = useState("");
+  
+  const loadImages = async () => {
+    setIsLoading(true);
+    const res = await getAllCanvas();
+    setArrData(res.data);
+    
+    arrMyDesigns.current = res.data;
+    
+    console.log(arrData) 
 
-    const loadImages = async () => {
-      setIsLoading(true);
-      const res = await getAllCanvas();
-      
-      if (res?.data) {
-        setArrData(res?.data);
-        arrMyDesigns.current = res?.data;
-        setIsLoading(false);
-      } else if (res?.error) {
-        setIsError(res?.error);
-        setIsLoading(false);
-      }
-    };
-
-    const deleteCanvas = async (canvasId) => {
-      const res = await deleteCanvasById(canvasId);
-      if (res?.data) {
-        toast.success(res?.data?.message);
-        loadImages();
-      } else if (res?.error) {
-        toast.error(res?.error);
-      }
-    };
-
-    const changeVisibility = async (canvasId) => {
-      const res = await changeCanvasVisibility(canvasId, "public");
-      if (res?.data) {
-        toast.success(res?.data);
-      } else if (res?.error) {
-        toast.error(res?.error);
-      }
-    };
-
-    const getSpecipifCanvas = async (id) => {
-      setIsLoading(true);
-      const res = await getCanvasById(id);
-      if (res?.data) {
-        // setData(res?.data);
-        console.log(res?.data);
-        setIsLoading(false);
-      } else if (res?.error) {
-        setIsError(res?.error);
-        setIsLoading(false);
-      }
-    };
-
-    useEffect(() => {
-      if (isDisconnected) return;
-      loadImages();
-    }, [isConnected]);
-
-    if (isDisconnected || !address) {
-      return (
-        <>
-          <p>Please connect your wallet</p>
-        </>
-      );
+    if (res?.data) {
+      setData(res?.data);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsError(res?.error);
+      setIsLoading(false);
     }
 
     if (isError) {
@@ -221,7 +175,80 @@ export const MyDesignsPanel = observer(
       </div>
     );
   }
-);
+
+  // Test - 23Jun2023
+  const arrDesign = [{design_id: 12, preview: "https://picsum.photos/300"}, {design_id: 23, preview: "https://picsum.photos/400"}]
+  // console.log(arrDesign)
+
+  // Function to delete all the canvas on confirmation - 25Jun2023
+    const fnDeleteCanvas = () =>{
+      const pagesIds = store.pages.map((p) => p.id);
+      store.deletePages(pagesIds);
+      store.addPage();
+      // project.id = '';
+      // project.save();
+    
+      // close the Modal/Dialog
+      setStOpenedModal(!stOpenedModal);
+    }
+
+  return (
+    <div className="h-full flex flex-col">
+      <h1 className="text-lg">My Designs</h1>
+
+      <Button onClick={() => {
+        const ids = store.pages
+          .map((page) => page.children.map((child) => child.id))
+          .flat();
+        const hasObjects = ids?.length;
+
+        if (hasObjects) {
+          setStOpenedModal(true)
+          if(stConfirmNew){
+            return;
+          }
+        }
+      }}> Create new design </Button>
+    
+    {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
+  
+    <Dialog title="Are you sure to create a new design?" icon="info-sign" isOpen={stOpenedModal} canOutsideClickClose="true" onClose={()=> {setStOpenedModal(!stOpenedModal)}}>
+      <DialogBody>
+        This will remove all the content.
+      </DialogBody>
+      <DialogFooter actions={
+          <div>
+            <Button intent="danger" text="Yes" onClick={()=> { fnDeleteCanvas() }} />  
+            <Button  text="No" onClick={()=> { setStOpenedModal(false) }} />   
+          </div>
+      } />
+    </Dialog>
+         
+    {/* New Design card start - 23Jun2023 */} 
+    {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
+    {/* Pass these onto Line 25 */}
+     {arrData.map((design)=> {
+      return(
+        
+          <DesignCard
+            design={design}
+            json={design.data}
+            preview={design.imageLink[0]}
+            key={design.id}
+            store={store}
+            project={project}
+            // onDelete={()=> {}}
+          />
+        )
+      })}
+
+     {/* New Design card end - 23Jun2023 */}
+
+ 
+    </div>
+
+  );
+ });
 
 // define the new custom section
 export const MyDesignsSection = {

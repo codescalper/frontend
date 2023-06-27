@@ -74,7 +74,15 @@ const LenspostTemplates = ({ store }) => {
         isLoading={isLoading}
         onSelect={async (item) => {
           const json = item.data;
+          // const json = req.json();
+          // just inject it into store
+
+          // Set canvas dimensions to Template dimensions - 26Jun2023
+          console.log("The logged JSON is ");
+          console.log(json);
+
           store.loadJSON(json);
+          store.setSize(json.width, json.height);
         }}
         rowsNumber={1}
       />

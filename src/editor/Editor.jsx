@@ -15,6 +15,7 @@ import { Workspace } from "polotno/canvas/workspace";
 import { loadFile } from "./file";
 import { CustomSizesPanel } from "./sections/resize-section";
 import { BackgroundSection2 } from "./sections/backgrounds-section";
+import { ShapesSection } from "./sections/shapes-section";
 import { IconsSection } from "./sections/icons-section";
 import { NFTSection } from "./sections/nft-section";
 import { StableDiffusionSection } from "./sections/stable-diffusion-section";
@@ -46,6 +47,7 @@ const sections = [
   IconsSection,
   BackgroundSection,
   BackgroundSection2,
+  ShapesSection,
   UploadSection,
   LayersSection,
   CustomSizesPanel,
@@ -106,6 +108,11 @@ const Editor = ({ store }) => {
   // 		setFile(event.target.files[0]);
   //   };
 
+  const fnDeletePrevImage = () =>{
+    console.log("In Delete previous image function")
+    store.deleteElements(store.selectedElements.map(x => x.id))
+  }
+
   const handleRemoveBg = async () => {
     var varActivePageNo = 0;
     console.log("Handle upload START");
@@ -144,7 +151,12 @@ const Editor = ({ store }) => {
         // formData,
         {
           headers: {
+
+            
+//         'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' 
+
             APIKEY: "63d61dd44f384a7c9ad3f05471e17130",
+
 
             //  Backup API Keys :
             // 'APIKEY': 'c136635d69324c99942639424feea81a'
@@ -157,8 +169,8 @@ const Editor = ({ store }) => {
           //   		'prompt' : "Football world cup"
           // 	}
         }
-      );
-
+      )  
+      .then((response)=>{    
       // Handle the response here
       console.log(response);
       // This is the Image URL for removed background
@@ -178,8 +190,13 @@ const Editor = ({ store }) => {
         removable: true,
         resizable: true,
         showInExport: true,
-      });
-      setRemovedBgImageUrl(response.data.data.imageUrl);
+      })
+      // delete the Previous Image: - 26Jun2023
+      // store.deleteElements(store.selectedElements.map(x => x.id))
+    })
+
+      setRemovedBgImageUrl(response.data.data.imageUrl)
+
       return response.data.data.imageUrl;
     } catch (error) {
       console.error(error);
@@ -210,10 +227,10 @@ const Editor = ({ store }) => {
         autoClose: 4000,
         closeButton: true,
       });
+
     }
   };
-
-  console.log("Handle upload END");
+   console.log("Handle upload END");
 
   // create canvas
   useEffect(() => {
@@ -292,6 +309,7 @@ const Editor = ({ store }) => {
                   {" "}
                   Remove background{" "}
                 </Button>
+                {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
               </div>
 
               {/* ai_integration End */}
