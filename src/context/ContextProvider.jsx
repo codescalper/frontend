@@ -5,6 +5,7 @@ export const Context = createContext();
 const ContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
+  const [canvasId, setCanvasId] = useState("");
 
   return (
     <Context.Provider
@@ -13,6 +14,8 @@ const ContextProvider = ({ children }) => {
         setIsLoading,
         text,
         setText,
+        canvasId,
+        setCanvasId,
       }}
     >
       {children}

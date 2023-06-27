@@ -1,25 +1,37 @@
+
 // Imports: 
 import React, { useEffect, useRef, useState } from "react";
+
 import { observer } from "mobx-react-lite";
 import { InputGroup, Button } from "@blueprintjs/core";
 import { svgToURL } from "polotno/utils/svg";
 import { SectionTab } from "polotno/side-panel";
+
 import { t } from "polotno/utils/l10n";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { BackgroundIcon, ElementsIcon } from "../editor-icon";
 import { useAccount } from "wagmi";
 import { getAllCanvas } from "../../services/backendApi";
 
+import { getKey } from "polotno/utils/validate-key";
+import { getImageSize } from "polotno/utils/image";
+import styled from "polotno/utils/styled";
+
+import { useInfiniteAPI } from "polotno/utils/use-api";
+import FaVectorSquare from "@meronex/icons/fa/FaVectorSquare";
+
+
+
+
 // New Tab Colors Start - 24Jun2023
 export const TabColors = observer(({ store, query }) => {
-
-	return(<>
-		
-		In Colors
-		{/* Code for Colors here */}
-
-	</>)
-})
+  return (
+    <>
+      In Colors
+      {/* Code for Colors here */}
+    </>
+  );
+});
 
 // New Tab Colors End - 24Jun2023
 
@@ -99,8 +111,6 @@ export const TabNFTBgs = observer(({ store, query }) => {
 
 // New Tab NFT Backgrounds End - 24Jun2023
 
-
-
 export const BackgroundPanel2 = observer(({ store, query }) => {
 
 	const [stTab, setStTab] = useState("tabColors")
@@ -158,17 +168,14 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
 	</>)
 })
 
-
 // define the new custom section
 export const BackgroundSection2 = {
-	name: "Backgrounds2",
-	Tab: (props) => (
-		<SectionTab
-			name="Backgrounds2"
-			{...props}> 
-			<BackgroundIcon />
-		</SectionTab>
-	),
-	// we need observer to update component automatically on any store changes
-	Panel: BackgroundPanel2,
+  name: "Backgrounds2",
+  Tab: (props) => (
+    <SectionTab name="Backgrounds2" {...props}>
+      <BackgroundIcon />
+    </SectionTab>
+  ),
+  // we need observer to update component automatically on any store changes
+  Panel: BackgroundPanel2,
 };

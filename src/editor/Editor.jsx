@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from "polotno";
 import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
@@ -37,6 +37,7 @@ import { toast } from "react-toastify";
 // New Imports :
 import { Button } from "@blueprintjs/core";
 import axios from "axios";
+import { Context } from "../context/ContextProvider";
 
 const sections = [
   TemplatesSection,
@@ -67,9 +68,9 @@ const Editor = ({ store }) => {
   const project = useProject();
   const height = useHeight();
   const { address, isConnected } = useAccount();
-  const [canvasId, setCanvasId] = useState();
   const canvasIdRef = useRef(null);
   const intervalRef = useRef(null);
+  const { setCanvasId } = useContext(Context);
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -150,13 +151,17 @@ const Editor = ({ store }) => {
         // formData,
         {
           headers: {
-            
-        'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' 
 
-        //  Backup API Keys : 
-        // 'APIKEY': 'c136635d69324c99942639424feea81a'
-        // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
-        // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
+            
+//         'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' 
+
+            APIKEY: "63d61dd44f384a7c9ad3f05471e17130",
+
+
+            //  Backup API Keys :
+            // 'APIKEY': 'c136635d69324c99942639424feea81a'
+            // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
+            // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
           },
           // For File type Input
           //	responseType: 'arraybuffer',
@@ -195,40 +200,38 @@ const Editor = ({ store }) => {
       return response.data.data.imageUrl;
     } catch (error) {
       console.error(error);
-      }
-
-      console.log("Handle upload END")
-      };
-
-  // Cutout pro API end 
-    //  Toast Setup
-    const fnCallToast = async () => {
-      const id = toast.loading("Removing Background", {autoClose: 4000,});
-      const res = await handleRemoveBg();
-      if (res) {
-        toast.update(id, {
-          render: "Removed Background", //Check if The toast is working 
-          type: "success",
-          isLoading: false,
-          autoClose: 4000,
-          closeButton: true,
-        })
-          // fnDeletePrevImage();
-        console.log("res", res?.data);
-      } else if (!res) {
-        toast.update(id, {
-          render: "Error in removing background",
-          type: "error",
-          isLoading: false,
-          autoClose: 4000,
-          closeButton: true,
-        });
-      }
-  
     }
 
+    console.log("Handle upload END");
+  };
+
+  // Cutout pro API end
+  //  Toast Setup
+  const fnCallToast = async () => {
+    const id = toast.loading("Removing Background", { autoClose: 4000 });
+    const res = await handleRemoveBg();
+    if (res) {
+      toast.update(id, {
+        render: "Removed Background", //Check if The toast is working
+        type: "success",
+        isLoading: false,
+        autoClose: 4000,
+        closeButton: true,
+      });
+      console.log("res", res?.data);
+    } else if (!res) {
+      toast.update(id, {
+        render: "Error in removing background",
+        type: "error",
+        isLoading: false,
+        autoClose: 4000,
+        closeButton: true,
+      });
+
+    }
+  };
    console.log("Handle upload END");
-  
+
   // create canvas
   useEffect(() => {
     const main = async () => {
@@ -244,6 +247,7 @@ const Editor = ({ store }) => {
           const res = await createCanvas(storeData, "hello", false);
           if (res?.data) {
             canvasIdRef.current = res?.data?.canvasId;
+            setCanvasId(res?.data?.canvasId);
             console.log("Canvas created", { canvasId: res?.data?.canvasId });
           } else if (res?.error) {
             console.log("Canvas creation error", { error: res?.error });
@@ -282,7 +286,7 @@ const Editor = ({ store }) => {
       <div
         style={{
           width: "100vw",
-          height: height + "px",                        
+          height: height + "px",
           display: "flex",
           flexDirection: "column",
         }}
