@@ -15,6 +15,9 @@ export const getImageUrl = (res) => {
       res[i].permaLink = convertIPFSUrl(res[i].permaLink);
       obj = { url: res[i].permaLink };
       arr.push(obj);
+    } else if (res[i].imageURL) {
+      obj = { url: res[i].imageURL };
+      arr.push(obj);
     } else {
       obj = { url: res[i].ipfsLink };
       arr.push(obj);

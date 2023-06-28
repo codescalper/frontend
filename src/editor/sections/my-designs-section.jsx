@@ -1,113 +1,108 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useInfiniteAPI } from "polotno/utils/use-api";
 
 import { SectionTab } from "polotno/side-panel";
-
-import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { TemplatesIcon } from "../editor-icon";
 
 //Icons Import
+
 import { Icon, IconSize, Button, Card, Menu, MenuItem, Position, Dialog, DialogBody, DialogFooter} from "@blueprintjs/core";
+
 import { Popover2 } from "@blueprintjs/popover2";
 import { useAccount } from "wagmi";
 import {
+  changeCanvasVisibility,
   deleteCanvasById,
   getAllCanvas,
   getCanvasById,
 } from "../../services/backendApi";
 import { toast } from "react-toastify";
-
+import { Context } from "../../context/ContextProvider";
 
 // Design card component start - 23Jun2023
 
+const DesignCard = observer(
+  ({ design, project, preview, json, onDelete, onPublic }) => {
+    const [loading, setLoading] = useState(false);
+    const { setCanvasId } = useContext(Context);
+    const handleSelect = async () => {
+      // setLoading(true);
+      // await project.loadById(design.id);
+      // project.store.openSidePanel('photos');
+      // setLoading(false);
+    };
 
-const DesignCard = observer(({ design, project, onDelete, preview, json }) => {
-  const [loading, setLoading] = useState(false);
-  const handleSelect = async () => {
-    // setLoading(true);
-    // await project.loadById(design.id);
-    // project.store.openSidePanel('photos');
-    // setLoading(false);
-  };
-
-  return (
-    <Card
-      style={{ margin: '3px', padding: '0px', position: 'relative' }}
-      interactive
-      onClick={() => {
-        handleSelect();
-      }}
-    >
-    <div className="" onClick={()=> store.loadJSON(json)} >
-      <img src={preview} alt="preview IMG" style={{ width: '100%' }} />
-    </div>
-
-      <div
-        style={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          padding: '3px',
+    return (
+      <Card
+        style={{ margin: "3px", padding: "0px", position: "relative" }}
+        interactive
+        onClick={() => {
+          handleSelect();
         }}
       >
-        {/* {design.name} */}
-      </div>
-      {loading && (
         <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
+          className=""
+          onClick={() => {
+            setCanvasId(design.id);
+            store.loadJSON(json);
           }}
         >
-          <Spinner />
+          <img src={preview} alt="preview IMG" style={{ width: "100%" }} />
         </div>
-      )}
-      <div
-        style={{ position: 'absolute', top: '5px', right: '5px' }}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        <Popover2
-          content={
-            <Menu>
-              <MenuItem
-                icon="share"
-                text="Share"
-                onClick={() => {
-                  // implement share function here
-                }}
-              />
-              <MenuItem
-                icon="globe"
-                text="Make Public"
-                onClick={async () => {
-                  // implement make public function here
-                }}
-              />
-              <MenuItem
-                icon="trash"
-                text="Delete"
-                onClick={() => {
-                  // implement delete function here
-                }}
-              />
-            </Menu>
-          }
-          position={Position.BOTTOM}
+
+        <div
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            padding: "3px",
+          }}
         >
-          <Button icon="more" />
-        </Popover2>
-      </div>
-    </Card>
-  );
-});
+          {/* {design.name} */}
+        </div>
+        {loading && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+          >
+            <Spinner />
+          </div>
+        )}
+        <div
+          style={{ position: "absolute", top: "5px", right: "5px" }}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <Popover2
+            content={
+              <Menu>
+                {/* <MenuItem
+                  icon="share"
+                  text="Share"
+                  onClick={() => {
+                    // implement share function here
+                  }}
+                /> */}
+                <MenuItem icon="globe" text="Make Public" onClick={onPublic} />
+                <MenuItem icon="trash" text="Delete" onClick={onDelete} />
+              </Menu>
+            }
+            position={Position.BOTTOM}
+          >
+            <Button icon="more" />
+          </Popover2>
+        </div>
+      </Card>
+    );
+  }
+);
 
 // Design card component end - 23Jun2023
-
 
 
 export const MyDesignsPanel = observer(({ store, design, project, onDelete, json }) => {
@@ -138,32 +133,47 @@ export const MyDesignsPanel = observer(({ store, design, project, onDelete, json
       setIsError(res?.error);
       setIsLoading(false);
     }
-  };
 
-  const deleteCanvas = async (canvasId) => {
-    const res = await deleteCanvasById(canvasId);
-    if (res?.data) {
-      toast.success(res?.data?.message);
-    } else if (res?.error) {
-      toast.error(res?.error);
+    if (isError) {
+      return <div>{isError}</div>;
     }
-  };
 
-  useEffect(() => {
-    if (isDisconnected) return;
-    loadImages();
-  }, [isConnected]);
+    // Test - 23Jun2023
+    // const arrDesign = [{design_id: 12, preview: "https://picsum.photos/300"}, {design_id: 23, preview: "https://picsum.photos/400"}]
+    // console.log(arrDesign)
 
-  if (isDisconnected || !address) {
     return (
-      <>
-        <p>Please connect your wallet</p>
-      </>
-    );
-  }
+      <div className="h-full flex flex-col">
+        <h1 className="text-lg">My Designs</h1>
+        <Button> Create new design </Button>
 
-  if (isError) {
-    return <div>{isError}</div>;
+        {/* New Design card start - 23Jun2023 */}
+        {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
+        {/* Pass these onto Line 25 */}
+        <div className="flex flex-col overflow-y-scroll overflow-x-hidden h-full mt-6">
+          {arrData.map((design) => {
+            return (
+              <DesignCard
+                design={design}
+                json={design.data}
+                preview={
+                  design?.imageLink != null &&
+                  design?.imageLink.length > 0 &&
+                  design?.imageLink[0]
+                }
+                key={design.id}
+                store={store}
+                project={project}
+                onDelete={() => deleteCanvas(design.id)}
+                onPublic={() => changeVisibility(design.id)}
+              />
+            );
+          })}
+        </div>
+
+        {/* New Design card end - 23Jun2023 */}
+      </div>
+    );
   }
 
   // Test - 23Jun2023
