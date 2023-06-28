@@ -111,15 +111,15 @@ export default function RightDrawer({}) {
                               setMenu("post");
                             }}
                           >
-                            <button
+                            {/* <button
                               className={`${
                                 menu == "post" ? "bg-[#E1F26C]" : "bg-white"
                               } h-12 w-12 rounded-full outline-none`}
                             >
-                              {/* Comment and mirror Icon  */}
+                     
                               <Icon icon="settings" size={16} />
-                            </button>
-                            <p className="w-20 text-center">Comment & Mirror</p>
+                            </button> */}
+                            {/* <p className="w-20 text-center">Comment & Mirror</p> */}
                           </div>
                         </div>
                         <div className="absolute left-0 top-1/2 flex -ml-5 flex-col items-center justify-center">
@@ -355,10 +355,10 @@ const Share = () => {
           </div>
 
           <div className="flex flex-col ml-4">
-            <div className="m-2">
+            {/* <div className="m-2">
               <input type="text" className="border" placeholder="Canvas name" />
-            </div>
-            <div className="ml-2 mt-2">{stFormattedTime}</div>
+            </div> */}
+            <div className="ml-2 mt-10">{stFormattedTime}</div>
           </div>
         </div>
       </div>

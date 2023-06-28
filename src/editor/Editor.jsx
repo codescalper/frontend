@@ -136,9 +136,11 @@ const Editor = ({ store }) => {
       setStActivePageNo(store.pages.indexOf(page));
       varActivePageNo = store.pages.indexOf(page);
     });
+
     try {
       const response = await axios.get(
         // BG REMOVE from Cutout.pro,
+
         // For File use this Endpoint
         // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
 
@@ -146,8 +148,6 @@ const Editor = ({ store }) => {
         `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
 
         // 'https://www.cutout.pro/api/v1/text2imageAsync',
-
-        // formData,
         {
           headers: {
             
@@ -158,11 +158,6 @@ const Editor = ({ store }) => {
         // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
         // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
           },
-          // For File type Input
-          //	responseType: 'arraybuffer',
-          // 	body:{
-          //   		'prompt' : "Football world cup"
-          // 	}
         }
       )  
       .then((response)=>{    
@@ -188,15 +183,12 @@ const Editor = ({ store }) => {
       })
       // delete the Previous Image: - 26Jun2023
       // store.deleteElements(store.selectedElements.map(x => x.id))
-    })
-
-      setRemovedBgImageUrl(response.data.data.imageUrl)
-
       return response.data.data.imageUrl;
-    } catch (error) {
+      setRemovedBgImageUrl(response.data.data.imageUrl)
+      })
+      } catch (error) {
       console.error(error);
       }
-
       console.log("Handle upload END")
       };
 
@@ -213,7 +205,6 @@ const Editor = ({ store }) => {
           autoClose: 4000,
           closeButton: true,
         })
-          // fnDeletePrevImage();
         console.log("res", res?.data);
       } else if (!res) {
         toast.update(id, {
@@ -226,9 +217,8 @@ const Editor = ({ store }) => {
       }
   
     }
-
    console.log("Handle upload END");
-  
+
   // create canvas
   useEffect(() => {
     const main = async () => {
