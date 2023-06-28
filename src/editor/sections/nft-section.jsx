@@ -247,7 +247,6 @@ const LenspostNFT = () => {
           onClick={() => searchNFT(searchId)}
         ></Button>
       </div>
-
       <div className="overflow-y-auto">
         {activeCat === null ? <RenderCategories /> : <RenderImages />}
       </div>

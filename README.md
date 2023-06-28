@@ -1,35 +1,24 @@
 
-# LensPost Studio
+# Lenspost Studio
 
+This is the official github repository for [Lenspost Studio](https://lenspost.xyz)
+
+## Deployment
+[Live](https://lenspost-vite.vercel.app) 
+
+[Alternate](https://lenspost-vite.vercel.app)
+
+## For local development
+
+1. Install all the dependencies:  `npm install` or `yarn`
+
+2. Start the development server `npm run dev` or `yarn dev`
+
+3. Visit [localhost:3000 || 5173](http://localhost:5173)
 
 ## Tech Stack
 
-React, Vite, Polotno SDK
-
-
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://github.com/vijethx/lenspost-vite.git
-```
-
-Go to the project directory
-
-```bash
-  cd lenspost-vite
-```
-
-Install dependencies
-
-```bash
-  yarn
-```
-
-Start the server
-
-```bash
-  yarn dev
-```
-
+| Technology             | Official Link                                                                |
+| ----------------- | ------------------------------------------------------------------ |
+| React.js | https://react.dev/ |
+| Tailwindcss | https://tailwindcss.com/ |
