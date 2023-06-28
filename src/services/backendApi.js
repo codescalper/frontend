@@ -969,3 +969,43 @@ export const getAssetByQuery = async (query) => {
 };
 
 // asset apis end
+
+// BG asset apis start
+// need auth token (jwt)
+export const getBGAssetByQuery = async (query) => {
+  try {
+    const result = await api.get(`${API}/asset/background?author=${query}`);
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 401) {
+      console.log({ 401: error?.response?.statusText });
+      return {
+        error: error?.response?.data?.message,
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
+
+// BG asset apis end

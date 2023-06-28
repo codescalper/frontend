@@ -52,8 +52,6 @@ export const IconFinderPanel = observer(({ store, query }) => {
     },
   });
 
-  console.log({ data });
-
   React.useEffect(() => {
     setQuery(query);
   }, [query]);
@@ -118,7 +116,6 @@ export const NFTIcons = observer(({ store, query }) => {
     if (res?.data) {
       setIsLoading(false);
       setData(res?.data[0].slice(0, 50));
-      console.log(res.data[0]);
     } else if (res?.error) {
       setIsLoading(false);
       setIsError(res?.error);
@@ -140,17 +137,17 @@ export const NFTIcons = observer(({ store, query }) => {
       shadowEnabled={false}
       images={data}
       getPreview={(item) => item.image}
-      onSelect={async (image, pos) => {
-        const { width, height } = await getImageSize(image.image);
+      onSelect={async (item, pos) => {
+        // const { width, height } = await getImageSize(item.image);
         store.activePage.addElement({
           type: "image",
-          src: image.image,
-          width,
-          height,
+          src: item.image,
+          width: 1000,
+          height: 1000,
           // if position is available, show image on dropped place
           // or just show it in the center
-          x: pos ? pos.x : store.width / 2 - width / 2,
-          y: pos ? pos.y : store.height / 2 - height / 2,
+          x: pos ? pos.x : 0 * store.width,
+          y: pos ? pos.y : 0 * store.height, 
         });
       }}
       isLoading={isLoading}
