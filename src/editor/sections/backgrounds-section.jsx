@@ -113,7 +113,7 @@ export const TabNFTBgs = observer(({ store, query }) => {
 
 export const BackgroundPanel2 = observer(({ store, query }) => {
 
-	const [stTab, setStTab] = useState("tabColors")
+	const [stTab, setStTab] = useState("tabNFTBgs") //Load NFTBgs first
 	const [stInputQuery, setStInputQuery] = useState("")
 
 	return(<>
