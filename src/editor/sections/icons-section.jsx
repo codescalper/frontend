@@ -185,8 +185,8 @@ export const IconsPanel = ({ store }) => {
         style={{
           display: "flex",
           justifyContent: "",
-          paddingBottom: "10px",
-          margin: "4px",
+          // paddingBottom: "10px",
+          // margin: "4px",
         }}
       >
         <Button
@@ -239,7 +239,7 @@ export const IconsPanel = ({ store }) => {
 					FlatIcon
 				</Button> */}
       </div>
-      <input
+      {/* <input
         leftIcon="search"
         placeholder={t("sidePanel.searchPlaceholder")}
         onChange={(e) => {
@@ -250,7 +250,23 @@ export const IconsPanel = ({ store }) => {
         style={{
           marginBottom: "20px",
         }}
-      />
+      /> */}
+
+      <div className="flex flex-row justify-normal">
+        <input
+          className="border px-2 py-1 rounded-md w-full m-1 mb-4 mt-4"
+          placeholder="Search by Token ID"
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <Button
+          className="ml-3 m-1 rounded-md mb-4 mt-4"
+          icon="search"
+          onClick={() =>
+            console.log(query)
+            // Implement Search Function here
+          }
+        ></Button> 
+      </div>
       {service === "iconfinder" && (
         <IconFinderPanel query={delayedQuery} store={store} />
       )}

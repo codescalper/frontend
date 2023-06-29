@@ -45,7 +45,7 @@ const DesignCard = observer(
 
     return (
       <Card
-        style={{ margin: "3px", padding: "0px", position: "relative" }}
+        style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
         onClick={() => {
           handleSelect();
@@ -54,11 +54,11 @@ const DesignCard = observer(
         <div
           className=""
           onClick={() => {
-            setCanvasId(design.id);
+            setCanvasId(design.id); //Issue 29Jun2023
             store.loadJSON(json);
           }}
         >
-          <img src={preview} alt="preview IMG" style={{ width: "100%" }} />
+          <img src={preview} alt="Preview Image" style={{ width: "100%" }} />
         </div>
 
         <div
@@ -131,6 +131,7 @@ export const MyDesignsPanel = observer(
     const loadImages = async () => {
       setIsLoading(true);
       const res = await getAllCanvas();
+      console.log(res)
       
       if (res?.data) {
         setArrData(res.data);
@@ -185,7 +186,6 @@ export const MyDesignsPanel = observer(
       store.addPage();
       // project.id = '';
       // project.save();
-
       // close the Modal/Dialog
       setStOpenedModal(!stOpenedModal);
     };

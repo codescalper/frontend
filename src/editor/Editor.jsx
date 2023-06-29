@@ -186,6 +186,7 @@ const Editor = ({ store }) => {
         resizable: true,
         showInExport: true,
       })
+      console.log(response.data.data.imageBase64)
       // delete the Previous Image: - 26Jun2023
       // store.deleteElements(store.selectedElements.map(x => x.id))
       return response.data.data.imageUrl;
