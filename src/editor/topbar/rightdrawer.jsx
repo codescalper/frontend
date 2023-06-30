@@ -5,7 +5,7 @@ import { ShareIcon } from "../editor-icon";
 import MdcCalendarClock from "@meronex/icons/mdc/MdcCalendarClock";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import { Switch } from "@headlessui/react";
-import {Icon} from "@blueprintjs/core"
+import { Icon } from "@blueprintjs/core";
 import {
   lensAuthenticate,
   shareOnLens,
@@ -98,7 +98,9 @@ export default function RightDrawer({}) {
                           >
                             <button
                               className={`${
-                                menu == "monetization" ? "bg-[#E1F26C]" : "bg-white"
+                                menu == "monetization"
+                                  ? "bg-[#E1F26C]"
+                                  : "bg-white"
                               } h-12 w-12 rounded-full outline-none`}
                             >
                               <Icon icon="dollar" size={16} />
@@ -138,7 +140,6 @@ export default function RightDrawer({}) {
                     {menu === "monetization" && <Monetization />}
                     {/* {menu === "post" && <Post />} */}
                     {menu === "post" && <Post />}
-
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
@@ -151,7 +152,7 @@ export default function RightDrawer({}) {
 }
 
 const Share = () => {
-  const { canvasId, setCanvasId } = useContext(Context);
+  const { contextCanvasIdRef } = useContext(Context);
   const [stShareClicked, setStShareClicked] = useState(false);
   const [stCalendarClicked, setStCalendarClicked] = useState(false);
   const [stSelectedDateTime, setStSelectedDateTime] = useState();
@@ -200,9 +201,8 @@ const Share = () => {
 
   // share post on lens
   const sharePost = async () => {
-    console.log("canvasId", canvasId);
     // check if canvasId is provided
-    if (!canvasId) {
+    if (contextCanvasIdRef.current === null) {
       toast.error("Please select a design");
       return;
     }
@@ -213,7 +213,11 @@ const Share = () => {
     }
 
     const id = toast.loading("Sharing on Lens...");
-    const res = await shareOnLens(canvasId, "post", description);
+    const res = await shareOnLens(
+      contextCanvasIdRef.current,
+      "post",
+      description
+    );
     if (res?.data) {
       toast.update(id, {
         render: "Successfully shared on Lens",

@@ -70,7 +70,7 @@ const Editor = ({ store }) => {
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
   const intervalRef = useRef(null);
-  const { setCanvasId } = useContext(Context);
+  const { contextCanvasIdRef } = useContext(Context);
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -108,10 +108,10 @@ const Editor = ({ store }) => {
   // 		setFile(event.target.files[0]);
   //   };
 
-  const fnDeletePrevImage = () =>{
-    console.log("In Delete previous image function")
-    store.deleteElements(store.selectedElements.map(x => x.id))
-  }
+  const fnDeletePrevImage = () => {
+    console.log("In Delete previous image function");
+    store.deleteElements(store.selectedElements.map((x) => x.id));
+  };
 
   const handleRemoveBg = async () => {
     var varActivePageNo = 0;
@@ -139,90 +139,87 @@ const Editor = ({ store }) => {
     });
 
     try {
-      const response = await axios.get(
-        // BG REMOVE from Cutout.pro,
+      const response = await axios
+        .get(
+          // BG REMOVE from Cutout.pro,
 
-        // For File use this Endpoint
-        // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
+          // For File use this Endpoint
+          // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
 
-        // For Image `src` URL as parameter , use this Endpoint
-        `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
+          // For Image `src` URL as parameter , use this Endpoint
+          `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
 
-        // 'https://www.cutout.pro/api/v1/text2imageAsync',
-        {
-          headers: {
+          // 'https://www.cutout.pro/api/v1/text2imageAsync',
+          {
+            headers: {
+              //         'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99'
 
-            
-//         'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' 
+              APIKEY: "63d61dd44f384a7c9ad3f05471e17130",
 
-            APIKEY: "63d61dd44f384a7c9ad3f05471e17130",
+              //  Backup API Keys :
+              // 'APIKEY': 'c136635d69324c99942639424feea81a'
+              // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
+              // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
+            },
+          }
+        )
+        .then((response) => {
+          // Handle the response here
+          console.log(response);
+          // This is the Image URL for removed background
+          console.log("The removed background URL is :");
+          // console.log(response.data.data.imageUrl);
 
-
-            //  Backup API Keys :
-            // 'APIKEY': 'c136635d69324c99942639424feea81a'
-            // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
-            // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
-          },
-        }
-      )  
-      .then((response)=>{    
-      // Handle the response here
-      console.log(response);
-      // This is the Image URL for removed background
-      console.log("The removed background URL is :");
-      // console.log(response.data.data.imageUrl);
-
-      // Add the new removed Bg Image to the Page
-      store.pages[stActivePageNo || varActivePageNo].addElement({
-        type: "image",
-        x: 0.5 * store.width,
-        y: 0.5 * store.height,
-        width: store.selectedElements[0].width,
-        height: store.selectedElements[0].height,
-        src: response.data.data.imageUrl,
-        selectable: true,
-        draggable: true,
-        removable: true,
-        resizable: true,
-        showInExport: true,
-      })
-      // delete the Previous Image: - 26Jun2023
-      // store.deleteElements(store.selectedElements.map(x => x.id))
-      return response.data.data.imageUrl;
-      setRemovedBgImageUrl(response.data.data.imageUrl)
-      })
-      } catch (error) {
-      console.error(error);
-      }
-      console.log("Handle upload END")
-      };
-
-  // Cutout pro API end 
-    //  Toast Setup
-    const fnCallToast = async () => {
-      const id = toast.loading("Removing Background", {autoClose: 4000,});
-      const res = await handleRemoveBg();
-      if (res) {
-        toast.update(id, {
-          render: "Removed Background", //Check if The toast is working 
-          type: "success",
-          isLoading: false,
-          autoClose: 4000,
-          closeButton: true,
-        })
-        console.log("res", res?.data);
-      } else if (!res) {
-        toast.update(id, {
-          render: "Error in removing background",
-          type: "error",
-          isLoading: false,
-          autoClose: 4000,
-          closeButton: true,
+          // Add the new removed Bg Image to the Page
+          store.pages[stActivePageNo || varActivePageNo].addElement({
+            type: "image",
+            x: 0.5 * store.width,
+            y: 0.5 * store.height,
+            width: store.selectedElements[0].width,
+            height: store.selectedElements[0].height,
+            src: response.data.data.imageUrl,
+            selectable: true,
+            draggable: true,
+            removable: true,
+            resizable: true,
+            showInExport: true,
+          });
+          // delete the Previous Image: - 26Jun2023
+          // store.deleteElements(store.selectedElements.map(x => x.id))
+          return response.data.data.imageUrl;
+          setRemovedBgImageUrl(response.data.data.imageUrl);
         });
-      }
-  
+    } catch (error) {
+      console.error(error);
     }
-   console.log("Handle upload END");
+    console.log("Handle upload END");
+  };
+
+  // Cutout pro API end
+  //  Toast Setup
+  const fnCallToast = async () => {
+    const id = toast.loading("Removing Background", { autoClose: 4000 });
+    const res = await handleRemoveBg();
+    if (res) {
+      toast.update(id, {
+        render: "Removed Background", //Check if The toast is working
+        type: "success",
+        isLoading: false,
+        autoClose: 4000,
+        closeButton: true,
+      });
+      console.log("res", res?.data);
+    } else if (!res) {
+      toast.update(id, {
+        render: "Error in removing background",
+        type: "error",
+        isLoading: false,
+        autoClose: 4000,
+        closeButton: true,
+      });
+    }
+  };
+  console.log("Handle upload END");
 
   // create canvas
   useEffect(() => {
@@ -232,6 +229,11 @@ const Editor = ({ store }) => {
 
       if (canvasChildren.length === 0) {
         canvasIdRef.current = null;
+        contextCanvasIdRef.current = null;
+      }
+
+      if (contextCanvasIdRef.current !== null) {
+        canvasIdRef.current = contextCanvasIdRef.current;
       }
 
       if (canvasChildren.length > 0) {
@@ -239,7 +241,7 @@ const Editor = ({ store }) => {
           const res = await createCanvas(storeData, "hello", false);
           if (res?.data) {
             canvasIdRef.current = res?.data?.canvasId;
-            setCanvasId(res?.data?.canvasId);
+            contextCanvasIdRef.current = res?.data?.canvasId;
             console.log("Canvas created", { canvasId: res?.data?.canvasId });
           } else if (res?.error) {
             console.log("Canvas creation error", { error: res?.error });
