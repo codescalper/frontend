@@ -29,6 +29,7 @@ import {
 } from "../../services/backendApi";
 import { ToastContainer, toast } from "react-toastify";
 import { Context } from "../../context/ContextProvider";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 // Design card component start - 23Jun2023
 
@@ -58,15 +59,15 @@ const DesignCard = observer(
             store.loadJSON(json);
           }}
         >
-          <img src={preview} alt="Preview Image" style={{ width: "100%" }} />
+          <LazyLoadImage src={preview} alt="Preview Image"/> 
         </div>
-
+ 
         <div
           style={{
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            padding: "3px",
+            // padding: "3px",
           }}
         >
           {/* {design.name} */}
@@ -123,7 +124,6 @@ export const MyDesignsPanel = observer(
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState("");
 
-    const arrMyDesigns = useRef();
     const [arrData, setArrData] = useState([]);
     const [stOpenedModal, setStOpenedModal] = useState(false);
     const [stConfirmNew, setStConfirmNew] = useState("");
@@ -135,7 +135,6 @@ export const MyDesignsPanel = observer(
       
       if (res?.data) {
         setArrData(res.data);
-        arrMyDesigns.current = res.data;
         setData(res?.data);
         setIsLoading(false);
       } else if (res?.error) {
@@ -195,6 +194,7 @@ export const MyDesignsPanel = observer(
         <h1 className="text-lg">My Designs</h1>
 
         <Button
+          className="m-2 p-1"
           onClick={() => {
             const ids = store.pages
               .map((page) => page.children.map((child) => child.id))
@@ -249,8 +249,8 @@ export const MyDesignsPanel = observer(
         {/* New Design card start - 23Jun2023 */}
         {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
         {/* Pass these onto Line 25 */}
-        <div className="overflow-y-auto">
-        {arrData.map((design) => {
+        <div className="overflow-y-auto grid grid-cols-2">
+       {arrData.map((design) => {
           return (
             <DesignCard
               design={design}

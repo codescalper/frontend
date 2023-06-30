@@ -70,7 +70,7 @@ const Editor = ({ store }) => {
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
   const intervalRef = useRef(null);
-  const { setCanvasId } = useContext(Context);
+  const { setCanvasId, canvasId } = useContext(Context);
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -151,13 +151,7 @@ const Editor = ({ store }) => {
         // 'https://www.cutout.pro/api/v1/text2imageAsync',
         {
           headers: {
-
-            
-//         'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' 
-
             APIKEY: "63d61dd44f384a7c9ad3f05471e17130",
-
-
             //  Backup API Keys :
             // 'APIKEY': 'c136635d69324c99942639424feea81a'
             // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
@@ -224,6 +218,11 @@ const Editor = ({ store }) => {
   
     }
    console.log("Handle upload END");
+  
+  //  if(canvasId){
+     console.log("canvasId Outside"); 
+     console.log(canvasId);
+    // }
 
   // create canvas
   useEffect(() => {
@@ -237,6 +236,10 @@ const Editor = ({ store }) => {
 
       if (canvasChildren.length > 0) {
         if (!canvasIdRef.current) {
+          // debugger
+          if(canvasId) return; // Issue with True
+          console.log("This is Canvas ID")
+          console.log(canvasId)
           const res = await createCanvas(storeData, "hello", false);
           if (res?.data) {
             canvasIdRef.current = res?.data?.canvasId;
@@ -247,9 +250,9 @@ const Editor = ({ store }) => {
           }
         }
 
-        if (canvasIdRef.current) {
+        if (canvasIdRef.current || canvasId) {
           const res = await updateCanvas(
-            canvasIdRef.current,
+            canvasIdRef.current || canvasId, //Current canvas ID
             storeData,
             "hello",
             false

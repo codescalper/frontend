@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { InputGroup, Button } from "@blueprintjs/core";
+import { InputGroup, Button, Card} from "@blueprintjs/core";
 import { isAlive } from "mobx-state-tree";
 
 import { svgToURL } from "polotno/utils/svg";
@@ -15,9 +15,48 @@ import FaVectorSquare from "@meronex/icons/fa/FaVectorSquare";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { ElementsIcon } from "../editor-icon";
 import { getAssetByQuery } from "../../services/backendApi";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
+// Custom Image card component start - 01Jul2023
+const CustomImage = observer(
+  ({ imgArray, project, preview, json, store}) => {
+  // const { setCanvasId } = useContext(Context);
+  const fnDropImageOnCanvas = () =>{
+    store.activePage.addElement({
+      type: "image",
+      src: preview, //Image URL
+      width: store.width,
+      height: store.height, 
+      // x: store.width / 2 ,
+      // y: pos ? pos.y : store.height / 2 - height / 2,
+    });
+    element.set({ clipSrc: preview });
+  }
+    
+  return (
+    <Card
+      style={{ margin: "4px", padding: "0px", position: "relative" }}
+      interactive
+      onDragEnd = {()=>{ fnDropImageOnCanvas()}}
+      onClick={() => { fnDropImageOnCanvas() }}
+    >
+      <div className=""
+        onClick={() => {
+          // handle onClick
+          // setCanvasId(design.id);
+          // store.loadJSON(json);
+        }}
+      >
+        <LazyLoadImage src={preview} alt="Preview Image" opacity/>
+      </div>
+    </Card>
+  );
+});
+// Custom Image card component end - 01Jul2023
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
+
 
 const iconToSrc = async (id) => {
   const req = await fetch(
@@ -106,6 +145,7 @@ export const IconFinderPanel = observer(({ store, query }) => {
 // New Tab NFT Elements/Stickers Start - 24Jun2023
 export const NFTIcons = observer(({ store, query }) => {
   const [data, setData] = useState([]);
+  const [arrData, setArrData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   // const [query, setQuery] = useState("supducks");
   const [isError, setIsError] = useState("");
@@ -113,9 +153,12 @@ export const NFTIcons = observer(({ store, query }) => {
   const getAssets = async (query) => {
     setIsLoading(true);
     const res = await getAssetByQuery(query);
-    if (res?.data) {
+    setArrData(res.data[0].slice(0, 50));
+
+    if (res?.data) {  
       setIsLoading(false);
       setData(res?.data[0].slice(0, 50));
+      // setData(res.data[0].slice(0, 50));
     } else if (res?.error) {
       setIsLoading(false);
       setIsError(res?.error);
@@ -127,34 +170,51 @@ export const NFTIcons = observer(({ store, query }) => {
     getAssets("supducks");
   }, [query]);
 
-  return isError ? (
-    <div className="flex flex-col items-center justify-center">
-      <FaVectorSquare className="text-5xl text-gray-400" />
-      <p className="text-gray-400 text-xl mt-4">{isError}</p>
+  // return isError ? (
+  //   <div className="flex flex-col items-center justify-center">
+  //     <FaVectorSquare className="text-5xl text-gray-400" />
+  //     <p className="text-gray-400 text-xl mt-4">{isError}</p>
+  //   </div>
+  // ) : 
+    // <ImagesGrid
+    //   shadowEnabled={false}
+    //   images={data}
+    //   getPreview={(item) => item.image}
+    //   onSelect={async (item, pos) => {
+    //     // const { width, height } = await getImageSize(item.image);
+    //     store.activePage.addElement({
+    //       type: "image",
+    //       src: item.image,
+    //       width: 1000,
+    //       height: 1000,
+    //       // if position is available, show image on dropped place
+    //       // or just show it in the center
+    //       x: pos ? pos.x : 0 * store.width,
+    //       y: pos ? pos.y : 0 * store.height, 
+    //     });
+    //   }}
+    //   isLoading={isLoading}
+    //   rowsNumber={2}
+    // />
+    return(
+    <>
+    <div className=" h-full overflow-y-auto">
+      <div className="grid grid-cols-2">
+
+      {arrData.map((img)=>{ 
+        return(
+          <CustomImage 
+          preview = {img.image}
+          store={store}
+          project={project}
+          />
+          )})
+        }
+        </div>
     </div>
-  ) : (
-    <ImagesGrid
-      shadowEnabled={false}
-      images={data}
-      getPreview={(item) => item.image}
-      onSelect={async (item, pos) => {
-        // const { width, height } = await getImageSize(item.image);
-        store.activePage.addElement({
-          type: "image",
-          src: item.image,
-          width: 1000,
-          height: 1000,
-          // if position is available, show image on dropped place
-          // or just show it in the center
-          x: pos ? pos.x : 0 * store.width,
-          y: pos ? pos.y : 0 * store.height, 
-        });
-      }}
-      isLoading={isLoading}
-      rowsNumber={2}
-    />
-  );
-});
+    </>    
+    )
+  });
 
 // New Tab NFT Elements/Stickers End - 24Jun2023
 

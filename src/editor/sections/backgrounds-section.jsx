@@ -21,82 +21,45 @@ import { useInfiniteAPI } from "polotno/utils/use-api";
 import FaVectorSquare from "@meronex/icons/fa/FaVectorSquare";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
-// Seperate component for Lazy loading (DesignCard) - 29Jun2023
-// Design card component start - 23Jun2023
-const DesignCard = observer(
+// Seperate component for Lazy loading (CustomImage) - 29Jun2023
+// Custom Image card component start - 23Jun2023
+const CustomImage = observer(
   ({ design, project, preview, json, onDelete, onPublic, store}) => {
-    const [loading, setLoading] = useState(false);
     // const { setCanvasId } = useContext(Context);
-    const handleSelect = async () => {
-      // setLoading(true);
-      // await project.loadById(design.id);
-      // project.store.openSidePanel('photos');
-      // setLoading(false);
-    };
 
+    const fnDropImageOnCanvas = () =>{
+      store.activePage.addElement({
+        type: "image",
+        src: preview, //Image URL
+        width: store.width,
+        height: store.height, 
+        // x: store.width / 2 ,
+        // y: pos ? pos.y : store.height / 2 - height / 2,
+      });
+      element.set({ clipSrc: preview });
+    }
+    
     return (
       <Card
-        style={{ margin: "3px", padding: "0px", position: "relative" }}
+        style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
-        onClick={() => {
-
-          store.activePage.addElement({
-            type: "image",
-            src: preview,
-            width: store.width,
-            height: store.height,
-            // if position is available, show image on dropped place
-            // or just show it in the center
-            // x: store.width / 2 ,
-            // y: pos ? pos.y : store.height / 2 - height / 2,
-          });
-        }}
+        onDragEnd = {()=>{ fnDropImageOnCanvas()}}
+        onClick={() => { fnDropImageOnCanvas() }}
       >
-        <div
-          className=""
+        <div className=""
           onClick={() => {
             // handle onClick
             // setCanvasId(design.id);
             // store.loadJSON(json);
           }}
         >
-          <LazyLoadImage src={preview} alt="Preview Image" style={{ width: "100%" }} />
-        </div>
-
-        <div
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            padding: "3px",
-          }}
-        >
-        </div>
-        {loading && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <Spinner />
-          </div>
-        )}
-        <div
-          style={{ position: "absolute", top: "5px", right: "5px" }}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
+          <LazyLoadImage src={preview} alt="Preview Image" style={{ width: "100%" }} opacity/>
         </div>
       </Card>
     );
   }
 );
-
-// Design card component end - 23Jun2023
+// Custom Image card component end - 23Jun2023
 
 // New Tab Colors Start - 24Jun2023
 export const TabColors = observer(({ store, query }) => {
@@ -178,14 +141,13 @@ export const TabNFTBgs = observer(({ store, query }) => {
 
       {arrData.map((design) => { 
         return(
-
-        <DesignCard
+        <CustomImage
         design={design}
         json={design.data}
         preview={
           // design?.imageLink != null &&
           // design?.imageLink.length > 0 &&
-                // design?.imageLink[0]
+                // design?.imageLink[0]w
         design.image
         }
         key={design.id}
