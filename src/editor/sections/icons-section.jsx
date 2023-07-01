@@ -15,6 +15,7 @@ import FaVectorSquare from "@meronex/icons/fa/FaVectorSquare";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { ElementsIcon } from "../editor-icon";
 import { getAssetByQuery } from "../../services/backendApi";
+import { useAccount } from "wagmi";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -105,6 +106,7 @@ export const IconFinderPanel = observer(({ store, query }) => {
 
 // New Tab NFT Elements/Stickers Start - 24Jun2023
 export const NFTIcons = observer(({ store, query }) => {
+  const { address, isDisconnected } = useAccount();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   // const [query, setQuery] = useState("supducks");
@@ -127,6 +129,14 @@ export const NFTIcons = observer(({ store, query }) => {
     getAssets("supducks");
   }, [query]);
 
+  if (isDisconnected || !address) {
+    return (
+      <>
+        <p>Please connect your wallet</p>
+      </>
+    );
+  }
+
   return isError ? (
     <div className="flex flex-col items-center justify-center">
       <FaVectorSquare className="text-5xl text-gray-400" />
@@ -147,7 +157,7 @@ export const NFTIcons = observer(({ store, query }) => {
           // if position is available, show image on dropped place
           // or just show it in the center
           x: pos ? pos.x : 0 * store.width,
-          y: pos ? pos.y : 0 * store.height, 
+          y: pos ? pos.y : 0 * store.height,
         });
       }}
       isLoading={isLoading}

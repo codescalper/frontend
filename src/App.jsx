@@ -31,6 +31,15 @@ export default function App() {
   const getUserAuthToken = getFromLocalStorage("userAuthToken");
   const getUserAddress = getFromLocalStorage("userAddress");
   const getUsertAuthTmestamp = getFromLocalStorage("usertAuthTmestamp");
+  const getLensAuth = getFromLocalStorage("lensAuth");
+
+  // remove all data from localstorage
+  const clearAllLocalStorageData = () => {
+    removeFromLocalStorage("userAuthToken");
+    removeFromLocalStorage("usertAuthTmestamp");
+    removeFromLocalStorage("userAddress");
+    removeFromLocalStorage("lensAuth");
+  };
 
   // remove jwt from localstorage if it is expired (24hrs)
   useEffect(() => {
@@ -44,9 +53,7 @@ export default function App() {
       const currentTimestamp = new Date().getTime();
 
       if (jwtTimestamp && currentTimestamp - jwtTimestamp > jwtExpiration) {
-        removeFromLocalStorage("userAuthToken");
-        removeFromLocalStorage("usertAuthTmestamp");
-        removeFromLocalStorage("userAddress");
+        clearAllLocalStorageData();
         setSession("");
         disconnect();
         console.log("session expired");
@@ -71,6 +78,7 @@ export default function App() {
     ) {
       return setSession(getUserAuthToken);
     } else if (isConnected) {
+      clearAllLocalStorageData();
       setIsLoading(true);
       signMessage({
         message,

@@ -1,11 +1,11 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 
 export const Context = createContext();
 
 const ContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
-  const [canvasId, setCanvasId] = useState("");
+  const contextCanvasIdRef = useRef(null);
 
   return (
     <Context.Provider
@@ -14,8 +14,7 @@ const ContextProvider = ({ children }) => {
         setIsLoading,
         text,
         setText,
-        canvasId,
-        setCanvasId,
+        contextCanvasIdRef,
       }}
     >
       {children}
