@@ -3,7 +3,7 @@ import { NFTIcon } from "../editor-icon";
 import { observer } from "mobx-react-lite";
 import { useState, useEffect, useContext } from "react";
 import { getImageSize } from "polotno/utils/image";
-import { InputGroup } from "@blueprintjs/core";
+import { InputGroup, Card, Button } from "@blueprintjs/core";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import {
   getAllCollection,
@@ -19,7 +19,45 @@ import { toast } from "react-toastify";
 import { Context } from "../../context/ContextProvider";
 
 // New Imports:
-import { Button } from "@blueprintjs/core";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
+// Custom Image card component start - 01Jul2023
+const CustomImage = observer(
+  ({ imgArray, project, preview, json, store, pos,}) => {
+  // const { setCanvasId } = useContext(Context);
+  const { width, height } =  getImageSize(preview);
+  const fnDropImageOnCanvas = () =>{
+
+    store.activePage.addElement({
+      type: "image",
+      src: preview, //Image URL
+      width: store.width/2,
+      height: store.height/2, 
+      x: pos ? pos.x : store.width / 2 - width / 2,
+      y: pos ? pos.y : store.height / 2 - height / 2,
+    });
+    // element.set({ clipSrc: preview });
+  }
+    
+  return (
+    <Card
+      style={{ margin: "4px", padding: "0px", position: "relative" }}
+      interactive
+      onDragEnd = {()=>{ fnDropImageOnCanvas()}}
+      onClick={() => { fnDropImageOnCanvas() }}
+    >
+      <div className=""
+        onClick={() => {
+          // handle onClick
+          // setCanvasId(design.id);
+          // store.loadJSON(json);
+        }}
+      >
+        <LazyLoadImage src={preview} alt="Preview Image" opacity/>
+      </div>
+    </Card>
+  );
+});
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -187,8 +225,8 @@ const LenspostNFT = () => {
 
   function RenderImages() {
     return (
-      <div className="">
-        <div className="flex flex-row align-middle">
+      <div className="h-full">
+        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10 m-1 mb-4">
           <Button
             icon="arrow-left"
             onClick={() => {
@@ -201,26 +239,44 @@ const LenspostNFT = () => {
         {isNftsError ? (
           <div>{isNftsError}</div>
         ) : (
-          <ImagesGrid
-            images={lenspostNFTImages}
-            getPreview={(image) => image.url}
-            onSelect={async (image, pos) => {
-              const { width, height } = await getImageSize(image.url);
-              store.activePage.addElement({
-                type: "image",
-                src: image.url,
-                width,
-                height,
-                // if position is available, show image on dropped place
-                // or just show it in the center
-                x: pos ? pos.x : store.width / 2 - width / 2,
-                y: pos ? pos.y : store.height / 2 - height / 2,
-              });
-            }}
-            rowsNumber={2}
-            isLoading={isLoading}
-            loadMore={false}
-          />
+          // <ImagesGrid
+          //   images={lenspostNFTImages}
+          //   getPreview={(image) => image.url}
+          //   onSelect={async (image, pos) => {
+          //     const { width, height } = await getImageSize(image.url);
+          //     store.activePage.addElement({
+          //       type: "image",
+          //       src: image.url,
+          //       width,
+          //       height,
+          //       // if position is available, show image on dropped place
+          //       // or just show it in the center
+          //       x: pos ? pos.x : store.width / 2 - width / 2,
+          //       y: pos ? pos.y : store.height / 2 - height / 2,
+          //     });
+          //   }}
+          //   rowsNumber={2}
+          //   isLoading={isLoading}
+          //   loadMore={false}
+          // />
+          <>
+       {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
+        <div className="h-full overflow-y-auto">
+        <div className="grid grid-cols-2 overflow-y-auto">
+  
+        {lenspostNFTImages.map((imgArray)=>{ 
+          return(
+            <CustomImage 
+            preview = {imgArray.url}
+            store={store} 
+            project={project}
+            />
+            )})
+          }
+          </div>
+      </div>
+          
+          </>
         )}
       </div>
     );
@@ -350,7 +406,7 @@ const WalletNFT = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-normal">
+      <div className="flex flex-row justify-normal mb-4">
         <input
           className="border px-2 py-1 rounded-md w-full"
           placeholder="Search by Token ID"
@@ -385,27 +441,43 @@ const WalletNFT = () => {
       {isNftsError ? (
         <div>{isNftsError}</div>
       ) : (
-        <ImagesGrid
-          images={walletNFTImages}
-          key={walletNFTImages}
-          getPreview={(image) => image.url}
-          onSelect={async (image, pos) => {
-            const { width, height } = await getImageSize(image.url);
-            store.activePage.addElement({
-              type: "image",
-              src: image.url,
-              width,
-              height,
-              // if position is available, show image on dropped place
-              // or just show it in the center
-              x: pos ? pos.x : store.width / 2 - width / 2,
-              y: pos ? pos.y : store.height / 2 - height / 2,
-            });
-          }}
-          rowsNumber={2}
-          isLoading={isLoading}
-          loadMore={false}
-        />
+        // <ImagesGrid
+        //   images={walletNFTImages}
+        //   key={walletNFTImages}
+        //   getPreview={(image) => image.url}
+        //   onSelect={async (image, pos) => {
+        //     const { width, height } = await getImageSize(image.url);
+        //     store.activePage.addElement({
+        //       type: "image",
+        //       src: image.url,
+        //       width,
+        //       height,
+        //       // if position is available, show image on dropped place
+        //       // or just show it in the center
+        //       x: pos ? pos.x : store.width / 2 - width / 2,
+        //       y: pos ? pos.y : store.height / 2 - height / 2,
+        //     });
+        //   }}
+        //   rowsNumber={2}
+        //   isLoading={isLoading}
+        //   loadMore={false}
+        // />
+
+        // CustomImage - LazyLoaded component - Definition for this is given above 
+        <div className="h-full overflow-y-auto">
+        <div className="grid grid-cols-2 overflow-y-auto">
+  
+        {walletNFTImages.map((imgArray)=>{ 
+          return(
+            <CustomImage 
+            preview = {imgArray.url}
+            store={store} 
+            project={project}
+            />
+            )})
+          }
+          </div>
+      </div>
       )}
 
       {/* )} */}

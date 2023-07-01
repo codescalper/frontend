@@ -112,7 +112,7 @@ export const TabNFTBgs = observer(({ store, query }) => {
   }
 
   return (
-    <div style={{ height: "100%" }} className="overflow-y-auto">
+    <>
       {/* Code for NFT BACKGROUNDS here */}
       {/* <ImagesGrid
         images={arrData}
@@ -137,7 +137,8 @@ export const TabNFTBgs = observer(({ store, query }) => {
       /> */}
 
       {/* Lazyloading Try - 29Jun2023 */}
-      <div className="grid grid-cols-2">
+    <div className=" h-full overflow-y-auto" >
+      <div className="grid grid-cols-2 overflow-y-auto">
 
       {arrData.map((design) => { 
         return(
@@ -158,9 +159,8 @@ export const TabNFTBgs = observer(({ store, query }) => {
         />)})}
 
         </div>
-              
-
-    </div>
+    </div> 
+    </>
   );
 });
 
