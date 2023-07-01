@@ -281,14 +281,14 @@ const StableDiffusionPanel = observer(({ store }) => {
 					id="designify"
 					title="Designify"
 				/> */}
-				{/* <Tab
+				<Tab
 					id="textToImage"
 					title="Text to Image"
-				/> */}
-				<Tab
+				/>
+				{/* <Tab
 					id="textToImage2"
 					title="Text to Image 2"
-				/>
+				/> */}
 			</Tabs>
 			<div
 				style={{
@@ -300,8 +300,8 @@ const StableDiffusionPanel = observer(({ store }) => {
 				{selectedTabId === "search" && <SearchTab store={store} />}
 				{/* {selectedTabId === "generate" && <GenerateTab store={store} />}
 				{selectedTabId === "designify" && <DesignifyTab store={store} />} */}
-				{/* {selectedTabId === "textToImage" && <TextToImageTab store={store} />} */}
-				{selectedTabId === "textToImage2" && <TextToImage2Tab store={store} />}
+				{selectedTabId === "textToImage" && <TextToImageTab2 store={store} />}
+				{/* {selectedTabId === "textToImage2" && <TextToImage2Tab store={store} />} */}
 			</div>
 		</div>
 	);
@@ -388,10 +388,11 @@ const TextToImageTab2 = observer(({ store }) => {
 	const [stTaskId, setStTaskId] = useState(0);
 	const [stImageLoadStatus, setStImageLoadStatus] = useState(0);
 	const [stStatusCode, setStStatusCode] = useState(0);
+	const [stWaitNumber, setStWaitNumber] = useState(0);
 	const [stLoading, setStLoading] = useState(false);
 	const [stMoreBtn, setStMoreBtn] = useState(false);
 
-	const varApiKey = '182b5d78366f4bdb9ba093c0be608afa';	
+	const varApiKey = 'eb4c9faa1954407886ad5c8aab02029b';	
 	var varTaskId ;
 	const fnHandleText = (evt) => { 
 		setStTextInput(evt.target.value)
@@ -425,48 +426,18 @@ const TextToImageTab2 = observer(({ store }) => {
 
 			console.log(`The Task Id is: `)
 			setStTaskId(res.data.data)
-			varTaskId = res?.data.data;
-			setStStatusCode(res.data.code)
-			console.log(res.data.data)
-			console.log("The Query API execution START")
+			varTaskId = res.data.data;
 
-			// //--------------- Generate the Image API - GET Start ---------------
-			
-			// const apiUrl = 'https://www.cutout.pro/api/v1/getText2imageResult';
-			// const taskId = `${res.data.data}`; 
-			
-			// const config = {
-			// 	headers: {
-			// 		'APIKEY': varApiKey,
-			// 		"Access-Control-Allow-Origin": "https://localhost:5173", 
-			// 	},
-			// 	params: {
-			// 		taskId: taskId,
-			// 	},
-			// };
-			
-			// axios.get(apiUrl, config)
-			// 	.then(response => {
-			// 	console.log('Get text to image result successful!');
-			// 	console.log("GET Response is: ");
-			// 	console.log(response);
-			// 	// Handle the response data here
-			// 		setStImageUrl(response.data.data.resultUrl)
-			// 		setStImageLoadStatus(response.data.data.status)
-			// 	})
-			// 	.catch(error => {
-			// 	console.error('Error getting text to image result:', error);
-			// 	// Handle errors here
-			// 	});
-			
-			// //--------------- Generate the Image API - GET End ---------------
-
-			console.log("The Query API execution END")
+			setStStatusCode(res.data.code)			
 		})
 		.catch( err => console.log(err))	
 		console.log("Handling the API End");
 	}
 	const fnGetImageAPI = () => {
+		
+		//--------------- Generate the Image API - GET Start ---------------
+		console.log("The Query API execution START")
+		
 		const apiUrl = 'https://www.cutout.pro/api/v1/getText2imageResult';
 
 		const config = {
@@ -476,7 +447,7 @@ const TextToImageTab2 = observer(({ store }) => {
 			},
 			params: {
 				taskId: varTaskId,
-				// taskId: 369316216640539,
+				// taskId: 369316216658263,
 			},
 		};
 		
@@ -487,31 +458,34 @@ const TextToImageTab2 = observer(({ store }) => {
 			console.log(response);
 			// Handle the response data here
 				setStImageUrl(response.data.data.resultUrl);
-				setStImageLoadStatus(response.data.data.percentage);
+				setStImageLoadStatus(response.data.data.status);
 				setStStatusCode(response.data.data.code)
+				setStWaitNumber(response.data.data.stWaitNumber)
 			})
 			.catch(error => {
 			console.error('Error getting text to image result:', error);
 			// Handle errors here
 			})	
-	}
 
-	// useEffect(()=>{fnGetImageAPI}, [stImageLoadStatus, stTaskId, stStatusCode, stImageUrl])
+		console.log("The Query API execution END")
+		//--------------- Generate the Image API - GET End ---------------
+		}
+
+	var arrTextSuggestions = [{text:"A futuristic cityscape with sleek, towering skyscrapers and flying vehicles zipping through the air"}, {text:"An ancient, mystical forest filled with towering trees"}, {text: "Nebulas and distant galaxies paint the canvas, creating a sense of awe and wonder."}]
+	
 	useEffect(() => {
-    const intervalId = setInterval(()=> {}, 2000); // Run every 5 seconds
-    
-    // Clear the interval when the component is unmounted or changed
-    return () => {
-      clearInterval(intervalId);
-    };
-  },[])
-
-//   New Array of Images:
-var imgArray = [{url: "https://picsum.photos/300", },{url: "https://picsum.photos/400", }]
-
+		const intervalId = setInterval(()=> {fnGetImageAPI()}, 2000); // Run every 5 seconds
+		
+		// Clear the interval when the component is unmounted or changed
+		return () => {
+		clearInterval(intervalId);
+		};
+	},[stImageUrl, stImageLoadStatus, stWaitNumber])
 	return ( 
 	<>
-		<div className="flex flex-row justify-normal align-bottom">
+	<div className="overflow-y-scroll">
+
+		<div className="flex flex-row justify-normal align-bottom ">
 
 			<textarea rows="4" 
 				value={`${stTextInput}`}
@@ -524,8 +498,10 @@ var imgArray = [{url: "https://picsum.photos/300", },{url: "https://picsum.photo
 		</div>
 		
 		<div className="mt-4"> 
-			<div className="bg-[#e0f26c54] hover:bg-[#e0f26c8f] cursor-pointer m-1 pl-2 pr-2 rounded-2xl w-fit text-start text-xs" onClick={()=> setStTextInput("An ancient, mystical forest filled with towering trees")}> An ancient, mystical forest filled with towering trees </div>
-			<div className="bg-[#e0f26c54] hover:bg-[#e0f26c8f] cursor-pointer m-1 pl-2 pr-2 rounded-2xl text-start text-xs" onClick={()=> setStTextInput("A peaceful lakeside scene with a vibrant sunset reflecting off the calm waters.")}> A peaceful lakeside scene with a vibrant sunset reflecting off the calm waters. </div>
+		{arrTextSuggestions.map((x)=>{
+			return(<div className="bg-[#e0f26c54] hover:bg-[#e0f26c8f] cursor-pointer m-1 pl-2 pr-2 rounded-2xl w-fit text-start text-xs" onClick={()=> setStTextInput(x.text)}> {x.text} </div>)
+		})
+		}
 		</div>
 		
 		<hr className="mt-4 mb-4"/>
@@ -539,60 +515,24 @@ var imgArray = [{url: "https://picsum.photos/300", },{url: "https://picsum.photo
 					The server is at capacity, Please try again later
 				</div>
 			: ""
-		} 
-		
-		{stImageLoadStatus != 100 && `Loading ${stImageLoadStatus}%`}
-		
-		{stImageLoadStatus == 100 && <img className="m-2 p-2" src={stImageUrl} alt="Searched Image"/> }
+		}
 
-		{/* Image Grid */}
-		
-		{/* { imgArray.map( (x) => { */}
-			<div className="">
+		{stWaitNumber}
 
-			{/* Popover here */}
-			<Popover2
-			className="z-10 relative left-40 top-8"
-			interactionKind="click"
-			isOpen={stMoreBtn}
-			renderTarget={({ isOpen, ref, ...targetProps }) => (
-			<Button
-				{...targetProps}
-				elementRef={ref}
-				onClick={() => setStMoreBtn(!stMoreBtn)}
-				intent="none"
-			>
-				{" "}
-				<Icon icon="more" />{" "}
-			</Button>
-			)}
-			content={
-			<div>
-				<Button icon="share"> Share </Button>
-				<Button onClick={() => deleteCanvas("4")} icon="trash">
-				{" "}
-				Delete{" "}
-				</Button>
-			</div>
-			}
-		/>
-		<div className="" onClick={()=> {
+		<div className="cursor-pointer" onClick={()=>{
+			store.activePage.addElement({
+				type: "image",
+				src: stImageUrl,
+				width: store.width/2,
+				height: store.height/2,
+			  });
+		}}>
+			{stImageLoadStatus == 1 && <img className="m-2 ml-0 p-2 rounded-md" src={stImageUrl} alt="Loading Image"/> }
+		</div>	
 
-			const width = 100;
-			const height = 100;
-			store.activePage?.addElement({
-			type: 'image',
-			src: "https://picsum.photos/200",
-			width,
-			height, 
-			});
-			}
-		}>
-			<img src = "https://picsum.photos/200" width={200} height={150} /> 
 		</div>
-	</div>  
 	</>
-	)
+	) 
 })
 
 // New Tab - Text to Image End

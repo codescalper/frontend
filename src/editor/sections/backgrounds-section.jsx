@@ -1,8 +1,9 @@
 // Imports:
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 
 import { observer } from "mobx-react-lite";
-import { InputGroup, Button } from "@blueprintjs/core";
+import { InputGroup, Button, Card, Menu, Spinner, MenuItem, Position} from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 import { svgToURL } from "polotno/utils/svg";
 import { SectionTab } from "polotno/side-panel";
 
@@ -18,6 +19,47 @@ import styled from "polotno/utils/styled";
 
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import FaVectorSquare from "@meronex/icons/fa/FaVectorSquare";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
+// Seperate component for Lazy loading (CustomImage) - 29Jun2023
+// Custom Image card component start - 23Jun2023
+const CustomImage = observer(
+  ({ design, project, preview, json, onDelete, onPublic, store}) => {
+    // const { setCanvasId } = useContext(Context);
+
+    const fnDropImageOnCanvas = () =>{
+      store.activePage.addElement({
+        type: "image",
+        src: preview, //Image URL
+        width: store.width,
+        height: store.height, 
+        // x: store.width / 2 ,
+        // y: pos ? pos.y : store.height / 2 - height / 2,
+      });
+      element.set({ clipSrc: preview });
+    }
+    
+    return (
+      <Card
+        style={{ margin: "4px", padding: "0px", position: "relative" }}
+        interactive
+        onDragEnd = {()=>{ fnDropImageOnCanvas()}}
+        onClick={() => { fnDropImageOnCanvas() }}
+      >
+        <div className=""
+          onClick={() => {
+            // handle onClick
+            // setCanvasId(design.id);
+            // store.loadJSON(json);
+          }}
+        >
+          <LazyLoadImage src={preview} alt="Preview Image" style={{ width: "100%" }} opacity/>
+        </div>
+      </Card>
+    );
+  }
+);
+// Custom Image card component end - 23Jun2023
 
 // New Tab Colors Start - 24Jun2023
 export const TabColors = observer(({ store, query }) => {
@@ -72,7 +114,7 @@ export const TabNFTBgs = observer(({ store, query }) => {
   return (
     <div style={{ height: "100%" }} className="overflow-y-auto">
       {/* Code for NFT BACKGROUNDS here */}
-      <ImagesGrid
+      {/* <ImagesGrid
         images={arrData}
         key={arrData.id}
         getPreview={(item) => item?.image}
@@ -92,7 +134,32 @@ export const TabNFTBgs = observer(({ store, query }) => {
         rowsNumber={2}
         isLoading={isLoading}
         loadMore={false}
-      />
+      /> */}
+
+      {/* Lazyloading Try - 29Jun2023 */}
+      <div className="grid grid-cols-2">
+
+      {arrData.map((design) => { 
+        return(
+        <CustomImage
+        design={design}
+        json={design.data}
+        preview={
+          // design?.imageLink != null &&
+          // design?.imageLink.length > 0 &&
+                // design?.imageLink[0]w
+        design.image
+        }
+        key={design.id}
+        store={store}
+        project={project}
+        // onDelete={() => deleteCanvas(design.id)}
+        // onPublic={() => changeVisibility(design.id)}
+        />)})}
+
+        </div>
+              
+
     </div>
   );
 });
@@ -105,7 +172,7 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
 
   return (
     <>
-      <div className="flex flex-row">
+      <div className="flex flex-row overflow-y-scroll h-fit">
         {/* <Button
 			className="m-1 rounded-md border-2 p-2"
 			onClick={() => {
@@ -116,7 +183,7 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
 				Colors
 		</Button> */}
         <Button
-          className="m-1 rounded-md border-2 p-2"
+          className="m-2 rounded-md border-2 px-2"
           onClick={() => {
             setStTab("tabNFTBgs");
           }}
@@ -126,19 +193,22 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
           NFT Backgrounds
         </Button>
       </div>
-      <input
-        leftIcon="search"
-        placeholder={t("sidePanel.searchPlaceholder")}
-        onChange={(e) => {
-          setStInputQuery(e.target.value);
-          console.log(stInputQuery);
-        }}
-        className="border-2 rounded-md p-2 m-1 mt-2 w-full"
-        type="search"
-        style={{
-          marginBottom: "20px",
-        }}
-      />
+
+      <div className="flex flex-row justify-normal">
+        <input
+          className="border px-2 py-1 rounded-md w-full m-1 mb-4 mt-4"
+          placeholder="Search by Token ID"
+          onChange={(e) => setStInputQuery(e.target.value)}
+        />
+        <Button
+          className="ml-3 m-1 rounded-md mb-4 mt-4"
+          icon="search"
+          onClick={() =>
+            console.log(stInputQuery)
+            // Implement Search Function here
+          }
+        ></Button> 
+      </div>
 
       {/* The Tab Elements start to appear here - 24Jun2023 */}
       {stTab === "tabColors" && <TabColors query={""} store={store} />}

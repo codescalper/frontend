@@ -149,78 +149,74 @@ const Editor = ({ store }) => {
           // For Image `src` URL as parameter , use this Endpoint
           `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
 
-          // 'https://www.cutout.pro/api/v1/text2imageAsync',
-          {
-            headers: {
-              //         'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99'
+        // 'https://www.cutout.pro/api/v1/text2imageAsync',
+        {
+          headers: {
+            APIKEY: "63d61dd44f384a7c9ad3f05471e17130",
+            //  Backup API Keys :
+            // 'APIKEY': 'c136635d69324c99942639424feea81a'
+            // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
+            // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
+          },
+        }
+      )  
+      .then((response)=>{    
+      // Handle the response here
+      console.log(response);
+      // This is the Image URL for removed background
+      console.log("The removed background URL is :");
+      // console.log(response.data.data.imageUrl);
 
-              APIKEY: "63d61dd44f384a7c9ad3f05471e17130",
-
-              //  Backup API Keys :
-              // 'APIKEY': 'c136635d69324c99942639424feea81a'
-              // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
-              // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
-            },
-          }
-        )
-        .then((response) => {
-          // Handle the response here
-          console.log(response);
-          // This is the Image URL for removed background
-          console.log("The removed background URL is :");
-          // console.log(response.data.data.imageUrl);
-
-          // Add the new removed Bg Image to the Page
-          store.pages[stActivePageNo || varActivePageNo].addElement({
-            type: "image",
-            x: 0.5 * store.width,
-            y: 0.5 * store.height,
-            width: store.selectedElements[0].width,
-            height: store.selectedElements[0].height,
-            src: response.data.data.imageUrl,
-            selectable: true,
-            draggable: true,
-            removable: true,
-            resizable: true,
-            showInExport: true,
-          });
-          // delete the Previous Image: - 26Jun2023
-          // store.deleteElements(store.selectedElements.map(x => x.id))
-          return response.data.data.imageUrl;
-          setRemovedBgImageUrl(response.data.data.imageUrl);
-        });
-    } catch (error) {
+      // Add the new removed Bg Image to the Page
+      store.pages[stActivePageNo || varActivePageNo].addElement({
+        type: "image",
+        x: 0.5 * store.width,
+        y: 0.5 * store.height,
+        width: store.selectedElements[0].width,
+        height: store.selectedElements[0].height,
+        src: response.data.data.imageUrl,
+        selectable: true,
+        draggable: true,
+        removable: true,
+        resizable: true,
+        showInExport: true,
+      })
+      console.log(response.data.data.imageBase64)
+      // delete the Previous Image: - 26Jun2023
+      // store.deleteElements(store.selectedElements.map(x => x.id))
+      return response.data.data.imageUrl;
+      setRemovedBgImageUrl(response.data.data.imageUrl)
+      })
+      } catch (error) {
       console.error(error);
-    }
-    console.log("Handle upload END");
-  };
+      }
+      console.log("Handle upload END")
+      };
 
-  // Cutout pro API end
-  //  Toast Setup
-  const fnCallToast = async () => {
-    const id = toast.loading("Removing Background", { autoClose: 4000 });
-    const res = await handleRemoveBg();
-    if (res) {
-      toast.update(id, {
-        render: "Removed Background", //Check if The toast is working
-        type: "success",
-        isLoading: false,
-        autoClose: 4000,
-        closeButton: true,
-      });
-      console.log("res", res?.data);
-    } else if (!res) {
-      toast.update(id, {
-        render: "Error in removing background",
-        type: "error",
-        isLoading: false,
-        autoClose: 4000,
-        closeButton: true,
-      });
-    }
-  };
-  console.log("Handle upload END");
-
+  // Cutout pro API end 
+    //  Toast Setup
+    const fnCallToast = async () => {
+      const id = toast.loading("Removing Background", {autoClose: 4000,});
+      const res = await handleRemoveBg();
+      if (res) {
+        toast.update(id, {
+          render: "Removed Background", //Check if The toast is working 
+          type: "success",
+          isLoading: false,
+          autoClose: 4000,
+          closeButton: true,
+        })
+        console.log("res", res?.data);
+      } else if (!res) {
+        toast.update(id, {
+          render: "Error in removing background",
+          type: "error",
+          isLoading: false,
+          autoClose: 4000,
+          closeButton: true,
+        });
+    }  
+  }
   // create canvas
   useEffect(() => {
     const main = async () => {
@@ -238,6 +234,10 @@ const Editor = ({ store }) => {
 
       if (canvasChildren.length > 0) {
         if (!canvasIdRef.current) {
+          // debugger
+          if(canvasId) return; // Issue with True
+          console.log("This is Canvas ID")
+          console.log(canvasId)
           const res = await createCanvas(storeData, "hello", false);
           if (res?.data) {
             canvasIdRef.current = res?.data?.canvasId;
@@ -248,9 +248,9 @@ const Editor = ({ store }) => {
           }
         }
 
-        if (canvasIdRef.current) {
+        if (canvasIdRef.current || canvasId) {
           const res = await updateCanvas(
-            canvasIdRef.current,
+            canvasIdRef.current || canvasId, //Current canvas ID
             storeData,
             "hello",
             false
