@@ -70,7 +70,7 @@ const Editor = ({ store }) => {
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
   const intervalRef = useRef(null);
-  const { setCanvasId, canvasId } = useContext(Context);
+  const { contextCanvasIdRef } = useContext(Context);
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -108,10 +108,10 @@ const Editor = ({ store }) => {
   // 		setFile(event.target.files[0]);
   //   };
 
-  const fnDeletePrevImage = () =>{
-    console.log("In Delete previous image function")
-    store.deleteElements(store.selectedElements.map(x => x.id))
-  }
+  const fnDeletePrevImage = () => {
+    console.log("In Delete previous image function");
+    store.deleteElements(store.selectedElements.map((x) => x.id));
+  };
 
   const handleRemoveBg = async () => {
     var varActivePageNo = 0;
@@ -139,14 +139,15 @@ const Editor = ({ store }) => {
     });
 
     try {
-      const response = await axios.get(
-        // BG REMOVE from Cutout.pro,
+      const response = await axios
+        .get(
+          // BG REMOVE from Cutout.pro,
 
-        // For File use this Endpoint
-        // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
+          // For File use this Endpoint
+          // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
 
-        // For Image `src` URL as parameter , use this Endpoint
-        `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
+          // For Image `src` URL as parameter , use this Endpoint
+          `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
 
         // 'https://www.cutout.pro/api/v1/text2imageAsync',
         {
@@ -214,16 +215,8 @@ const Editor = ({ store }) => {
           autoClose: 4000,
           closeButton: true,
         });
-      }
-  
-    }
-   console.log("Handle upload END");
-  
-  //  if(canvasId){
-     console.log("canvasId Outside"); 
-     console.log(canvasId);
-    // }
-
+    }  
+  }
   // create canvas
   useEffect(() => {
     const main = async () => {
@@ -232,6 +225,11 @@ const Editor = ({ store }) => {
 
       if (canvasChildren.length === 0) {
         canvasIdRef.current = null;
+        contextCanvasIdRef.current = null;
+      }
+
+      if (contextCanvasIdRef.current !== null) {
+        canvasIdRef.current = contextCanvasIdRef.current;
       }
 
       if (canvasChildren.length > 0) {
@@ -243,7 +241,7 @@ const Editor = ({ store }) => {
           const res = await createCanvas(storeData, "hello", false);
           if (res?.data) {
             canvasIdRef.current = res?.data?.canvasId;
-            setCanvasId(res?.data?.canvasId);
+            contextCanvasIdRef.current = res?.data?.canvasId;
             console.log("Canvas created", { canvasId: res?.data?.canvasId });
           } else if (res?.error) {
             console.log("Canvas creation error", { error: res?.error });

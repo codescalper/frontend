@@ -36,7 +36,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 const DesignCard = observer(
   ({ design, project, preview, json, onDelete, onPublic }) => {
     const [loading, setLoading] = useState(false);
-    const { setCanvasId } = useContext(Context);
+    const { contextCanvasIdRef } = useContext(Context);
     const handleSelect = async () => {
       // setLoading(true);
       // await project.loadById(design.id);
@@ -55,7 +55,7 @@ const DesignCard = observer(
         <div
           className=""
           onClick={() => {
-            setCanvasId(design.id); //Issue 29Jun2023
+            contextCanvasIdRef.current = design.id;
             store.loadJSON(json);
           }}
         >
@@ -131,8 +131,6 @@ export const MyDesignsPanel = observer(
     const loadImages = async () => {
       setIsLoading(true);
       const res = await getAllCanvas();
-      console.log(res)
-      
       if (res?.data) {
         setArrData(res.data);
         setData(res?.data);
@@ -164,11 +162,21 @@ export const MyDesignsPanel = observer(
     };
 
     useEffect(() => {
+      console.log("useEffect");
+      if (isDisconnected) return;
       loadImages();
-    }, []);
+    }, [isConnected]);
 
     if (isError) {
       return <div>{isError}</div>;
+    }
+
+    if (isDisconnected || !address) {
+      return (
+        <>
+          <p>Please connect your wallet</p>
+        </>
+      );
     }
 
     // Test - 23Jun2023
@@ -248,27 +256,37 @@ export const MyDesignsPanel = observer(
 
         {/* New Design card start - 23Jun2023 */}
         {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
-        {/* Pass these onto Line 25 */}
-        <div className="overflow-y-auto grid grid-cols-2">
-       {arrData.map((design) => {
-          return (
-            <DesignCard
-              design={design}
-              json={design.data}
-              preview={
-                design?.imageLink != null &&
-                design?.imageLink.length > 0 &&
-                design?.imageLink[0]
-              }
-              key={design.id}
-              store={store}
-              project={project}
-              onDelete={() => deleteCanvas(design.id)}
-              onPublic={() => changeVisibility(design.id)}
-            />
-          );
-        })}
-        </div>
+        {/*   Pass these onto Line 25 */}
+        {arrData.length === 0 ? (
+          <div className="flex justify-center items-center">
+            <div className="text-center">
+              <p className="text-gray-500 text-sm mt-4">
+                You have not created any designs yet.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="overflow-y-auto grid grid-cols-2">
+            {arrData.map((design) => {
+              return (
+                <DesignCard
+                  design={design}
+                  json={design.data}
+                  preview={
+                    design?.imageLink != null &&
+                    design?.imageLink.length > 0 &&
+                    design?.imageLink[0]
+                  }
+                  key={design.id}
+                  store={store}
+                  project={project}
+                  onDelete={() => deleteCanvas(design.id)}
+                  onPublic={() => changeVisibility(design.id)}
+                />
+              );
+            })}
+          </div>
+        )}
 
         {/* New Design card end - 23Jun2023 */}
       </div>
