@@ -19,18 +19,21 @@ export default observer(({ store }) => {
   return (
     <div className="bg-white h-[75px]  w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
       <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between">
-          <img
-            className="flex items-center justify-start"
-            src="/logo.svg"
-            alt="lenspost"
-          />
-        </div>
+        <a href="https://lenspost.xyz" target="_blank">
+          <div className="flex items-center justify-between cursor-pointer">
+            <img
+              className="flex items-center justify-start object-contain p-1 mt-3"
+              src="/LenspostLogo.png"
+              alt="lenspost"
+              width={140}
+              />
+          </div>
+        </a>
         {isDisconnected && (
-          <ConnectButton
-            label="Connect Wallet"
-            chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
-            showBalance={{ smallScreen: false, largeScreen: true }}
+          <ConnectButton   
+           label="Connect Wallet"
+           chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
+           showBalance={{ smallScreen: false, largeScreen: true }}
           />
         )}
         {isConnected && (
