@@ -154,11 +154,12 @@ export const NFTIcons = observer(({ store, query }) => {
   const getAssets = async (query) => {
     setIsLoading(true);
     const res = await getAssetByQuery(query);
-    setArrData(res.data[0].slice(0, 50));
+    console.log(res.data)
+    setArrData(res.data);
 
     if (res?.data) {  
       setIsLoading(false);
-      setData(res?.data[0].slice(0, 50));
+      // setData(res?.data[0].slice(0, 50));
       // setData(res.data[0].slice(0, 50));
     } else if (res?.error) {
       setIsLoading(false);
@@ -191,7 +192,7 @@ export const NFTIcons = observer(({ store, query }) => {
     <div className="h-full overflow-y-auto">
       <div className="grid grid-cols-2 overflow-y-auto">
 
-      {arrData.map((img)=>{ 
+      {arrData.map((img) => { 
         return(
           <CustomImage 
           preview = {img.image}
