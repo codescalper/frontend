@@ -2,7 +2,15 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 
 import { observer } from "mobx-react-lite";
-import { InputGroup, Button, Card, Menu, Spinner, MenuItem, Position} from "@blueprintjs/core";
+import {
+  InputGroup,
+  Button,
+  Card,
+  Menu,
+  Spinner,
+  MenuItem,
+  Position,
+} from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { svgToURL } from "polotno/utils/svg";
 import { SectionTab } from "polotno/side-panel";
@@ -24,36 +32,46 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 // Seperate component for Lazy loading (CustomImage) - 29Jun2023
 // Custom Image card component start - 23Jun2023
 const CustomImage = observer(
-  ({ design, project, preview, json, onDelete, onPublic, store}) => {
+  ({ design, project, preview, json, onDelete, onPublic, store }) => {
     // const { setCanvasId } = useContext(Context);
 
-    const fnDropImageOnCanvas = () =>{
+    const fnDropImageOnCanvas = () => {
       store.activePage.addElement({
         type: "image",
         src: preview, //Image URL
         width: store.width,
-        height: store.height, 
+        height: store.height,
         // x: store.width / 2 ,
         // y: pos ? pos.y : store.height / 2 - height / 2,
       });
       element.set({ clipSrc: preview });
-    }
-    
+    };
+
     return (
       <Card
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
-        onDragEnd = {()=>{ fnDropImageOnCanvas()}}
-        onClick={() => { fnDropImageOnCanvas() }}
+        onDragEnd={() => {
+          fnDropImageOnCanvas();
+        }}
+        onClick={() => {
+          fnDropImageOnCanvas();
+        }}
       >
-        <div className=""
+        <div
+          className=""
           onClick={() => {
             // handle onClick
             // setCanvasId(design.id);
             // store.loadJSON(json);
           }}
         >
-          <LazyLoadImage src={preview} alt="Preview Image" style={{ width: "100%" }} opacity/>
+          <LazyLoadImage
+            src={preview}
+            alt="Preview Image"
+            style={{ width: "100%" }}
+            opacity
+          />
         </div>
       </Card>
     );
@@ -138,28 +156,26 @@ export const TabNFTBgs = observer(({ store, query }) => {
 
       {/* Lazyloading Try - 29Jun2023 */}
       <div className="grid grid-cols-2">
-
-      {arrData.map((design) => { 
-        return(
-        <CustomImage
-        design={design}
-        json={design.data}
-        preview={
-          // design?.imageLink != null &&
-          // design?.imageLink.length > 0 &&
+        {arrData.map((design) => {
+          return (
+            <CustomImage
+              design={design}
+              json={design.data}
+              preview={
+                // design?.imageLink != null &&
+                // design?.imageLink.length > 0 &&
                 // design?.imageLink[0]w
-        design.image
-        }
-        key={design.id}
-        store={store}
-        project={project}
-        // onDelete={() => deleteCanvas(design.id)}
-        // onPublic={() => changeVisibility(design.id)}
-        />)})}
-
-        </div>
-              
-
+                design.image
+              }
+              key={design.id}
+              store={store}
+              project={project}
+              // onDelete={() => deleteCanvas(design.id)}
+              // onPublic={() => changeVisibility(design.id)}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 });
@@ -203,11 +219,11 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
         <Button
           className="ml-3 m-1 rounded-md mb-4 mt-4"
           icon="search"
-          onClick={() =>
-            console.log(stInputQuery)
+          onClick={
+            () => console.log(stInputQuery)
             // Implement Search Function here
           }
-        ></Button> 
+        ></Button>
       </div>
 
       {/* The Tab Elements start to appear here - 24Jun2023 */}
