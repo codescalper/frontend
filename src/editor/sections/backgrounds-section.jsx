@@ -130,7 +130,7 @@ export const TabNFTBgs = observer(({ store, query }) => {
   }
 
   return (
-    <div style={{ height: "100%" }} className="overflow-y-auto">
+    <>
       {/* Code for NFT BACKGROUNDS here */}
       {/* <ImagesGrid
         images={arrData}
@@ -155,28 +155,32 @@ export const TabNFTBgs = observer(({ store, query }) => {
       /> */}
 
       {/* Lazyloading Try - 29Jun2023 */}
-      <div className="grid grid-cols-2">
-        {arrData.map((design) => {
-          return (
-            <CustomImage
-              design={design}
-              json={design.data}
-              preview={
-                // design?.imageLink != null &&
-                // design?.imageLink.length > 0 &&
+
+    <div className=" h-full overflow-y-auto" >
+      <div className="grid grid-cols-2 overflow-y-auto">
+
+      {arrData.map((design) => { 
+        return(
+        <CustomImage
+        design={design}
+        json={design.data}
+        preview={
+          // design?.imageLink != null &&
+          // design?.imageLink.length > 0 &&
                 // design?.imageLink[0]w
-                design.image
-              }
-              key={design.id}
-              store={store}
-              project={project}
-              // onDelete={() => deleteCanvas(design.id)}
-              // onPublic={() => changeVisibility(design.id)}
-            />
-          );
-        })}
-      </div>
-    </div>
+        design.image
+        }
+        key={design.id}
+        store={store}
+        project={project}
+        // onDelete={() => deleteCanvas(design.id)}
+        // onPublic={() => changeVisibility(design.id)}
+        />)})}
+
+        </div>
+    </div> 
+    </>
+
   );
 });
 

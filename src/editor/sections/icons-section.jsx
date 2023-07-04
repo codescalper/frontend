@@ -188,23 +188,25 @@ export const NFTIcons = observer(({ store, query }) => {
       <p className="text-gray-400 text-xl mt-4">{isError}</p>
     </div>
   ) : (
-    <div>
-      <div className=" h-full overflow-y-auto">
-        <div className="grid grid-cols-2">
-          {arrData.map((img) => {
-            return (
-              <CustomImage
-                preview={img.image}
-                store={store}
-                project={project}
-              />
-            );
-          })}
+    <>
+    <div className="h-full overflow-y-auto">
+      <div className="grid grid-cols-2 overflow-y-auto">
+
+      {arrData.map((img)=>{ 
+        return(
+          <CustomImage 
+          preview = {img.image}
+          store={store} 
+          project={project}
+          />
+          )})
+        }
         </div>
       </div>
     </div>
-  );
-});
+    </>    
+    )
+  });
 
 // New Tab NFT Elements/Stickers End - 24Jun2023
 
