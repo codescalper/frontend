@@ -2,7 +2,7 @@ import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import axios from "axios";
 import { getFromLocalStorage } from "./localStorage";
 
-const API = BACKEND_DEV_URL;
+const API = BACKEND_LOCAL_URL;
 
 /**
  * @param walletAddress string
@@ -934,7 +934,7 @@ export const getAllTemplates = async () => {
 // need auth token (jwt)
 export const getAssetByQuery = async (query) => {
   try {
-    const result = await api.get(`${API}/asset/?query=${query}`);
+    const result = await api.get(`${API}/asset/?query=${query}&limit=100&offset=0`);
 
     if (result?.status === 200) {
       return {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { InputGroup, Button, Card} from "@blueprintjs/core";
+import { InputGroup, Button, Card } from "@blueprintjs/core";
 import { isAlive } from "mobx-state-tree";
 
 import { svgToURL } from "polotno/utils/svg";
@@ -23,36 +23,40 @@ const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
 
 // Custom Image card component start - 01Jul2023
-const CustomImage = observer(
-  ({ imgArray, project, preview, json, store}) => {
+const CustomImage = observer(({ imgArray, project, preview, json, store }) => {
   // const { setCanvasId } = useContext(Context);
-  const fnDropImageOnCanvas = () =>{
+  const fnDropImageOnCanvas = () => {
     store.activePage.addElement({
       type: "image",
       src: preview, //Image URL
       width: store.width,
-      height: store.height, 
+      height: store.height,
       // x: store.width / 2 ,
       // y: pos ? pos.y : store.height / 2 - height / 2,
     });
     element.set({ clipSrc: preview });
-  }
-    
+  };
+
   return (
     <Card
       style={{ margin: "4px", padding: "0px", position: "relative" }}
       interactive
-      onDragEnd = {()=>{ fnDropImageOnCanvas()}}
-      onClick={() => { fnDropImageOnCanvas() }}
+      onDragEnd={() => {
+        fnDropImageOnCanvas();
+      }}
+      onClick={() => {
+        fnDropImageOnCanvas();
+      }}
     >
-      <div className=""
+      <div
+        className=""
         onClick={() => {
           // handle onClick
           // setCanvasId(design.id);
           // store.loadJSON(json);
         }}
       >
-        <LazyLoadImage src={preview} alt="Preview Image" opacity/>
+        <LazyLoadImage src={preview} alt="Preview Image" opacity />
       </div>
     </Card>
   );
@@ -154,9 +158,8 @@ export const NFTIcons = observer(({ store, query }) => {
   const getAssets = async (query) => {
     setIsLoading(true);
     const res = await getAssetByQuery(query);
-    setArrData(res.data[0].slice(0, 50));
-
-    if (res?.data) {  
+    if (res?.data) {
+      setArrData(res.data[0].slice(0, 50));
       setIsLoading(false);
       setData(res?.data[0].slice(0, 50));
       // setData(res.data[0].slice(0, 50));
@@ -171,8 +174,6 @@ export const NFTIcons = observer(({ store, query }) => {
     getAssets("supducks");
   }, [query]);
 
-
- 
   if (isDisconnected || !address) {
     return (
       <>
@@ -188,24 +189,22 @@ export const NFTIcons = observer(({ store, query }) => {
     </div>
   ) : (
     <div>
-    <div className=" h-full overflow-y-auto">
-      <div className="grid grid-cols-2">
-
-      {arrData.map((img)=>{ 
-        return(
-          <CustomImage 
-          preview = {img.image}
-          store={store} 
-          project={project}
-          />
-          )})
-        }
+      <div className=" h-full overflow-y-auto">
+        <div className="grid grid-cols-2">
+          {arrData.map((img) => {
+            return (
+              <CustomImage
+                preview={img.image}
+                store={store}
+                project={project}
+              />
+            );
+          })}
         </div>
+      </div>
     </div>
-    </div>    
-    )
-  });
-
+  );
+});
 
 // New Tab NFT Elements/Stickers End - 24Jun2023
 
@@ -312,11 +311,11 @@ export const IconsPanel = ({ store }) => {
         <Button
           className="ml-3 m-1 rounded-md mb-4 mt-4"
           icon="search"
-          onClick={() =>
-            console.log(query)
+          onClick={
+            () => console.log(query)
             // Implement Search Function here
           }
-        ></Button> 
+        ></Button>
       </div>
       {service === "iconfinder" && (
         <IconFinderPanel query={delayedQuery} store={store} />
