@@ -246,10 +246,6 @@ const Editor = ({ store }) => {
 
       if (canvasChildren.length > 0) {
         if (!canvasIdRef.current) {
-          // debugger
-          if (canvasId) return; // Issue with True
-          // console.log("This is Canvas ID")
-          // console.log(canvasId)
           const res = await createCanvas(storeData, "hello", false);
           if (res?.data) {
             canvasIdRef.current = res?.data?.canvasId;
@@ -260,9 +256,9 @@ const Editor = ({ store }) => {
           }
         }
 
-        if (canvasIdRef.current || canvasId) {
+        if (canvasIdRef.current) {
           const res = await updateCanvas(
-            canvasIdRef.current || canvasId, //Current canvas ID
+            canvasIdRef.current,
             storeData,
             "hello",
             false
