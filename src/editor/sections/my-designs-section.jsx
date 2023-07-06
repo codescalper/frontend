@@ -27,6 +27,7 @@ import {
 import { toast } from "react-toastify";
 import { Context } from "../../context/ContextProvider";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { replaceImageURL } from "../../services/replaceUrl";
 
 // Design card component start - 23Jun2023
 
@@ -34,35 +35,25 @@ const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
   const [loading, setLoading] = useState(false);
   const { contextCanvasIdRef } = useContext(Context);
 
-  const fnDropImageOnCanvas = () => {
-    // contextCanvasIdRef.current = design.id;
-    store.activePage.addElement({
-      type: "image",
-      src: preview, //Image URL
-      width: store.width,
-      height: store.height,
-    });
-  };
-
   return (
     <Card
       style={{ margin: "4px", padding: "0px", position: "relative" }}
       interactive
       onDragEnd={() => {
-        fnDropImageOnCanvas();
+        store.loadJSON(json);
       }}
       onClick={() => {
-        fnDropImageOnCanvas();
+        store.loadJSON(json);
         contextCanvasIdRef.current = design.id;
       }}
     >
       <div className="">
         <LazyLoadImage
-          placeholderSrc={preview}
+          placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           height={150}
           width={150}
-          src={preview}
+          src={replaceImageURL(preview)}
           alt="Preview Image"
         />
       </div>

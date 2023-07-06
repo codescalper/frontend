@@ -45,6 +45,7 @@ const LenspostTemplates = ({ store }) => {
     setIsLoading(true);
     const res = await getAllTemplates();
     if (res?.data) {
+      replaceImageURL(res?.data[0].image);
       setData(res?.data);
       setIsLoading(false);
     } else if (res?.error) {
@@ -61,12 +62,18 @@ const LenspostTemplates = ({ store }) => {
     return <div>{isError}</div>;
   }
 
+  // function for replacing image s3 url with the CDN url
+  const replaceImageURL = (url) => {
+    const replacedURL = url.replace("https://lenspost.s3.amazonaws.com/", "");
+    return `http://lenspost.b-cdn.net/${replacedURL}`;
+  };
+
   return (
     <div style={{ height: "100%" }} className="overflow-y-auto">
       <ImagesGrid
         shadowEnabled={false}
         images={data}
-        getPreview={(item) => item.image}
+        getPreview={(item) => replaceImageURL(item.image)}
         isLoading={isLoading}
         onSelect={async (item) => {
           const json = item.data;

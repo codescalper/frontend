@@ -2,15 +2,24 @@
 
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Card } from "@blueprintjs/core";
+import { replaceImageURL } from "../services/replaceUrl";
 
 // Custom Image card component start - 23Jun2023
-const CustomImageComponent = ({ design, preview, json, onDelete, onPublic, store }) => {
+const CustomImageComponent = ({
+  design,
+  preview,
+  json,
+  onDelete,
+  onPublic,
+  store,
+}) => {
   const fnDropImageOnCanvas = () => {
-    store.activePage.addElement({
+    store.activePage?.addElement({
       type: "image",
-      src: preview, //Image URL
+      src: replaceImageURL(preview), //Image URL
       width: store.width,
       height: store.height,
+      crossOriginIsolated: false,
     });
   };
 
@@ -27,11 +36,11 @@ const CustomImageComponent = ({ design, preview, json, onDelete, onPublic, store
     >
       <div className="">
         <LazyLoadImage
-          placeholderSrc={preview}
+          placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           height={150}
           width={150}
-          src={preview}
+          src={replaceImageURL(preview)}
           alt="Preview Image"
         />
       </div>
