@@ -30,7 +30,6 @@ import {
   createCanvas,
   deleteCanvasById,
   getCanvasById,
-  removeBG,
   updateCanvas,
 } from "../services/backendApi";
 import { toast } from "react-toastify";
@@ -271,13 +270,6 @@ const Editor = ({ store }) => {
       };
     }
   }, [isConnected, store, address]);
-
-  // for test
-  const getImgFromS3 = async () => {
-    const query = "https://lexica-serve-encoded-images.sharif.workers.dev/md/02487216-39c5-4c31-995e-32d5baf01a14"
-    const res = await removeBG(query)
-    console.log(res)
-  }
 
   return (
     <>
