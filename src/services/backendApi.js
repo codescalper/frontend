@@ -29,6 +29,8 @@ api.interceptors.request.use(
       // Add your default header here
       config.headers["Authorization"] = `Bearer ${jwtToken}`;
       config.headers["Content-Type"] = "application/json";
+      config.headers["Access-Control-Allow-Origin"] = "*";
+      config.headers["Access-Control-Allow-Methods"] = "*";
     }
     return config;
   },
@@ -934,7 +936,9 @@ export const getAllTemplates = async () => {
 // need auth token (jwt)
 export const getAssetByQuery = async (query) => {
   try {
-    const result = await api.get(`${API}/asset/?query=${query}&limit=100&offset=0`);
+    const result = await api.get(
+      `${API}/asset/?query=${query}&limit=100&offset=0`
+    );
 
     if (result?.status === 200) {
       return {
@@ -974,7 +978,7 @@ export const getAssetByQuery = async (query) => {
 // need auth token (jwt)
 export const getBGAssetByQuery = async (query) => {
   try {
-    const result = await api.get(`${API}/asset/background?author=${query}`);
+    const result = await api.get(`${API}/asset/background?author=${query}&limit=100&offset=0`);
 
     if (result?.status === 200) {
       return {

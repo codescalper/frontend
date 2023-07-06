@@ -4,8 +4,6 @@ import { observer } from "mobx-react-lite";
 import { SectionTab } from "polotno/side-panel";
 import { TemplatesIcon } from "../editor-icon";
 
-//Icons Import
-
 import {
   Icon,
   IconSize,
@@ -25,94 +23,100 @@ import {
   changeCanvasVisibility,
   deleteCanvasById,
   getAllCanvas,
-  getCanvasById,
 } from "../../services/backendApi";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { Context } from "../../context/ContextProvider";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 // Design card component start - 23Jun2023
 
-const DesignCard = observer(
-  ({ design, project, preview, json, onDelete, onPublic }) => {
-    const [loading, setLoading] = useState(false);
-    const { contextCanvasIdRef } = useContext(Context);
-    const handleSelect = async () => {
-      // setLoading(true);
-      // await project.loadById(design.id);
-      // project.store.openSidePanel('photos');
-      // setLoading(false);
-    };
+const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
+  const [loading, setLoading] = useState(false);
+  const { contextCanvasIdRef } = useContext(Context);
 
-    return (
-      <Card
-        style={{ margin: "4px", padding: "0px", position: "relative" }}
-        interactive
-        onClick={() => {
-          handleSelect();
+  const fnDropImageOnCanvas = () => {
+    // contextCanvasIdRef.current = design.id;
+    store.activePage.addElement({
+      type: "image",
+      src: preview, //Image URL
+      width: store.width,
+      height: store.height,
+    });
+  };
+
+  return (
+    <Card
+      style={{ margin: "4px", padding: "0px", position: "relative" }}
+      interactive
+      onDragEnd={() => {
+        fnDropImageOnCanvas();
+      }}
+      onClick={() => {
+        fnDropImageOnCanvas();
+        contextCanvasIdRef.current = design.id;
+      }}
+    >
+      <div className="">
+        <LazyLoadImage
+          placeholderSrc={preview}
+          effect="blur"
+          height={150}
+          width={150}
+          src={preview}
+          alt="Preview Image"
+        />
+      </div>
+
+      <div
+        style={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          // padding: "3px",
         }}
       >
-        <div
-          className=""
-          onClick={() => {
-            contextCanvasIdRef.current = design.id;
-            store.loadJSON(json);
-          }}
-        >
-          <LazyLoadImage src={preview} alt="Preview Image"/> 
-        </div>
- 
+        {/* {design.name} */}
+      </div>
+      {loading && (
         <div
           style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            // padding: "3px",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
           }}
         >
-          {/* {design.name} */}
+          <Spinner />
         </div>
-        {loading && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <Spinner />
-          </div>
-        )}
-        <div
-          style={{ position: "absolute", top: "5px", right: "5px" }}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <Popover2
-            content={
-              <Menu>
-                {/* <MenuItem
+      )}
+      <div
+        style={{ position: "absolute", top: "5px", right: "5px" }}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <Popover2
+          content={
+            <Menu>
+              {/* <MenuItem
                   icon="share"
                   text="Share"
                   onClick={() => {
                     // implement share function here
                   }}
                 /> */}
-                <MenuItem icon="globe" text="Make Public" onClick={onPublic} />
-                <MenuItem icon="trash" text="Delete" onClick={onDelete} />
-              </Menu>
-            }
-            position={Position.BOTTOM}
-          >
-            <Button icon="more" />
-          </Popover2>
-        </div>
-      </Card>
-    );
-  }
-);
+              <MenuItem icon="globe" text="Make Public" onClick={onPublic} />
+              <MenuItem icon="trash" text="Delete" onClick={onDelete} />
+            </Menu>
+          }
+          position={Position.BOTTOM}
+        >
+          <Button icon="more" />
+        </Popover2>
+      </div>
+    </Card>
+  );
+});
 
 // Design card component end - 23Jun2023
 
@@ -123,8 +127,6 @@ export const MyDesignsPanel = observer(
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState("");
-
-    const [arrData, setArrData] = useState([]);
     const [stOpenedModal, setStOpenedModal] = useState(false);
     const [stConfirmNew, setStConfirmNew] = useState("");
 
@@ -132,7 +134,6 @@ export const MyDesignsPanel = observer(
       setIsLoading(true);
       const res = await getAllCanvas();
       if (res?.data) {
-        setArrData(res.data);
         setData(res?.data);
         setIsLoading(false);
       } else if (res?.error) {
@@ -162,7 +163,6 @@ export const MyDesignsPanel = observer(
     };
 
     useEffect(() => {
-      console.log("useEffect");
       if (isDisconnected) return;
       loadImages();
     }, [isConnected]);
@@ -257,7 +257,7 @@ export const MyDesignsPanel = observer(
         {/* New Design card start - 23Jun2023 */}
         {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
         {/*   Pass these onto Line 25 */}
-        {arrData.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex justify-center items-center">
             <div className="text-center">
               <p className="text-gray-500 text-sm mt-4">
@@ -267,7 +267,7 @@ export const MyDesignsPanel = observer(
           </div>
         ) : (
           <div className="overflow-y-auto grid grid-cols-2">
-            {arrData.map((design) => {
+            {data.map((design) => {
               return (
                 <DesignCard
                   design={design}

@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useInfiniteAPI } from "polotno/utils/use-api";
-
 import { SectionTab } from "polotno/side-panel";
-import MdPhotoLibrary from "@meronex/icons/md/MdPhotoLibrary";
-
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { TemplatesIcon } from "../editor-icon";
 import { getAllTemplates } from "../../services/backendApi";
-import { useAccount } from "wagmi";
 
 export const TemplatesPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");

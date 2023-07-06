@@ -10,7 +10,7 @@ import {
 import CheckInternetConnection from "./elements/CheckInternetConnection";
 import LoadingComponent from "./elements/LoadingComponent";
 import { ToastContainer, toast } from "react-toastify";
-import ContextProvider, { Context } from "./context/ContextProvider";
+import { Context } from "./context/ContextProvider";
 
 export default function App() {
   const { isLoading, setIsLoading, text, setText } = useContext(Context);
