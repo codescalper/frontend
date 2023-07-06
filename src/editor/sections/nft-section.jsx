@@ -1,4 +1,4 @@
-import { SectionTab } from "polotno/side-panel";
+import { ImagesGrid, SectionTab } from "polotno/side-panel";
 import { NFTIcon } from "../editor-icon";
 import { observer } from "mobx-react-lite";
 import { useState, useEffect } from "react";
@@ -387,6 +387,20 @@ const WalletNFT = () => {
                 />
               );
             })}
+            {/* <ImagesGrid
+              images={walletNFTImages}
+              isLoading={isLoading}
+              getPreview={(image) => image.url}
+              crossOrigin="anonymous"
+              onSelect={async (image) => {
+                store.activePage?.addElement({
+                  type: "image",
+                  src: image.url,
+                  width: store.width,
+                  height: store.height,
+                });
+              }}
+            /> */}
           </div>
         </div>
       )}
