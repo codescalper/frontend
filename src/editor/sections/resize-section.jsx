@@ -29,10 +29,29 @@ export const CustomSizesPanel = {
 		</SectionTab>
 	),
 	Panel: observer(({ store }) => {
-		const [width, setWidth] = useState(1000);
-		const [height, setHeight] = useState(1000);
+		var localWidth =  1000;
+		var localHeight = 1000;
+		// if(localHeight || localWidth == null ){
+		// 	localWidth = 1000,
+		// 	localHeight = 1000
+		// }
+	
+
+		console.log(localWidth);
+		const [width, setWidth] = useState(localWidth);
+		const [height, setHeight] = useState(localHeight);
 
 		useEffect(() => {
+			if(localHeight || localWidth == NaN ){
+			localWidth = width,
+			localHeight = height
+			}else{
+				localStorage.setItem("currStoreWidth", width)
+				localStorage.setItem("currStoreHeight", height)	
+
+				localWidth =  Number(localStorage.getItem("currStoreWidth"))
+				localHeight = Number(localStorage.getItem("currStoreHeight"))
+			}
 			store.setSize(width, height);
 		}, [width, height]);
 

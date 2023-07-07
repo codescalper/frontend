@@ -225,8 +225,8 @@ const LenspostNFT = () => {
 
   function RenderImages() {
     return (
-      <div className="h-full">
-        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10 m-1 mb-4">
+      <div className="h-full overflow-scroll">
+        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10 ml-1 mb-4">
           <Button
             icon="arrow-left"
             onClick={() => {
@@ -261,8 +261,8 @@ const LenspostNFT = () => {
           // />
           <>
        {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
-        <div className="h-full overflow-y-auto">
-        <div className="grid grid-cols-2 overflow-y-auto">
+        <div className="h-full">
+        <div className="grid grid-cols-2">
   
         {lenspostNFTImages.map((imgArray)=>{ 
           return(
@@ -299,7 +299,7 @@ const LenspostNFT = () => {
         />
         <Button
           icon="search"
-          className="ml-4"
+          className="ml-"
           onClick={() => searchNFT(searchId)}
         ></Button>
       </div>

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { InputGroup, Button, Card } from "@blueprintjs/core";
+import { InputGroup, Button, Card, Spinner } from "@blueprintjs/core";
 import { isAlive } from "mobx-state-tree";
-
 import { svgToURL } from "polotno/utils/svg";
 import { SectionTab } from "polotno/side-panel";
 import { getKey } from "polotno/utils/validate-key";
@@ -159,7 +158,7 @@ export const NFTIcons = observer(({ store, query }) => {
     setIsLoading(true);
     const res = await getAssetByQuery(query);
     if (res?.data) {
-      setArrData(res.data[0].slice(0, 50));
+      setArrData(res.data);
       setIsLoading(false);
       // setData(res?.data[0].slice(0, 50));
       // setData(res.data[0].slice(0, 50));
@@ -180,6 +179,13 @@ export const NFTIcons = observer(({ store, query }) => {
         <p>Please connect your wallet</p>
       </>
     );
+  }
+
+  // Show Loading - 06Jul2023
+  if(isLoading){
+    return<div className="flex flex-col">
+      <Spinner/>
+    </div>
   }
 
   return isError ? (

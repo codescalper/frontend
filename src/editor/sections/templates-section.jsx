@@ -9,7 +9,7 @@ import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { TemplatesIcon } from "../editor-icon";
 import { getAllTemplates } from "../../services/backendApi";
 import { useAccount } from "wagmi";
-
+import {Spinner} from "@blueprintjs/core"
 export const TemplatesPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
 
@@ -64,13 +64,18 @@ const LenspostTemplates = ({ store }) => {
   if (isError) {
     return <div>{isError}</div>;
   }
-
+  // Show Loading - 06Jul2023
+  if(isLoading){
+    return<div className="flex flex-col">
+      <Spinner/>
+    </div>
+  }
   return (
     <div style={{ height: "100%" }} className="overflow-y-auto">
       <ImagesGrid
         shadowEnabled={false}
         images={data}
-        getPreview={(item) => item.image}
+        getPreview={(item) => `${item.image}`}
         isLoading={isLoading}
         onSelect={async (item) => {
           const json = item.data;

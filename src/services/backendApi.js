@@ -2,7 +2,7 @@ import axios from "axios";
 import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import { getFromLocalStorage } from "./localStorage";
 
-const API = BACKEND_LOCAL_URL;
+const API = BACKEND_DEV_URL;
 
 /**
  * @param walletAddress string

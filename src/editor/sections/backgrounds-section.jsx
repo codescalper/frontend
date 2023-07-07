@@ -38,7 +38,7 @@ const CustomImage = observer(
     const fnDropImageOnCanvas = () => {
       store.activePage.addElement({
         type: "image",
-        src: preview, //Image URL
+        // src: preview, //Image URL
         width: store.width,
         height: store.height,
         // x: store.width / 2 ,
@@ -124,11 +124,17 @@ export const TabNFTBgs = observer(({ store, query }) => {
       </>
     );
   }
-
+  
   if (isError) {
     return <div>{isError}</div>;
   }
 
+  // Show Loading - 06Jul2023
+  if(isLoading){
+    return<div className="flex flex-col">
+      <Spinner/>
+    </div>
+  }
   return (
     <>
       {/* Code for NFT BACKGROUNDS here */}
@@ -156,8 +162,8 @@ export const TabNFTBgs = observer(({ store, query }) => {
 
       {/* Lazyloading Try - 29Jun2023 */}
 
-    <div className=" h-full overflow-y-auto" >
-      <div className="grid grid-cols-2 overflow-y-auto">
+    <div className="overflow-y-auto h-96" >
+      <div className="grid grid-cols-2">
 
       {arrData.map((design) => { 
         return(
@@ -168,7 +174,7 @@ export const TabNFTBgs = observer(({ store, query }) => {
           // design?.imageLink != null &&
           // design?.imageLink.length > 0 &&
                 // design?.imageLink[0]w
-        design.image
+        `${design.image}`
         }
         key={design.id}
         store={store}
@@ -191,8 +197,8 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
   const [stInputQuery, setStInputQuery] = useState("");
 
   return (
-    <>
-      <div className="flex flex-row overflow-y-scroll h-fit">
+    <div className="h-full">
+      <div className="flex flex-row h-fit">
         {/* <Button
 			className="m-1 rounded-md border-2 p-2"
 			onClick={() => {
@@ -233,7 +239,7 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
       {/* The Tab Elements start to appear here - 24Jun2023 */}
       {stTab === "tabColors" && <TabColors query={""} store={store} />}
       {stTab === "tabNFTBgs" && <TabNFTBgs query={""} store={store} />}
-    </>
+    </div>
   );
 });
 
