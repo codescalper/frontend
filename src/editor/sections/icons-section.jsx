@@ -17,49 +17,10 @@ import { getAssetByQuery } from "../../services/backendApi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 // Custom Image card component end - 01Jul2023
 import { useAccount } from "wagmi";
+import CustomImageComponent from "../../elements/CustomImageComponent";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
-
-// Custom Image card component start - 01Jul2023
-const CustomImage = observer(({ imgArray, project, preview, json, store }) => {
-  // const { setCanvasId } = useContext(Context);
-  const fnDropImageOnCanvas = () => {
-    store.activePage.addElement({
-      type: "image",
-      src: preview, //Image URL
-      width: store.width,
-      height: store.height,
-      // x: store.width / 2 ,
-      // y: pos ? pos.y : store.height / 2 - height / 2,
-    });
-    element.set({ clipSrc: preview });
-  };
-
-  return (
-    <Card
-      style={{ margin: "4px", padding: "0px", position: "relative" }}
-      interactive
-      onDragEnd={() => {
-        fnDropImageOnCanvas();
-      }}
-      onClick={() => {
-        fnDropImageOnCanvas();
-      }}
-    >
-      <div
-        className=""
-        onClick={() => {
-          // handle onClick
-          // setCanvasId(design.id);
-          // store.loadJSON(json);
-        }}
-      >
-        <LazyLoadImage src={preview} alt="Preview Image" opacity />
-      </div>
-    </Card>
-  );
-});
 
 const iconToSrc = async (id) => {
   const req = await fetch(
@@ -149,7 +110,6 @@ export const IconFinderPanel = observer(({ store, query }) => {
 export const NFTIcons = observer(({ store, query }) => {
   const { address, isDisconnected } = useAccount();
   const [data, setData] = useState([]);
-  const [arrData, setArrData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   // const [query, setQuery] = useState("supducks");
   const [isError, setIsError] = useState("");
@@ -158,10 +118,8 @@ export const NFTIcons = observer(({ store, query }) => {
     setIsLoading(true);
     const res = await getAssetByQuery(query);
     if (res?.data) {
-      setArrData(res.data);
+      setData(res?.data);
       setIsLoading(false);
-      // setData(res?.data[0].slice(0, 50));
-      // setData(res.data[0].slice(0, 50));
     } else if (res?.error) {
       setIsLoading(false);
       setIsError(res?.error);
@@ -195,23 +153,22 @@ export const NFTIcons = observer(({ store, query }) => {
     </div>
   ) : (
     <>
-    <div className="h-full overflow-y-auto">
-      <div className="grid grid-cols-2 overflow-y-auto">
-
-      {arrData.map((img) => { 
-        return(
-          <CustomImage 
-          preview = {img.image}
-          store={store} 
-          project={project}
-          />
-          )})
-        }
+      <div className="h-full overflow-y-auto">
+        <div className="grid grid-cols-2 overflow-y-auto">
+          {data.map((img) => {
+            return (
+              <CustomImageComponent
+                preview={img.image}
+                store={store}
+                project={project}
+              />
+            );
+          })}
         </div>
       </div>
-    </>    
-    )
-  });
+    </>
+  );
+});
 
 // New Tab NFT Elements/Stickers End - 24Jun2023
 
@@ -266,49 +223,7 @@ export const IconsPanel = ({ store }) => {
         >
           NFTs
         </Button>
-        {/* <Button
-					onClick={() => {
-						setService("nounproject");
-					}}
-					active={service === "nounproject"}
-					icon={
-						<img
-							src="/noun-project.svg"
-							alt="IconFinder"
-							width="15"
-						/>
-					}>
-					Noun Project
-				</Button>
-				<Button
-					onClick={() => {
-						setService("flaticon");
-					}}
-					active={service === "flaticon"}
-					icon={
-						<img
-							src="/flaticon.png"
-							alt="FlatIcon"
-							width="15"
-							style={{ filter: "invert(1)" }}
-						/>
-					}>
-					FlatIcon
-				</Button> */}
       </div>
-      {/* <input
-        leftIcon="search"
-        placeholder={t("sidePanel.searchPlaceholder")}
-        onChange={(e) => {
-          setQuery(e.target.value);
-        }}
-        className="border-2 rounded-md p-2 m-2 mt-0"
-        type="search"
-        style={{
-          marginBottom: "20px",
-        }}
-      /> */}
-
       <div className="flex flex-row justify-normal">
         <input
           className="border px-2 py-1 rounded-md w-full m-1 mb-4 mt-4"
@@ -330,18 +245,6 @@ export const IconsPanel = ({ store }) => {
       {service === "servNFTIcons" && (
         <NFTIcons query={delayedQuery} store={store} />
       )}
-      {/* {service === "nounproject" && (
-				<NounprojectPanel
-					query={delayedQuery}
-					store={store}
-				/>
-			)} */}
-      {/* {service === "flaticon" && (
-				<FlatIconPanel
-					query={delayedQuery}
-					store={store}
-			/>
-		)} */}
     </div>
   );
 };

@@ -392,7 +392,7 @@ const TextToImageTab2 = observer(({ store }) => {
 	const [stLoading, setStLoading] = useState(false);
 	const [stMoreBtn, setStMoreBtn] = useState(false);
 
-	const varApiKey = 'eb4c9faa1954407886ad5c8aab02029b';	
+	const varApiKey = 'eb4c9faa1954407886ad5c8aab02029b';	//change API KEY
 	var varTaskId ;
 	const fnHandleText = (evt) => { 
 		setStTextInput(evt.target.value)
@@ -446,8 +446,8 @@ const TextToImageTab2 = observer(({ store }) => {
 				"Access-Control-Allow-Origin": "https://localhost:5173", 
 			},
 			params: {
-				taskId: varTaskId,
-				// taskId: 369316216658263,
+				// taskId: varTaskId,
+				taskId: 369316216658263,
 			},
 		};
 		

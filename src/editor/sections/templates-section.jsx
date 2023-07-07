@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useInfiniteAPI } from "polotno/utils/use-api";
-
 import { SectionTab } from "polotno/side-panel";
-import MdPhotoLibrary from "@meronex/icons/md/MdPhotoLibrary";
-
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { TemplatesIcon } from "../editor-icon";
 import { getAllTemplates } from "../../services/backendApi";
@@ -49,6 +46,7 @@ const LenspostTemplates = ({ store }) => {
     setIsLoading(true);
     const res = await getAllTemplates();
     if (res?.data) {
+      // replaceImageURL(res?.data[0].image);
       setData(res?.data);
       setIsLoading(false);
     } else if (res?.error) {

@@ -110,11 +110,6 @@ const Editor = ({ store }) => {
   // 		setFile(event.target.files[0]);
   //   };
 
-  const fnDeletePrevImage = () => {
-    console.log("In Delete previous image function");
-    store.deleteElements(store.selectedElements.map((x) => x.id));
-  };
-
   const handleRemoveBg = async () => {
     var varActivePageNo = 0;
     console.log("Handle upload START");
@@ -160,15 +155,15 @@ const Editor = ({ store }) => {
           },
         }
       );
-        console.log(store.selectedElements[0].src);
-
+      console.log(store.selectedElements[0].src);
       fnAddImageToCanvas(response?.data?.data?.imageUrl, varActivePageNo);
-
-      console.log("The S3 Res is ")
+      
+      // console.log("The S3 Res is ")
       fnStoreImageToS3(response?.data?.data?.imageUrl);
-
-      // // delete the Previous Image: - 26Jun2023
-      // // store.deleteElements(store.selectedElements.map(x => x.id))
+      
+      // console.log("Deleting Previous images") // Under DEV - 08Jul2023
+      // fnDeletePrevImage()
+      return response?.data?.data?.imageUrl; //For to
     } catch (error) {
       console.error(error);
     }
@@ -205,7 +200,12 @@ const Editor = ({ store }) => {
     }
   }
 
+  // delete the Previous Image: - 26Jun2023
+  const fnDeletePrevImage = async () =>{
+    await store.deleteElements(store.selectedElements.map(x => x.id))
+  }
   // Cutout pro API end
+
   //  Toast Setup
   const fnCallToast = async () => {
     const id = toast.loading("Removing Background", { autoClose: 4000 });

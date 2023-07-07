@@ -1,83 +1,12 @@
 // Imports:
-import React, { useEffect, useRef, useState, useContext } from "react";
-
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import {
-  InputGroup,
-  Button,
-  Card,
-  Menu,
-  Spinner,
-  MenuItem,
-  Position,
-} from "@blueprintjs/core";
-import { Popover2 } from "@blueprintjs/popover2";
-import { svgToURL } from "polotno/utils/svg";
+import { Button, Spinner} from "@blueprintjs/core";
 import { SectionTab } from "polotno/side-panel";
-
-import { t } from "polotno/utils/l10n";
-import { ImagesGrid } from "polotno/side-panel/images-grid";
-import { BackgroundIcon, ElementsIcon } from "../editor-icon";
+import { BackgroundIcon } from "../editor-icon";
 import { useAccount } from "wagmi";
-import { getAllCanvas, getBGAssetByQuery } from "../../services/backendApi";
-
-import { getKey } from "polotno/utils/validate-key";
-import { getImageSize } from "polotno/utils/image";
-import styled from "polotno/utils/styled";
-
-import { useInfiniteAPI } from "polotno/utils/use-api";
-import FaVectorSquare from "@meronex/icons/fa/FaVectorSquare";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-
-// Seperate component for Lazy loading (CustomImage) - 29Jun2023
-// Custom Image card component start - 23Jun2023
-const CustomImage = observer(
-  ({ design, project, preview, json, onDelete, onPublic, store }) => {
-    // const { setCanvasId } = useContext(Context);
-
-    const fnDropImageOnCanvas = () => {
-      store.activePage.addElement({
-        type: "image",
-        // src: preview, //Image URL
-        width: store.width,
-        height: store.height,
-        // x: store.width / 2 ,
-        // y: pos ? pos.y : store.height / 2 - height / 2,
-      });
-      element.set({ clipSrc: preview });
-    };
-
-    return (
-      <Card
-        style={{ margin: "4px", padding: "0px", position: "relative" }}
-        interactive
-        onDragEnd={() => {
-          fnDropImageOnCanvas();
-        }}
-        onClick={() => {
-          fnDropImageOnCanvas();
-        }}
-      >
-        <div
-          className=""
-          onClick={() => {
-            // handle onClick
-            // setCanvasId(design.id);
-            // store.loadJSON(json);
-          }}
-        >
-          <LazyLoadImage
-            src={preview}
-            alt="Preview Image"
-            style={{ width: "100%" }}
-            opacity
-          />
-        </div>
-      </Card>
-    );
-  }
-);
-// Custom Image card component end - 23Jun2023
+import { getBGAssetByQuery } from "../../services/backendApi";
+import CustomImageComponent from "../../elements/CustomImageComponent";
 
 // New Tab Colors Start - 24Jun2023
 export const TabColors = observer(({ store, query }) => {
@@ -97,14 +26,13 @@ export const TabNFTBgs = observer(({ store, query }) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState("");
-  const [arrData, setArrData] = useState([]);
 
   const loadImages = async (query) => {
     setIsLoading(true);
 
     const res = await getBGAssetByQuery(query);
     if (res?.data) {
-      setArrData(res?.data);
+      setData(res?.data);
       setIsLoading(false);
     } else if (res?.error) {
       setIsError(res?.error);
@@ -138,55 +66,24 @@ export const TabNFTBgs = observer(({ store, query }) => {
   return (
     <>
       {/* Code for NFT BACKGROUNDS here */}
-      {/* <ImagesGrid
-        images={arrData}
-        key={arrData.id}
-        getPreview={(item) => item?.image}
-        onSelect={async (item, pos) => {
-          const { width, height } = await getImageSize(item?.image);
-          store.activePage.addElement({
-            type: "image",
-            src: item.image,
-            //   width,
-            //   height,
-            // if position is available, show image on dropped place
-            // or just show it in the center
-            x: pos ? pos.x : store.width / 2 - width / 2,
-            y: pos ? pos.y : store.height / 2 - height / 2,
-          });
-        }}
-        rowsNumber={2}
-        isLoading={isLoading}
-        loadMore={false}
-      /> */}
-
       {/* Lazyloading Try - 29Jun2023 */}
-
-    <div className="overflow-y-auto h-96" >
-      <div className="grid grid-cols-2">
-
-      {arrData.map((design) => { 
-        return(
-        <CustomImage
-        design={design}
-        json={design.data}
-        preview={
-          // design?.imageLink != null &&
-          // design?.imageLink.length > 0 &&
-                // design?.imageLink[0]w
-        `${design.image}`
-        }
-        key={design.id}
-        store={store}
-        project={project}
-        // onDelete={() => deleteCanvas(design.id)}
-        // onPublic={() => changeVisibility(design.id)}
-        />)})}
-
+      <div className="overflow-y-auto h-96">
+        <div className="grid grid-cols-2">
+          {data.map((design) => {
+            return (
+              <CustomImageComponent
+                design={design}
+                json={design.data}
+                preview={design.image}
+                key={design.id}
+                store={store}
+                project={project}
+              />
+            );
+          })}
         </div>
-    </div> 
+      </div>
     </>
-
   );
 });
 
