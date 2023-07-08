@@ -1,10 +1,51 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { SectionTab } from "polotno/side-panel";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { TemplatesIcon } from "../editor-icon";
-import { getAllTemplates } from "../../services/backendApi";
+import {
+  getAllTemplates,
+  getUserPublicTemplates,
+} from "../../services/backendApi";
+import { replaceImageURL } from "../../services/replaceUrl";
+import { Context } from "wagmi";
+import { Card } from "@blueprintjs/core";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { ErrorComponent } from "../../elements";
+
+// Design card component start
+
+const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
+  const { contextCanvasIdRef } = useContext(Context);
+
+  return (
+    <Card
+      style={{ margin: "4px", padding: "0px", position: "relative" }}
+      interactive
+      onDragEnd={() => {
+        store.loadJSON(json);
+      }}
+      onClick={() => {
+        store.loadJSON(json);
+        contextCanvasIdRef.current = design.id;
+      }}
+    >
+      <div className="">
+        <LazyLoadImage
+          placeholderSrc={replaceImageURL(preview)}
+          effect="blur"
+          height={150}
+          width={150}
+          src={replaceImageURL(preview)}
+          alt="Preview Image"
+        />
+      </div>
+    </Card>
+  );
+});
+
+// Design card component end
 
 export const TemplatesPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -45,7 +86,6 @@ const LenspostTemplates = ({ store }) => {
     setIsLoading(true);
     const res = await getAllTemplates();
     if (res?.data) {
-      replaceImageURL(res?.data[0].image);
       setData(res?.data);
       setIsLoading(false);
     } else if (res?.error) {
@@ -59,62 +99,94 @@ const LenspostTemplates = ({ store }) => {
   }, []);
 
   if (isError) {
-    return <div>{isError}</div>;
+    return <ErrorComponent message={isError} />;
   }
 
-  // function for replacing image s3 url with the CDN url
-  const replaceImageURL = (url) => {
-    const replacedURL = url.replace("https://lenspost.s3.amazonaws.com/", "");
-    return `http://lenspost.b-cdn.net/${replacedURL}`;
-  };
-
   return (
-    <div style={{ height: "100%" }} className="overflow-y-auto">
-      <ImagesGrid
-        shadowEnabled={false}
-        images={data}
-        getPreview={(item) => replaceImageURL(item.image)}
-        isLoading={isLoading}
-        onSelect={async (item) => {
-          const json = item.data;
-          // const json = req.json();
-          // just inject it into store
+    <>
+      {/* New Design card start - 23Jun2023 */}
+      {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
+      {/*   Pass these onto Line 25 */}
+      {data.length === 0 ? (
+        <ErrorComponent message="No templates found" />
+      ) : (
+        <div className="overflow-y-auto grid grid-cols-2">
+          {data.map((design) => {
+            return (
+              <DesignCard
+                design={design}
+                json={design.data}
+                preview={design?.image}
+                key={design.id}
+                store={store}
+                project={project}
+              />
+            );
+          })}
+        </div>
+      )}
 
-          // Set canvas dimensions to Template dimensions - 26Jun2023
-          store.loadJSON(json);
-          store.setSize(json.width, json.height);
-        }}
-        rowsNumber={1}
-      />
-    </div>
+      {/* New Design card end - 23Jun2023 */}
+    </>
   );
 };
 
 const UserTemplates = ({ store }) => {
-  // load data
-  const { data, isLoading } = useInfiniteAPI({
-    getAPI: ({ page }) => `templates/page${page}.json`,
-  });
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState("");
+
+  const loadImages = async () => {
+    setIsLoading(true);
+    const res = await getUserPublicTemplates();
+    if (res?.data) {
+      setData(res?.data);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsError(res?.error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadImages();
+  }, []);
+
+  if (isError) {
+    return <ErrorComponent message={isError} />;
+  }
 
   return (
-    <div style={{ height: "100%" }}>
-      <p>user public templates -- remove later</p>
+    <>
+      {/* New Design card start - 23Jun2023 */}
+      {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
+      {/*   Pass these onto Line 25 */}
+      {data.length === 0 ? (
+        <ErrorComponent message="No templates found" />
+      ) : (
+        <div className="overflow-y-auto grid grid-cols-2">
+          {data.map((design) => {
+            console.log(design.data);
+            return (
+              <DesignCard
+                design={design}
+                json={design.data}
+                preview={
+                  design?.imageLink != null &&
+                  design?.imageLink.length > 0 &&
+                  design?.imageLink[0]
+                }
+                key={design.id}
+                store={store}
+                project={project}
+              />
+            );
+          })}
+        </div>
+      )}
 
-      <ImagesGrid
-        shadowEnabled={false}
-        images={data?.map((data) => data.items).flat()}
-        getPreview={(item) => `/templates/${item.preview}`}
-        isLoading={isLoading}
-        onSelect={async (item) => {
-          // download selected json
-          const req = await fetch(`/templates/${item.json}`);
-          const json = await req.json();
-          // just inject it into store
-          store.loadJSON(json);
-        }}
-        rowsNumber={1}
-      />
-    </div>
+      {/* New Design card end - 23Jun2023 */}
+    </>
   );
 };
 

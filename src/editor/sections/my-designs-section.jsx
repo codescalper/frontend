@@ -28,6 +28,7 @@ import { toast } from "react-toastify";
 import { Context } from "../../context/ContextProvider";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { replaceImageURL } from "../../services/replaceUrl";
+import { ConnectWalletMsgComponent, ErrorComponent } from "../../elements";
 
 // Design card component start - 23Jun2023
 
@@ -144,7 +145,7 @@ export const MyDesignsPanel = observer(
     };
 
     const changeVisibility = async (id) => {
-      const res = await changeCanvasVisibility(id);
+      const res = await changeCanvasVisibility(id, true);
       if (res?.data) {
         toast.success(res?.data);
         loadImages();
@@ -158,16 +159,8 @@ export const MyDesignsPanel = observer(
       loadImages();
     }, [isConnected]);
 
-    if (isError) {
-      return <div>{isError}</div>;
-    }
-
     if (isDisconnected || !address) {
-      return (
-        <>
-          <p>Please connect your wallet</p>
-        </>
-      );
+      return <ConnectWalletMsgComponent />;
     }
 
     // Test - 23Jun2023
@@ -248,14 +241,10 @@ export const MyDesignsPanel = observer(
         {/* New Design card start - 23Jun2023 */}
         {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
         {/*   Pass these onto Line 25 */}
-        {data.length === 0 ? (
-          <div className="flex justify-center items-center">
-            <div className="text-center">
-              <p className="text-gray-500 text-sm mt-4">
-                You have not created any designs yet.
-              </p>
-            </div>
-          </div>
+        {isError ? (
+          <ErrorComponent message={isError} />
+        ) : data.length === 0 ? (
+          <ErrorComponent message="You have not created any design" />
         ) : (
           <div className="overflow-y-auto grid grid-cols-2">
             {data.map((design) => {

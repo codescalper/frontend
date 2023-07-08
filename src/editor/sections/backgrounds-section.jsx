@@ -6,7 +6,11 @@ import { SectionTab } from "polotno/side-panel";
 import { BackgroundIcon } from "../editor-icon";
 import { useAccount } from "wagmi";
 import { getBGAssetByQuery } from "../../services/backendApi";
-import CustomImageComponent from "../../elements/CustomImageComponent";
+import {
+  ConnectWalletMsgComponent,
+  CustomImageComponent,
+  ErrorComponent,
+} from "../../elements";
 
 // New Tab Colors Start - 24Jun2023
 export const TabColors = observer(({ store, query }) => {
@@ -46,15 +50,11 @@ export const TabNFTBgs = observer(({ store, query }) => {
   }, [isConnected]);
 
   if (isDisconnected || !address) {
-    return (
-      <>
-        <p>Please connect your wallet</p>
-      </>
-    );
+    return <ConnectWalletMsgComponent />;
   }
 
   if (isError) {
-    return <div>{isError}</div>;
+    return <ErrorComponent message={isError} />;
   }
 
   return (
