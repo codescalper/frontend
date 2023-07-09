@@ -138,6 +138,7 @@ const LenspostTemplates = ({ store }) => {
     </>
 
   // Show Loading - 06Jul2023
+    )
 };
 
 const UserTemplates = ({ store }) => {
