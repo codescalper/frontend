@@ -1,5 +1,5 @@
-import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import axios from "axios";
+import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import { getFromLocalStorage } from "./localStorage";
 
 const API = BACKEND_DEV_URL;
@@ -1013,3 +1013,49 @@ export const getBGAssetByQuery = async (query) => {
 };
 
 // BG asset apis end
+
+// Remove Background API
+
+export const getRemovedBgS3Link = async (query) => {
+  try {
+    // headers = {
+    //   "Access-Control-Allow-Origin":"*",
+    // }
+
+    console.log({query})
+    
+    const result = await api.post(`${API}/util/upload-image?image=${query}`);
+    
+    console.log({result})
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 401) {
+      console.log({ 401: error?.response?.statusText });
+      return {
+        error: error?.response?.data?.message,
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};

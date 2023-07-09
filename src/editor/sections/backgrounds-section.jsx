@@ -1,7 +1,7 @@
 // Imports:
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { Button } from "@blueprintjs/core";
+import { Button, Spinner} from "@blueprintjs/core";
 import { SectionTab } from "polotno/side-panel";
 import { BackgroundIcon } from "../editor-icon";
 import { useAccount } from "wagmi";
@@ -52,17 +52,23 @@ export const TabNFTBgs = observer(({ store, query }) => {
       </>
     );
   }
-
+  
   if (isError) {
     return <div>{isError}</div>;
   }
 
+  // Show Loading - 06Jul2023
+  if(isLoading){
+    return<div className="flex flex-col">
+      <Spinner/>
+    </div>
+  }
   return (
     <>
       {/* Code for NFT BACKGROUNDS here */}
       {/* Lazyloading Try - 29Jun2023 */}
-      <div className=" h-full overflow-y-auto">
-        <div className="grid grid-cols-2 overflow-y-auto">
+      <div className="overflow-y-auto h-96">
+        <div className="grid grid-cols-2">
           {data.map((design) => {
             return (
               <CustomImageComponent
@@ -88,8 +94,17 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
   const [stInputQuery, setStInputQuery] = useState("");
 
   return (
-    <>
-      <div className="flex flex-row overflow-y-scroll h-fit">
+    <div className="h-full">
+      <div className="flex flex-row h-fit">
+        {/* <Button
+			className="m-1 rounded-md border-2 p-2"
+			onClick={() => {
+				setStTab("tabColors");
+			}}
+			active={stTab === "tabColors"}
+			icon="color-fill">
+				Colors
+		</Button> */}
         <Button
           className="m-2 rounded-md border-2 px-2"
           onClick={() => {
@@ -121,7 +136,7 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
       {/* The Tab Elements start to appear here - 24Jun2023 */}
       {stTab === "tabColors" && <TabColors query={""} store={store} />}
       {stTab === "tabNFTBgs" && <TabNFTBgs query={""} store={store} />}
-    </>
+    </div>
   );
 });
 

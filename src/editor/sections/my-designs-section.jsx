@@ -15,6 +15,7 @@ import {
   Dialog,
   DialogBody,
   DialogFooter,
+  Spinner
 } from "@blueprintjs/core";
 
 import { Popover2 } from "@blueprintjs/popover2";
@@ -170,6 +171,12 @@ export const MyDesignsPanel = observer(
       );
     }
 
+    // Show Loading - 06Jul2023
+    if(isLoading){
+      return<div className="flex flex-col">
+        <Spinner/>
+      </div>
+    }
     // Test - 23Jun2023
     // const arrDesign = [
     //   { design_id: 12, preview: "https://picsum.photos/300" },
