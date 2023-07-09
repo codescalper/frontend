@@ -7,10 +7,9 @@ import {
   saveToLocalStorage,
   removeFromLocalStorage,
 } from "./services/localStorage";
-import CheckInternetConnection from "./elements/CheckInternetConnection";
-import LoadingComponent from "./elements/LoadingComponent";
 import { ToastContainer, toast } from "react-toastify";
 import { Context } from "./context/ContextProvider";
+import { CheckInternetConnection, LoadingComponent } from "./elements";
 
 export default function App() {
   const { isLoading, setIsLoading, text, setText } = useContext(Context);

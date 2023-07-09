@@ -2,7 +2,7 @@ import axios from "axios";
 import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import { getFromLocalStorage } from "./localStorage";
 
-const API = BACKEND_DEV_URL;
+const API = BACKEND_LOCAL_URL;
 
 /**
  * @param walletAddress string
@@ -496,12 +496,12 @@ export const updateCanvas = async (
 };
 
 // need auth token (jwt)
-export const changeCanvasVisibility = async (id, visibility) => {
+export const changeCanvasVisibility = async (id, isPublic) => {
   try {
     const result = await api.put(`${API}/user/canvas/visibility`, {
       canvasData: {
         id: id,
-        visibility: visibility,
+        isPublic: isPublic,
       },
     });
 
@@ -978,7 +978,48 @@ export const getAssetByQuery = async (query) => {
 // need auth token (jwt)
 export const getBGAssetByQuery = async (query) => {
   try {
-    const result = await api.get(`${API}/asset/background?author=${query}&limit=100&offset=0`);
+    const result = await api.get(
+      `${API}/asset/background?author=${query}&limit=100&offset=0`
+    );
+
+    if (result?.status === 200) {
+      return {
+        data: result?.data,
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 401) {
+      console.log({ 401: error?.response?.statusText });
+      return {
+        error: error?.response?.data?.message,
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
+
+// BG asset apis end
+
+// user public templates apis start
+export const getUserPublicTemplates = async () => {
+  try {
+    const result = await api.get(`${API}/template/user`);
 
     if (result?.status === 200) {
       return {

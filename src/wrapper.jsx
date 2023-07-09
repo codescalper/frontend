@@ -33,7 +33,7 @@ export const Wrapper = () => {
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
         <ContextProvider>
-        <App />
+          <App />
         </ContextProvider>
       </RainbowKitProvider>
     </WagmiConfig>

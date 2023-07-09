@@ -17,7 +17,11 @@ import { getAssetByQuery } from "../../services/backendApi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 // Custom Image card component end - 01Jul2023
 import { useAccount } from "wagmi";
-import CustomImageComponent from "../../elements/CustomImageComponent";
+import {
+  ConnectWalletMsgComponent,
+  CustomImageComponent,
+  ErrorComponent,
+} from "../../elements";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -132,11 +136,7 @@ export const NFTIcons = observer(({ store, query }) => {
   }, [query]);
 
   if (isDisconnected || !address) {
-    return (
-      <>
-        <p>Please connect your wallet</p>
-      </>
-    );
+    return <ConnectWalletMsgComponent />;
   }
 
   // Show Loading - 06Jul2023
@@ -147,10 +147,7 @@ export const NFTIcons = observer(({ store, query }) => {
   }
 
   return isError ? (
-    <div className="flex flex-col items-center justify-center">
-      <FaVectorSquare className="text-5xl text-gray-400" />
-      <p className="text-gray-400 text-xl mt-4">{isError}</p>
-    </div>
+    <ErrorComponent message={isError} />
   ) : (
     <>
       <div className="h-full overflow-y-auto">

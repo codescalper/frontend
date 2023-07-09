@@ -5,21 +5,18 @@ import { Card } from "@blueprintjs/core";
 import { replaceImageURL } from "../services/replaceUrl";
 
 // Custom Image card component start - 23Jun2023
-const CustomImageComponent = ({
-  design,
-  preview,
-  json,
-  onDelete,
-  onPublic,
-  store,
-}) => {
+const CustomImageComponent = ({ design, preview, json, store }) => {
+  // function for random 3 digit number
+  const randomThreeDigitNumber = () => {
+    return Math.floor(100 + Math.random() * 900);
+  };
+
   const fnDropImageOnCanvas = () => {
     store.activePage?.addElement({
       type: "image",
-      src: replaceImageURL(preview), //Image URL
+      src: replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`, //Image URL
       width: store.width,
       height: store.height,
-      crossOriginIsolated: false,
     });
   };
 

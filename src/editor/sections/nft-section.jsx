@@ -14,7 +14,11 @@ import {
 import { useAccount } from "wagmi";
 import { convertIPFSUrl, getImageUrl } from "../../services/imageUrl";
 import { toast } from "react-toastify";
-import CustomImageComponent from "../../elements/CustomImageComponent";
+import {
+  ConnectWalletMsgComponent,
+  CustomImageComponent,
+  ErrorComponent,
+} from "../../elements";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -129,6 +133,21 @@ const LenspostNFT = () => {
     }
   }
 
+  // function for infinite scroll with limit anf offset
+  const loadMore = async () => {
+    if (!contractAddress) return;
+    setIsLoading(true);
+    const res = await getNftByCollection(contractAddress);
+    if (res?.data) {
+      const images = getImageUrl(res?.data);
+      setLenspostNFTImages((prev) => [...prev, ...images]);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsNftsError(res?.error);
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isDisconnected) return;
 
@@ -142,16 +161,12 @@ const LenspostNFT = () => {
   }, [isConnected]);
 
   if (isDisconnected || !address) {
-    return (
-      <>
-        <p>Please connect your wallet</p>
-      </>
-    );
+    return <ConnectWalletMsgComponent />;
   }
 
   function RenderCategories() {
     return isError ? (
-      <p>{isError}</p>
+      <ErrorComponent message={isError} />
     ) : (
       <>
         {collection.length > 0 ? (
@@ -210,6 +225,7 @@ const LenspostNFT = () => {
                     />
                   );
                 })}
+                <button onClick={loadMore}>Load More</button>
               </div>
             </div>
           </>
@@ -325,19 +341,7 @@ const WalletNFT = () => {
   }, [isConnected]);
 
   if (isDisconnected || !address) {
-    return (
-      <>
-        <p>Please connect your wallet</p>
-      </>
-    );
-  }
-
-  if (isError) {
-    return (
-      <>
-        <div>{isError}</div>
-      </>
-    );
+    return <ConnectWalletMsgComponent />;
   }
 
   return (
@@ -374,8 +378,10 @@ const WalletNFT = () => {
         ></Button>
       )}
 
-      {isNftsError ? (
-        <div>{isNftsError}</div>
+      {isError ? (
+        <ErrorComponent message={isError} />
+      ) : isNftsError ? (
+        <ErrorComponent message={isNftsError} />
       ) : (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -388,20 +394,6 @@ const WalletNFT = () => {
                 />
               );
             })}
-            {/* <ImagesGrid
-              images={walletNFTImages}
-              isLoading={isLoading}
-              getPreview={(image) => image.url}
-              crossOrigin="anonymous"
-              onSelect={async (image) => {
-                store.activePage?.addElement({
-                  type: "image",
-                  src: image.url,
-                  width: store.width,
-                  height: store.height,
-                });
-              }}
-            /> */}
           </div>
         </div>
       )}

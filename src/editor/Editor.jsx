@@ -256,19 +256,19 @@ const Editor = ({ store }) => {
           }
         }
 
-        if (canvasIdRef.current) {
-          const res = await updateCanvas(
-            canvasIdRef.current,
-            storeData,
-            "hello",
-            false
-          );
-          if (res?.data) {
-            console.log(res?.data);
-          } else if (res?.error) {
-            console.log("Canvas update error", { error: res?.error });
-          }
-        }
+        // if (canvasIdRef.current) {
+        //   const res = await updateCanvas(
+        //     canvasIdRef.current,
+        //     storeData,
+        //     "hello",
+        //     false
+        //   );
+        //   if (res?.data) {
+        //     console.log(res?.data);
+        //   } else if (res?.error) {
+        //     console.log("Canvas update error", { error: res?.error });
+        //   }
+        // }
       }
     };
 
