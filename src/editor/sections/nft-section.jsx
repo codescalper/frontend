@@ -19,6 +19,7 @@ import {
   CustomImageComponent,
   ErrorComponent,
 } from "../../elements";
+import { useQuery } from "@tanstack/react-query";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -63,102 +64,77 @@ export const NFTSection = {
 };
 
 const LenspostNFT = () => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["lenspost-nft-collections"],
+    queryFn: getAllCollection,
+  });
   const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
   const [activeCat, setActiveCat] = useState(null);
   const [collection, setCollection] = useState([]);
   const { address, isDisconnected, isConnected } = useAccount();
-  const [isError, setIsError] = useState("");
   const [isNftsError, setIsNftsError] = useState("");
   const [searchId, setSearchId] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  const searchNFT = async () => {
-    if (!activeCat) return;
-    setIsLoading(true);
-    const res = await getCollectionNftById(searchId, contractAddress);
-    let obj = {};
-    let arr = [];
+  // const searchNFT = async () => {
+  //   if (!activeCat) return;
+  //   setIsLoading(true);
+  //   const res = await getCollectionNftById(searchId, contractAddress);
+  //   let obj = {};
+  //   let arr = [];
 
-    if (res?.data) {
-      if (res?.data?.ipfsLink?.includes("ipfs://")) {
-        res.data.ipfsLink = convertIPFSUrl(res?.data?.ipfsLink);
-        obj = { url: res?.data[i].ipfsLink };
-        arr.push(obj);
-      } else {
-        obj = { url: res?.data?.ipfsLink };
-        arr.push(obj);
-      }
-      setLenspostNFTImages(arr);
-      setIsLoading(false);
-      setSearchId("");
-    } else if (res?.data === "") {
-      setIsNftsError("NFT not found");
-      setSearchId("");
-    } else if (res?.error) {
-      setIsNftsError(res?.error);
-      setIsLoading(false);
-      setSearchId("");
-    }
+  //   if (res?.data) {
+  //     if (res?.data?.ipfsLink?.includes("ipfs://")) {
+  //       res.data.ipfsLink = convertIPFSUrl(res?.data?.ipfsLink);
+  //       obj = { url: res?.data[i].ipfsLink };
+  //       arr.push(obj);
+  //     } else {
+  //       obj = { url: res?.data?.ipfsLink };
+  //       arr.push(obj);
+  //     }
+  //     setLenspostNFTImages(arr);
+  //     setIsLoading(false);
+  //     setSearchId("");
+  //   } else if (res?.data === "") {
+  //     setIsNftsError("NFT not found");
+  //     setSearchId("");
+  //   } else if (res?.error) {
+  //     setIsNftsError(res?.error);
+  //     setIsLoading(false);
+  //     setSearchId("");
+  //   }
 
-    if (!searchId) {
-      getNftByContractAddress();
-    }
-  };
+  //   if (!searchId) {
+  //     getNftByContractAddress();
+  //   }
+  // };
 
-  const getNftByContractAddress = async () => {
-    if (!contractAddress) return;
-    setIsLoading(true);
-    const res = await getNftByCollection(contractAddress);
-    if (res?.data) {
-      const images = getImageUrl(res?.data);
-      setLenspostNFTImages(images);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsNftsError(res?.error);
-      setIsLoading(false);
-    }
-  };
+  // const getNftByContractAddress = async () => {
+  //   if (!contractAddress) return;
+  //   setIsLoading(true);
+  //   const res = await getNftByCollection(contractAddress);
+  //   if (res?.data) {
+  //     const images = getImageUrl(res?.data);
+  //     setLenspostNFTImages(images);
+  //     setIsLoading(false);
+  //   } else if (res?.error) {
+  //     setIsNftsError(res?.error);
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  async function loadImages() {
-    // here we should implement your own API requests
-    setIsLoading(true);
-    const res = await getAllCollection();
-    if (res?.data) {
-      setCollection(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsError(res?.error);
-      setIsLoading(false);
-    }
-  }
-
-  // function for infinite scroll with limit anf offset
-  const loadMore = async () => {
-    if (!contractAddress) return;
-    setIsLoading(true);
-    const res = await getNftByCollection(contractAddress);
-    if (res?.data) {
-      const images = getImageUrl(res?.data);
-      setLenspostNFTImages((prev) => [...prev, ...images]);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsNftsError(res?.error);
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isDisconnected) return;
-
-    getNftByContractAddress();
-  }, [contractAddress]);
-
-  useEffect(() => {
-    if (isDisconnected) return;
-
-    loadImages();
-  }, [isConnected]);
+  // async function loadImages() {
+  //   // here we should implement your own API requests
+  //   setIsLoading(true);
+  //   const res = await getAllCollection();
+  //   if (res?.data) {
+  //     setCollection(res?.data);
+  //     setIsLoading(false);
+  //   } else if (res?.error) {
+  //     setIsError(res?.error);
+  //     setIsLoading(false);
+  //   }
+  // }
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -166,11 +142,19 @@ const LenspostNFT = () => {
 
   function RenderCategories() {
     return isError ? (
-      <ErrorComponent message={isError} />
+      <ErrorComponent message={error} />
     ) : (
       <>
-        {collection.length > 0 ? (
-          collection.map((item, index) => (
+        {isLoading ? (
+          <div className="flex justify-center items-center">
+            <div className="text-center">
+              <p className="text-gray-500 text-sm mt-4">
+                Loading collections...
+              </p>
+            </div>
+          </div>
+        ) : data.length > 0 ? (
+          data.map((item, index) => (
             <div className="" key={index}>
               <div
                 className="flex items-center space-x-4 p-2 mb-4 cursor-pointer"

@@ -736,46 +736,8 @@ export const shareOnLens = async (canvasId, name, content) => {
 // collection apis start
 // need auth token (jwt)
 export const getAllCollection = async () => {
-  try {
-    const result = await api.get(`${API}/collection`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(`${API}/collection`);
+  return result?.data;
 };
 
 // need auth token (jwt)
@@ -888,49 +850,18 @@ export const getCollectionNftById = async (id, contractAddress) => {
 // template apis start
 // no need auth token (jwt)
 export const getAllTemplates = async () => {
-  try {
-    const result = await api.get(`${API}/template`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      console.log({ 401: error?.response?.statusText });
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(`${API}/template`);
+  return result?.data;
 };
 // template apis end
+
+// user public templates apis start
+export const getUserPublicTemplates = async () => {
+  const result = await api.get(`${API}/template/user`);
+  return result?.data;
+};
+
+// user public templates apis end
 
 // asset apis start
 // need auth token (jwt)
@@ -1015,42 +946,3 @@ export const getBGAssetByQuery = async (query) => {
 };
 
 // BG asset apis end
-
-// user public templates apis start
-export const getUserPublicTemplates = async () => {
-  try {
-    const result = await api.get(`${API}/template/user`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      console.log({ 401: error?.response?.statusText });
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
-};
-
-// user public templates apis end

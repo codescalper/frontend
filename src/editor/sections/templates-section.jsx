@@ -13,12 +13,12 @@ import { Context } from "wagmi";
 import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ErrorComponent } from "../../elements";
+import { useQuery } from "@tanstack/react-query";
 
 // Design card component start
 
 const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
   const { contextCanvasIdRef } = useContext(Context);
-
   return (
     <Card
       style={{ margin: "4px", padding: "0px", position: "relative" }}
@@ -78,28 +78,13 @@ export const TemplatesPanel = observer(({ store }) => {
 });
 
 const LenspostTemplates = ({ store }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState("");
-
-  const loadImages = async () => {
-    setIsLoading(true);
-    const res = await getAllTemplates();
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsError(res?.error);
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadImages();
-  }, []);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["lenspost-templates"],
+    queryFn: getAllTemplates,
+  });
 
   if (isError) {
-    return <ErrorComponent message={isError} />;
+    return <ErrorComponent message={error} />;
   }
 
   return (
@@ -107,7 +92,13 @@ const LenspostTemplates = ({ store }) => {
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {data.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center">
+          <div className="text-center">
+            <p className="text-gray-500 text-sm mt-4">Loading templates...</p>
+          </div>
+        </div>
+      ) : data.length === 0 ? (
         <ErrorComponent message="No templates found" />
       ) : (
         <div className="overflow-y-auto grid grid-cols-2">
@@ -132,28 +123,13 @@ const LenspostTemplates = ({ store }) => {
 };
 
 const UserTemplates = ({ store }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState("");
-
-  const loadImages = async () => {
-    setIsLoading(true);
-    const res = await getUserPublicTemplates();
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsError(res?.error);
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadImages();
-  }, []);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["user-templates"],
+    queryFn: getUserPublicTemplates,
+  });
 
   if (isError) {
-    return <ErrorComponent message={isError} />;
+    return <ErrorComponent message={error} />;
   }
 
   return (
@@ -161,12 +137,17 @@ const UserTemplates = ({ store }) => {
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {data.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center">
+          <div className="text-center">
+            <p className="text-gray-500 text-sm mt-4">Loading templates...</p>
+          </div>
+        </div>
+      ) : data.length === 0 ? (
         <ErrorComponent message="No templates found" />
       ) : (
         <div className="overflow-y-auto grid grid-cols-2">
           {data.map((design) => {
-            console.log(design.data);
             return (
               <DesignCard
                 design={design}
