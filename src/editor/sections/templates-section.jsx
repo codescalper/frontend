@@ -13,6 +13,8 @@ import { Context } from "wagmi";
 import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ErrorComponent } from "../../elements";
+import { useAccount } from "wagmi";
+import {Spinner} from "@blueprintjs/core"
 
 // Design card component start
 
@@ -101,6 +103,12 @@ const LenspostTemplates = ({ store }) => {
   if (isError) {
     return <ErrorComponent message={isError} />;
   }
+  
+    if(isLoading){
+    return<div className="flex flex-col">
+      <Spinner/>
+    </div>
+  }
 
   return (
     <>
@@ -128,7 +136,8 @@ const LenspostTemplates = ({ store }) => {
 
       {/* New Design card end - 23Jun2023 */}
     </>
-  );
+
+  // Show Loading - 06Jul2023
 };
 
 const UserTemplates = ({ store }) => {

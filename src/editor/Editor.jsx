@@ -30,6 +30,7 @@ import {
   createCanvas,
   deleteCanvasById,
   getCanvasById,
+  getRemovedBgS3Link,
   updateCanvas,
 } from "../services/backendApi";
 import { toast } from "react-toastify";
@@ -38,6 +39,7 @@ import { toast } from "react-toastify";
 import { Button } from "@blueprintjs/core";
 import axios from "axios";
 import { Context } from "../context/ContextProvider";
+import { BACKEND_DEV_URL } from "../services/env";
 
 const sections = [
   TemplatesSection,
@@ -108,11 +110,6 @@ const Editor = ({ store }) => {
   // 		setFile(event.target.files[0]);
   //   };
 
-  const fnDeletePrevImage = () => {
-    console.log("In Delete previous image function");
-    store.deleteElements(store.selectedElements.map((x) => x.id));
-  };
-
   const handleRemoveBg = async () => {
     var varActivePageNo = 0;
     console.log("Handle upload START");
@@ -131,69 +128,84 @@ const Editor = ({ store }) => {
     // Find the index of the page for which thee removed background image needs to be placed
     store.pages.map((page) => {
       page.identifier == store._activePageId;
-
-      console.log("Index of the Page is ");
-      console.log(store.pages.indexOf(page));
-      setStActivePageNo(store.pages.indexOf(page));
+      // console.log("Index of the Page is ");
+      // console.log(store.pages.indexOf(page));
+      // setStActivePageNo(store.pages.indexOf(page));
       varActivePageNo = store.pages.indexOf(page);
     });
 
     try {
-      const response = await axios
-        .get(
-          // BG REMOVE from Cutout.pro,
+      const response = await axios.get(
+        // BG REMOVE from Cutout.pro,
 
-          // For File use this Endpoint
-          // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
+        // For File use this Endpoint
+        // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
 
-          // For Image `src` URL as parameter , use this Endpoint
-          `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
+        // For Image `src` URL as parameter , use this Endpoint
+        `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
 
-          // 'https://www.cutout.pro/api/v1/text2imageAsync',
-          {
-            headers: {
-              APIKEY: "63d61dd44f384a7c9ad3f05471e17130",
-              //  Backup API Keys :
-              // 'APIKEY': 'c136635d69324c99942639424feea81a'
-              // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
-              // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
-            },
-          }
-        )
-        .then((response) => {
-          // Handle the response here
-          console.log(response);
-          // This is the Image URL for removed background
-          console.log("The removed background URL is :");
-          // console.log(response.data.data.imageUrl);
-
-          // Add the new removed Bg Image to the Page
-          store.pages[stActivePageNo || varActivePageNo].addElement({
-            type: "image",
-            x: 0.5 * store.width,
-            y: 0.5 * store.height,
-            width: store.selectedElements[0].width,
-            height: store.selectedElements[0].height,
-            src: response.data.data.imageUrl,
-            selectable: true,
-            draggable: true,
-            removable: true,
-            resizable: true,
-            showInExport: true,
-          });
-          console.log(response.data.data.imageBase64);
-          // delete the Previous Image: - 26Jun2023
-          // store.deleteElements(store.selectedElements.map(x => x.id))
-          return response.data.data.imageUrl;
-          setRemovedBgImageUrl(response.data.data.imageUrl);
-        });
+        // 'https://www.cutout.pro/api/v1/text2imageAsync',
+        {
+          headers: {
+            APIKEY: "de13ee35bc2d4fbb80e9c618336b0f99",
+            //  Backup API Keys :
+            // 'APIKEY': 'c136635d69324c99942639424feea81a'
+            // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
+            // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
+          },
+        }
+      );
+      console.log(store.selectedElements[0].src);
+      fnAddImageToCanvas(response?.data?.data?.imageUrl, varActivePageNo);
+      
+      // console.log("The S3 Res is ")
+      fnStoreImageToS3(response?.data?.data?.imageUrl);
+      
+      // console.log("Deleting Previous images") // Under DEV - 08Jul2023
+      // fnDeletePrevImage()
+      return response?.data?.data?.imageUrl; //For to
     } catch (error) {
       console.error(error);
     }
     console.log("Handle upload END");
   };
+  // Function to Add Removed BG image on the Canvas
+  const fnAddImageToCanvas = (removedBgUrl, varActivePageNo) => {
+    // Add the new removed Bg Image to the Page
+    store.pages[stActivePageNo || varActivePageNo].addElement({
+      type: "image",
+      x: 0.5 * store.width,
+      y: 0.5 * store.height,
+      width: store.selectedElements[0].width,
+      height: store.selectedElements[0].height,
+      src: removedBgUrl,
+      selectable: true,
+      draggable: true,
+      removable: true,
+      resizable: true,
+      showInExport: true,
+    });
+  };
 
+  const fnStoreImageToS3 = async (removedBgUrl) =>{
+
+    // return console.log(removedBgUrl);
+
+    const res = await getRemovedBgS3Link(removedBgUrl);
+    if(res?.data){
+      console.log(res.data);
+    }
+    else if(res?.error) {
+      console.log(res.error)
+    }
+  }
+
+  // delete the Previous Image: - 26Jun2023
+  const fnDeletePrevImage = async () =>{
+    await store.deleteElements(store.selectedElements.map(x => x.id))
+  }
   // Cutout pro API end
+
   //  Toast Setup
   const fnCallToast = async () => {
     const id = toast.loading("Removing Background", { autoClose: 4000 });

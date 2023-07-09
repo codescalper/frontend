@@ -197,9 +197,10 @@ const LenspostNFT = () => {
 
   function RenderImages() {
     return (
-      <div className="h-full">
-        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10 m-1 mb-4">
+      <div className="h-88">
+        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10">
           <Button
+          className="mb-4 ml-1"
             icon="arrow-left"
             onClick={() => {
               goBack();
@@ -250,11 +251,11 @@ const LenspostNFT = () => {
         />
         <Button
           icon="search"
-          className="ml-4"
+          className="ml-"
           onClick={() => searchNFT(searchId)}
         ></Button>
       </div>
-      <div className="overflow-y-auto">
+      <div className="overflow-y-auto overflow-x-hidden">
         {activeCat === null ? <RenderCategories /> : <RenderImages />}
       </div>
     </>
