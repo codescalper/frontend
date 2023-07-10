@@ -1,8 +1,20 @@
-import { BACKEND_DEV_URL, BACKEND_PROD_URL, BACKEND_LOCAL_URL } from "./env";
 import axios from "axios";
+import {
+  BACKEND_DEV_URL,
+  BACKEND_PROD_URL,
+  BACKEND_LOCAL_URL,
+  ENVIRONMENT,
+} from "./env";
 import { getFromLocalStorage } from "./localStorage";
 
-const API = BACKEND_LOCAL_URL;
+const API =
+  ENVIRONMENT === "production"
+    ? BACKEND_PROD_URL
+    : ENVIRONMENT === "staging"
+    ? BACKEND_DEV_URL
+    : ENVIRONMENT === "development"
+    ? BACKEND_LOCAL_URL
+    : BACKEND_LOCAL_URL;
 
 /**
  * @param walletAddress string
@@ -281,50 +293,8 @@ export const refreshNFT = async () => {
 
 // need auth token (jwt)
 export const getNFTs = async () => {
-  try {
-    const result = await api.get(`${API}/user/nft/owned?limit=100&offset=0`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 500) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(`${API}/user/nft/owned?limit=100&offset=0`);
+  return result?.data;
 };
 
 // need auth token (jwt)
@@ -550,46 +520,8 @@ export const changeCanvasVisibility = async (id, isPublic) => {
 
 // need auth token (jwt)
 export const getAllCanvas = async () => {
-  try {
-    const result = await api.get(`${API}/user/canvas?limit=100&offset=0`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(`${API}/user/canvas?limit=100&offset=0`);
+  return result?.data;
 };
 
 // need auth token (jwt)
@@ -866,41 +798,10 @@ export const getUserPublicTemplates = async () => {
 // asset apis start
 // need auth token (jwt)
 export const getAssetByQuery = async (query) => {
-  try {
-    const result = await api.get(
-      `${API}/asset/?query=${query}&limit=100&offset=0`
-    );
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      console.log({ 401: error?.response?.statusText });
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(
+    `${API}/asset/?query=${query}&limit=100&offset=0`
+  );
+  return result?.data;
 };
 
 // asset apis end
@@ -908,10 +809,25 @@ export const getAssetByQuery = async (query) => {
 // BG asset apis start
 // need auth token (jwt)
 export const getBGAssetByQuery = async (query) => {
+  const result = await api.get(
+    `${API}/asset/background?author=${query}&limit=100&offset=0`
+  );
+  return result?.data;
+};
+
+// Remove Background API
+
+export const getRemovedBgS3Link = async (query) => {
   try {
-    const result = await api.get(
-      `${API}/asset/background?author=${query}&limit=100&offset=0`
-    );
+    // headers = {
+    //   "Access-Control-Allow-Origin":"*",
+    // }
+
+    console.log({ query });
+
+    const result = await api.post(`${API}/util/upload-image?image=${query}`);
+
+    console.log({ result });
 
     if (result?.status === 200) {
       return {
@@ -944,5 +860,3 @@ export const getBGAssetByQuery = async (query) => {
     }
   }
 };
-
-// BG asset apis end

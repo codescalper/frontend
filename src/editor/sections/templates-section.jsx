@@ -14,6 +14,8 @@ import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ErrorComponent } from "../../elements";
 import { useQuery } from "@tanstack/react-query";
+import { useAccount } from "wagmi";
+import { Spinner } from "@blueprintjs/core";
 
 // Design card component start
 
@@ -87,18 +89,20 @@ const LenspostTemplates = ({ store }) => {
     return <ErrorComponent message={error} />;
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
+  }
+
   return (
     <>
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {isLoading ? (
-        <div className="flex justify-center items-center">
-          <div className="text-center">
-            <p className="text-gray-500 text-sm mt-4">Loading templates...</p>
-          </div>
-        </div>
-      ) : data.length === 0 ? (
+      {data.length === 0 ? (
         <ErrorComponent message="No templates found" />
       ) : (
         <div className="overflow-y-auto grid grid-cols-2">
@@ -132,18 +136,20 @@ const UserTemplates = ({ store }) => {
     return <ErrorComponent message={error} />;
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
+  }
+
   return (
     <>
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {isLoading ? (
-        <div className="flex justify-center items-center">
-          <div className="text-center">
-            <p className="text-gray-500 text-sm mt-4">Loading templates...</p>
-          </div>
-        </div>
-      ) : data.length === 0 ? (
+      {data.length === 0 ? (
         <ErrorComponent message="No templates found" />
       ) : (
         <div className="overflow-y-auto grid grid-cols-2">

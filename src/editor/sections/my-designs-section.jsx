@@ -15,6 +15,7 @@ import {
   Dialog,
   DialogBody,
   DialogFooter,
+  Spinner,
 } from "@blueprintjs/core";
 
 import { Popover2 } from "@blueprintjs/popover2";
@@ -29,6 +30,7 @@ import { Context } from "../../context/ContextProvider";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { replaceImageURL } from "../../services/replaceUrl";
 import { ConnectWalletMsgComponent, ErrorComponent } from "../../elements";
+import { useQuery } from "@tanstack/react-query";
 
 // Design card component start - 23Jun2023
 
@@ -114,25 +116,29 @@ const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
 
 export const MyDesignsPanel = observer(
   ({ store, design, project, onDelete, json }) => {
+    const { data, isLoading, isError, error } = useQuery({
+      queryKey: ["my-designs"],
+      queryFn: getAllCanvas,
+    });
     const { isDisconnected, address, isConnected } = useAccount();
     const [stMoreBtn, setStMoreBtn] = useState(false);
-    const [data, setData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isError, setIsError] = useState("");
+    // const [data, setData] = useState([]);
+    // const [isLoading, setIsLoading] = useState(false);
+    // const [isError, setIsError] = useState("");
     const [stOpenedModal, setStOpenedModal] = useState(false);
     const [stConfirmNew, setStConfirmNew] = useState("");
 
-    const loadImages = async () => {
-      setIsLoading(true);
-      const res = await getAllCanvas();
-      if (res?.data) {
-        setData(res?.data);
-        setIsLoading(false);
-      } else if (res?.error) {
-        setIsError(res?.error);
-        setIsLoading(false);
-      }
-    };
+    // const loadImages = async () => {
+    //   setIsLoading(true);
+    //   const res = await getAllCanvas();
+    //   if (res?.data) {
+    //     setData(res?.data);
+    //     setIsLoading(false);
+    //   } else if (res?.error) {
+    //     setIsError(res?.error);
+    //     setIsLoading(false);
+    //   }
+    // };
 
     const deleteCanvas = async (id) => {
       const res = await deleteCanvasById(id);
@@ -148,21 +154,28 @@ export const MyDesignsPanel = observer(
       const res = await changeCanvasVisibility(id, true);
       if (res?.data) {
         toast.success(res?.data);
-        loadImages();
       } else if (res?.error) {
         toast.error(res?.error);
       }
     };
 
-    useEffect(() => {
-      if (isDisconnected) return;
-      loadImages();
-    }, [isConnected]);
+    // useEffect(() => {
+    //   if (isDisconnected) return;
+    //   loadImages();
+    // }, [isConnected]);
 
     if (isDisconnected || !address) {
       return <ConnectWalletMsgComponent />;
     }
 
+    // Show Loading - 06Jul2023
+    if (isLoading) {
+      return (
+        <div className="flex flex-col">
+          <Spinner />
+        </div>
+      );
+    }
     // Test - 23Jun2023
     // const arrDesign = [
     //   { design_id: 12, preview: "https://picsum.photos/300" },
@@ -242,7 +255,7 @@ export const MyDesignsPanel = observer(
         {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
         {/*   Pass these onto Line 25 */}
         {isError ? (
-          <ErrorComponent message={isError} />
+          <ErrorComponent message={error} />
         ) : data.length === 0 ? (
           <ErrorComponent message="You have not created any design" />
         ) : (

@@ -8,6 +8,7 @@ import { publicProvider } from "wagmi/providers/public";
 import ContextProvider from "./context/ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ENVIRONMENT } from "./services/env";
 
 const { chains, provider } = configureChains(
   [polygon],
@@ -37,7 +38,7 @@ export const Wrapper = () => {
         <QueryClientProvider client={queryClient}>
           <ContextProvider>
             <App />
-            <ReactQueryDevtools />
+            {ENVIRONMENT === "development" && <ReactQueryDevtools />}
           </ContextProvider>
         </QueryClientProvider>
       </RainbowKitProvider>

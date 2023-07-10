@@ -3,6 +3,7 @@ import LoadingComponent from "./LoadingComponent";
 import CheckInternetConnection from "./CheckInternetConnection";
 import ConnectWalletMsgComponent from "./ConnectWalletMsgComponent";
 import CustomImageComponent from "./CustomImageComponent";
+import MessageComponent from "./MessageComponent";
 
 export {
   ErrorComponent,
@@ -10,4 +11,5 @@ export {
   CheckInternetConnection,
   ConnectWalletMsgComponent,
   CustomImageComponent,
+  MessageComponent,
 };

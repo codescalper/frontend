@@ -1,8 +1,8 @@
 import { ImagesGrid, SectionTab } from "polotno/side-panel";
 import { NFTIcon } from "../editor-icon";
 import { observer } from "mobx-react-lite";
-import { useState, useEffect } from "react";
-import { Button } from "@blueprintjs/core";
+import { useState, useEffect, useRef } from "react";
+import { Button, Spinner } from "@blueprintjs/core";
 import {
   getAllCollection,
   getNFTs,
@@ -18,6 +18,7 @@ import {
   ConnectWalletMsgComponent,
   CustomImageComponent,
   ErrorComponent,
+  MessageComponent,
 } from "../../elements";
 import { useQuery } from "@tanstack/react-query";
 
@@ -75,6 +76,7 @@ const LenspostNFT = () => {
   const { address, isDisconnected, isConnected } = useAccount();
   const [isNftsError, setIsNftsError] = useState("");
   const [searchId, setSearchId] = useState("");
+  const contractAddressRef = useRef(null);
 
   // const searchNFT = async () => {
   //   if (!activeCat) return;
@@ -123,67 +125,45 @@ const LenspostNFT = () => {
   //   }
   // };
 
-  // async function loadImages() {
-  //   // here we should implement your own API requests
-  //   setIsLoading(true);
-  //   const res = await getAllCollection();
-  //   if (res?.data) {
-  //     setCollection(res?.data);
-  //     setIsLoading(false);
-  //   } else if (res?.error) {
-  //     setIsError(res?.error);
-  //     setIsLoading(false);
-  //   }
-  // }
-
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
   }
 
-  function RenderCategories() {
-    return isError ? (
-      <ErrorComponent message={error} />
-    ) : (
-      <>
-        {isLoading ? (
-          <div className="flex justify-center items-center">
-            <div className="text-center">
-              <p className="text-gray-500 text-sm mt-4">
-                Loading collections...
-              </p>
-            </div>
-          </div>
-        ) : data.length > 0 ? (
-          data.map((item, index) => (
-            <div className="" key={index}>
-              <div
-                className="flex items-center space-x-4 p-2 mb-4 cursor-pointer"
-                onClick={() => {
-                  setContractAddress(item.address);
-                  setActiveCat(item.name);
-                }}
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-24 w-24 rounded-md"
-                />
-                <p className="text-lg font-normal">{item.name}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No results</p>
-        )}
-      </>
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
     );
   }
 
-  function RenderImages() {
+  function RenderCategories() {
     return (
-      <div className="h-full">
-        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10 m-1 mb-4">
+      isError ? (
+        <ErrorComponent error={error} />
+      ) : (
+        data?.length < 0 ? (
+          <MessageComponent message="No NFTs found" />
+        ): (
+          
+        )
+      )
+    )
+  }
+
+  console.log({ contractAddress: contractAddressRef.current });
+
+  function RenderImages() {
+    const { data, isLoading, isError, error } = useQuery({
+      queryKey: ["lenspost-nft-collections", contractAddress],
+      queryFn: () => getNftByCollection(contractAddress),
+    });
+
+    return (
+      <div className="h-88">
+        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10">
           <Button
+            className="mb-4 ml-1"
             icon="arrow-left"
             onClick={() => {
               goBack();
@@ -192,8 +172,8 @@ const LenspostNFT = () => {
           ></Button>
           <h1 className="ml-4 align-middle text-lg font-bold">{activeCat}</h1>
         </div>
-        {isNftsError ? (
-          <div>{isNftsError}</div>
+        {isError ? (
+          <div>{error}</div>
         ) : (
           <>
             {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
@@ -208,7 +188,6 @@ const LenspostNFT = () => {
                     />
                   );
                 })}
-                <button onClick={loadMore}>Load More</button>
               </div>
             </div>
           </>
@@ -234,11 +213,11 @@ const LenspostNFT = () => {
         />
         <Button
           icon="search"
-          className="ml-4"
+          className="ml-"
           onClick={() => searchNFT(searchId)}
         ></Button>
       </div>
-      <div className="overflow-y-auto">
+      <div className="overflow-y-auto overflow-x-hidden">
         {activeCat === null ? <RenderCategories /> : <RenderImages />}
       </div>
     </>
@@ -246,11 +225,13 @@ const LenspostNFT = () => {
 };
 
 const WalletNFT = () => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["userNFTs"],
+    queryFn: getNFTs,
+  });
   const { isConnected, isDisconnected, address } = useAccount();
   const [walletNFTImages, setWalletNFTImages] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [searchId, setSearchId] = useState("");
-  const [isError, setIsError] = useState("");
   const [stShowBackBtn, setStShowBackBtn] = useState(false);
   const [isNftsError, setIsNftsError] = useState("");
 
@@ -304,27 +285,35 @@ const WalletNFT = () => {
     }
   };
 
-  async function loadImages() {
-    setIsLoading(true);
-    // here we should implement your own API requests
-    const res = await getNFTs();
-    if (res?.data) {
-      const images = getImageUrl(res?.data);
-      setWalletNFTImages(images);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsError(res?.error);
-      setIsLoading(false);
-    }
-  }
+  // async function loadImages() {
+  //   setIsLoading(true);
+  //   // here we should implement your own API requests
+  //   const res = await getNFTs();
+  //   if (res?.data) {
+  //     const images = getImageUrl(res?.data);
+  //     setWalletNFTImages(images);
+  //     setIsLoading(false);
+  //   } else if (res?.error) {
+  //     setIsError(res?.error);
+  //     setIsLoading(false);
+  //   }
+  // }
 
-  useEffect(() => {
-    if (isDisconnected) return;
-    loadImages();
-  }, [isConnected]);
+  // useEffect(() => {
+  //   if (isDisconnected) return;
+  //   loadImages();
+  // }, [isConnected]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
   }
 
   return (
@@ -362,16 +351,17 @@ const WalletNFT = () => {
       )}
 
       {isError ? (
-        <ErrorComponent message={isError} />
+        <ErrorComponent message={error} />
       ) : isNftsError ? (
         <ErrorComponent message={isNftsError} />
       ) : (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
-            {walletNFTImages.map((imgArray) => {
+            {data.map((imgArray, index) => {
               return (
                 <CustomImageComponent
-                  preview={imgArray.url}
+                  key={index}
+                  preview={imgArray?.imageURL}
                   store={store}
                   project={project}
                 />
