@@ -1,7 +1,7 @@
 import { ImagesGrid, SectionTab } from "polotno/side-panel";
 import { NFTIcon } from "../editor-icon";
 import { observer } from "mobx-react-lite";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@blueprintjs/core";
 import {
   getAllCollection,
@@ -72,6 +72,7 @@ const LenspostNFT = () => {
   const [isNftsError, setIsNftsError] = useState("");
   const [searchId, setSearchId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [offset, setOffset] = useState(0);
 
   const searchNFT = async () => {
     if (!activeCat) return;
@@ -109,7 +110,7 @@ const LenspostNFT = () => {
   const getNftByContractAddress = async () => {
     if (!contractAddress) return;
     setIsLoading(true);
-    const res = await getNftByCollection(contractAddress);
+    const res = await getNftByCollection(contractAddress, offset);
     if (res?.data) {
       const images = getImageUrl(res?.data);
       setLenspostNFTImages(images);
@@ -133,32 +134,17 @@ const LenspostNFT = () => {
     }
   }
 
-  // function for infinite scroll with limit anf offset
-  const loadMore = async () => {
-    if (!contractAddress) return;
-    setIsLoading(true);
-    const res = await getNftByCollection(contractAddress);
-    if (res?.data) {
-      const images = getImageUrl(res?.data);
-      setLenspostNFTImages((prev) => [...prev, ...images]);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsNftsError(res?.error);
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (isDisconnected) return;
 
     getNftByContractAddress();
-  }, [contractAddress]);
+  }, [contractAddress, offset]);
 
   useEffect(() => {
     if (isDisconnected) return;
 
     loadImages();
-  }, [isConnected]);
+  }, [isConnected, offset]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -200,7 +186,7 @@ const LenspostNFT = () => {
       <div className="h-88">
         <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10">
           <Button
-          className="mb-4 ml-1"
+            className="mb-4 ml-1"
             icon="arrow-left"
             onClick={() => {
               goBack();
@@ -225,7 +211,11 @@ const LenspostNFT = () => {
                     />
                   );
                 })}
-                <button onClick={loadMore}>Load More</button>
+                <div className="my-2">
+                  <button onClick={() => setOffset(offset + 100)}>
+                    Load More
+                  </button>
+                </div>
               </div>
             </div>
           </>
@@ -270,6 +260,7 @@ const WalletNFT = () => {
   const [isError, setIsError] = useState("");
   const [stShowBackBtn, setStShowBackBtn] = useState(false);
   const [isNftsError, setIsNftsError] = useState("");
+  const [offset, setOffset] = useState(0);
 
   const refreshNFTs = async () => {
     const id = toast.loading("Updating NFTs...");
@@ -324,7 +315,7 @@ const WalletNFT = () => {
   async function loadImages() {
     setIsLoading(true);
     // here we should implement your own API requests
-    const res = await getNFTs();
+    const res = await getNFTs(offset);
     if (res?.data) {
       const images = getImageUrl(res?.data);
       setWalletNFTImages(images);
@@ -394,6 +385,11 @@ const WalletNFT = () => {
                 />
               );
             })}
+            <div className="my-2">
+                  <button onClick={() => setOffset(offset + 100)}>
+                    {isLoading ? "Loading..." : "Load More"}
+                  </button>
+                </div>
           </div>
         </div>
       )}

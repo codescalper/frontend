@@ -30,6 +30,7 @@ export const TabNFTBgs = observer(({ store, query }) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState("");
+  const [offset, setOffset] = useState(0);
 
   const loadImages = async (query) => {
     setIsLoading(true);
@@ -47,7 +48,7 @@ export const TabNFTBgs = observer(({ store, query }) => {
   useEffect(() => {
     if (isDisconnected) return;
     loadImages("supducks");
-  }, [isConnected]);
+  }, [isConnected, offset]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -81,6 +82,11 @@ export const TabNFTBgs = observer(({ store, query }) => {
               />
             );
           })}
+          <div className="my-2">
+                  <button onClick={() => setOffset(offset + 100)}>
+                    Load More
+                  </button>
+                </div>
         </div>
       </div>
     </>

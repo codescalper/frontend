@@ -117,10 +117,11 @@ export const NFTIcons = observer(({ store, query }) => {
   const [isLoading, setIsLoading] = useState(false);
   // const [query, setQuery] = useState("supducks");
   const [isError, setIsError] = useState("");
+  const [offset, setOffset] = useState(0);
 
   const getAssets = async (query) => {
     setIsLoading(true);
-    const res = await getAssetByQuery(query);
+    const res = await getAssetByQuery(query, offset);
     if (res?.data) {
       setData(res?.data);
       setIsLoading(false);
@@ -133,17 +134,19 @@ export const NFTIcons = observer(({ store, query }) => {
 
   useEffect(() => {
     getAssets("supducks");
-  }, [query]);
+  }, [query, offset]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
   }
 
   // Show Loading - 06Jul2023
-  if(isLoading){
-    return<div className="flex flex-col">
-      <Spinner/>
-    </div>
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
   }
 
   return isError ? (
@@ -161,6 +164,9 @@ export const NFTIcons = observer(({ store, query }) => {
               />
             );
           })}
+          <div className="my-2">
+            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+          </div>
         </div>
       </div>
     </>
