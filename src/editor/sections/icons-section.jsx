@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { InputGroup, Button, Card, Spinner } from "@blueprintjs/core";
 import { isAlive } from "mobx-state-tree";
@@ -22,6 +22,7 @@ import {
   CustomImageComponent,
   ErrorComponent,
 } from "../../elements";
+import { useQuery } from "@tanstack/react-query";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -112,29 +113,31 @@ export const IconFinderPanel = observer(({ store, query }) => {
 
 // New Tab NFT Elements/Stickers Start - 24Jun2023
 export const NFTIcons = observer(({ store, query }) => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["assets", "supducks"],
+    queryFn: () => getAssetByQuery("supducks"),
+  });
   const { address, isDisconnected } = useAccount();
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  // const [query, setQuery] = useState("supducks");
-  const [isError, setIsError] = useState("");
-  const [offset, setOffset] = useState(0);
+  // const [data, setData] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [isError, setIsError] = useState("");
 
-  const getAssets = async (query) => {
-    setIsLoading(true);
-    const res = await getAssetByQuery(query, offset);
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsLoading(false);
-      setIsError(res?.error);
-      console.log(res.error);
-    }
-  };
+  // const getAssets = async (query) => {
+  //   setIsLoading(true);
+  //   const res = await getAssetByQuery(query);
+  //   if (res?.data) {
+  //     setData(res?.data);
+  //     setIsLoading(false);
+  //   } else if (res?.error) {
+  //     setIsLoading(false);
+  //     setIsError(res?.error);
+  //     console.log(res.error);
+  //   }
+  // };
 
-  useEffect(() => {
-    getAssets("supducks");
-  }, [query, offset]);
+  // useEffect(() => {
+  //   getAssets("supducks");
+  // }, [query]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -149,16 +152,19 @@ export const NFTIcons = observer(({ store, query }) => {
     );
   }
 
+  // console.log(data);
+
   return isError ? (
-    <ErrorComponent message={isError} />
+    <ErrorComponent message={error} />
   ) : (
     <>
       <div className="h-full overflow-y-auto">
         <div className="grid grid-cols-2 overflow-y-auto">
-          {data.map((img) => {
+          {data.map((item, index) => {
             return (
               <CustomImageComponent
-                preview={img.image}
+                key={index}
+                preview={item.image}
                 store={store}
                 project={project}
               />
@@ -231,7 +237,9 @@ export const IconsPanel = ({ store }) => {
         <input
           className="border px-2 py-1 rounded-md w-full m-1 mb-4 mt-4"
           placeholder="Search by Token ID"
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+          }}
         />
         <Button
           className="ml-3 m-1 rounded-md mb-4 mt-4"

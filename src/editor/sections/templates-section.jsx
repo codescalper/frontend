@@ -13,14 +13,14 @@ import { Context } from "wagmi";
 import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ErrorComponent } from "../../elements";
+import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
-import {Spinner} from "@blueprintjs/core"
+import { Spinner } from "@blueprintjs/core";
 
 // Design card component start
 
 const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
   const { contextCanvasIdRef } = useContext(Context);
-
   return (
     <Card
       style={{ margin: "4px", padding: "0px", position: "relative" }}
@@ -80,34 +80,21 @@ export const TemplatesPanel = observer(({ store }) => {
 });
 
 const LenspostTemplates = ({ store }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState("");
-
-  const loadImages = async () => {
-    setIsLoading(true);
-    const res = await getAllTemplates();
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsError(res?.error);
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadImages();
-  }, []);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["lenspost-templates"],
+    queryFn: getAllTemplates,
+  });
 
   if (isError) {
-    return <ErrorComponent message={isError} />;
+    return <ErrorComponent message={error} />;
   }
-  
-    if(isLoading){
-    return<div className="flex flex-col">
-      <Spinner/>
-    </div>
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
   }
 
   return (
@@ -137,33 +124,26 @@ const LenspostTemplates = ({ store }) => {
       {/* New Design card end - 23Jun2023 */}
     </>
 
-  // Show Loading - 06Jul2023
-    )
+  );
+
 };
 
 const UserTemplates = ({ store }) => {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState("");
-
-  const loadImages = async () => {
-    setIsLoading(true);
-    const res = await getUserPublicTemplates();
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsError(res?.error);
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadImages();
-  }, []);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["user-templates"],
+    queryFn: getUserPublicTemplates,
+  });
 
   if (isError) {
-    return <ErrorComponent message={isError} />;
+    return <ErrorComponent message={error} />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
   }
 
   return (
@@ -176,7 +156,6 @@ const UserTemplates = ({ store }) => {
       ) : (
         <div className="overflow-y-auto grid grid-cols-2">
           {data.map((design) => {
-            console.log(design.data);
             return (
               <DesignCard
                 design={design}

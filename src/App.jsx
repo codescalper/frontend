@@ -60,7 +60,7 @@ export default function App() {
       }
     };
 
-    const interval = setInterval(clearLocalStorage, 30 * 1000); // check every 30 seconds
+    const interval = setInterval(clearLocalStorage, 15 * 1000); // check every 30 seconds
 
     return () => clearInterval(interval);
   }, []);

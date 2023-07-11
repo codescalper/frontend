@@ -11,6 +11,7 @@ import {
   CustomImageComponent,
   ErrorComponent,
 } from "../../elements";
+import { useQuery } from "@tanstack/react-query";
 
 // New Tab Colors Start - 24Jun2023
 export const TabColors = observer(({ store, query }) => {
@@ -26,36 +27,18 @@ export const TabColors = observer(({ store, query }) => {
 
 // New Tab NFT Backgrounds Start - 24Jun2023
 export const TabNFTBgs = observer(({ store, query }) => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["bg-assets", "supducks"],
+    queryFn: () => getBGAssetByQuery("supducks"),
+  });
   const { isDisconnected, address, isConnected } = useAccount();
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState("");
-  const [offset, setOffset] = useState(0);
-
-  const loadImages = async (query) => {
-    setIsLoading(true);
-
-    const res = await getBGAssetByQuery(query);
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsError(res?.error);
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isDisconnected) return;
-    loadImages("supducks");
-  }, [isConnected, offset]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
   }
   
   if (isError) {
-    return <ErrorComponent message={isError} />;
+    return <ErrorComponent message={error} />;
   }
 
   // Show Loading - 06Jul2023
@@ -68,8 +51,8 @@ export const TabNFTBgs = observer(({ store, query }) => {
     <>
       {/* Code for NFT BACKGROUNDS here */}
       {/* Lazyloading Try - 29Jun2023 */}
-      <div className="overflow-y-auto h-96">
-        <div className="grid grid-cols-2">
+      <div className="overflow-y-auto h-full">
+        <div className="grid grid-cols-2 overflow-y-auto">
           {data.map((design) => {
             return (
               <CustomImageComponent
@@ -100,7 +83,7 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
   const [stInputQuery, setStInputQuery] = useState("");
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       <div className="flex flex-row h-fit">
         {/* <Button
 			className="m-1 rounded-md border-2 p-2"
