@@ -3,6 +3,7 @@ import { NFTIcon } from "../editor-icon";
 import { observer } from "mobx-react-lite";
 import { useState, useEffect, useRef } from "react";
 import { Button, Spinner } from "@blueprintjs/core";
+
 import {
   getAllCollection,
   getNFTs,
@@ -133,9 +134,11 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
     };
   }, [query]);
 
+
   function goBack() {
     setActiveCat(null);
   }
+
 
   if (isLoading) {
     return (
@@ -345,6 +348,7 @@ const WalletNFT = () => {
   });
 
   const { isConnected, isDisconnected, address } = useAccount();
+
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -423,6 +427,11 @@ const WalletNFT = () => {
                 />
               );
             })}
+            <div className="my-2">
+                  <button onClick={() => setOffset(offset + 100)}>
+                    {isLoading ? "Loading..." : "Load More"}
+                  </button>
+                </div>
           </div>
         </div>
       )}

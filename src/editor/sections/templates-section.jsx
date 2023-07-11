@@ -123,7 +123,9 @@ const LenspostTemplates = ({ store }) => {
 
       {/* New Design card end - 23Jun2023 */}
     </>
+
   );
+
 };
 
 const UserTemplates = ({ store }) => {

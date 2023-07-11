@@ -254,6 +254,7 @@ export const refreshNFT = async () => {
 };
 
 // need auth token (jwt)
+
 export const getNFTs = async () => {
   const result = await api.get(`${API}/user/nft/owned?limit=100&offset=0`);
   return result?.data;
@@ -555,6 +556,7 @@ export const getAllCollection = async () => {
 };
 
 // need auth token (jwt)
+
 export const getNftByCollection = async (contractAddress) => {
   const result = await api.get(
     `${API}/collection/${contractAddress}?limit=100&offset=0`
@@ -603,6 +605,7 @@ export const getUserPublicTemplates = async () => {
 
 // asset apis start
 // need auth token (jwt)
+
 export const getAssetByQuery = async (query) => {
   const result = await api.get(
     `${API}/asset/?query=${query}&limit=100&offset=0`

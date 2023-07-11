@@ -170,6 +170,9 @@ export const NFTIcons = observer(({ store, query }) => {
               />
             );
           })}
+          <div className="my-2">
+            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+          </div>
         </div>
       </div>
     </>
