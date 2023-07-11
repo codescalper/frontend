@@ -10,6 +10,7 @@ import {
   getNftByCollection,
   getCollectionNftById,
   refreshNFT,
+  getRemovedBgS3Link,
 } from "../../services/backendApi";
 import { useAccount } from "wagmi";
 import { convertIPFSUrl, getImageUrl } from "../../services/imageUrl";
@@ -19,8 +20,10 @@ import {
   CustomImageComponent,
   ErrorComponent,
   MessageComponent,
+  SearchComponent,
 } from "../../elements";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fnMessege } from "../../services/FnMessege";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -64,69 +67,74 @@ export const NFTSection = {
   Panel: NFTPanel,
 };
 
-const LenspostNFT = () => {
+// catogoery component (child component of LenspostNFT component)
+const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lenspost-nft-collections"],
     queryFn: getAllCollection,
   });
-  const [lenspostNFTImages, setLenspostNFTImages] = useState([]);
-  const [contractAddress, setContractAddress] = useState("");
-  const [activeCat, setActiveCat] = useState(null);
-  const [collection, setCollection] = useState([]);
-  const { address, isDisconnected, isConnected } = useAccount();
-  const [isNftsError, setIsNftsError] = useState("");
-  const [searchId, setSearchId] = useState("");
-  const contractAddressRef = useRef(null);
 
-  // const searchNFT = async () => {
-  //   if (!activeCat) return;
-  //   setIsLoading(true);
-  //   const res = await getCollectionNftById(searchId, contractAddress);
-  //   let obj = {};
-  //   let arr = [];
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
+  }
 
-  //   if (res?.data) {
-  //     if (res?.data?.ipfsLink?.includes("ipfs://")) {
-  //       res.data.ipfsLink = convertIPFSUrl(res?.data?.ipfsLink);
-  //       obj = { url: res?.data[i].ipfsLink };
-  //       arr.push(obj);
-  //     } else {
-  //       obj = { url: res?.data?.ipfsLink };
-  //       arr.push(obj);
-  //     }
-  //     setLenspostNFTImages(arr);
-  //     setIsLoading(false);
-  //     setSearchId("");
-  //   } else if (res?.data === "") {
-  //     setIsNftsError("NFT not found");
-  //     setSearchId("");
-  //   } else if (res?.error) {
-  //     setIsNftsError(res?.error);
-  //     setIsLoading(false);
-  //     setSearchId("");
-  //   }
+  return (
+    <>
+      <SearchComponent />
+      {isError ? (
+        <ErrorComponent error={error} />
+      ) : data?.length > 0 ? (
+        data.map((item, index) => (
+          <div className="" key={index}>
+            <div
+              className="flex items-center space-x-4 p-2 mb-4 cursor-pointer"
+              onClick={() => {
+                contractAddressRef.current = item.address;
+                setActiveCat(item.name);
+              }}
+            >
+              <img
+                src={item.image}
+                alt={item.name}
+                className="h-24 w-24 rounded-md"
+              />
+              <p className="text-lg font-normal">{item.name}</p>
+            </div>
+          </div>
+        ))
+      ) : (
+        <MessageComponent message="No Results" />
+      )}
+    </>
+  );
+};
 
-  //   if (!searchId) {
-  //     getNftByContractAddress();
-  //   }
-  // };
+// nft component (child component of LenspostNFT component)
+const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["lenspost-nft-collections", contractAddressRef.current],
+    queryFn: () => getNftByCollection(contractAddressRef.current),
+  });
 
-  // const getNftByContractAddress = async () => {
-  //   if (!contractAddress) return;
-  //   setIsLoading(true);
-  //   const res = await getNftByCollection(contractAddress);
-  //   if (res?.data) {
-  //     const images = getImageUrl(res?.data);
-  //     setLenspostNFTImages(images);
-  //     setIsLoading(false);
-  //   } else if (res?.error) {
-  //     setIsNftsError(res?.error);
-  //     setIsLoading(false);
-  //   }
-  // };
+  const [query, setQuery] = useState("");
+  const [delayedQuery, setDelayedQuery] = useState(query);
+  const requestTimeout = useRef();
 
-  if (isDisconnected || !address) {
-    return <ConnectWalletMsgComponent />;
+  useEffect(() => {
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  function goBack() {
+    setActiveCat(null);
   }
 
   if (isLoading) {
@@ -137,29 +145,16 @@ const LenspostNFT = () => {
     );
   }
 
-  function RenderCategories() {
-    return (
-      isError ? (
-        <ErrorComponent error={error} />
-      ) : (
-        data?.length < 0 ? (
-          <MessageComponent message="No NFTs found" />
-        ): (
-          
-        )
-      )
-    )
-  }
-
-  console.log({ contractAddress: contractAddressRef.current });
-
-  function RenderImages() {
-    const { data, isLoading, isError, error } = useQuery({
-      queryKey: ["lenspost-nft-collections", contractAddress],
-      queryFn: () => getNftByCollection(contractAddress),
-    });
-
-    return (
+  return delayedQuery ? (
+    <RenderSearchedNFTs
+      activeCat={activeCat}
+      contractAddress={contractAddressRef.current}
+      goBack={goBack}
+      delayedQuery={delayedQuery}
+    />
+  ) : (
+    <>
+      <SearchComponent query={query} setQuery={setQuery} />
       <div className="h-88">
         <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10">
           <Button
@@ -167,142 +162,229 @@ const LenspostNFT = () => {
             icon="arrow-left"
             onClick={() => {
               goBack();
-              setIsNftsError("");
             }}
           ></Button>
           <h1 className="ml-4 align-middle text-lg font-bold">{activeCat}</h1>
         </div>
         {isError ? (
-          <div>{error}</div>
-        ) : (
-          <>
-            {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
-            <div className="h-full overflow-y-auto">
-              <div className="grid grid-cols-2 overflow-y-auto">
-                {lenspostNFTImages.map((imgArray) => {
-                  return (
-                    <CustomImageComponent
-                      preview={imgArray.url}
-                      store={store}
-                      project={project}
-                    />
-                  );
-                })}
-              </div>
+          <ErrorComponent error={error} />
+        ) : data?.length > 0 ? (
+          //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
+          <div className="h-full overflow-y-auto">
+            <div className="grid grid-cols-2 overflow-y-auto">
+              {data.map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item?.imageURL}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
             </div>
-          </>
+          </div>
+        ) : (
+          <MessageComponent message="No Results" />
         )}
+      </div>
+    </>
+  );
+};
+
+// searched NFTs (child component of LenspostNFT component)
+const RenderSearchedNFTs = ({
+  contractAddress,
+  activeCat,
+  goBack,
+  delayedQuery,
+}) => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: [
+      "lenspost-nft-collections",
+      contractAddress,
+      { tokenID: delayedQuery },
+    ],
+    queryFn: () => getCollectionNftById(delayedQuery, contractAddress),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
       </div>
     );
   }
 
-  function goBack() {
-    setActiveCat(null);
+  return (
+    <>
+      {/* <SearchComponent query={query} setQuery={setQuery} /> */}
+      <div className="h-88">
+        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10">
+          <Button
+            className="mb-4 ml-1"
+            icon="arrow-left"
+            onClick={() => {
+              goBack();
+            }}
+          ></Button>
+          <h1 className="ml-4 align-middle text-lg font-bold">{activeCat}</h1>
+        </div>
+        {isError ? (
+          <ErrorComponent error={error} />
+        ) : data ? (
+          //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
+          <div className="h-full overflow-y-auto">
+            <div className="grid grid-cols-2 overflow-y-auto">
+              <CustomImageComponent
+                preview={data?.imageURL}
+                store={store}
+                project={project}
+              />
+            </div>
+          </div>
+        ) : (
+          <MessageComponent message="No Results" />
+        )}
+      </div>
+    </>
+  );
+};
+
+const LenspostNFT = () => {
+  const [activeCat, setActiveCat] = useState("");
+  const { address, isDisconnected, isConnected } = useAccount();
+  const contractAddressRef = useRef(null);
+
+  if (isDisconnected || !address) {
+    return <ConnectWalletMsgComponent />;
   }
 
   return (
     <>
-      <div className="flex flex-row justify-normal mb-4">
-        <input
-          className="border px-2 py-1 rounded-md w-full"
-          placeholder="Search by Token ID"
-          onChange={(e) => {
-            setSearchId(e.target.value);
-          }}
-          value={searchId}
-        />
-        <Button
-          icon="search"
-          className="ml-"
-          onClick={() => searchNFT(searchId)}
-        ></Button>
-      </div>
       <div className="overflow-y-auto overflow-x-hidden">
-        {activeCat === null ? <RenderCategories /> : <RenderImages />}
+        {!activeCat ? (
+          <RenderCategories
+            contractAddressRef={contractAddressRef}
+            setActiveCat={setActiveCat}
+          />
+        ) : (
+          <RenderImages
+            activeCat={activeCat}
+            contractAddressRef={contractAddressRef}
+            setActiveCat={setActiveCat}
+          />
+        )}
+      </div>
+    </>
+  );
+};
+
+// searched nft component (child component of WalletNFT component)
+const RenderSearchedWalletNFT = ({ goBack, delayedQuery }) => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["userNFTs", { tokenID: delayedQuery }],
+    queryFn: () => getNftById(delayedQuery),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* <SearchComponent query={query} setQuery={setQuery} /> */}
+      <div className="h-88">
+        <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10">
+          <Button
+            className="mb-4 ml-1"
+            icon="arrow-left"
+            onClick={() => {
+              goBack();
+            }}
+          ></Button>
+        </div>
+        {isError ? (
+          <ErrorComponent error={error} />
+        ) : data ? (
+          //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
+          <div className="h-full overflow-y-auto">
+            <div className="grid grid-cols-2 overflow-y-auto">
+              <CustomImageComponent
+                preview={data?.imageURL}
+                store={store}
+                project={project}
+              />
+            </div>
+          </div>
+        ) : (
+          <MessageComponent message="No Results" />
+        )}
       </div>
     </>
   );
 };
 
 const WalletNFT = () => {
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["userNFTs"],
     queryFn: getNFTs,
   });
+
+  const { mutateAsync } = useMutation({
+    mutationKey: "refreshNFT",
+    mutationFn: refreshNFT,
+    onSuccess: () => {
+      queryClient.invalidateQueries("userNFTs");
+    },
+  });
+
   const { isConnected, isDisconnected, address } = useAccount();
-  const [walletNFTImages, setWalletNFTImages] = useState([]);
-  const [searchId, setSearchId] = useState("");
-  const [stShowBackBtn, setStShowBackBtn] = useState(false);
-  const [isNftsError, setIsNftsError] = useState("");
+  const [query, setQuery] = useState("");
+  const [delayedQuery, setDelayedQuery] = useState(query);
+  const requestTimeout = useRef();
 
-  const refreshNFTs = async () => {
+  useEffect(() => {
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  const refreshNFTs = () => {
     const id = toast.loading("Updating NFTs...");
-    const res = await refreshNFT();
-    if (res?.data) {
-      toast.update(id, {
-        render: res?.data,
-        type: "success",
-        isLoading: false,
-        autoClose: 5000,
-        closeButton: true,
+    mutateAsync()
+      .then((res) => {
+        toast.update(id, {
+          render: res?.data,
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+          closeButton: true,
+        });
+      })
+      .catch((err) => {
+        toast.update(id, {
+          render: fnMessege(err),
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+          closeButton: true,
+        });
       });
-      loadImages();
-    } else if (res?.error) {
-      toast.update(id, {
-        render: res?.error,
-        type: "error",
-        isLoading: false,
-        autoClose: 5000,
-        closeButton: true,
-      });
-    }
   };
 
-  const searchNFT = async (searchId) => {
-    if (walletNFTImages.length === 0) return;
-    let obj = {};
-    let arr = [];
-    const res = await getNftById(searchId);
-    if (res?.data) {
-      res.data.permaLink = convertIPFSUrl(res?.data?.permaLink);
-      obj = { url: res?.data?.permaLink };
-      arr.push(obj);
-      setWalletNFTImages(arr);
-      setStShowBackBtn(true);
-      setSearchId("");
-    } else if (res?.data === "") {
-      setIsNftsError("NFT not found");
-      setSearchId("");
-      setStShowBackBtn(true);
-    } else if (res?.error) {
-      setIsNftsError(res?.error);
-      setSearchId("");
-      setStShowBackBtn(true);
-    }
-
-    if (!searchId) {
-      loadImages();
-    }
+  const goBack = () => {
+    setDelayedQuery("");
+    setQuery("");
   };
-
-  // async function loadImages() {
-  //   setIsLoading(true);
-  //   // here we should implement your own API requests
-  //   const res = await getNFTs();
-  //   if (res?.data) {
-  //     const images = getImageUrl(res?.data);
-  //     setWalletNFTImages(images);
-  //     setIsLoading(false);
-  //   } else if (res?.error) {
-  //     setIsError(res?.error);
-  //     setIsLoading(false);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (isDisconnected) return;
-  //   loadImages();
-  // }, [isConnected]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -316,44 +398,18 @@ const WalletNFT = () => {
     );
   }
 
-  return (
+  return delayedQuery ? (
+    <RenderSearchedWalletNFT delayedQuery={delayedQuery} goBack={goBack} />
+  ) : (
     <>
-      <div className="flex flex-row justify-normal mb-4">
-        <input
-          className="border px-2 py-1 rounded-md w-full"
-          placeholder="Search by Token ID"
-          onChange={(e) => setSearchId(e.target.value)}
-          value={searchId}
-        />
-        <Button
-          className="ml-4"
-          icon="search"
-          onClick={() => searchNFT(searchId)}
-        ></Button>
-        {/* you can create yur own custom component here */}
-        {/* but we will use built-in grid component */}
-        {/* {walletNFTImages.length > 0 && ( */}
-
-        <Button className="ml-4" icon="refresh" onClick={refreshNFTs}></Button>
-      </div>
-
-      {stShowBackBtn && (
-        <Button
-          className="mt-4 mb-4 w-1"
-          icon="arrow-left"
-          onClick={() => {
-            loadImages();
-            setSearchId("");
-            setStShowBackBtn(false);
-            setIsNftsError("");
-          }}
-        ></Button>
-      )}
+      <SearchComponent
+        onClick={refreshNFTs}
+        query={query}
+        setQuery={setQuery}
+      />
 
       {isError ? (
         <ErrorComponent message={error} />
-      ) : isNftsError ? (
-        <ErrorComponent message={isNftsError} />
       ) : (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">

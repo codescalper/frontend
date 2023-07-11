@@ -144,10 +144,12 @@ export const NFTIcons = observer(({ store, query }) => {
   }
 
   // Show Loading - 06Jul2023
-  if(isLoading){
-    return<div className="flex flex-col">
-      <Spinner/>
-    </div>
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
   }
 
   // console.log(data);
@@ -158,10 +160,11 @@ export const NFTIcons = observer(({ store, query }) => {
     <>
       <div className="h-full overflow-y-auto">
         <div className="grid grid-cols-2 overflow-y-auto">
-          {data.map((img) => {
+          {data.map((item, index) => {
             return (
               <CustomImageComponent
-                preview={img.image}
+                key={index}
+                preview={item.image}
                 store={store}
                 project={project}
               />
@@ -232,7 +235,7 @@ export const IconsPanel = ({ store }) => {
           className="border px-2 py-1 rounded-md w-full m-1 mb-4 mt-4"
           placeholder="Search by Token ID"
           onChange={(e) => {
-            setQuery(e.target.value)
+            setQuery(e.target.value);
           }}
         />
         <Button

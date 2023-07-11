@@ -249,46 +249,8 @@ export const twitterAuthenticateCallback = async (state, code) => {
 // NFT apis start
 // need auth token (jwt)
 export const refreshNFT = async () => {
-  try {
-    const result = await api.post(`${API}/user/nft/update`);
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log(error);
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.post(`${API}/user/nft/update`);
+  return result?.data;
 };
 
 // need auth token (jwt)
@@ -299,50 +261,8 @@ export const getNFTs = async () => {
 
 // need auth token (jwt)
 export const getNftById = async (id) => {
-  try {
-    const result = await api.get(`${API}/user/nft/${id}`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 500) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(`${API}/user/nft/${id}`);
+  return result?.data;
 };
 // NFT apis end
 
@@ -570,46 +490,8 @@ export const getCanvasById = async (id) => {
 
 // need auth token (jwt)
 export const deleteCanvasById = async (id) => {
-  try {
-    const result = await api.delete(`${API}/user/canvas/delete/${id}`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.delete(`${API}/user/canvas/delete/${id}`);
+  return result?.data;
 };
 
 export const shareOnLens = async (canvasId, name, content) => {
@@ -674,92 +556,16 @@ export const getAllCollection = async () => {
 
 // need auth token (jwt)
 export const getNftByCollection = async (contractAddress) => {
-  try {
-    const result = await api.get(
-      `${API}/collection/${contractAddress}?limit=100&offset=0`
-    );
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(
+    `${API}/collection/${contractAddress}?limit=100&offset=0`
+  );
+  return result?.data;
 };
 
 // need auth token (jwt)
 export const getCollectionNftById = async (id, contractAddress) => {
-  try {
-    const result = await api.get(`${API}/collection/${contractAddress}/${id}`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(`${API}/collection/${contractAddress}/${id}`);
+  return result?.data;
 };
 // collection apis start
 
@@ -819,15 +625,7 @@ export const getBGAssetByQuery = async (query) => {
 
 export const getRemovedBgS3Link = async (query) => {
   try {
-    // headers = {
-    //   "Access-Control-Allow-Origin":"*",
-    // }
-
-    console.log({ query });
-
     const result = await api.post(`${API}/util/upload-image?image=${query}`);
-
-    console.log({ result });
 
     if (result?.status === 200) {
       return {
