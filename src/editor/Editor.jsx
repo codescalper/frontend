@@ -112,28 +112,14 @@ const Editor = ({ store }) => {
 
   const handleRemoveBg = async () => {
     var varActivePageNo = 0;
+    var base64String = "";
     console.log("Handle upload START");
-
-    //Fetch Image URL from the canvas
-    // setFile(store.selectedElements[0].src);
-    // console.log(file);
-
-    // if (!file) return;
 
     const formData = new FormData();
     // formData.append('file', file);
     formData.append("url", store.selectedElements[0].src);
 
-    // 03June2023
-    // Find the index of the page for which thee removed background image needs to be placed
-    store.pages.map((page) => {
-      page.identifier == store._activePageId;
-      // console.log("Index of the Page is ");
-      // console.log(store.pages.indexOf(page));
-      // setStActivePageNo(store.pages.indexOf(page));
-      varActivePageNo = store.pages.indexOf(page);
-    });
-
+    varActivePageNo = Number(fnFindPageNo())
     try {
       const response = await axios.get(
         // BG REMOVE from Cutout.pro,
@@ -142,37 +128,52 @@ const Editor = ({ store }) => {
         // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
 
         // For Image `src` URL as parameter , use this Endpoint
-        `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
-
+        // `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
+        "https://api.remove.bg/v1.0/removebg?image_url=",
         // 'https://www.cutout.pro/api/v1/text2imageAsync',
         {
           headers: {
-            APIKEY: "de13ee35bc2d4fbb80e9c618336b0f99",
+            // APIKEY: "de13ee35bc2d4fbb80e9c618336b0f99",
+            "X-API-Key": "2rNFJBVG7pVAY5WBAy8ovwVw"
             //  Backup API Keys :
             // 'APIKEY': 'c136635d69324c99942639424feea81a'
             // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
             // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
           },
         }
-      );
-      console.log(store.selectedElements[0].src);
+      )
+     
       fnAddImageToCanvas(response?.data?.data?.imageUrl, varActivePageNo);
       console.log({image: response?.data?.data?.imageUrl});
       
       // console.log("The S3 Res is ")
-      fnStoreImageToS3(response?.data?.data?.imageUrl);
+      // fnStoreImageToS3(response?.data?.data?.imageUrl);
       
       // console.log("Deleting Previous images") // Under DEV - 08Jul2023
       // fnDeletePrevImage()
-      return response?.data?.data?.imageUrl; //For to
+ 
+      return response?.data?.data?.imageUrl; //For toast
     } catch (error) {
       console.error(error);
     }
     console.log("Handle upload END");
   };
-  // Function to Add Removed BG image on the Canvas
+
+  // 03June2023
+
+  // Find the index of the page for which the removed background image needs to be placed
+  const fnFindPageNo = () => {
+    return store.pages.map((page) => {
+    page.identifier == store._activePageId;
+    // setStActivePageNo(store.pages.indexOf(page));
+    store.pages.indexOf(page);
+  });
+  }
+    // Function to Add Removed BG image on the Canvas
   const fnAddImageToCanvas = (removedBgUrl, varActivePageNo) => {
     // Add the new removed Bg Image to the Page
+    console.log(removedBgUrl);
+
     store.pages[stActivePageNo || varActivePageNo].addElement({
       type: "image",
       x: 0.5 * store.width,
