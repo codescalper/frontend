@@ -9,18 +9,19 @@ import {
   getUserPublicTemplates,
 } from "../../services/backendApi";
 import { replaceImageURL } from "../../services/replaceUrl";
-import { Context } from "wagmi";
 import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ErrorComponent } from "../../elements";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner } from "@blueprintjs/core";
+import { Context } from "../../context/ContextProvider";
 
 // Design card component start
 
 const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
   const { contextCanvasIdRef } = useContext(Context);
+
   return (
     <Card
       style={{ margin: "4px", padding: "0px", position: "relative" }}
@@ -123,13 +124,11 @@ const LenspostTemplates = ({ store }) => {
 
       {/* New Design card end - 23Jun2023 */}
     </>
-
   );
-
 };
 
 const UserTemplates = ({ store }) => {
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error, isSuccess } = useQuery({
     queryKey: ["user-templates"],
     queryFn: getUserPublicTemplates,
   });

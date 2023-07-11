@@ -343,7 +343,7 @@ const WalletNFT = () => {
     mutationKey: "refreshNFT",
     mutationFn: refreshNFT,
     onSuccess: () => {
-      queryClient.invalidateQueries("userNFTs");
+      queryClient.invalidateQueries(["userNFTs"], { exact: true });
     },
   });
 

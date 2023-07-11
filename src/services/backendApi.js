@@ -387,56 +387,14 @@ export const updateCanvas = async (
 };
 
 // need auth token (jwt)
-export const changeCanvasVisibility = async (id, isPublic) => {
-  try {
-    const result = await api.put(`${API}/user/canvas/visibility`, {
-      canvasData: {
-        id: id,
-        isPublic: isPublic,
-      },
-    });
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+export const changeCanvasVisibility = async ({ id, isPublic }) => {
+  const result = await api.put(`${API}/user/canvas/visibility`, {
+    canvasData: {
+      id: id,
+      isPublic: isPublic,
+    },
+  });
+  return result?.data;
 };
 
 // need auth token (jwt)
@@ -447,46 +405,8 @@ export const getAllCanvas = async () => {
 
 // need auth token (jwt)
 export const getCanvasById = async (id) => {
-  try {
-    const result = await api.get(`${API}/user/canvas/${id}`);
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  const result = await api.get(`${API}/user/canvas/${id}`);
+  return result?.data;
 };
 
 // need auth token (jwt)
