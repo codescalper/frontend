@@ -144,6 +144,7 @@ const Editor = ({ store }) => {
       )
      
       fnAddImageToCanvas(response?.data?.data?.imageUrl, varActivePageNo);
+      console.log({image: response?.data?.data?.imageUrl});
       
       // console.log("The S3 Res is ")
       // fnStoreImageToS3(response?.data?.data?.imageUrl);

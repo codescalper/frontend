@@ -15,7 +15,7 @@ import {
   Dialog,
   DialogBody,
   DialogFooter,
-  Spinner
+  Spinner,
 } from "@blueprintjs/core";
 
 import { Popover2 } from "@blueprintjs/popover2";
@@ -29,7 +29,12 @@ import { toast } from "react-toastify";
 import { Context } from "../../context/ContextProvider";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { replaceImageURL } from "../../services/replaceUrl";
-import { ConnectWalletMsgComponent, ErrorComponent } from "../../elements";
+import {
+  ConnectWalletMsgComponent,
+  ErrorComponent,
+  SearchComponent,
+} from "../../elements";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 // Design card component start - 23Jun2023
 
@@ -115,76 +120,62 @@ const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
 
 export const MyDesignsPanel = observer(
   ({ store, design, project, onDelete, json }) => {
+    const { data, isLoading, isError, error } = useQuery({
+      queryKey: ["my-designs"],
+      queryFn: getAllCanvas,
+    });
+    const deleteCanvas = useMutation({
+      mutationKey: "delete-canvas",
+      mutationFn: deleteCanvasById,
+      onSuccess: (data) => {
+        toast.success(data?.message);
+      },
+      onError: (error) => {
+        toast.error(error);
+      },
+    });
     const { isDisconnected, address, isConnected } = useAccount();
-    const [stMoreBtn, setStMoreBtn] = useState(false);
-    const [data, setData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isError, setIsError] = useState("");
     const [stOpenedModal, setStOpenedModal] = useState(false);
     const [stConfirmNew, setStConfirmNew] = useState("");
+    const [query, setQuery] = useState("");
 
-    const loadImages = async () => {
-      setIsLoading(true);
-      const res = await getAllCanvas();
-      if (res?.data) {
-        setData(res?.data);
-        setIsLoading(false);
-      } else if (res?.error) {
-        setIsError(res?.error);
-        setIsLoading(false);
-      }
-    };
-
-    const deleteCanvas = async (id) => {
-      const res = await deleteCanvasById(id);
-      if (res?.data) {
-        toast.success(res?.data?.message);
-        loadImages();
-      } else if (res?.error) {
-        toast.error(res?.error);
-      }
-    };
+    // const deleteCanvas = async (id) => {
+    //   const res = await deleteCanvasById(id);
+    //   if (res?.data) {
+    //     toast.success(res?.data?.message);
+    //     loadImages();
+    //   } else if (res?.error) {
+    //     toast.error(res?.error);
+    //   }
+    // };
 
     const changeVisibility = async (id) => {
       const res = await changeCanvasVisibility(id, true);
       if (res?.data) {
         toast.success(res?.data);
-        loadImages();
       } else if (res?.error) {
         toast.error(res?.error);
       }
     };
-
-    useEffect(() => {
-      if (isDisconnected) return;
-      loadImages();
-    }, [isConnected]);
 
     if (isDisconnected || !address) {
       return <ConnectWalletMsgComponent />;
     }
 
     // Show Loading - 06Jul2023
-    if(isLoading){
-      return<div className="flex flex-col">
-        <Spinner/>
-      </div>
+    if (isLoading) {
+      return (
+        <div className="flex flex-col">
+          <Spinner />
+        </div>
+      );
     }
-    // Test - 23Jun2023
-    // const arrDesign = [
-    //   { design_id: 12, preview: "https://picsum.photos/300" },
-    //   { design_id: 23, preview: "https://picsum.photos/400" },
-    // ];
-    // console.log(arrDesign)
 
     // Function to delete all the canvas on confirmation - 25Jun2023
     const fnDeleteCanvas = () => {
       const pagesIds = store.pages.map((p) => p.id);
       store.deletePages(pagesIds);
       store.addPage();
-      // project.id = '';
-      // project.save();
-      // close the Modal/Dialog
       setStOpenedModal(!stOpenedModal);
     };
 
@@ -211,6 +202,8 @@ export const MyDesignsPanel = observer(
           {" "}
           Create new design{" "}
         </Button>
+
+        <SearchComponent onClick={false} query={query} setQuery={setQuery} />
 
         {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
@@ -249,7 +242,7 @@ export const MyDesignsPanel = observer(
         {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
         {/*   Pass these onto Line 25 */}
         {isError ? (
-          <ErrorComponent message={isError} />
+          <ErrorComponent message={error} />
         ) : data.length === 0 ? (
           <ErrorComponent message="You have not created any design" />
         ) : (
@@ -267,7 +260,7 @@ export const MyDesignsPanel = observer(
                   key={design.id}
                   store={store}
                   project={project}
-                  onDelete={() => deleteCanvas(design.id)}
+                  onDelete={() => deleteCanvas.mutate(design.id)}
                   onPublic={() => changeVisibility(design.id)}
                 />
               );
