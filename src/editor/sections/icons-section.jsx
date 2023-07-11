@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { InputGroup, Button, Card, Spinner } from "@blueprintjs/core";
+import { InputGroup, Button, Card, Spinner, Icon } from "@blueprintjs/core";
 import { isAlive } from "mobx-state-tree";
 import { svgToURL } from "polotno/utils/svg";
 import { SectionTab } from "polotno/side-panel";
@@ -9,10 +9,8 @@ import { getImageSize } from "polotno/utils/image";
 import styled from "polotno/utils/styled";
 import { t } from "polotno/utils/l10n";
 import { useInfiniteAPI } from "polotno/utils/use-api";
-import FaVectorSquare from "@meronex/icons/fa/FaVectorSquare";
-
 import { ImagesGrid } from "polotno/side-panel/images-grid";
-import { ElementsIcon } from "../editor-icon";
+import { ElementsIcon, LayersIcon } from "../editor-icon";
 import { getAssetByQuery } from "../../services/backendApi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 // Custom Image card component end - 01Jul2023
@@ -46,7 +44,7 @@ const NounContainer = styled("div")`
   }
 `;
 
-export const IconFinderPanel = observer(({ store, query }) => {
+export const CompIcons = observer(({ store, query }) => {
   // load data
   const count = 50;
   const { data, isLoading, loadMore, setQuery, error } = useInfiniteAPI({
@@ -111,7 +109,7 @@ export const IconFinderPanel = observer(({ store, query }) => {
 });
 
 // New Tab NFT Elements/Stickers Start - 24Jun2023
-export const NFTIcons = observer(({ store, query }) => {
+export const CompSupducks = observer(({ store, query }) => {
   const { address, isDisconnected } = useAccount();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -175,11 +173,210 @@ export const NFTIcons = observer(({ store, query }) => {
 
 // New Tab NFT Elements/Stickers End - 24Jun2023
 
+// ----------- New Tabs - Nouns, Lens, Assorted START - 11Jul2023 -----------
+
+// New Tab Lens Start - 11Jul2023
+export const CompLens = observer(({ store, query }) => {
+  const { address, isDisconnected } = useAccount();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [query, setQuery] = useState("supducks");
+  const [isError, setIsError] = useState("");
+  const [offset, setOffset] = useState(0);
+
+  const getAssets = async (query) => {
+    setIsLoading(true);
+    const res = await getAssetByQuery(query, offset);
+    if (res?.data) {
+      setData(res?.data);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsLoading(false);
+      setIsError(res?.error);
+      console.log(res.error);
+    }
+  };
+
+  useEffect(() => {
+    getAssets("supducks");
+  }, [query, offset]);
+
+  if (isDisconnected || !address) {
+    return <ConnectWalletMsgComponent />;
+  }
+
+  // Show Loading - 06Jul2023
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return isError ? (
+    <ErrorComponent message={isError} />
+  ) : (
+    <>
+      <div className="h-full overflow-y-auto">
+        <div className="grid grid-cols-2 overflow-y-auto">
+          {data.map((img) => {
+            return (
+              <CustomImageComponent
+                preview={img.image}
+                store={store}
+                project={project}
+              />
+            );
+          })}
+          <div className="my-2">
+            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+});
+
+// New Tab Lens End - 11Jul2023
+
+// New Tab Nouns Start - 11Jul2023
+export const CompNouns = observer(({ store, query }) => {
+  const { address, isDisconnected } = useAccount();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [query, setQuery] = useState("supducks");
+  const [isError, setIsError] = useState("");
+  const [offset, setOffset] = useState(0);
+
+  const getAssets = async (query) => {
+    setIsLoading(true);
+    const res = await getAssetByQuery(query, offset);
+    if (res?.data) {
+      setData(res?.data);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsLoading(false);
+      setIsError(res?.error);
+      console.log(res.error);
+    }
+  };
+
+  useEffect(() => {
+    getAssets("supducks");
+  }, [query, offset]);
+
+  if (isDisconnected || !address) {
+    return <ConnectWalletMsgComponent />;
+  }
+
+  // Show Loading - 06Jul2023
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return isError ? (
+    <ErrorComponent message={isError} />
+  ) : (
+    <>
+      <div className="h-full overflow-y-auto">
+        <div className="grid grid-cols-2 overflow-y-auto">
+          {data.map((img) => {
+            return (
+              <CustomImageComponent
+                preview={img.image}
+                store={store}
+                project={project}
+              />
+            );
+          })}
+          <div className="my-2">
+            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+});
+
+// New Tab Nouns End - 11Jul2023
+
+// New Tab Assorted Start - 11Jul2023
+export const CompAssorted = observer(({ store, query }) => {
+  const { address, isDisconnected } = useAccount();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [query, setQuery] = useState("supducks");
+  const [isError, setIsError] = useState("");
+  const [offset, setOffset] = useState(0);
+
+  const getAssets = async (query) => {
+    setIsLoading(true);
+    const res = await getAssetByQuery(query, offset);
+    if (res?.data) {
+      setData(res?.data);
+      setIsLoading(false);
+    } else if (res?.error) {
+      setIsLoading(false);
+      setIsError(res?.error);
+      console.log(res.error);
+    }
+  };
+
+  useEffect(() => {
+    getAssets("supducks");
+  }, [query, offset]);
+
+  if (isDisconnected || !address) {
+    return <ConnectWalletMsgComponent />;
+  }
+
+  // Show Loading - 06Jul2023
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return isError ? (
+    <ErrorComponent message={isError} />
+  ) : (
+    <>
+      <div className="h-full overflow-y-auto">
+        <div className="grid grid-cols-2 overflow-y-auto">
+          {data.map((img) => {
+            return (
+              <CustomImageComponent
+                preview={img.image}
+                store={store}
+                project={project}
+              />
+            );
+          })}
+          <div className="my-2">
+            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+});
+
+// New Tab Assorted End - 11Jul2023
+
+// ----------- New Tabs - Nouns, Lens, Assorted END - 11Jul2023 -----------
+
 export const IconsPanel = ({ store }) => {
   const requestTimeout = React.useRef();
   const [query, setQuery] = React.useState("");
   const [delayedQuery, setDelayedQuery] = React.useState(query);
-  const [service, setService] = React.useState("iconfinder");
+  const [currentTab, setCurrentTab] = useState("tabIcons");
 
   React.useEffect(() => {
     requestTimeout.current = setTimeout(() => {
@@ -191,42 +388,63 @@ export const IconsPanel = ({ store }) => {
   }, [query]);
 
   return (
-    <div
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "",
-          // paddingBottom: "10px",
-          // margin: "4px",
-        }}
-      >
+    <div className="flex flex-col h-full">
+      <div className="">
         <Button
           className="m-2 rounded-md"
           onClick={() => {
-            setService("iconfinder");
+            setCurrentTab("tabIcons");
           }}
-          active={service === "iconfinder"}
-          icon="social-media"
+          active={currentTab === "tabIcons"}
+          // icon="social-media"
         >
           Icons
         </Button>
         <Button
           className="m-2 rounded-md"
           onClick={() => {
-            setService("servNFTIcons");
+            setCurrentTab("tabSupducks");
           }}
-          active={service === "servNFTIcons"}
-          icon="build"
+          active={currentTab === "tabSupducks"}
+          // icon=""
         >
-          NFTs
+          Supducks
+        </Button>
+
+        {/* New Tabs Lens, Nouns, Assorted START - 11Jul2023 */}
+        <Button
+          className="m-2 rounded-md"
+          onClick={() => {
+            setCurrentTab("tabLens");
+          }}
+          active={currentTab === "tabLens"}
+          // icon=""
+        >
+          Lens
+        </Button>
+        <Button
+          className="m-2 rounded-md"
+          onClick={() => {
+            setCurrentTab("tabNouns");
+          }}
+          active={currentTab === "tabNouns"}
+          // icon=""
+        >
+          Nouns
+        </Button>
+        <Button
+          className="m-2 rounded-md"
+          onClick={() => {
+            setCurrentTab("tabAssorted");
+          }}
+          active={currentTab === "tabAssorted"}
+          // icon=""
+        >
+          Assorted
         </Button>
       </div>
+      {/* New Tabs Lens, Nouns, Assorted END - 11Jul2023 */}
+
       <div className="flex flex-row justify-normal">
         <input
           className="border px-2 py-1 rounded-md w-full m-1 mb-4 mt-4"
@@ -242,22 +460,32 @@ export const IconsPanel = ({ store }) => {
           }
         ></Button>
       </div>
-      {service === "iconfinder" && (
-        <IconFinderPanel query={delayedQuery} store={store} />
+
+      {currentTab === "tabIcons" && (
+        <CompIcons query={delayedQuery} store={store} />
       )}
-      {service === "servNFTIcons" && (
-        <NFTIcons query={delayedQuery} store={store} />
+      {currentTab === "tabSupducks" && (
+        <CompSupducks query={delayedQuery} store={store} />
+      )}
+      {currentTab === "tabLens" && (
+        <CompLens query={delayedQuery} store={store} />
+      )}
+      {currentTab === "tabNouns" && (
+        <CompNouns query={delayedQuery} store={store} />
+      )}
+      {currentTab === "tabAssorted" && (
+        <CompAssorted query={delayedQuery} store={store} />
       )}
     </div>
   );
 };
 
-// // define the new custom section
+// define the new custom section
 export const IconsSection = {
   name: "Elements",
   Tab: (props) => (
-    <SectionTab name="Elements" {...props}>
-      <ElementsIcon />
+    <SectionTab name="Stickers" {...props}>
+      <Icon icon="new-drawing" />
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes
