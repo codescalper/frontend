@@ -22,7 +22,8 @@ const CustomImageComponent = ({ design, preview, json, store }) => {
 
   return (
     <Card
-      style={{ margin: "4px", padding: "0px", position: "relative" }}
+      // style={{ margin: "4px", padding: "0px", position: "relative" }}
+      className="relative p-0 m-1"
       interactive
       onDragEnd={() => {
         fnDropImageOnCanvas();
@@ -35,8 +36,6 @@ const CustomImageComponent = ({ design, preview, json, store }) => {
         <LazyLoadImage
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
-          height={150}
-          width={150}
           src={replaceImageURL(preview)}
           alt="Preview Image"
         />

@@ -37,13 +37,12 @@ api.interceptors.request.use(
     const jwtToken = getFromLocalStorage("userAuthToken");
 
     // Exclude the login API from adding the default header
-    if (config.url !== "/auth/login" || config.url !== "/template") {
-      // Add your default header here
-      config.headers["Authorization"] = `Bearer ${jwtToken}`;
-      config.headers["Content-Type"] = "application/json";
-      config.headers["Access-Control-Allow-Origin"] = "*";
-      config.headers["Access-Control-Allow-Methods"] = "*";
-    }
+
+    // Add your default header here
+    config.headers["Authorization"] = `Bearer ${jwtToken}`;
+    config.headers["Content-Type"] = "application/json";
+    config.headers["Access-Control-Allow-Origin"] = "*";
+    config.headers["Access-Control-Allow-Methods"] = "*";
     return config;
   },
   (error) => {
@@ -55,7 +54,7 @@ api.interceptors.request.use(
 // no need auth token (jwt)
 export const login = async (walletAddress, signature, message) => {
   try {
-    const result = await api.post(`${API}/auth/login`, {
+    const result = await axios.post(`${API}/auth/login`, {
       address: walletAddress,
       signature: signature,
       message: message,
@@ -256,7 +255,8 @@ export const refreshNFT = async () => {
 // need auth token (jwt)
 
 export const getNFTs = async () => {
-  const result = await api.get(`${API}/user/nft/owned?limit=100&offset=0`);
+  const result = await api.get(`${API}/user/nft/owned?limit=50&offset=0`);
+  console.log("result", result?.data);
   return result?.data;
 };
 
@@ -399,7 +399,7 @@ export const changeCanvasVisibility = async ({ id, isPublic }) => {
 
 // need auth token (jwt)
 export const getAllCanvas = async () => {
-  const result = await api.get(`${API}/user/canvas?limit=100&offset=0`);
+  const result = await api.get(`${API}/user/canvas?limit=50&offset=0`);
   return result?.data;
 };
 
@@ -424,6 +424,7 @@ export const shareOnLens = async (canvasId, name, content) => {
         content: content,
       },
       platform: "lens",
+      // titmeStamp: Date.now(),
     });
 
     console.log("result", result);
@@ -470,18 +471,34 @@ export const shareOnLens = async (canvasId, name, content) => {
 
 // collection apis start
 // need auth token (jwt)
-export const getAllCollection = async () => {
-  const result = await api.get(`${API}/collection`);
-  return result?.data;
+export const getAllCollection = async (page) => {
+  const result = await api.get(`${API}/collection`, {
+    params: {
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 
 // need auth token (jwt)
 
-export const getNftByCollection = async (contractAddress) => {
-  const result = await api.get(
-    `${API}/collection/${contractAddress}?limit=100&offset=0`
-  );
-  return result?.data;
+export const getNftByCollection = async (contractAddress, page) => {
+  const result = await api.get(`${API}/collection/${contractAddress}`, {
+    params: {
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 
 // need auth token (jwt)
@@ -510,14 +527,14 @@ export const getCollectionNftById = async (id, contractAddress) => {
 // template apis start
 // no need auth token (jwt)
 export const getAllTemplates = async () => {
-  const result = await api.get(`${API}/template`);
+  const result = await api.get(`${API}/template?limit=50&offset=0`);
   return result?.data;
 };
 // template apis end
 
 // user public templates apis start
 export const getUserPublicTemplates = async () => {
-  const result = await api.get(`${API}/template/user`);
+  const result = await api.get(`${API}/template/user?limit=50&offset=0`);
   return result?.data;
 };
 
@@ -526,22 +543,40 @@ export const getUserPublicTemplates = async () => {
 // asset apis start
 // need auth token (jwt)
 
-export const getAssetByQuery = async (query) => {
+export const getAssetByQuery = async (query, page) => {
   const result = await api.get(
-    `${API}/asset/?query=${query}&limit=100&offset=0`
+    `${API}/asset/?query=${query}`, {
+      params: {
+        page: page,
+      }
+    }
   );
-  return result?.data;
+  
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  }
 };
 
 // asset apis end
 
 // BG asset apis start
 // need auth token (jwt)
-export const getBGAssetByQuery = async (query) => {
+export const getBGAssetByQuery = async (query, page) => {
   const result = await api.get(
-    `${API}/asset/background?author=${query}&limit=100&offset=0`
+    `${API}/asset/background?author=${query}`, {
+      params: {
+        page: page,
+      }
+    }
   );
-  return result?.data;
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  }
 };
 
 // Remove Background API

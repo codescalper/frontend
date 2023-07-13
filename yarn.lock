@@ -611,13 +611,37 @@
   resolved "https://registry.yarnpkg.com/@blueprintjs/colors/-/colors-4.1.22.tgz#033cbf03705100d5114d54161c225eec5cfeacfb"
   integrity sha512-qcC7nWW9TTSS7aDxE5gbo9vrxo+IOpC6/Kzpi0rdOBYFDd02PppCdnCCjGYw1/IopSsZ9EWqDLmD7zuy0H+WEA==
 
-"@blueprintjs/core@^4.17.8", "@blueprintjs/core@^4.18.0":
+"@blueprintjs/colors@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/colors/-/colors-4.2.1.tgz#603b2512caee84feddcb3dbd536534c140b9a1f3"
+  integrity sha512-Cx7J2YnUuxn+fi+y5XtXnBB7+cFHN4xBrRkaAetp78i3VTCXjUk+d1omrOr8TqbRucUXTdrhbZOUHpzRLFcJpQ==
+  dependencies:
+    tslib "~2.5.0"
+
+"@blueprintjs/core@^4.18.0":
   version "4.18.0"
   resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-4.18.0.tgz#4e7ffe1f7d2490212b814fe2b34724c832dbbed3"
   integrity sha512-BZk+wglL5KGcZC9/ziJWT6TH7frjW469O6FPSN1thFdzKYj6XATpfTSP0g0L90UW6r8yskCcUOo1Faw3jRoFTA==
   dependencies:
     "@blueprintjs/colors" "^4.1.22"
     "@blueprintjs/icons" "^4.15.0"
+    "@juggle/resize-observer" "^3.4.0"
+    "@types/dom4" "^2.0.2"
+    classnames "^2.3.1"
+    dom4 "^2.1.5"
+    normalize.css "^8.0.1"
+    popper.js "^1.16.1"
+    react-popper "^1.3.11"
+    react-transition-group "^4.4.5"
+    tslib "~2.5.0"
+
+"@blueprintjs/core@^4.20.2":
+  version "4.20.2"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-4.20.2.tgz#ae1bbaf13bd1bf887b506760c478cc940f6d6e20"
+  integrity sha512-5v4Nr0jozfAjiOkjY4zvt1XSpt4ldnrSaxtwo506S2cxJYfwFeMTmDshXNPFcc8L1fjZMxi0IWI2WABXzZXS6w==
+  dependencies:
+    "@blueprintjs/colors" "^4.2.1"
+    "@blueprintjs/icons" "^4.16.0"
     "@juggle/resize-observer" "^3.4.0"
     "@types/dom4" "^2.0.2"
     classnames "^2.3.1"
@@ -650,7 +674,16 @@
     classnames "^2.3.1"
     tslib "~2.5.0"
 
-"@blueprintjs/popover2@^1.13.12", "@blueprintjs/popover2@^1.14.1":
+"@blueprintjs/icons@^4.16.0":
+  version "4.16.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/icons/-/icons-4.16.0.tgz#47f9e8abe64d84fc18721080b8f191d8aac075d8"
+  integrity sha512-cyfgjUZcZCtQrXWUV8FwqYTFEzduV4a0N7yhOU38jY+cBRCLu/sDrD0Osvfk4DGRvNe4YjY7pohVLFSxpg68Uw==
+  dependencies:
+    change-case "^4.1.2"
+    classnames "^2.3.1"
+    tslib "~2.5.0"
+
+"@blueprintjs/popover2@^1.14.1":
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/@blueprintjs/popover2/-/popover2-1.14.1.tgz#f56c7c21c0cf6304bfd4d4b2cc32d75ef472561f"
   integrity sha512-/KU4qb4BTny4JKUt4OOl9y2L5NJd7PRCL5Ti58ctCG3bOa6y/hh3vgQWq7jhSGz+dVGxowGMtvEjvaj1rZKSew==
@@ -663,13 +696,36 @@
     react-popper "^2.3.0"
     tslib "~2.5.0"
 
-"@blueprintjs/select@^4.9.12", "@blueprintjs/select@^4.9.14":
+"@blueprintjs/popover2@^1.14.11":
+  version "1.14.11"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/popover2/-/popover2-1.14.11.tgz#0698fdeaf6710460cef0b71bed592ca37f40d1f9"
+  integrity sha512-5XAjeb2mlWjYXC0pqrNDLzHSsX85Zaiv8jixxUN9abarMUUFKGATgGF8MRsWTLAW94Gli6CB1lzVkrYkRHHf6Q==
+  dependencies:
+    "@blueprintjs/core" "^4.20.2"
+    "@juggle/resize-observer" "^3.4.0"
+    "@popperjs/core" "^2.11.7"
+    classnames "^2.3.1"
+    dom4 "^2.1.5"
+    react-popper "^2.3.0"
+    tslib "~2.5.0"
+
+"@blueprintjs/select@^4.9.14":
   version "4.9.14"
   resolved "https://registry.yarnpkg.com/@blueprintjs/select/-/select-4.9.14.tgz#b3a050b27a3a9a20e545facc1cb0cc5232892f50"
   integrity sha512-pJsrEsoYgunF0xLusVhd7gMeR59uFdC7uvwlN2tm8qM0vWpzZSlSCwD2FdlQCt3Co76JhmVPyxOxbnUKm55gkw==
   dependencies:
     "@blueprintjs/core" "^4.18.0"
     "@blueprintjs/popover2" "^1.14.1"
+    classnames "^2.3.1"
+    tslib "~2.5.0"
+
+"@blueprintjs/select@^4.9.24":
+  version "4.9.24"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/select/-/select-4.9.24.tgz#5814d946486308a05758a9e1408b6f8c31f4a60e"
+  integrity sha512-OTjesxH/7UZvM7yAdHJ5u3sIjX1N8Rs4CQQ22AfqNl82SIROqkuXI31XEl6YNX1GsYfmAMiw0K7XohEKOMXR5g==
+  dependencies:
+    "@blueprintjs/core" "^4.20.2"
+    "@blueprintjs/popover2" "^1.14.11"
     classnames "^2.3.1"
     tslib "~2.5.0"
 
@@ -4257,7 +4313,7 @@ it-to-stream@^1.0.0:
     p-fifo "^1.0.0"
     readable-stream "^3.6.0"
 
-its-fine@^1.0.6:
+its-fine@^1.0.6, its-fine@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/its-fine/-/its-fine-1.1.1.tgz#e74b93fddd487441f978a50f64f0f5af4d2fc38e"
   integrity sha512-v1Ia1xl20KbuSGlwoaGsW0oxsw8Be+TrXweidxD9oT/1lAh6O3K3/GIM95Tt6WCiv6W+h2M7RB1TwdoAjQyyKw==
@@ -4355,10 +4411,10 @@ kind-of@^6.0.3:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-konva@^9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/konva/-/konva-9.0.1.tgz#92b4171beaa94273b108bd87b08c4d3e51a0da22"
-  integrity sha512-wzpkprJ8idE42TDF9Lu9RNjVVYNXrj0apvTK3pujdHQhX1iNV+MUquSxYN8HqjYSG95QQ51jhFzRLWhnhf44Mw==
+konva@^9.2.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/konva/-/konva-9.2.0.tgz#3739e539724b0e6b76d697a322efdaa01baa1508"
+  integrity sha512-+woI76Sk+VFVl9z7zPkuTnN2zFpEYg27YWz8BCdQXpt5IS3pdnSPAPQVPPMidcbDi9/G5b/IOIp35/KqMGiYPA==
 
 lie@3.1.1:
   version "3.1.1"
@@ -5044,17 +5100,17 @@ pngjs@^5.0.0:
   resolved "https://registry.yarnpkg.com/pngjs/-/pngjs-5.0.0.tgz#e79dd2b215767fd9c04561c01236df960bce7fbb"
   integrity sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==
 
-polotno@^1.9.1:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/polotno/-/polotno-1.9.1.tgz#82d7b7bf9d4c353ec7e2b403862c947528481bb0"
-  integrity sha512-zvcsicKTOdQf+8qJFp1bDPhG4YWtO0nNFv6zt2SPzpgmVfXe5TG1hPKt1DfIwsM5QyU5HDWy9WoZCZpPmCZSVg==
+polotno@^1.11.1:
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/polotno/-/polotno-1.11.1.tgz#5467c3c14a6a6d1673e7bd77dce84b00fff76704"
+  integrity sha512-EUQWANzi8ffrRaoG6+IJXmdgGIxnZyaGhgmWlwOu+Rfmn1miig4Y8WUUjv98LbsL4VfmRC8gU3Imi11auX+5ww==
   dependencies:
-    "@blueprintjs/core" "^4.17.8"
-    "@blueprintjs/popover2" "^1.13.12"
-    "@blueprintjs/select" "^4.9.12"
+    "@blueprintjs/core" "^4.20.2"
+    "@blueprintjs/popover2" "^1.14.11"
+    "@blueprintjs/select" "^4.9.24"
     "@meronex/icons" "^4.0.0"
     gradient-parser "^1.0.2"
-    konva "^9.0.1"
+    konva "^9.2.0"
     mobx "6.9.0"
     mobx-react-lite "^3.4.3"
     mobx-state-tree "5.1.8"
@@ -5062,14 +5118,14 @@ polotno@^1.9.1:
     quill "^1.3.7"
     rasterizehtml "^1.3.1"
     react-color "^2.19.3"
-    react-konva "18.2.7"
+    react-konva "18.2.10"
     react-konva-utils "^1.0.4"
     react-sortablejs "6.1.4"
-    react-window "^1.8.8"
+    react-window "^1.8.9"
     sortablejs "^1.15.0"
     svg-round-corners "^0.4.1"
-    swr "^2.1.3"
-    use-image "^1.1.0"
+    swr "^2.1.5"
+    use-image "^1.1.1"
 
 popper.js@^1.14.4, popper.js@^1.16.1:
   version "1.16.1"
@@ -5367,13 +5423,13 @@ react-konva-utils@^1.0.4:
     react-konva "^18.0.0-0"
     use-image "^1.1.0"
 
-react-konva@18.2.7:
-  version "18.2.7"
-  resolved "https://registry.yarnpkg.com/react-konva/-/react-konva-18.2.7.tgz#f01735ac9ae35a7cd0f3ca359a898374ce791d04"
-  integrity sha512-Q52ghaIR+2g3x14V5aIyt7VWNqPnWRotILo0Nj4YWVbNQisozrTJJ3/w68qb5Ar2fsYo7yXb4T6Nt4yZcGd2yg==
+react-konva@18.2.10:
+  version "18.2.10"
+  resolved "https://registry.yarnpkg.com/react-konva/-/react-konva-18.2.10.tgz#5b5edc5e9ed452755d21babc353747828868decc"
+  integrity sha512-ohcX1BJINL43m4ynjZ24MxFI1syjBdrXhqVxYVDw2rKgr3yuS0x/6m1Y2Z4sl4T/gKhfreBx8KHisd0XC6OT1g==
   dependencies:
     "@types/react-reconciler" "^0.28.2"
-    its-fine "^1.0.6"
+    its-fine "^1.1.1"
     react-reconciler "~0.29.0"
     scheduler "^0.23.0"
 
@@ -5523,7 +5579,7 @@ react-uid@^2.2.0:
   dependencies:
     tslib "^2.0.0"
 
-react-window@^1.8.8:
+react-window@^1.8.9:
   version "1.8.9"
   resolved "https://registry.yarnpkg.com/react-window/-/react-window-1.8.9.tgz#24bc346be73d0468cdf91998aac94e32bc7fa6a8"
   integrity sha512-+Eqx/fj1Aa5WnhRfj9dJg4VYATGwIUP2ItwItiJ6zboKWA6EX3lYDAXfGF2hyNqplEprhbtjbipiADEcwQ823Q==
@@ -5986,10 +6042,10 @@ svg-round-corners@^0.4.1:
   dependencies:
     lodash.clonedeep "^4.5.0"
 
-swr@^2.1.3:
-  version "2.1.5"
-  resolved "https://registry.yarnpkg.com/swr/-/swr-2.1.5.tgz#688effa719c03f6d35c66decbb0f8e79c7190399"
-  integrity sha512-/OhfZMcEpuz77KavXST5q6XE9nrOBOVcBLWjMT+oAE/kQHyE3PASrevXCtQDZ8aamntOfFkbVJp7Il9tNBQWrw==
+swr@^2.1.5:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/swr/-/swr-2.2.0.tgz#575c6ac1bec087847f4c86a39ccbc0043c834d6a"
+  integrity sha512-AjqHOv2lAhkuUdIiBu9xbuettzAzWXmCEcLONNKJRba87WAefz8Ca9d6ds/SzrPc235n1IxWYdhJ2zF3MNUaoQ==
   dependencies:
     use-sync-external-store "^1.2.0"
 
@@ -6218,6 +6274,11 @@ use-image@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/use-image/-/use-image-1.1.0.tgz#dc244c34506d3cf3a8177c1f0bbfb158b9beefe5"
   integrity sha512-+cBHRR/44ZyMUS873O0vbVylgMM0AbdTunEplAWXvIQ2p69h2sIo2Qq74zeUsq6AMo+27e5lERQvXzd1crGiMg==
+
+use-image@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/use-image/-/use-image-1.1.1.tgz#bdd3f2e1718393ffc0e56136f993467103d9d2df"
+  integrity sha512-n4YO2k8AJG/BcDtxmBx8Aa+47kxY5m335dJiCQA5tTeVU4XdhrhqR6wT0WISRXwdMEOv5CSjqekDZkEMiiWaYQ==
 
 use-isomorphic-layout-effect@^1.1.2:
   version "1.1.2"

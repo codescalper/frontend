@@ -11,7 +11,7 @@ import {
 import { replaceImageURL } from "../../services/replaceUrl";
 import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { ErrorComponent } from "../../elements";
+import { ErrorComponent, MessageComponent } from "../../elements";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner } from "@blueprintjs/core";
@@ -38,8 +38,6 @@ const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
         <LazyLoadImage
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
-          height={150}
-          width={150}
           src={replaceImageURL(preview)}
           alt="Preview Image"
         />
@@ -103,9 +101,7 @@ const LenspostTemplates = ({ store }) => {
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {data.length === 0 ? (
-        <ErrorComponent message="No templates found" />
-      ) : (
+      {data.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
           {data.map((design) => {
             return (
@@ -120,6 +116,8 @@ const LenspostTemplates = ({ store }) => {
             );
           })}
         </div>
+      ) : (
+        <MessageComponent message="No Results" />
       )}
 
       {/* New Design card end - 23Jun2023 */}
@@ -150,9 +148,7 @@ const UserTemplates = ({ store }) => {
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {data.length === 0 ? (
-        <ErrorComponent message="No templates found" />
-      ) : (
+      {data?.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
           {data.map((design) => {
             return (
@@ -171,6 +167,8 @@ const UserTemplates = ({ store }) => {
             );
           })}
         </div>
+      ) : (
+        <MessageComponent message="No Results" />
       )}
 
       {/* New Design card end - 23Jun2023 */}

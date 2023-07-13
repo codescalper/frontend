@@ -9,3 +9,26 @@ body {
 img {
 	display: inline;
 }
+
+/* css for designed scrollbar start here */
+::-webkit-scrollbar {
+	width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: #999;
+	border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #777;
+}
+
+/* css for designed scrollbar ends here */

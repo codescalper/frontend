@@ -33,6 +33,7 @@ import { replaceImageURL } from "../../services/replaceUrl";
 import {
   ConnectWalletMsgComponent,
   ErrorComponent,
+  MessageComponent,
   SearchComponent,
 } from "../../elements";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -61,8 +62,6 @@ const DesignCard = observer(
           <LazyLoadImage
             placeholderSrc={replaceImageURL(preview)}
             effect="blur"
-            height={150}
-            width={150}
             src={replaceImageURL(preview)}
             alt="Preview Image"
           />
@@ -275,10 +274,8 @@ export const MyDesignsPanel = observer(({ store }) => {
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
       {isError ? (
-        <ErrorComponent message={error} />
-      ) : data.length === 0 ? (
-        <ErrorComponent message="You have not created any design" />
-      ) : (
+        <ErrorComponent error={error} />
+      ) : data.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
           {data.map((design) => {
             return (
@@ -304,6 +301,8 @@ export const MyDesignsPanel = observer(({ store }) => {
             );
           })}
         </div>
+      ) : (
+        <MessageComponent message="You have not created any design" />
       )}
 
       {/* New Design card end - 23Jun2023 */}

@@ -39,7 +39,9 @@ import { toast } from "react-toastify";
 import { Button } from "@blueprintjs/core";
 import axios from "axios";
 import { Context } from "../context/ContextProvider";
-import { BACKEND_DEV_URL } from "../services/env";
+import { unstable_setAnimationsEnabled } from 'polotno/config';
+
+unstable_setAnimationsEnabled(true);
 
 const sections = [
   TemplatesSection,
@@ -247,30 +249,30 @@ const Editor = ({ store }) => {
       }
 
       if (canvasChildren.length > 0) {
-        if (!canvasIdRef.current) {
-          const res = await createCanvas(storeData, "hello", false);
-          if (res?.data) {
-            canvasIdRef.current = res?.data?.canvasId;
-            contextCanvasIdRef.current = res?.data?.canvasId;
-            console.log("Canvas created", { canvasId: res?.data?.canvasId });
-          } else if (res?.error) {
-            console.log("Canvas creation error", { error: res?.error });
-          }
-        }
+        // if (!canvasIdRef.current) {
+        //   const res = await createCanvas(storeData, "hello", false);
+        //   if (res?.data) {
+        //     canvasIdRef.current = res?.data?.canvasId;
+        //     contextCanvasIdRef.current = res?.data?.canvasId;
+        //     console.log("Canvas created", { canvasId: res?.data?.canvasId });
+        //   } else if (res?.error) {
+        //     console.log("Canvas creation error", { error: res?.error });
+        //   }
+        // }
 
-        if (canvasIdRef.current) {
-          const res = await updateCanvas(
-            canvasIdRef.current,
-            storeData,
-            "hello",
-            false
-          );
-          if (res?.data) {
-            console.log(res?.data);
-          } else if (res?.error) {
-            console.log("Canvas update error", { error: res?.error });
-          }
-        }
+        // if (canvasIdRef.current) {
+        //   const res = await updateCanvas(
+        //     canvasIdRef.current,
+        //     storeData,
+        //     "hello",
+        //     false
+        //   );
+        //   if (res?.data) {
+        //     console.log(res?.data);
+        //   } else if (res?.error) {
+        //     console.log("Canvas update error", { error: res?.error });
+        //   }
+        // }
       }
     };
 

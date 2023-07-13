@@ -5,6 +5,7 @@ import ConnectWalletMsgComponent from "./ConnectWalletMsgComponent";
 import CustomImageComponent from "./CustomImageComponent";
 import MessageComponent from "./MessageComponent";
 import SearchComponent from "./SearchCOmponent";
+import LoadMoreComponent from "./LoadMoreComponent";
 
 export {
   ErrorComponent,
@@ -14,4 +15,5 @@ export {
   CustomImageComponent,
   MessageComponent,
   SearchComponent,
+  LoadMoreComponent,
 };

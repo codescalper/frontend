@@ -1,7 +1,7 @@
 // Imports:
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { Button, Spinner} from "@blueprintjs/core";
+import { Button, Spinner } from "@blueprintjs/core";
 import { SectionTab } from "polotno/side-panel";
 import { BackgroundIcon } from "../editor-icon";
 import { useAccount } from "wagmi";
@@ -10,8 +10,12 @@ import {
   ConnectWalletMsgComponent,
   CustomImageComponent,
   ErrorComponent,
+  LoadMoreComponent,
+  MessageComponent,
+  SearchComponent,
 } from "../../elements";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { fnLoadMore } from "../../services/fnLoadMore";
 
 // New Tab Colors Start - 24Jun2023
 export const TabColors = observer(({ store, query }) => {
@@ -26,52 +30,87 @@ export const TabColors = observer(({ store, query }) => {
 // New Tab Colors End - 24Jun2023
 
 // New Tab NFT Backgrounds Start - 24Jun2023
-export const TabNFTBgs = observer(({ store, query }) => {
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["bg-assets", "supducks"],
-    queryFn: () => getBGAssetByQuery("supducks"),
-  });
+export const TabNFTBgs = observer(({ store }) => {
+  const [query, setQuery] = useState("");
+  const [delayedQuery, setDelayedQuery] = useState(query);
+  const requestTimeout = useRef();
   const { isDisconnected, address, isConnected } = useAccount();
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["bg-assets", delayedQuery || "supducks"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) =>
+      getBGAssetByQuery(delayedQuery || "supducks", pageParam),
+  });
+
+  useEffect(() => {
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
+
+  console.log("data", data);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
   }
-  
+
   if (isError) {
     return <ErrorComponent message={error} />;
   }
 
   // Show Loading - 06Jul2023
-  if(isLoading){
-    return<div className="flex flex-col">
-      <Spinner/>
-    </div>
-  }
-  return (
-    <>
-      {/* Code for NFT BACKGROUNDS here */}
-      {/* Lazyloading Try - 29Jun2023 */}
-      <div className="overflow-y-auto h-full">
-        <div className="grid grid-cols-2 overflow-y-auto">
-          {data.map((design) => {
-            return (
-              <CustomImageComponent
-                design={design}
-                json={design.data}
-                preview={design.image}
-                key={design.id}
-                store={store}
-                project={project}
-              />
-            );
-          })}
-          <div className="my-2">
-                  <button onClick={() => setOffset(offset + 100)}>
-                    Load More
-                  </button>
-                </div>
-        </div>
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
       </div>
+    );
+  }
+  return isError ? (
+    <ErrorComponent message={error} />
+  ) : (
+    <>
+      <SearchComponent query={query} setQuery={setQuery} />
+      {data?.pages[0]?.data.length > 0 ? (
+        <div className="h-full overflow-y-auto">
+          <div className="grid grid-cols-2 overflow-y-auto">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item.image}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
+          </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+        </div>
+      ) : (
+        <MessageComponent message="No results found" />
+      )}
     </>
   );
 });
@@ -80,7 +119,6 @@ export const TabNFTBgs = observer(({ store, query }) => {
 
 export const BackgroundPanel2 = observer(({ store, query }) => {
   const [stTab, setStTab] = useState("tabNFTBgs");
-  const [stInputQuery, setStInputQuery] = useState("");
 
   return (
     <div className="h-full flex flex-col">
@@ -106,25 +144,9 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
         </Button>
       </div>
 
-      <div className="flex flex-row justify-normal">
-        <input
-          className="border px-2 py-1 rounded-md w-full m-1 mb-4 mt-4"
-          placeholder="Search by Token ID"
-          onChange={(e) => setStInputQuery(e.target.value)}
-        />
-        <Button
-          className="ml-3 m-1 rounded-md mb-4 mt-4"
-          icon="search"
-          onClick={
-            () => console.log(stInputQuery)
-            // Implement Search Function here
-          }
-        ></Button>
-      </div>
-
       {/* The Tab Elements start to appear here - 24Jun2023 */}
-      {stTab === "tabColors" && <TabColors query={""} store={store} />}
-      {stTab === "tabNFTBgs" && <TabNFTBgs query={""} store={store} />}
+      {stTab === "tabColors" && <TabColors store={store} />}
+      {stTab === "tabNFTBgs" && <TabNFTBgs store={store} />}
     </div>
   );
 });
