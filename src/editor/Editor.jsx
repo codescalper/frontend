@@ -39,6 +39,8 @@ import { toast } from "react-toastify";
 import { Button } from "@blueprintjs/core";
 import axios from "axios";
 import { Context } from "../context/ContextProvider";
+import { BACKEND_DEV_URL } from "../services/env";
+import { replaceImageURL } from "../services/replaceUrl";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fnMessege } from "../services/FnMessege";
@@ -109,6 +111,7 @@ const Editor = ({ store }) => {
   const [removedBgImageUrl, setRemovedBgImageUrl] = useState("");
   const [stActivePageNo, setStActivePageNo] = useState(0);
   const [stShowRemoveBgBtn, setStShowRemoveBgBtn] = useState(false);
+  var varActivePageNo = 0;
   const queryClient = useQueryClient();
   const { mutateAsync: createCanvasAsync } = useMutation({
     mutationKey: "createCanvas",
@@ -132,70 +135,33 @@ const Editor = ({ store }) => {
   //   };
 
   const handleRemoveBg = async () => {
-    var varActivePageNo = 0;
-    var base64String = "";
-    console.log("Handle upload START");
+    const varImageUrl = store.selectedElements[0].src
+    fnFindPageNo();
 
-    const formData = new FormData();
-    // formData.append('file', file);
-    formData.append("url", store.selectedElements[0].src);
+    var removedBgURL = await fnRemoveBg(varImageUrl);
+    console.log(varActivePageNo);
+    console.log(removedBgURL)
+    // // To Fix CORS error, we append the string with b-cdn url
+    fnAddImageToCanvas(`${replaceImageURL(removedBgURL)}`, varActivePageNo)
 
-    varActivePageNo = Number(fnFindPageNo());
-    try {
-      const response = await axios.get(
-        // BG REMOVE from Cutout.pro,
-
-        // For File use this Endpoint
-        // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
-
-        // For Image `src` URL as parameter , use this Endpoint
-        `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
-        // "https://api.remove.bg/v1.0/removebg?image_url=",
-        // 'https://www.cutout.pro/api/v1/text2imageAsync',
-        {
-          headers: {
-            // APIKEY: "de13ee35bc2d4fbb80e9c618336b0f99",
-            "X-API-Key": "2rNFJBVG7pVAY5WBAy8ovwVw",
-            //  Backup API Keys :
-            // 'APIKEY': 'c136635d69324c99942639424feea81a'
-            // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
-            APIKEY: "63d61dd44f384a7c9ad3f05471e17130", //40 Credits
-          },
-        }
-      );
-
-      fnAddImageToCanvas(response?.data?.data?.imageUrl, varActivePageNo);
-      console.log({ image: response?.data?.data?.imageUrl });
-
-      // console.log("The S3 Res is ")
-      // fnStoreImageToS3(response?.data?.data?.imageUrl);
-
-      // console.log("Deleting Previous images") // Under DEV - 08Jul2023
-      // fnDeletePrevImage()
-
-      return response?.data?.data?.imageUrl; //For toast
-    } catch (error) {
-      console.error(error);
-    }
-    console.log("Handle upload END");
-  };
-
+    return removedBgURL;
+  }
   // 03June2023
 
   // Find the index of the page for which the removed background image needs to be placed
   const fnFindPageNo = () => {
-    return store.pages.map((page) => {
-      page.identifier == store._activePageId;
-      // setStActivePageNo(store.pages.indexOf(page));
-      store.pages.indexOf(page);
-    });
-  };
-  // Function to Add Removed BG image on the Canvas
-  const fnAddImageToCanvas = (removedBgUrl, varActivePageNo) => {
+    store.pages.map((page) => {
+    page.identifier == store._activePageId;
+    setStActivePageNo(store.pages.indexOf(page));
+    varActivePageNo = store.pages.indexOf(page);
+  });
+  }
+    // Function to Add Removed BG image on the Canvas
+  const fnAddImageToCanvas = async (removedBgUrl, varActivePageNo) => {
     // Add the new removed Bg Image to the Page
     console.log(removedBgUrl);
 
-    store.pages[stActivePageNo || varActivePageNo].addElement({
+    await store.pages[stActivePageNo || varActivePageNo].addElement({
       type: "image",
       x: 0.5 * store.width,
       y: 0.5 * store.height,
@@ -210,14 +176,11 @@ const Editor = ({ store }) => {
     });
   };
 
-  const fnStoreImageToS3 = async (removedBgUrl) => {
-    // return console.log(removedBgUrl);
-
-    const res = await getRemovedBgS3Link(removedBgUrl);
-    if (res?.data) {
+  const fnRemoveBg = async (varImageUrl) =>{
+    const res = await getRemovedBgS3Link(varImageUrl);
+    if(res?.data){
       console.log(res.data);
-    } else if (res?.error) {
-      console.log(res.error);
+      return res.data.s3link;
     }
   };
 

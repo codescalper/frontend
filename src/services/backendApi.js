@@ -514,7 +514,7 @@ export const getBGAssetByQuery = async (query, page) => {
 // Remove Background API
 export const getRemovedBgS3Link = async (query) => {
   try {
-    const result = await api.post(`${API}/util/upload-image?image=${query}`);
+    const result = await api.post(`${API}/util/remove-bg?image=${query}`);
 
     if (result?.status === 200) {
       return {

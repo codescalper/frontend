@@ -97,6 +97,8 @@ export const TabNFTBgs = observer(({ store }) => {
                     preview={item.image}
                     store={store}
                     project={project}
+                    dimensions={item?.dimensions != null && item.dimensions}
+                    isBackground={true}
                   />
                 );
               })}

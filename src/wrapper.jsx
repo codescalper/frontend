@@ -20,6 +20,7 @@ const { chains, provider } = configureChains(
 
 const { connectors } = getDefaultWallets({
 appName: "LensPost",
+projectId: "755e88fd4f93da5f0dadcf2dee54e6a0",
   chains,
 });
 
