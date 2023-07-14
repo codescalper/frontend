@@ -104,77 +104,47 @@ const Editor = ({ store }) => {
   const [removedBgImageUrl, setRemovedBgImageUrl] = useState("");
   const [stActivePageNo, setStActivePageNo] = useState(0);
   const [stShowRemoveBgBtn, setStShowRemoveBgBtn] = useState(false);
-
+  var varActivePageNo = 0;
   //   const handleFileChange = (event) => {
   // 		setFile(event.target.files[0]);
   // 		setFile(event.target.files[0]);
   //   };
 
   const handleRemoveBg = async () => {
-    var varActivePageNo = 0;
-    var base64String = "";
-    console.log("Handle upload START");
+    const varImageUrl = store.selectedElements[0].src
+    fnFindPageNo();
 
-    const formData = new FormData();
-    // formData.append('file', file);
-    formData.append("url", store.selectedElements[0].src);
+    var removedBgURL = await fnRemoveBg(varImageUrl);
+    console.log(varActivePageNo);
+    console.log(removedBgURL)
 
-    varActivePageNo = Number(fnFindPageNo())
-    try {
-      const response = await axios.get(
-        // BG REMOVE from Cutout.pro,
+    // To Fix CORS error, we append the string with b-cdn url
+    var cdnPrefix = "https://lenspost.b-cdn.net/"
+    var newUrl = cdnPrefix + removedBgURL.slice(45) //Remove first 45 characters [s3 url]
+    console.log(newUrl);
 
-        // For File use this Endpoint
-        // 'https://www.cutout.pro/api/v1/matting?mattingType=6',
+    fnAddImageToCanvas(`${newUrl}`, varActivePageNo)
 
-        // For Image `src` URL as parameter , use this Endpoint
-        // `https://www.cutout.pro/api/v1/mattingByUrl?mattingType=6&url=${store.selectedElements[0].src}&crop=true`,
-        "https://api.remove.bg/v1.0/removebg?image_url=",
-        // 'https://www.cutout.pro/api/v1/text2imageAsync',
-        {
-          headers: {
-            // APIKEY: "de13ee35bc2d4fbb80e9c618336b0f99",
-            "X-API-Key": "2rNFJBVG7pVAY5WBAy8ovwVw"
-            //  Backup API Keys :
-            // 'APIKEY': 'c136635d69324c99942639424feea81a'
-            // 'APIKEY': 'de13ee35bc2d4fbb80e9c618336b0f99' // rao2srinivasa@gmail.com
-            // 'APIKEY': '63d61dd44f384a7c9ad3f05471e17130' //40 Credits
-          },
-        }
-      )
-     
-      fnAddImageToCanvas(response?.data?.data?.imageUrl, varActivePageNo);
-      console.log({image: response?.data?.data?.imageUrl});
-      
-      // console.log("The S3 Res is ")
-      // fnStoreImageToS3(response?.data?.data?.imageUrl);
-      
-      // console.log("Deleting Previous images") // Under DEV - 08Jul2023
-      // fnDeletePrevImage()
+    return removedBgURL;
+  }
  
-      return response?.data?.data?.imageUrl; //For toast
-    } catch (error) {
-      console.error(error);
-    }
-    console.log("Handle upload END");
-  };
 
   // 03June2023
 
   // Find the index of the page for which the removed background image needs to be placed
   const fnFindPageNo = () => {
-    return store.pages.map((page) => {
+    store.pages.map((page) => {
     page.identifier == store._activePageId;
-    // setStActivePageNo(store.pages.indexOf(page));
-    store.pages.indexOf(page);
+    setStActivePageNo(store.pages.indexOf(page));
+    varActivePageNo = store.pages.indexOf(page);
   });
   }
     // Function to Add Removed BG image on the Canvas
-  const fnAddImageToCanvas = (removedBgUrl, varActivePageNo) => {
+  const fnAddImageToCanvas = async (removedBgUrl, varActivePageNo) => {
     // Add the new removed Bg Image to the Page
     console.log(removedBgUrl);
 
-    store.pages[stActivePageNo || varActivePageNo].addElement({
+    await store.pages[stActivePageNo || varActivePageNo].addElement({
       type: "image",
       x: 0.5 * store.width,
       y: 0.5 * store.height,
@@ -189,13 +159,14 @@ const Editor = ({ store }) => {
     });
   };
 
-  const fnStoreImageToS3 = async (removedBgUrl) =>{
+  const fnRemoveBg = async (varImageUrl) =>{
 
     // return console.log(removedBgUrl);
 
-    const res = await getRemovedBgS3Link(removedBgUrl);
+    const res = await getRemovedBgS3Link(varImageUrl);
     if(res?.data){
       console.log(res.data);
+      return res.data.s3link;
     }
     else if(res?.error) {
       console.log(res.error)

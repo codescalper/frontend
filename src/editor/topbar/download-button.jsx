@@ -22,7 +22,7 @@ export const DownloadButton = observer(({ store }) => {
 		});
 		const allWords = texts.join(" ").split(" ");
 		const words = allWords.slice(0, 6);
-		return words.join(" ").replace(/\s/g, "-").toLowerCase() || "polotno";
+		return words.join(" ").replace(/\s/g, "-").toLowerCase() || "lenspost";
 	};
 	return (
 		<Popover2
