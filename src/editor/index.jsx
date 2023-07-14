@@ -4,8 +4,9 @@ import { createStore } from "polotno/model/store";
 import { createProject, ProjectContext } from "./project";
 
 import Editor from "./Editor";
+import { POLOTNO_API_KEY } from "../services/env";
 
-const store = createStore({ key: import.meta.env.VITE_POLOTNO_API_KEY });
+const store = createStore({ key: POLOTNO_API_KEY });
 window.store = store;
 store.addPage();
 

@@ -19,8 +19,12 @@ import {
   ConnectWalletMsgComponent,
   CustomImageComponent,
   ErrorComponent,
+  LoadMoreComponent,
+  MessageComponent,
+  SearchComponent,
 } from "../../elements";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { fnLoadMore } from "../../services/fnLoadMore";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -45,10 +49,20 @@ const NounContainer = styled("div")`
   }
 `;
 
-export const CompIcons = observer(({ store, query }) => {
+export const CompIcons = observer(({ store }) => {
+  const requestTimeout = React.useRef();
+  const [query, setQuery] = React.useState("");
+  const [delayedQuery, setDelayedQuery] = React.useState(query);
+
   // load data
   const count = 50;
-  const { data, isLoading, loadMore, setQuery, error } = useInfiniteAPI({
+  const {
+    data,
+    isLoading,
+    loadMore,
+    setQuery: setApiQuery,
+    error,
+  } = useInfiniteAPI({
     getAPI: ({ page, query }) =>
       `${API}/get-iconfinder?query=${query}&offset=${
         (page - 1) * count
@@ -59,84 +73,103 @@ export const CompIcons = observer(({ store, query }) => {
   });
 
   React.useEffect(() => {
-    setQuery(query);
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
   }, [query]);
 
+  React.useEffect(() => {
+    setApiQuery(delayedQuery);
+  }, [delayedQuery]);
+
   return (
-    <ImagesGrid
-      shadowEnabled={false}
-      images={data?.map((data) => data.icons).flat()}
-      getPreview={(item) => item.raster_sizes[6].formats[0].preview_url}
-      isLoading={isLoading}
-      onSelect={async (item, pos, element) => {
-        const { download_url } = item.vector_sizes[0].formats[0];
-        if (element && element.type === "image" && !element.locked) {
-          const req = await fetch(
-            `${API}/download-iconfinder?download_url=${download_url}&KEY=${getKey()}`
-          );
-          const json = await req.json();
-          const base64 = await svgToURL(json.content);
-          element.set({ clipSrc: base64 });
-          return;
-        }
-        // const { width, height } = await getImageSize(item.images['256']);
-        const width = item.vector_sizes[0].size_width;
-        const height = item.vector_sizes[0].size_height;
-        store.history.transaction(async () => {
-          const x = (pos?.x || store.width / 2) - width / 2;
-          const y = (pos?.y || store.height / 2) - height / 2;
-          const svg = store.activePage?.addElement({
-            type: "svg",
-            width,
-            height,
-            x,
-            y,
-          });
-          const req = await fetch(
-            `${API}/download-iconfinder?download_url=${download_url}&KEY=${getKey()}`
-          );
-          const json = await req.json();
-          const base64 = await svgToURL(json.content);
-          if (isAlive(svg)) {
-            await svg.set({ src: base64 });
+    <>
+      <SearchComponent query={query} setQuery={setQuery} />
+      <ImagesGrid
+        shadowEnabled={false}
+        images={data?.map((data) => data.icons).flat()}
+        getPreview={(item) => item.raster_sizes[6].formats[0].preview_url}
+        isLoading={isLoading}
+        onSelect={async (item, pos, element) => {
+          const { download_url } = item.vector_sizes[0].formats[0];
+          if (element && element.type === "image" && !element.locked) {
+            const req = await fetch(
+              `${API}/download-iconfinder?download_url=${download_url}&KEY=${getKey()}`
+            );
+            const json = await req.json();
+            const base64 = await svgToURL(json.content);
+            element.set({ clipSrc: base64 });
+            return;
           }
-        });
-      }}
-      rowsNumber={4}
-      error={error}
-      loadMore={loadMore}
-    />
+          // const { width, height } = await getImageSize(item.images['256']);
+          const width = item.vector_sizes[0].size_width;
+          const height = item.vector_sizes[0].size_height;
+          store.history.transaction(async () => {
+            const x = (pos?.x || store.width / 2) - width / 2;
+            const y = (pos?.y || store.height / 2) - height / 2;
+            const svg = store.activePage?.addElement({
+              type: "svg",
+              width,
+              height,
+              x,
+              y,
+            });
+            const req = await fetch(
+              `${API}/download-iconfinder?download_url=${download_url}&KEY=${getKey()}`
+            );
+            const json = await req.json();
+            const base64 = await svgToURL(json.content);
+            if (isAlive(svg)) {
+              await svg.set({ src: base64 });
+            }
+          });
+        }}
+        rowsNumber={4}
+        error={error}
+        loadMore={loadMore}
+      />
+    </>
   );
 });
 
 // New Tab NFT Elements/Stickers Start - 24Jun2023
 // export const CompSupducks = observer(({ store, query }) => {
-export const CompSupducks = observer(({ store, query }) => {
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["assets", "supducks"],
-    queryFn: () => getAssetByQuery("supducks"),
-  });
+export const CompSupducks = observer(({ store }) => {
+  const [query, setQuery] = useState("");
+  const requestTimeout = useRef();
+  const [delayedQuery, setDelayedQuery] = useState(query);
   const { address, isDisconnected } = useAccount();
-  // const [data, setData] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [isError, setIsError] = useState("");
 
-  // const getAssets = async (query) => {
-  //   setIsLoading(true);
-  //   const res = await getAssetByQuery(query);
-  //   if (res?.data) {
-  //     setData(res?.data);
-  //     setIsLoading(false);
-  //   } else if (res?.error) {
-  //     setIsLoading(false);
-  //     setIsError(res?.error);
-  //     console.log(res.error);
-  //   }
-  // };
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["assets", delayedQuery || "supducks"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) =>
+      getAssetByQuery(delayedQuery || "supducks", pageParam),
+  });
 
-  // useEffect(() => {
-  //   getAssets("supducks");
-  // }, [query]);
+  useEffect(() => {
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -157,23 +190,31 @@ export const CompSupducks = observer(({ store, query }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <div className="h-full overflow-y-auto">
-        <div className="grid grid-cols-2 overflow-y-auto">
-          {data.map((item, index) => {
-            return (
-              <CustomImageComponent
-                key={index}
-                preview={item.image}
-                store={store}
-                project={project}
-              />
-            );
-          })}
-          <div className="my-2">
-            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+      <SearchComponent query={query} setQuery={setQuery} />
+      {data?.pages[0]?.data.length > 0 ? (
+        <div className="h-full overflow-y-auto">
+          <div className="grid grid-cols-2 overflow-y-auto">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item.image}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
           </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
-      </div>
+      ) : (
+        <MessageComponent message="No results found" />
+      )}
     </>
   );
 });
@@ -183,30 +224,39 @@ export const CompSupducks = observer(({ store, query }) => {
 // ----------- New Tabs - Nouns, Lens, Assorted START - 11Jul2023 -----------
 
 // New Tab Lens Start - 11Jul2023
-export const CompLens = observer(({ store, query }) => {
+export const CompLens = observer(({ store }) => {
   const { address, isDisconnected } = useAccount();
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  // const [query, setQuery] = useState("supducks");
-  const [isError, setIsError] = useState("");
-  const [offset, setOffset] = useState(0);
+  const [query, setQuery] = useState("");
+  const requestTimeout = useRef();
+  const [delayedQuery, setDelayedQuery] = useState(query);
 
-  const getAssets = async (query) => {
-    setIsLoading(true);
-    const res = await getAssetByQuery(query, offset);
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsLoading(false);
-      setIsError(res?.error);
-      console.log(res.error);
-    }
-  };
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["assets", delayedQuery || "lens"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) =>
+      getAssetByQuery(delayedQuery || "lens", pageParam),
+  });
 
   useEffect(() => {
-    getAssets("supducks");
-  }, [query, offset]);
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -222,25 +272,34 @@ export const CompLens = observer(({ store, query }) => {
   }
 
   return isError ? (
-    <ErrorComponent message={isError} />
+    <ErrorComponent message={error} />
   ) : (
     <>
-      <div className="h-full overflow-y-auto">
-        <div className="grid grid-cols-2 overflow-y-auto">
-          {data.map((img) => {
-            return (
-              <CustomImageComponent
-                preview={img.image}
-                store={store}
-                project={project}
-              />
-            );
-          })}
-          <div className="my-2">
-            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+      <SearchComponent query={query} setQuery={setQuery} />
+      {data?.pages[0]?.data.length > 0 ? (
+        <div className="h-full overflow-y-auto">
+          <div className="grid grid-cols-2 overflow-y-auto">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item.image}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
           </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
-      </div>
+      ) : (
+        <MessageComponent message="No results found" />
+      )}
     </>
   );
 });
@@ -248,30 +307,39 @@ export const CompLens = observer(({ store, query }) => {
 // New Tab Lens End - 11Jul2023
 
 // New Tab Nouns Start - 11Jul2023
-export const CompNouns = observer(({ store, query }) => {
+export const CompNouns = observer(({ store }) => {
   const { address, isDisconnected } = useAccount();
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  // const [query, setQuery] = useState("supducks");
-  const [isError, setIsError] = useState("");
-  const [offset, setOffset] = useState(0);
+  const [query, setQuery] = useState("");
+  const requestTimeout = useRef();
+  const [delayedQuery, setDelayedQuery] = useState(query);
 
-  const getAssets = async (query) => {
-    setIsLoading(true);
-    const res = await getAssetByQuery(query, offset);
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsLoading(false);
-      setIsError(res?.error);
-      console.log(res.error);
-    }
-  };
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["assets", delayedQuery || "nouns"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) =>
+      getAssetByQuery(delayedQuery || "nouns", pageParam),
+  });
 
   useEffect(() => {
-    getAssets("supducks");
-  }, [query, offset]);
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -287,25 +355,34 @@ export const CompNouns = observer(({ store, query }) => {
   }
 
   return isError ? (
-    <ErrorComponent message={isError} />
+    <ErrorComponent message={error} />
   ) : (
     <>
-      <div className="h-full overflow-y-auto">
-        <div className="grid grid-cols-2 overflow-y-auto">
-          {data.map((img) => {
-            return (
-              <CustomImageComponent
-                preview={img.image}
-                store={store}
-                project={project}
-              />
-            );
-          })}
-          <div className="my-2">
-            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+      <SearchComponent query={query} setQuery={setQuery} />
+      {data?.pages[0]?.data.length > 0 ? (
+        <div className="h-full overflow-y-auto">
+          <div className="grid grid-cols-2 overflow-y-auto">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item.image}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
           </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
-      </div>
+      ) : (
+        <MessageComponent message="No results found" />
+      )}
     </>
   );
 });
@@ -313,30 +390,39 @@ export const CompNouns = observer(({ store, query }) => {
 // New Tab Nouns End - 11Jul2023
 
 // New Tab Assorted Start - 11Jul2023
-export const CompAssorted = observer(({ store, query }) => {
+export const CompAssorted = observer(({ store }) => {
   const { address, isDisconnected } = useAccount();
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  // const [query, setQuery] = useState("supducks");
-  const [isError, setIsError] = useState("");
-  const [offset, setOffset] = useState(0);
+  const [query, setQuery] = useState("");
+  const requestTimeout = useRef();
+  const [delayedQuery, setDelayedQuery] = useState(query);
 
-  const getAssets = async (query) => {
-    setIsLoading(true);
-    const res = await getAssetByQuery(query, offset);
-    if (res?.data) {
-      setData(res?.data);
-      setIsLoading(false);
-    } else if (res?.error) {
-      setIsLoading(false);
-      setIsError(res?.error);
-      console.log(res.error);
-    }
-  };
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["assets", delayedQuery || "assorted"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) =>
+      getAssetByQuery(delayedQuery || "assorted", pageParam),
+  });
 
   useEffect(() => {
-    getAssets("supducks");
-  }, [query, offset]);
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -352,25 +438,34 @@ export const CompAssorted = observer(({ store, query }) => {
   }
 
   return isError ? (
-    <ErrorComponent message={isError} />
+    <ErrorComponent message={error} />
   ) : (
     <>
-      <div className="h-full overflow-y-auto">
-        <div className="grid grid-cols-2 overflow-y-auto">
-          {data.map((img) => {
-            return (
-              <CustomImageComponent
-                preview={img.image}
-                store={store}
-                project={project}
-              />
-            );
-          })}
-          <div className="my-2">
-            <button onClick={() => setOffset(offset + 100)}>Load More</button>
+      <SearchComponent query={query} setQuery={setQuery} />
+      {data?.pages[0]?.data.length > 0 ? (
+        <div className="h-full overflow-y-auto">
+          <div className="grid grid-cols-2 overflow-y-auto">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item.image}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
           </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
-      </div>
+      ) : (
+        <MessageComponent message="No results found" />
+      )}
     </>
   );
 });
@@ -380,19 +475,7 @@ export const CompAssorted = observer(({ store, query }) => {
 // ----------- New Tabs - Nouns, Lens, Assorted END - 11Jul2023 -----------
 
 export const IconsPanel = ({ store }) => {
-  const requestTimeout = React.useRef();
-  const [query, setQuery] = React.useState("");
-  const [delayedQuery, setDelayedQuery] = React.useState(query);
   const [currentTab, setCurrentTab] = useState("tabIcons");
-
-  React.useEffect(() => {
-    requestTimeout.current = setTimeout(() => {
-      setDelayedQuery(query);
-    }, 500);
-    return () => {
-      clearTimeout(requestTimeout.current);
-    };
-  }, [query]);
 
   return (
     <div className="flex flex-col h-full">
@@ -452,39 +535,11 @@ export const IconsPanel = ({ store }) => {
       </div>
       {/* New Tabs Lens, Nouns, Assorted END - 11Jul2023 */}
 
-      <div className="flex flex-row justify-normal">
-        <input
-          className="border px-2 py-1 rounded-md w-full m-1 mb-4 mt-4"
-          placeholder="Search by Token ID"
-          onChange={(e) => {
-            setQuery(e.target.value);
-          }}
-        />
-        <Button
-          className="ml-3 m-1 rounded-md mb-4 mt-4"
-          icon="search"
-          onClick={
-            () => console.log(query)
-            // Implement Search Function here
-          }
-        ></Button>
-      </div>
-
-      {currentTab === "tabIcons" && (
-        <CompIcons query={delayedQuery} store={store} />
-      )}
-      {currentTab === "tabSupducks" && (
-        <CompSupducks query={delayedQuery} store={store} />
-      )}
-      {currentTab === "tabLens" && (
-        <CompLens query={delayedQuery} store={store} />
-      )}
-      {currentTab === "tabNouns" && (
-        <CompNouns query={delayedQuery} store={store} />
-      )}
-      {currentTab === "tabAssorted" && (
-        <CompAssorted query={delayedQuery} store={store} />
-      )}
+      {currentTab === "tabIcons" && <CompIcons store={store} />}
+      {currentTab === "tabSupducks" && <CompSupducks store={store} />}
+      {currentTab === "tabLens" && <CompLens store={store} />}
+      {currentTab === "tabNouns" && <CompNouns store={store} />}
+      {currentTab === "tabAssorted" && <CompAssorted store={store} />}
     </div>
   );
 };

@@ -20,11 +20,18 @@ import {
   ConnectWalletMsgComponent,
   CustomImageComponent,
   ErrorComponent,
+  LoadMoreComponent,
   MessageComponent,
   SearchComponent,
 } from "../../elements";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { fnMessege } from "../../services/FnMessege";
+import { fnLoadMore } from "../../services/fnLoadMore";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -70,10 +77,24 @@ export const NFTSection = {
 
 // catogoery component (child component of LenspostNFT component)
 const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
-  const { data, isLoading, isError, error } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ["lenspost-nft-collections"],
-    queryFn: getAllCollection,
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) => getAllCollection(pageParam),
   });
+
+  // run fetchNextPage() function when scroll to bottom
+  useEffect(() => {
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isLoading) {
     return (
@@ -88,25 +109,33 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
       <SearchComponent />
       {isError ? (
         <ErrorComponent error={error} />
-      ) : data?.length > 0 ? (
-        data.map((item, index) => (
-          <div className="" key={index}>
-            <div
-              className="flex items-center space-x-4 p-2 mb-4 cursor-pointer"
-              onClick={() => {
-                contractAddressRef.current = item.address;
-                setActiveCat(item.name);
-              }}
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                className="h-24 w-24 rounded-md"
-              />
-              <p className="text-lg font-normal">{item.name}</p>
-            </div>
-          </div>
-        ))
+      ) : data?.pages[0]?.data.length > 0 ? (
+        <>
+          {data?.pages
+            .flatMap((item) => item?.data)
+            .map((item, index) => (
+              <div className="" key={index}>
+                <div
+                  className="flex items-center space-x-4 p-2 mb-4 cursor-pointer"
+                  onClick={() => {
+                    contractAddressRef.current = item.address;
+                    setActiveCat(item.name);
+                  }}
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="h-24 w-24 rounded-md"
+                  />
+                  <p className="text-lg font-normal">{item.name}</p>
+                </div>
+              </div>
+            ))}
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+        </>
       ) : (
         <MessageComponent message="No Results" />
       )}
@@ -116,14 +145,25 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
 
 // nft component (child component of LenspostNFT component)
 const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["lenspost-nft-collections", contractAddressRef.current],
-    queryFn: () => getNftByCollection(contractAddressRef.current),
-  });
-
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
+  
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["lenspost-nft-collections", contractAddressRef.current],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) =>
+      getNftByCollection(contractAddressRef.current, pageParam),
+  });
+
 
   useEffect(() => {
     requestTimeout.current = setTimeout(() => {
@@ -134,11 +174,14 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
     };
   }, [query]);
 
-
   function goBack() {
     setActiveCat(null);
   }
 
+  // run fetchNextPage() function when scroll to bottom
+  useEffect(() => {
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isLoading) {
     return (
@@ -171,21 +214,27 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
         </div>
         {isError ? (
           <ErrorComponent error={error} />
-        ) : data?.length > 0 ? (
+        ) : data?.pages[0]?.data.length > 0 ? (
           //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
           <div className="h-full overflow-y-auto">
             <div className="grid grid-cols-2 overflow-y-auto">
-              {data.map((item, index) => {
-                return (
-                  <CustomImageComponent
-                    key={index}
-                    preview={item?.imageURL}
-                    store={store}
-                    project={project}
-                  />
-                );
-              })}
+              {data?.pages
+                .flatMap((item) => item?.data)
+                .map((item, index) => {
+                  return (
+                    <CustomImageComponent
+                      key={index}
+                      preview={item?.imageURL}
+                      store={store}
+                      project={project}
+                    />
+                  );
+                })}
             </div>
+            <LoadMoreComponent
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
           </div>
         ) : (
           <MessageComponent message="No Results" />
@@ -343,7 +392,7 @@ const WalletNFT = () => {
     mutationKey: "refreshNFT",
     mutationFn: refreshNFT,
     onSuccess: () => {
-      queryClient.invalidateQueries("userNFTs");
+      queryClient.invalidateQueries(["userNFTs"], { exact: true });
     },
   });
 
@@ -414,7 +463,7 @@ const WalletNFT = () => {
 
       {isError ? (
         <ErrorComponent message={error} />
-      ) : (
+      ) : data?.length ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
             {data.map((imgArray, index) => {
@@ -427,13 +476,10 @@ const WalletNFT = () => {
                 />
               );
             })}
-            <div className="my-2">
-                  <button onClick={() => setOffset(offset + 100)}>
-                    {isLoading ? "Loading..." : "Load More"}
-                  </button>
-                </div>
           </div>
         </div>
+      ) : (
+        <MessageComponent message="No Results" />
       )}
     </>
   );

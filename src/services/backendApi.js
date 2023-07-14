@@ -37,13 +37,12 @@ api.interceptors.request.use(
     const jwtToken = getFromLocalStorage("userAuthToken");
 
     // Exclude the login API from adding the default header
-    if (config.url !== "/auth/login" || config.url !== "/template") {
-      // Add your default header here
-      config.headers["Authorization"] = `Bearer ${jwtToken}`;
-      config.headers["Content-Type"] = "application/json";
-      config.headers["Access-Control-Allow-Origin"] = "*";
-      config.headers["Access-Control-Allow-Methods"] = "*";
-    }
+
+    // Add your default header here
+    config.headers["Authorization"] = `Bearer ${jwtToken}`;
+    config.headers["Content-Type"] = "application/json";
+    config.headers["Access-Control-Allow-Origin"] = "*";
+    config.headers["Access-Control-Allow-Methods"] = "*";
     return config;
   },
   (error) => {
@@ -55,7 +54,7 @@ api.interceptors.request.use(
 // no need auth token (jwt)
 export const login = async (walletAddress, signature, message) => {
   try {
-    const result = await api.post(`${API}/auth/login`, {
+    const result = await axios.post(`${API}/auth/login`, {
       address: walletAddress,
       signature: signature,
       message: message,
@@ -101,7 +100,9 @@ export const login = async (walletAddress, signature, message) => {
     }
   }
 };
+// authentication apis end
 
+// lensauth apis start
 // need auth token (jwt)
 export const lensAuthenticate = async (signature) => {
   try {
@@ -148,7 +149,9 @@ export const lensAuthenticate = async (signature) => {
     }
   }
 };
+// lensauth apis end
 
+// twitter apis start
 // need auth token (jwt)
 export const twitterAuthenticate = async () => {
   try {
@@ -195,7 +198,9 @@ export const twitterAuthenticate = async () => {
     }
   }
 };
+// twitter apis end
 
+// twitter callback apis start
 // need auth token (jwt)
 export const twitterAuthenticateCallback = async (state, code) => {
   try {
@@ -244,22 +249,24 @@ export const twitterAuthenticateCallback = async (state, code) => {
     }
   }
 };
-// authentication apis end
+// twitter callback apis end
 
 // NFT apis start
+// upload users' nft endpoint
 // need auth token (jwt)
 export const refreshNFT = async () => {
   const result = await api.post(`${API}/user/nft/update`);
   return result?.data;
 };
 
+// gwt users' nft endpoint
 // need auth token (jwt)
-
 export const getNFTs = async () => {
-  const result = await api.get(`${API}/user/nft/owned?limit=100&offset=0`);
+  const result = await api.get(`${API}/user/nft/owned?limit=50&offset=0`);
   return result?.data;
 };
 
+// search users' nft by id endpoint
 // need auth token (jwt)
 export const getNftById = async (id) => {
   const result = await api.get(`${API}/user/nft/${id}`);
@@ -268,233 +275,83 @@ export const getNftById = async (id) => {
 // NFT apis end
 
 // canvas apis satrt
+// craete canvas endpoint
 // need auth token (jwt)
-export const createCanvas = async (
+export const createCanvas = async ({
   jsonCanvasData,
   followCollectModule,
-  isPublic
-) => {
-  try {
-    const result = await api.post(`${API}/user/canvas/create`, {
-      canvasData: {
-        data: jsonCanvasData,
-        params: {
-          followCollectModule: followCollectModule,
-        },
-        isPublic: isPublic,
+  isPublic,
+}) => {
+  const result = await api.post(`${API}/user/canvas/create`, {
+    canvasData: {
+      data: jsonCanvasData,
+      params: {
+        followCollectModule: followCollectModule,
       },
-    });
+      isPublic: isPublic,
+    },
+  });
 
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message ||
-          error?.response?.data?.name ||
-          error?.response?.data,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
-};
-
-// need auth token (jwt)
-export const updateCanvas = async (
-  id,
-  jsonCanvasData,
-  followCollectModule,
-  isPublic
-) => {
-  try {
-    const result = await api.put(`${API}/user/canvas/update`, {
-      canvasData: {
-        id: id,
-        data: jsonCanvasData,
-        params: {
-          followCollectModule: followCollectModule,
-        },
-        isPublic: isPublic,
-      },
-    });
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message ||
-          error?.response?.data?.name ||
-          error?.response?.data,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
-};
-
-// need auth token (jwt)
-export const changeCanvasVisibility = async (id, isPublic) => {
-  try {
-    const result = await api.put(`${API}/user/canvas/visibility`, {
-      canvasData: {
-        id: id,
-        isPublic: isPublic,
-      },
-    });
-
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
-};
-
-// need auth token (jwt)
-export const getAllCanvas = async () => {
-  const result = await api.get(`${API}/user/canvas?limit=100&offset=0`);
   return result?.data;
 };
 
+// update current canvas endpoint
 // need auth token (jwt)
-export const getCanvasById = async (id) => {
-  try {
-    const result = await api.get(`${API}/user/canvas/${id}`);
+export const updateCanvas = async ({
+  id,
+  jsonCanvasData,
+  followCollectModule,
+  isPublic,
+}) => {
+  const result = await api.put(`${API}/user/canvas/update`, {
+    canvasData: {
+      id: id,
+      data: jsonCanvasData,
+      params: {
+        followCollectModule: followCollectModule,
+      },
+      isPublic: isPublic,
+    },
+  });
 
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  return result?.data;
 };
 
+// change canvas visibility endpoint
+// need auth token (jwt)
+export const changeCanvasVisibility = async ({ id, isPublic }) => {
+  const result = await api.put(`${API}/user/canvas/visibility`, {
+    canvasData: {
+      id: id,
+      isPublic: isPublic,
+    },
+  });
+  return result?.data;
+};
+
+// get all canvas endpoint
+// need auth token (jwt)
+export const getAllCanvas = async () => {
+  const result = await api.get(`${API}/user/canvas?limit=50&offset=0`);
+  return result?.data;
+};
+
+// get canvas by id endpoint
+// need auth token (jwt)
+export const getCanvasById = async (id) => {
+  const result = await api.get(`${API}/user/canvas/${id}`);
+  return result?.data;
+};
+
+// delete canvas by id endpoint
 // need auth token (jwt)
 export const deleteCanvasById = async (id) => {
   const result = await api.delete(`${API}/user/canvas/delete/${id}`);
   return result?.data;
 };
 
+// share canvas on lens endpoint
+// need auth token (jwt)
 export const shareOnLens = async (canvasId, name, content) => {
   try {
     const result = await api.post(`${API}/user/canvas/publish`, {
@@ -504,6 +361,7 @@ export const shareOnLens = async (canvasId, name, content) => {
         content: content,
       },
       platform: "lens",
+      // titmeStamp: Date.now(),
     });
 
     console.log("result", result);
@@ -549,21 +407,39 @@ export const shareOnLens = async (canvasId, name, content) => {
 // canvas apis end
 
 // collection apis start
+// get all collection endpoint
 // need auth token (jwt)
-export const getAllCollection = async () => {
-  const result = await api.get(`${API}/collection`);
-  return result?.data;
+export const getAllCollection = async (page) => {
+  const result = await api.get(`${API}/collection`, {
+    params: {
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 
+// get nfts of a collection endpoint
 // need auth token (jwt)
+export const getNftByCollection = async (contractAddress, page) => {
+  const result = await api.get(`${API}/collection/${contractAddress}`, {
+    params: {
+      page: page,
+    },
+  });
 
-export const getNftByCollection = async (contractAddress) => {
-  const result = await api.get(
-    `${API}/collection/${contractAddress}?limit=100&offset=0`
-  );
-  return result?.data;
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 
+// search a NFT of a collection endpoint
 // need auth token (jwt)
 export const getCollectionNftById = async (id, contractAddress) => {
   const result = await api.get(`${API}/collection/${contractAddress}/${id}`);
@@ -590,42 +466,52 @@ export const getCollectionNftById = async (id, contractAddress) => {
 // template apis start
 // no need auth token (jwt)
 export const getAllTemplates = async () => {
-  const result = await api.get(`${API}/template`);
+  const result = await api.get(`${API}/template?limit=50&offset=0`);
   return result?.data;
 };
 // template apis end
 
 // user public templates apis start
 export const getUserPublicTemplates = async () => {
-  const result = await api.get(`${API}/template/user`);
+  const result = await api.get(`${API}/template/user?limit=50&offset=0`);
   return result?.data;
 };
-
 // user public templates apis end
 
 // asset apis start
 // need auth token (jwt)
+export const getAssetByQuery = async (query, page) => {
+  const result = await api.get(`${API}/asset/?query=${query}`, {
+    params: {
+      page: page,
+    },
+  });
 
-export const getAssetByQuery = async (query) => {
-  const result = await api.get(
-    `${API}/asset/?query=${query}&limit=100&offset=0`
-  );
-  return result?.data;
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
-
 // asset apis end
 
 // BG asset apis start
 // need auth token (jwt)
-export const getBGAssetByQuery = async (query) => {
-  const result = await api.get(
-    `${API}/asset/background?author=${query}&limit=100&offset=0`
-  );
-  return result?.data;
+export const getBGAssetByQuery = async (query, page) => {
+  const result = await api.get(`${API}/asset/background?author=${query}`, {
+    params: {
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 
 // Remove Background API
-
 export const getRemovedBgS3Link = async (query) => {
   try {
     const result = await api.post(`${API}/util/upload-image?image=${query}`);

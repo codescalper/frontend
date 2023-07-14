@@ -5,7 +5,7 @@ import { Card } from "@blueprintjs/core";
 import { replaceImageURL } from "../services/replaceUrl";
 
 // Custom Image card component start - 23Jun2023
-const CustomImageComponent = ({ design, preview, json, store }) => {
+const CustomImageComponent = ({ design, preview, json, store, dimensions }) => {
   // function for random 3 digit number
   const randomThreeDigitNumber = () => {
     return Math.floor(100 + Math.random() * 900);
@@ -22,7 +22,8 @@ const CustomImageComponent = ({ design, preview, json, store }) => {
 
   return (
     <Card
-      style={{ margin: "4px", padding: "0px", position: "relative" }}
+      // style={{ margin: "4px", padding: "0px", position: "relative" }}
+      className="relative p-0 m-1"
       interactive
       onDragEnd={() => {
         fnDropImageOnCanvas();
@@ -35,8 +36,6 @@ const CustomImageComponent = ({ design, preview, json, store }) => {
         <LazyLoadImage
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
-          height={150}
-          width={150}
           src={replaceImageURL(preview)}
           alt="Preview Image"
         />
