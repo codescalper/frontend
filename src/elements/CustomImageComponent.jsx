@@ -18,8 +18,8 @@ const CustomImageComponent = ({ design, preview, json, store, dimensions, isBack
     store.activePage?.addElement({
       type: "image",
       src: replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`, //Image URL
-      width: isBackground? store.width : store.width/2,
-      height: isBackground? store.height : store.height/2,
+      width: isBackground? store.width : 300,
+      height: isBackground? store.height : 300,
       x : isBackground ? 0 : store.width/4,
       y : isBackground ? 0 : store.height/4
 
