@@ -5,7 +5,7 @@ import { Card } from "@blueprintjs/core";
 import { replaceImageURL } from "../services/replaceUrl";
 
 // Custom Image card component start - 23Jun2023
-const CustomImageComponent = ({ design, preview, json, store }) => {
+const CustomImageComponent = ({ design, preview, json, store, dimensions }) => {
   // function for random 3 digit number
   const randomThreeDigitNumber = () => {
     return Math.floor(100 + Math.random() * 900);

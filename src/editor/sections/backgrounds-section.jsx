@@ -64,8 +64,6 @@ export const TabNFTBgs = observer(({ store }) => {
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
-  console.log("data", data);
-
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
   }

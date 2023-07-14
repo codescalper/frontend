@@ -52,6 +52,7 @@ const DesignCard = observer(
         interactive
         onDragEnd={() => {
           store.loadJSON(json);
+          contextCanvasIdRef.current = design.id;
         }}
         onClick={() => {
           store.loadJSON(json);
