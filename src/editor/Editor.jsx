@@ -43,8 +43,9 @@ import { BACKEND_DEV_URL } from "../services/env";
 import { replaceImageURL } from "../services/replaceUrl";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fnMessege } from "../services/FnMessege";
+
 import { wait } from "../utility/waitFn";
+import { fnMessage } from "../services/fnMessage";
 
 unstable_setAnimationsEnabled(true);
 
@@ -263,7 +264,7 @@ const Editor = ({ store }) => {
               }
             })
             .catch((err) => {
-              console.log("Canvas creation error", { error: fnMessege(err) });
+              console.log("Canvas creation error", { error: fnMessage(err) });
             });
         }
 
@@ -280,7 +281,7 @@ const Editor = ({ store }) => {
               }
             })
             .catch((err) => {
-              console.log("Canvas Update error", { error: fnMessege(err) });
+              console.log("Canvas Update error", { error: fnMessage(err) });
             });
         }
       }
