@@ -290,7 +290,8 @@ const Editor = ({ store }) => {
   useEffect(() => {
     // request saving operation on any changes
     store.on("change", () => {
-      requestSave();
+      // requestSave();
+      console.log("Something changed");
     });
   }, []);
 
