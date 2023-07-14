@@ -20,8 +20,8 @@ const CustomImageComponent = ({ design, preview, json, store, dimensions, isBack
       src: replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`, //Image URL
       width: isBackground? store.width : store.width/2,
       height: isBackground? store.height : store.height/2,
-      x : store.width/4,
-      y : store.height/4
+      x : isBackground ? 0 : store.width/4,
+      y : isBackground ? 0 : store.height/4
 
     });
   };
