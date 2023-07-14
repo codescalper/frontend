@@ -30,8 +30,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { fnMessege } from "../../services/FnMessege";
 import { fnLoadMore } from "../../services/fnLoadMore";
+import { fnMessage } from "../../services/fnMessage";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -425,7 +425,7 @@ const WalletNFT = () => {
       })
       .catch((err) => {
         toast.update(id, {
-          render: fnMessege(err),
+          render: fnMessage(err),
           type: "error",
           isLoading: false,
           autoClose: 5000,

@@ -1,4 +1,4 @@
-export const fnMessege = (error) => {
+export const fnMessage = (error) => {
   if (error?.response) {
     if (error?.response?.status === 500) {
       console.log({

@@ -37,7 +37,7 @@ import {
   SearchComponent,
 } from "../../elements";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fnMessege } from "../../services/FnMessege";
+import { fnMessage } from "../../services/fnMessage";
 
 // Design card component start - 23Jun2023
 
@@ -185,9 +185,9 @@ export const MyDesignsPanel = observer(({ store }) => {
 
   useEffect(() => {
     if (isDeleteError) {
-      toast.error(fnMessege(deleteError));
+      toast.error(fnMessage(deleteError));
     } else if (isVisibilityError) {
-      toast.error(fnMessege(visibilityError));
+      toast.error(fnMessage(visibilityError));
     }
   }, [isDeleteError, isVisibilityError]);
 
