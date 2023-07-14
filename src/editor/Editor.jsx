@@ -40,6 +40,7 @@ import { Button } from "@blueprintjs/core";
 import axios from "axios";
 import { Context } from "../context/ContextProvider";
 import { BACKEND_DEV_URL } from "../services/env";
+import { replaceImageURL } from "../services/replaceUrl";
 
 const sections = [
   TemplatesSection,
@@ -117,18 +118,11 @@ const Editor = ({ store }) => {
     var removedBgURL = await fnRemoveBg(varImageUrl);
     console.log(varActivePageNo);
     console.log(removedBgURL)
-
-    // To Fix CORS error, we append the string with b-cdn url
-    var cdnPrefix = "https://lenspost.b-cdn.net/"
-    var newUrl = cdnPrefix + removedBgURL.slice(45) //Remove first 45 characters [s3 url]
-    console.log(newUrl);
-
-    fnAddImageToCanvas(`${newUrl}`, varActivePageNo)
+    // // To Fix CORS error, we append the string with b-cdn url
+    fnAddImageToCanvas(`${replaceImageURL(removedBgURL)}`, varActivePageNo)
 
     return removedBgURL;
   }
- 
-
   // 03June2023
 
   // Find the index of the page for which the removed background image needs to be placed
