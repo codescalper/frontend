@@ -41,6 +41,12 @@ import axios from "axios";
 import { Context } from "../context/ContextProvider";
 import { BACKEND_DEV_URL } from "../services/env";
 import { replaceImageURL } from "../services/replaceUrl";
+import { unstable_setAnimationsEnabled } from "polotno/config";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { fnMessege } from "../services/FnMessege";
+import { wait } from "../utility/waitFn";
+
+unstable_setAnimationsEnabled(true);
 
 const sections = [
   TemplatesSection,
@@ -106,6 +112,23 @@ const Editor = ({ store }) => {
   const [stActivePageNo, setStActivePageNo] = useState(0);
   const [stShowRemoveBgBtn, setStShowRemoveBgBtn] = useState(false);
   var varActivePageNo = 0;
+  const queryClient = useQueryClient();
+  const { mutateAsync: createCanvasAsync } = useMutation({
+    mutationKey: "createCanvas",
+    mutationFn: createCanvas,
+    onSuccess: () => {
+      // queryClient.invalidateQueries(["my-designs"], { exact: true });
+    },
+  });
+
+  const { mutateAsync: updateCanvasAsync } = useMutation({
+    mutationKey: "createCanvas",
+    mutationFn: updateCanvas,
+    onSuccess: () => {
+      // queryClient.invalidateQueries(["my-designs"], { exact: true });
+    },
+  });
+
   //   const handleFileChange = (event) => {
   // 		setFile(event.target.files[0]);
   // 		setFile(event.target.files[0]);
@@ -154,23 +177,17 @@ const Editor = ({ store }) => {
   };
 
   const fnRemoveBg = async (varImageUrl) =>{
-
-    // return console.log(removedBgUrl);
-
     const res = await getRemovedBgS3Link(varImageUrl);
     if(res?.data){
       console.log(res.data);
       return res.data.s3link;
     }
-    else if(res?.error) {
-      console.log(res.error)
-    }
-  }
+  };
 
   // delete the Previous Image: - 26Jun2023
-  const fnDeletePrevImage = async () =>{
-    await store.deleteElements(store.selectedElements.map(x => x.id))
-  }
+  const fnDeletePrevImage = async () => {
+    await store.deleteElements(store.selectedElements.map((x) => x.id));
+  };
   // Cutout pro API end
 
   //  Toast Setup
@@ -196,59 +213,88 @@ const Editor = ({ store }) => {
       });
     }
   };
-  // create canvas
-  useEffect(() => {
-    const main = async () => {
-      const storeData = store.toJSON();
-      const canvasChildren = storeData.pages[0].children;
+
+  // store the canvas and update it by traching the changes start
+  // write a function for throttle saving
+  let timeout = null;
+  const requestSave = () => {
+    // if save is already requested - do nothing
+    if (timeout) {
+      return;
+    }
+    // schedule saving to the backend
+    timeout = setTimeout(() => {
+      // reset timeout
+      timeout = null;
+      // export the design
+      const json = store.toJSON();
+
+      const canvasChildren = json.pages[0].children;
+
+      
+      if (contextCanvasIdRef.current) {
+        canvasIdRef.current = contextCanvasIdRef.current;
+      }
+      console.log({
+        canvasIdRef: canvasIdRef.current,
+        contextCanvasIdRef: contextCanvasIdRef.current,
+      });
 
       if (canvasChildren.length === 0) {
+        console.log("Canvas is empty. Its stopped from saving");
         canvasIdRef.current = null;
         contextCanvasIdRef.current = null;
       }
 
-      if (contextCanvasIdRef.current !== null) {
-        canvasIdRef.current = contextCanvasIdRef.current;
-      }
-
+      // save it to the backend
       if (canvasChildren.length > 0) {
         if (!canvasIdRef.current) {
-          const res = await createCanvas(storeData, "hello", false);
-          if (res?.data) {
-            canvasIdRef.current = res?.data?.canvasId;
-            contextCanvasIdRef.current = res?.data?.canvasId;
-            console.log("Canvas created", { canvasId: res?.data?.canvasId });
-          } else if (res?.error) {
-            console.log("Canvas creation error", { error: res?.error });
-          }
+          createCanvasAsync({
+            jsonCanvasData: json,
+            followCollectModule: "canvas",
+            isPublic: false,
+          })
+            .then((res) => {
+              if (res?.status === "success") {
+                console.log(res);
+                canvasIdRef.current = res?.id;
+                contextCanvasIdRef.current = res?.id;
+                console.log(res?.message);
+              }
+            })
+            .catch((err) => {
+              console.log("Canvas creation error", { error: fnMessege(err) });
+            });
         }
 
         if (canvasIdRef.current) {
-          const res = await updateCanvas(
-            canvasIdRef.current,
-            storeData,
-            "hello",
-            false
-          );
-          if (res?.data) {
-            console.log(res?.data);
-          } else if (res?.error) {
-            console.log("Canvas update error", { error: res?.error });
-          }
+          updateCanvasAsync({
+            id: canvasIdRef.current,
+            jsonCanvasData: json,
+            followCollectModule: "canvas",
+            isPublic: false,
+          })
+            .then((res) => {
+              if (res?.status === "success") {
+                console.log(res?.message);
+              }
+            })
+            .catch((err) => {
+              console.log("Canvas Update error", { error: fnMessege(err) });
+            });
         }
       }
-    };
+    }, 3000);
+  };
 
-    if (isConnected) {
-      main(); // Fetch data initially
+  useEffect(() => {
+    // request saving operation on any changes
+    store.on("change", () => {
+      requestSave();
+    });
+  }, []);
 
-      intervalRef.current = setInterval(main, 5000); // Fetch data at regular intervals
-
-      return () => {
-        clearInterval(intervalRef.current); // Clear the interval when the component is unmounted
-      };
-    }
-  }, [isConnected, store, address]);
+  // store the canvas and update it by traching the changes end
 
   return (
     <>

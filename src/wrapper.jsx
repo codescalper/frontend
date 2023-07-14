@@ -19,7 +19,8 @@ const { chains, provider } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "LensPost",
+appName: "LensPost",
+projectId: "755e88fd4f93da5f0dadcf2dee54e6a0",
   chains,
 });
 
@@ -35,12 +36,12 @@ export const Wrapper = () => {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
-        <QueryClientProvider client={queryClient}>
-          <ContextProvider>
+        <ContextProvider>
+          <QueryClientProvider client={queryClient}>
             <App />
             {ENVIRONMENT === "development" && <ReactQueryDevtools />}
-          </ContextProvider>
-        </QueryClientProvider>
+          </QueryClientProvider>
+        </ContextProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

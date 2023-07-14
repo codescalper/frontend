@@ -5,24 +5,31 @@ import { Card } from "@blueprintjs/core";
 import { replaceImageURL } from "../services/replaceUrl";
 
 // Custom Image card component start - 23Jun2023
-const CustomImageComponent = ({ design, preview, json, store }) => {
+const CustomImageComponent = ({ design, preview, json, store, dimensions, isBackground }) => {
   // function for random 3 digit number
   const randomThreeDigitNumber = () => {
     return Math.floor(100 + Math.random() * 900);
   };
 
   const fnDropImageOnCanvas = () => {
+    
+    (isBackground && store.setSize(dimensions[0], dimensions[1]))
+
     store.activePage?.addElement({
       type: "image",
       src: replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`, //Image URL
-      width: store.width,
-      height: store.height,
+      width: isBackground? store.width : store.width/2,
+      height: isBackground? store.height : store.height/2,
+      x : store.width/4,
+      y : store.height/4
+
     });
   };
 
   return (
     <Card
-      style={{ margin: "4px", padding: "0px", position: "relative" }}
+      // style={{ margin: "4px", padding: "0px", position: "relative" }}
+      className="relative p-0 m-1"
       interactive
       onDragEnd={() => {
         fnDropImageOnCanvas();
@@ -35,8 +42,6 @@ const CustomImageComponent = ({ design, preview, json, store }) => {
         <LazyLoadImage
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
-          height={150}
-          width={150}
           src={replaceImageURL(preview)}
           alt="Preview Image"
         />
