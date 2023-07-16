@@ -549,7 +549,7 @@ export const IconsSection = {
   name: "Elements",
   Tab: (props) => (
     <SectionTab name="Stickers" {...props}>
-      <Icon icon="new-drawing" />
+      <Icon icon="emoji" />
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes
