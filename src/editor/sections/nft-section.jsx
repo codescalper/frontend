@@ -58,7 +58,7 @@ const NFTPanel = observer(({ store }) => {
         </button>
       </div>
       {tab === "lenspost" && <LenspostNFT />}
-      {tab === "wallet" && isConnected && <WalletNFT />}
+      {tab === "wallet" && <WalletNFT />}
     </div>
   );
 });
@@ -77,6 +77,8 @@ export const NFTSection = {
 
 // catogoery component (child component of LenspostNFT component)
 const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
+  const { address, isDisconnected } = useAccount();
+  const [query, setQuery] = useState("");
   const {
     data,
     isLoading,
@@ -93,6 +95,7 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
 
   // run fetchNextPage() function when scroll to bottom
   useEffect(() => {
+    if (isDisconnected || !address) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -106,7 +109,11 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
 
   return (
     <>
-      <SearchComponent />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder="Search collections"
+      />
       {isError ? (
         <ErrorComponent error={error} />
       ) : data?.pages[0]?.data.length > 0 ? (
@@ -148,7 +155,8 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
-  
+  const { address, isDisconnected } = useAccount();
+
   const {
     data,
     isLoading,
@@ -163,7 +171,6 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
     queryFn: ({ pageParam = 1 }) =>
       getNftByCollection(contractAddressRef.current, pageParam),
   });
-
 
   useEffect(() => {
     requestTimeout.current = setTimeout(() => {
@@ -180,6 +187,7 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
 
   // run fetchNextPage() function when scroll to bottom
   useEffect(() => {
+    if (isDisconnected || !address) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -200,7 +208,11 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
     />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder="Search NFTs by id"
+      />
       <div className="h-88">
         <div className="flex flex-row align-middle w-full bg-[#fff] sticky top-0 z-10">
           <Button
@@ -382,6 +394,11 @@ const RenderSearchedWalletNFT = ({ goBack, delayedQuery }) => {
 };
 
 const WalletNFT = () => {
+  const { isConnected, isDisconnected, address } = useAccount();
+
+  const [query, setQuery] = useState("");
+  const [delayedQuery, setDelayedQuery] = useState(query);
+  const requestTimeout = useRef();
   const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["userNFTs"],
@@ -395,12 +412,6 @@ const WalletNFT = () => {
       queryClient.invalidateQueries(["userNFTs"], { exact: true });
     },
   });
-
-  const { isConnected, isDisconnected, address } = useAccount();
-
-  const [query, setQuery] = useState("");
-  const [delayedQuery, setDelayedQuery] = useState(query);
-  const requestTimeout = useRef();
 
   useEffect(() => {
     requestTimeout.current = setTimeout(() => {
@@ -459,6 +470,7 @@ const WalletNFT = () => {
         onClick={refreshNFTs}
         query={query}
         setQuery={setQuery}
+        placeholder="Search NFTs by id"
       />
 
       {isError ? (

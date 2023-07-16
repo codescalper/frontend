@@ -11,7 +11,11 @@ import {
 import { replaceImageURL } from "../../services/replaceUrl";
 import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { ErrorComponent, MessageComponent } from "../../elements";
+import {
+  ErrorComponent,
+  MessageComponent,
+  SearchComponent,
+} from "../../elements";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner } from "@blueprintjs/core";
@@ -31,7 +35,6 @@ const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
       }}
       onClick={() => {
         store.loadJSON(json);
-        contextCanvasIdRef.current = design.id;
       }}
     >
       <div className="">
@@ -79,6 +82,7 @@ export const TemplatesPanel = observer(({ store }) => {
 });
 
 const LenspostTemplates = ({ store }) => {
+  const [query, setQuery] = useState("");
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lenspost-templates"],
     queryFn: getAllTemplates,
@@ -98,6 +102,7 @@ const LenspostTemplates = ({ store }) => {
 
   return (
     <>
+      <SearchComponent query={query} setQuery={setQuery} placeholder={"Search templates"} />
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
@@ -126,6 +131,7 @@ const LenspostTemplates = ({ store }) => {
 };
 
 const UserTemplates = ({ store }) => {
+  const [query, setQuery] = useState("");
   const { data, isLoading, isError, error, isSuccess } = useQuery({
     queryKey: ["user-templates"],
     queryFn: getUserPublicTemplates,
@@ -145,6 +151,7 @@ const UserTemplates = ({ store }) => {
 
   return (
     <>
+      <SearchComponent query={query} setQuery={setQuery} placeholder={"Search templates"} />
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}

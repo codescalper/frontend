@@ -17,6 +17,11 @@ export const fnMessage = (error) => {
         error?.response?.data?.message ||
         "Something went wrong, please try again later"
       );
+    } else if (error?.response?.status === 400) {
+      console.log({
+        400: error?.response?.data?.message,
+      });
+      return error?.response?.data?.message;
     }
   } else {
     return "Something went wrong, please try again later";
