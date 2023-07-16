@@ -28,7 +28,6 @@ const CustomImageComponent = ({ design, preview, json, store, dimensions, isBack
 
   return (
     <Card
-      // style={{ margin: "4px", padding: "0px", position: "relative" }}
       className="relative p-0 m-1"
       interactive
       onDragEnd={() => {

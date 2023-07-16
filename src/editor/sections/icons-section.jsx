@@ -87,7 +87,7 @@ export const CompIcons = observer(({ store }) => {
 
   return (
     <>
-      <SearchComponent query={query} setQuery={setQuery} />
+      <SearchComponent query={query} setQuery={setQuery} placeholder="Search icons" />
       <ImagesGrid
         shadowEnabled={false}
         images={data?.map((data) => data.icons).flat()}
@@ -168,6 +168,7 @@ export const CompSupducks = observer(({ store }) => {
   }, [query]);
 
   useEffect(() => {
+    if (isDisconnected || !address) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -190,7 +191,7 @@ export const CompSupducks = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} />
+      <SearchComponent query={query} setQuery={setQuery} placeholder="Saerch stickers" />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -255,6 +256,7 @@ export const CompLens = observer(({ store }) => {
   }, [query]);
 
   useEffect(() => {
+    if (isDisconnected || !address) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -275,7 +277,7 @@ export const CompLens = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} />
+      <SearchComponent query={query} setQuery={setQuery} placeholder="Saerch stickers" />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -338,6 +340,7 @@ export const CompNouns = observer(({ store }) => {
   }, [query]);
 
   useEffect(() => {
+    if (isDisconnected || !address) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -358,7 +361,7 @@ export const CompNouns = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} />
+      <SearchComponent query={query} setQuery={setQuery} placeholder="Saerch stickers" />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -421,6 +424,7 @@ export const CompAssorted = observer(({ store }) => {
   }, [query]);
 
   useEffect(() => {
+    if (isDisconnected || !address) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -441,7 +445,7 @@ export const CompAssorted = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} />
+      <SearchComponent query={query} setQuery={setQuery} placeholder="Saerch stickers" />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">

@@ -48,7 +48,7 @@ const DesignCard = observer(
 
     return (
       <Card
-        style={{ margin: "4px", padding: "0px", position: "relative" }}
+        className="relative p-0 m-1"
         interactive
         onDragEnd={() => {
           store.loadJSON(json);
@@ -63,7 +63,7 @@ const DesignCard = observer(
           <LazyLoadImage
             placeholderSrc={replaceImageURL(preview)}
             effect="blur"
-            src={replaceImageURL(preview)}
+            src={preview}
             alt="Preview Image"
           />
         </div>
@@ -192,7 +192,12 @@ export const MyDesignsPanel = observer(({ store }) => {
   }, [isDeleteError, isVisibilityError]);
 
   if (isDisconnected || !address) {
-    return <ConnectWalletMsgComponent />;
+    return (
+      <div className="h-full flex flex-col">
+        <h1 className="text-lg">My Designs</h1>
+        <ConnectWalletMsgComponent />
+      </div>
+    );
   }
 
   // Show Loading - 06Jul2023
@@ -236,7 +241,7 @@ export const MyDesignsPanel = observer(({ store }) => {
         Create new design{" "}
       </Button>
 
-      <SearchComponent onClick={false} query={query} setQuery={setQuery} />
+      <SearchComponent onClick={false} query={query} setQuery={setQuery} placeholder="Search desgns by id" />
 
       {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 

@@ -28,8 +28,6 @@ import { TemplatesSection } from "./sections/templates-section";
 import { useAccount } from "wagmi";
 import {
   createCanvas,
-  deleteCanvasById,
-  getCanvasById,
   getRemovedBgS3Link,
   updateCanvas,
 } from "../services/backendApi";
@@ -43,9 +41,9 @@ import { BACKEND_DEV_URL } from "../services/env";
 import { replaceImageURL } from "../services/replaceUrl";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 import { wait } from "../utility/waitFn";
 import { fnMessage } from "../services/fnMessage";
+import _ from "lodash";
 
 unstable_setAnimationsEnabled(true);
 
@@ -79,8 +77,8 @@ const Editor = ({ store }) => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
-  const intervalRef = useRef(null);
   const { contextCanvasIdRef } = useContext(Context);
+  const timeoutRef = useRef(null);
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -118,7 +116,7 @@ const Editor = ({ store }) => {
     mutationKey: "createCanvas",
     mutationFn: createCanvas,
     onSuccess: () => {
-      // queryClient.invalidateQueries(["my-designs"], { exact: true });
+      queryClient.invalidateQueries(["my-designs"], { exact: true });
     },
   });
 
@@ -126,7 +124,7 @@ const Editor = ({ store }) => {
     mutationKey: "createCanvas",
     mutationFn: updateCanvas,
     onSuccess: () => {
-      // queryClient.invalidateQueries(["my-designs"], { exact: true });
+      queryClient.invalidateQueries(["my-designs"], { exact: true });
     },
   });
 
@@ -136,28 +134,28 @@ const Editor = ({ store }) => {
   //   };
 
   const handleRemoveBg = async () => {
-    const varImageUrl = store.selectedElements[0].src
+    const varImageUrl = store.selectedElements[0].src;
     fnFindPageNo();
 
     var removedBgURL = await fnRemoveBg(varImageUrl);
     console.log(varActivePageNo);
-    console.log(removedBgURL)
+    console.log("removedBgURL", removedBgURL);
     // // To Fix CORS error, we append the string with b-cdn url
-    fnAddImageToCanvas(`${replaceImageURL(removedBgURL)}`, varActivePageNo)
+    fnAddImageToCanvas(`${replaceImageURL(removedBgURL)}`, varActivePageNo);
 
     return removedBgURL;
-  }
+  };
   // 03June2023
 
   // Find the index of the page for which the removed background image needs to be placed
   const fnFindPageNo = () => {
     store.pages.map((page) => {
-    page.identifier == store._activePageId;
-    setStActivePageNo(store.pages.indexOf(page));
-    varActivePageNo = store.pages.indexOf(page);
-  });
-  }
-    // Function to Add Removed BG image on the Canvas
+      page.identifier == store._activePageId;
+      setStActivePageNo(store.pages.indexOf(page));
+      varActivePageNo = store.pages.indexOf(page);
+    });
+  };
+  // Function to Add Removed BG image on the Canvas
   const fnAddImageToCanvas = async (removedBgUrl, varActivePageNo) => {
     // Add the new removed Bg Image to the Page
     console.log(removedBgUrl);
@@ -177,9 +175,9 @@ const Editor = ({ store }) => {
     });
   };
 
-  const fnRemoveBg = async (varImageUrl) =>{
-    const res = await getRemovedBgS3Link(varImageUrl);
-    if(res?.data){
+  const fnRemoveBg = async (varImageUrl) => {
+    const res = await getRemovedBgS3Link(encodeURI(varImageUrl));
+    if (res?.data) {
       console.log(res.data);
       return res.data.s3link;
     }
@@ -216,23 +214,21 @@ const Editor = ({ store }) => {
   };
 
   // store the canvas and update it by traching the changes start
-  // write a function for throttle saving
-  let timeout = null;
   const requestSave = () => {
     // if save is already requested - do nothing
-    if (timeout) {
+    if (timeoutRef.current) {
       return;
     }
+
     // schedule saving to the backend
-    timeout = setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       // reset timeout
-      timeout = null;
+      timeoutRef.current = null;
+
       // export the design
       const json = store.toJSON();
 
       const canvasChildren = json.pages[0].children;
-
-      
       if (contextCanvasIdRef.current) {
         canvasIdRef.current = contextCanvasIdRef.current;
       }
@@ -249,15 +245,14 @@ const Editor = ({ store }) => {
 
       // save it to the backend
       if (canvasChildren.length > 0) {
+        if (!address) return;
+
         if (!canvasIdRef.current) {
           createCanvasAsync({
             jsonCanvasData: json,
-            followCollectModule: "canvas",
-            isPublic: false,
           })
             .then((res) => {
               if (res?.status === "success") {
-                console.log(res);
                 canvasIdRef.current = res?.id;
                 contextCanvasIdRef.current = res?.id;
                 console.log(res?.message);
@@ -277,6 +272,7 @@ const Editor = ({ store }) => {
           })
             .then((res) => {
               if (res?.status === "success") {
+                lastSavedJsonRef.current = json;
                 console.log(res?.message);
               }
             })
@@ -285,15 +281,22 @@ const Editor = ({ store }) => {
             });
         }
       }
-    }, 3000);
+    }, 5000);
   };
 
   useEffect(() => {
     // request saving operation on any changes
-    store.on("change", () => {
-      // requestSave();
-      console.log("Something changed");
-    });
+    const handleChange = () => {
+      requestSave();
+    };
+
+    // Add the change event listener
+    const off = store.on("change", handleChange);
+
+    // Clean up the event listener on unmount
+    return () => {
+      off();
+    };
   }, []);
 
   // store the canvas and update it by traching the changes end
