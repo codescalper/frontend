@@ -61,6 +61,7 @@ export const TabNFTBgs = observer(({ store }) => {
   }, [query]);
 
   useEffect(() => {
+    if (isDisconnected || !address) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -84,7 +85,7 @@ export const TabNFTBgs = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} />
+      <SearchComponent query={query} setQuery={setQuery} placeholder="Search backgrounds" />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
