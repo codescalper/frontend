@@ -219,6 +219,11 @@ const Share = () => {
       description
     );
     if (res?.data) {
+      const jsConfetti = new JSConfetti();
+      jsConfetti.addConfetti({
+        emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
+        confettiNumber: 100,
+      });
       toast.update(id, {
         render: "Successfully shared on Lens",
         type: "success",
