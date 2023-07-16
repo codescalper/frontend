@@ -1,7 +1,7 @@
 // Imports:
 import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { Button, Spinner } from "@blueprintjs/core";
+import { Button, Icon, Spinner } from "@blueprintjs/core";
 import { SectionTab } from "polotno/side-panel";
 import { BackgroundIcon } from "../editor-icon";
 import { useAccount } from "wagmi";
@@ -141,7 +141,7 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
           active={stTab === "tabNFTBgs"}
           icon="build"
         >
-          NFT Backgrounds
+          Supducks Backgrounds
         </Button>
       </div>
 
@@ -156,7 +156,7 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
 export const BackgroundSection2 = {
   name: "Backgrounds2",
   Tab: (props) => (
-    <SectionTab name="Backgrounds2" {...props}>
+    <SectionTab name="NFT Banners" {...props}>
       <BackgroundIcon />
     </SectionTab>
   ),

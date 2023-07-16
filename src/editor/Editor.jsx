@@ -325,10 +325,8 @@ const Editor = ({ store }) => {
               {/* ai_integration Start */}
               <div className="rf">
                 <ZoomButtons store={store} />
-                <Button icon="clean" onClick={fnCallToast} className="m-2 ml-6">
-                  {" "}
-                  Remove background{" "}
-                </Button>
+               <Button icon="clean" onClick={fnCallToast} title={isConnected? "" : "Please connect your wallet"} disabled={!isConnected } className="m-2 ml-6">Remove background</Button>
+               
                 {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
               </div>
 

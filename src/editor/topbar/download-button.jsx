@@ -10,6 +10,7 @@ export const DownloadButton = observer(({ store }) => {
 	const [saving, setSaving] = React.useState(false);
 	const [quality, setQuality] = React.useState(1);
 	const [type, setType] = React.useState("png");
+	const [fps, setFPS] = React.useState(10);
 
 	const getName = () => {
 		const texts = [];
@@ -41,6 +42,7 @@ export const DownloadButton = observer(({ store }) => {
 						<option value="jpeg">JPEG</option>
 						<option value="png">PNG</option>
 						<option value="pdf">PDF</option>
+						<option value="gif">GIF</option>
 					</HTMLSelect>
 
 					<>
@@ -60,6 +62,7 @@ export const DownloadButton = observer(({ store }) => {
 								max={3}
 								showTrackFill={false}
 							/>
+							
 							{type === "pdf" && (
 								<div>
 									{unit.pxToUnitRounded({
@@ -84,9 +87,30 @@ export const DownloadButton = observer(({ store }) => {
 									{Math.round(store.height * quality)} px
 								</div>
 							)}
-						</div>
-					</>
-
+							 {type === 'gif' && (
+								<>
+									<li class="bp4-menu-header">
+									<h6 class="bp4-heading">FPS</h6>
+									</li>
+									<div style={{ padding: '10px' }}>
+									<Slider
+										value={fps}
+										// labelRenderer={false}
+										labelStepSize={5}
+										onChange={(fps) => {
+										setFPS(fps);
+										}}
+										stepSize={1}
+										min={5}
+										max={30}
+										showTrackFill={false}
+									/>
+									</div>
+								</>
+								)}
+							</div>
+							</>
+         
 					<Button
 						fill
 						intent="primary"
@@ -106,25 +130,30 @@ export const DownloadButton = observer(({ store }) => {
 									fileName: getName() + ".html",
 								});
 								setSaving(false);
-							} else {
-								store.pages.forEach((page, index) => {
-									// do not add index if we have just one page
-									const indexString =
-										store.pages.length > 1
-											? "-" + (index + 1)
-											: "";
-									store.saveAsImage({
-										pageId: page.id,
-										pixelRatio: quality,
-										mimeType: "image/" + type,
-										fileName:
-											getName() +
-											indexString +
-											"." +
-											type,
-									});
-								});
 							}
+							else if (type === 'gif') {
+								setSaving(true);
+								await store.saveAsGIF({
+								  fileName: getName() + '.gif',
+								  pixelRatio: quality,
+								  fps,
+								});
+								setSaving(false);
+							  } else {
+								store.pages.forEach((page, index) => {
+								  // do not add index if we have just one page
+								  const indexString =
+									store.pages.length > 1 ? '-' + (index + 1) : '';
+								  store.saveAsImage({
+									pageId: page.id,
+									pixelRatio: quality,
+									mimeType: 'image/' + type,
+									fileName: getName() + indexString + '.' + type,
+								  });
+								});
+							  }
+							
+						
 						}}>
 						Download {type.toUpperCase()}
 					</Button>
