@@ -36,6 +36,8 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- analitycs script start -->
     <script>
       !(function (t, e) {
         var o, n, p, r;
@@ -87,6 +89,19 @@
         api_host: "https://eu.posthog.com",
       });
     </script>
+    <!-- analitycs script end -->
+
+    <!-- conffeti CDN script start -->
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <!-- conffeti CDN script end -->
+
+    <!-- token gate script start -->
+    <script src="https://cdn.gueb3.xyz/tokengating_inside.js"></script>
+    <script type="text/javascript">
+      TokenGating.setup(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlOTFiNTFlYTRjNzYzY2JlNjM3ZGUzNzQzNDU3MjNmNGJkYTY2MmNjMTFhNDA0ZGJkYTFiZDJhOWI1MTRkNzgiLCJpYXQiOjE2ODk1ODc2MTgsImV4cCI6MjAwNDk0NzYxOH0.S9essNe9zcFqrfAkJowuLl1bcs__kpOkqD5giNj7J0s"
+      );
+    </script>
+    <!-- token gate script end -->
   </body>
 </html>
