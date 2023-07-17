@@ -155,6 +155,7 @@ export const lensAuthenticate = async (signature) => {
 // need auth token (jwt)
 export const twitterAuthenticate = async () => {
   try {
+    // authenticated request
     const result = await api.get(`${API}/auth/twitter/authenticate`);
 
     console.log("result", result);
@@ -204,8 +205,9 @@ export const twitterAuthenticate = async () => {
 // need auth token (jwt)
 export const twitterAuthenticateCallback = async (state, code) => {
   try {
+    // authenticated request
     const result = await api.get(
-      `${API}/auth/twitter/callback?state=${state}&code=${code}`
+      `${API}/auth/twitter/callback?oauth_token=${state}&oauth_verifier=${code}`
     );
 
     console.log("result", result);
@@ -495,7 +497,7 @@ export const getBGAssetByQuery = async (query, page) => {
       page: page,
     },
   });
-console.log("result", result?.data);
+  console.log("result", result?.data);
   return {
     data: result?.data?.assets,
     nextPage: result?.data?.nextPage,
