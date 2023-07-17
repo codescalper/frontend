@@ -245,7 +245,7 @@ const Editor = ({ store }) => {
 
       // save it to the backend
       if (canvasChildren.length > 0) {
-        if (!address) return;
+        // if (!address) return;
 
         if (!canvasIdRef.current) {
           createCanvasAsync({

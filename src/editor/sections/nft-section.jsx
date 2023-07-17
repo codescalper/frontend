@@ -32,6 +32,7 @@ import {
 } from "@tanstack/react-query";
 import { fnLoadMore } from "../../services/fnLoadMore";
 import { fnMessage } from "../../services/fnMessage";
+import { replaceImageURL } from "../../services/replaceUrl";
 
 const NFTPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
@@ -130,7 +131,7 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
                   }}
                 >
                   <img
-                    src={item.image}
+                    src={replaceImageURL(item.image)}
                     alt={item.name}
                     className="h-24 w-24 rounded-md"
                   />
