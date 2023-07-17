@@ -1,6 +1,6 @@
 import React from "react";
 
-const LoadMoreComponent = ({hasNextPage, isFetchingNextPage}) => {
+const LoadMoreComponent = ({ hasNextPage, isFetchingNextPage }) => {
   return (
     <>
       {hasNextPage && (

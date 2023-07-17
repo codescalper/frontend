@@ -241,7 +241,7 @@ export const MyDesignsPanel = observer(({ store }) => {
         Create new design{" "}
       </Button>
 
-      <SearchComponent onClick={false} query={query} setQuery={setQuery} placeholder="Search desgns by id" />
+      <SearchComponent onClick={false} query={query} setQuery={setQuery} placeholder="Search designs by id" />
 
       {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 

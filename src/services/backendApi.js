@@ -495,7 +495,7 @@ export const getBGAssetByQuery = async (query, page) => {
       page: page,
     },
   });
-
+console.log("result", result?.data);
   return {
     data: result?.data?.assets,
     nextPage: result?.data?.nextPage,
