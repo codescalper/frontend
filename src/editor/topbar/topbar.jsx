@@ -22,10 +22,10 @@ export default observer(({ store }) => {
         <a href="https://lenspost.xyz" target="_blank">
           <div className="flex items-center justify-between cursor-pointer">
             <img
-              className="flex items-center justify-start object-contain p-1 mt-3"
-              src="/LenspostLogo.png"
+              className="flex items-center justify-start object-contain mt-2"
+              src="/LenspostAlphaLogo.png"
               alt="lenspost"
-              width={140}
+              width={170}
               />
           </div>
         </a>

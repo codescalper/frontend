@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import "@rainbow-me/rainbowkit/styles.css";
 import App from "./App";
 import { ConnectButton, getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -9,12 +10,10 @@ import ContextProvider from "./context/ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ENVIRONMENT } from "./services/env";
-
-
-import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { ERC1155ABI, NFTContractAddress } from "./tokengating/NFTCredentials";
+import LoginComp from "./tokengating/LoginComp";
 
 const { chains, provider } = configureChains(
   [polygon],
@@ -92,7 +91,8 @@ const TokenGatedRoute = ({ component: Component, tokenContractAddress, redirectP
         // Get the balance of the connected wallet address for the specific token contract
         // const balance = await tokenContract.balanceOf(signer.getAddress());
         console.log(walAddress)
-        const balance = await tokenContract.balanceOf(walAddress, tokenID);
+        // const balance = await tokenContract.balanceOf(walAddress, tokenID);
+        const balance = await tokenContract.balanceOf(walAddress, ethers.constants.AddressZero);
 
         // Check if the balance is greater than zero 
         const hasToken = balance.gt(0);
@@ -109,7 +109,7 @@ const TokenGatedRoute = ({ component: Component, tokenContractAddress, redirectP
     } else {
       setLoading(false);
     }
-      
+     
     if(!walAddress){
       setLoading(false);
       setHasToken(false)
@@ -129,21 +129,10 @@ const TokenGatedRoute = ({ component: Component, tokenContractAddress, redirectP
          hasToken ? (
           <Component {...props} />
         ) : (
-          <Redirect to={redirectPath} />
+          // <Redirect to={redirectPath} />
+          <LoginComp/>
         )
       }
     />
   );
-};
-
-const LoginComp = () => {
-
-  return <>
-  <div className="flex flex-col justify-center align-middle text-center flex-wrap border m-4"> 
-    <div className="m-2 text-lg"> <a href="/">Lenspost</a> </div>
-    <div className="m-2 text-lg"> This is a tokengated site, you can only access it if have an NFT from the contract </div>
-    <div className="m-2 text-sm">{NFTContractAddress}</div>
-    <div className="m-2">{ <ConnectButton/> }</div>
-  </div>
-  </>
 };

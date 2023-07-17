@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html{
+	margin: 0;
+}
 body {
 	font-family: "Josefin Sans";
 }
@@ -31,4 +34,10 @@ img {
 	background: #777;
 }
 
+.gradText{
+	background: linear-gradient(119deg, #E598D8 0%, #2C346B 99.30%);
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
 /* css for designed scrollbar ends here */
