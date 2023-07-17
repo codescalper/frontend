@@ -245,7 +245,7 @@ const Editor = ({ store }) => {
 
       // save it to the backend
       if (canvasChildren.length > 0) {
-        if (!address) return;
+        // if (!address) return;
 
         if (!canvasIdRef.current) {
           createCanvasAsync({
@@ -325,8 +325,16 @@ const Editor = ({ store }) => {
               {/* ai_integration Start */}
               <div className="rf">
                 <ZoomButtons store={store} />
-               <Button icon="clean" onClick={fnCallToast} title={isConnected? "" : "Please connect your wallet"} disabled={!isConnected } className="m-2 ml-6">Remove background</Button>
-               
+                <Button
+                  icon="clean"
+                  onClick={fnCallToast}
+                  title={isConnected ? "" : "Please connect your wallet"}
+                  disabled={!isConnected}
+                  className="m-2 ml-6"
+                >
+                  Remove background
+                </Button>
+
                 {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
               </div>
 

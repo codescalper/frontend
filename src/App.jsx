@@ -141,6 +141,16 @@ export default function App() {
     genarateSignature();
   }, [isConnected, address]);
 
+  // useEffect(() => {
+  //   if (session) {
+  //     const jsConfetti = new JSConfetti();
+  //     jsConfetti.addConfetti({
+  //       emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
+  //       confettiNumber: 100,
+  //     });
+  //   }
+  // }, [session]);
+
   return (
     <>
       <Editor />

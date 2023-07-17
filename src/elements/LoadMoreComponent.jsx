@@ -1,10 +1,10 @@
 import React from "react";
 
-const LoadMoreComponent = ({hasNextPage, isFetchingNextPage}) => {
+const LoadMoreComponent = ({ hasNextPage, isFetchingNextPage }) => {
   return (
     <>
       {hasNextPage && (
-        <div className="flex justify-center" id="bottom">
+        <div className="flex justify-center w-full h-10" id="bottom">
           {isFetchingNextPage && "Loading more..."}
         </div>
       )}
