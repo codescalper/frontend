@@ -257,7 +257,7 @@ const Share = () => {
   const twitterAuth = async () => {
     const res = await twitterAuthenticate();
     if (res?.data) {
-      window.open(res?.data?.url, "_blank");
+      window.open(res?.data?.message, "_blank");
     } else if (res?.error) {
       toast.error(res?.error);
     }
@@ -265,9 +265,9 @@ const Share = () => {
 
   // http://localhost:5173/?state=&code=
 
-  const state = "S3I7MHMNkrBXMnynJuRW3P0te90%7E9KHp";
+  const state = "m9VXpQAAAAABo2s1AAABiWXb3ro";
   const code =
-    "c2VGMFJEYTFPNjZKRV9KZlFOd2V2RzFZQUdaN0p0cVIxT0xQRTkya09iRVdzOjE2ODcxODM4NDI2MjY6MToxOmFjOjE";
+    "98ti9QJDFXVfuGIMiCJKOgu5uvX9zshv";
 
   const twitterAuthCallback = async () => {
     const res = await twitterAuthenticateCallback(state, code);
@@ -405,7 +405,7 @@ const Share = () => {
               alt="Lens"
             />{" "}
           </div>
-          <div>
+          <div onClick={twitterAuthCallback}>
             {" "}
             <img
               className="w-10 cursor-pointer"
