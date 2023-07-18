@@ -23,31 +23,33 @@ import { Context } from "../../context/ContextProvider";
 
 // Design card component start
 
-const DesignCard = observer(({ design, preview, json, onDelete, onPublic }) => {
-  const { contextCanvasIdRef } = useContext(Context);
+const DesignCard = observer(
+  ({ design, preview, json, onDelete, onPublic, tab }) => {
+    const { contextCanvasIdRef } = useContext(Context);
 
-  return (
-    <Card
-      style={{ margin: "4px", padding: "0px", position: "relative" }}
-      interactive
-      onDragEnd={() => {
-        store.loadJSON(json);
-      }}
-      onClick={() => {
-        store.loadJSON(json);
-      }}
-    >
-      <div className="">
-        <LazyLoadImage
-          placeholderSrc={replaceImageURL(preview)}
-          effect="blur"
-          src={replaceImageURL(preview)}
-          alt="Preview Image"
-        />
-      </div>
-    </Card>
-  );
-});
+    return (
+      <Card
+        style={{ margin: "4px", padding: "0px", position: "relative" }}
+        interactive
+        onDragEnd={() => {
+          store.loadJSON(json);
+        }}
+        onClick={() => {
+          store.loadJSON(json);
+        }}
+      >
+        <div className="">
+          <LazyLoadImage
+            placeholderSrc={replaceImageURL(preview)}
+            effect="blur"
+            src={tab === "user" ? preview : replaceImageURL(preview)}
+            alt="Preview Image"
+          />
+        </div>
+      </Card>
+    );
+  }
+);
 
 // Design card component end
 
@@ -102,7 +104,11 @@ const LenspostTemplates = ({ store }) => {
 
   return (
     <>
-      <SearchComponent query={query} setQuery={setQuery} placeholder={"Search templates"} />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder={"Search templates"}
+      />
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
@@ -117,6 +123,7 @@ const LenspostTemplates = ({ store }) => {
                 key={design.id}
                 store={store}
                 project={project}
+                tab="lenspost"
               />
             );
           })}
@@ -151,7 +158,11 @@ const UserTemplates = ({ store }) => {
 
   return (
     <>
-      <SearchComponent query={query} setQuery={setQuery} placeholder={"Search templates"} />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder={"Search templates"}
+      />
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
@@ -170,6 +181,7 @@ const UserTemplates = ({ store }) => {
                 key={design.id}
                 store={store}
                 project={project}
+                tab="user"
               />
             );
           })}

@@ -10,8 +10,10 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import { Context } from "./context/ContextProvider";
 import { CheckInternetConnection, LoadingComponent } from "./elements";
+import { useNavigate } from "react-router-dom";
 
 export default function App() {
+  const [initialRender, setInitialRender] = useState(true);
   const { isLoading, setIsLoading, text, setText } = useContext(Context);
   const [message, setMessage] = useState(
     "This message is to login you into lenspost dapp."
@@ -31,6 +33,9 @@ export default function App() {
   const getUserAddress = getFromLocalStorage("userAddress");
   const getUsertAuthTmestamp = getFromLocalStorage("usertAuthTmestamp");
   const getLensAuth = getFromLocalStorage("lensAuth");
+  const getifUserEligible = getFromLocalStorage("ifUserEligible");
+  const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
+  const navigate = useNavigate();
 
   // remove all data from localstorage
   const clearAllLocalStorageData = () => {
@@ -67,6 +72,7 @@ export default function App() {
 
   // generate signature
   const genarateSignature = () => {
+    saveToLocalStorage("hasUserSeenTheApp", true);
     if (isDisconnected) return;
 
     if (
@@ -119,8 +125,30 @@ export default function App() {
     }
   };
 
+  const isUserEligible = () => {
+    if (
+      getifUserEligible &&
+      getifUserEligible.address === address &&
+      getifUserEligible.isUserEligible === true
+    ) {
+      return true;
+    } else if (getHasUserSeenTheApp && getHasUserSeenTheApp === true) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    // if false redirect to ifUserEligible page
+    if (!isUserEligible()) {
+      navigate("/ifUserEligible");
+    }
+  }, []);
+
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
+      saveToLocalStorage("hasUserSeenTheApp", true);
       disconnect();
       setIsLoading(false);
       toast.error("User rejected the signature request");
@@ -138,18 +166,21 @@ export default function App() {
   }, [isSuccess]);
 
   useEffect(() => {
-    genarateSignature();
-  }, [isConnected, address]);
+    // Skip the effect on the initial render
+    if (initialRender) {
+      setInitialRender(false);
+      return;
+    }
+
+    // Run the effect when isConnected and address change
+    if (isConnected && address) {
+      genarateSignature();
+    }
+  }, [isConnected, address, initialRender]);
 
   // useEffect(() => {
-  //   if (session) {
-  //     const jsConfetti = new JSConfetti();
-  //     jsConfetti.addConfetti({
-  //       emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
-  //       confettiNumber: 100,
-  //     });
-  //   }
-  // }, [session]);
+  //   saveToLocalStorage("hasUserSeenTheApp", true);
+  // }, []);
 
   return (
     <>
