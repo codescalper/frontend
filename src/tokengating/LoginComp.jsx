@@ -42,7 +42,13 @@ const LoginComp = () => {
   const ifUserEligible = () => {
     if (data?.isHolderOfCollection === true) {
       setIsUserEligible(true);
-      // user is eligible yes
+
+      const jsConfetti = new JSConfetti();
+      jsConfetti.addConfetti({
+        emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
+        confettiNumber: 100,
+      });
+      // user is whitelisted
       // store the address in local storage
       saveToLocalStorage("ifUserEligible", {
         address: address,
