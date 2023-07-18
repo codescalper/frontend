@@ -4,6 +4,7 @@ import {
   BACKEND_PROD_URL,
   BACKEND_LOCAL_URL,
   ENVIRONMENT,
+  ALCHEMY_API,
 } from "./env";
 import { getFromLocalStorage } from "./localStorage";
 
@@ -538,4 +539,18 @@ export const getRemovedBgS3Link = async (query) => {
       };
     }
   }
+};
+
+export const isHolderOfCollection = async (walletAddress, contractAddress) => {
+  const result = await axios.get(
+    `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API}/isHolderOfCollection`,
+    {
+      params: {
+        wallet: walletAddress,
+        contractAddress: contractAddress,
+      },
+    }
+  );
+
+  return result?.data;
 };
