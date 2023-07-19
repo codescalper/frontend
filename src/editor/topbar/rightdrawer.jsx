@@ -8,7 +8,7 @@ import { Switch } from "@headlessui/react";
 import { Icon } from "@blueprintjs/core";
 import {
   lensAuthenticate,
-  shareOnLens,
+  shareOnSocials,
   twitterAuthenticate,
   twitterAuthenticateCallback,
 } from "../../services/backendApi";
@@ -24,6 +24,7 @@ import {
 // New Imports :
 // import { DatePicker, Space } from "antd"
 import { DateTimePicker } from "@atlaskit/datetime-picker";
+import { useNavigate } from "react-router-dom";
 
 export default function RightDrawer({}) {
   const [open, setOpen] = useState(false);
@@ -160,7 +161,8 @@ const Share = () => {
   const [stFormattedTime, setStFormattedTime] = useState("");
   const { address, isConnected } = useAccount();
   const [description, setDescription] = useState("");
-  const { isLoading, setIsLoading, text, setText } = useContext(Context);
+  const { isLoading, setIsLoading, text, setText, queryParams } =
+    useContext(Context);
   const {
     data: signature,
     isError,
@@ -169,6 +171,8 @@ const Share = () => {
     signMessage,
   } = useSignMessage();
   const getLensAuth = getFromLocalStorage("lensAuth");
+  const getTwitterAuth = getFromLocalStorage("twitterAuth");
+  const navigate = useNavigate();
 
   // generating signature
   const generateSignature = async () => {
@@ -190,7 +194,7 @@ const Share = () => {
       setIsLoading(false);
       setText("");
       setTimeout(() => {
-        sharePost();
+        sharePost("lens");
       }, 6000);
     } else if (res?.error) {
       toast.error(res?.error);
@@ -200,7 +204,7 @@ const Share = () => {
   };
 
   // share post on lens
-  const sharePost = async () => {
+  const sharePost = async (platform) => {
     // check if canvasId is provided
     if (contextCanvasIdRef.current === null) {
       toast.error("Please select a design");
@@ -212,11 +216,12 @@ const Share = () => {
       return;
     }
 
-    const id = toast.loading("Sharing on Lens...");
-    const res = await shareOnLens(
+    const id = toast.loading(`Sharing on ${platform}...`);
+    const res = await shareOnSocials(
       contextCanvasIdRef.current,
       "post",
-      description
+      description,
+      platform
     );
     if (res?.data) {
       const jsConfetti = new JSConfetti();
@@ -225,7 +230,7 @@ const Share = () => {
         confettiNumber: 100,
       });
       toast.update(id, {
-        render: "Successfully shared on Lens",
+        render: `Successfully shared on ${platform}`,
         type: "success",
         isLoading: false,
         autoClose: 5000,
@@ -245,9 +250,9 @@ const Share = () => {
   };
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
-  const handleClick = () => {
+  const handleLensClick = () => {
     if (isConnected && getLensAuth) {
-      sharePost();
+      sharePost("lens");
     } else {
       generateSignature();
     }
@@ -257,24 +262,38 @@ const Share = () => {
   const twitterAuth = async () => {
     const res = await twitterAuthenticate();
     if (res?.data) {
-      window.open(res?.data?.message, "_blank");
+      window.open(res?.data?.message, "_parent");
     } else if (res?.error) {
       toast.error(res?.error);
     }
   };
 
-  // http://localhost:5173/?state=&code=
-
-  const state = "m9VXpQAAAAABo2s1AAABiWXb3ro";
-  const code =
-    "98ti9QJDFXVfuGIMiCJKOgu5uvX9zshv";
-
-  const twitterAuthCallback = async () => {
-    const res = await twitterAuthenticateCallback(state, code);
+  const twitterCallback = async () => {
+    setText("Authenticating...");
+    const res = await twitterAuthenticateCallback(
+      queryParams?.oauth_token,
+      queryParams?.oauth_verifier
+    );
     if (res?.data) {
+      saveToLocalStorage("twitterAuth", true);
       toast.success("Successfully authenticated");
+      setIsLoading(false);
+      setText("");
+      setTimeout(() => {
+        sharePost("twitter");
+      }, 6000);
     } else if (res?.error) {
       toast.error(res?.error);
+      setIsLoading(false);
+      setText("");
+    }
+  };
+
+  const handleTwitterClick = () => {
+    if (isConnected && getTwitterAuth) {
+      sharePost("twitter");
+    } else {
+      twitterAuth();
     }
   };
 
@@ -397,7 +416,7 @@ const Share = () => {
       >
         <p className="text-lg">Share on socials</p>
         <div className="flex items-center justify-center space-x-12 py-5">
-          <div onClick={handleClick}>
+          <div onClick={handleLensClick}>
             {" "}
             <img
               className="w-10 cursor-pointer"
@@ -405,7 +424,7 @@ const Share = () => {
               alt="Lens"
             />{" "}
           </div>
-          <div onClick={twitterAuthCallback}>
+          <div onClick={handleTwitterClick}>
             {" "}
             <img
               className="w-10 cursor-pointer"
