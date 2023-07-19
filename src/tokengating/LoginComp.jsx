@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { isHolderOfCollection } from "../services/backendApi";
 import { useContext, useEffect, useRef, useState } from "react";
-import { whitelistAddresses } from "../utility/whitelistAddresses";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
@@ -11,6 +10,7 @@ import {
 import { toast } from "react-toastify";
 import { fnMessage } from "../services/fnMessage";
 import { useNavigate } from "react-router-dom";
+import { allowlistAddresses } from "../utility/allowlistAddresses";
 
 const LoginComp = () => {
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
@@ -58,7 +58,7 @@ const LoginComp = () => {
       // redirect to the app
     } else if (data?.isHolderOfCollection === false) {
       // user is not eligible
-      const isWhitelisted = whitelistAddresses.includes(address);
+      const isWhitelisted = allowlistAddresses.includes(address);
       if (isWhitelisted) {
         setIsUserEligible(true);
 
@@ -74,10 +74,6 @@ const LoginComp = () => {
           isUserEligible: true,
         });
 
-        // redirect to the app
-        // setTimeout(() => {
-        //   return navigate("/");
-        // }, 5000);
       } else {
         // user is not whitelisted
         // keep showing the login page
@@ -109,9 +105,9 @@ const LoginComp = () => {
       className="flex justify-center items-center h-screen"
       style={{ background: "linear-gradient(90deg, #E598D8 0%, #E1F16B 100%)" }}
     >
-      <div className="w-1/2">
-        <div className="flex flex-col align-middle justify-between m-2 p-2">
-          <div className="flex flex-col justify-center align-middle text-center flex-wrap m-4 rounded-md">
+      <div className="md:w-3/4 lg:w-1/2">
+        <div className="flex flex-col justify-between m-2 p-2">
+          <div className="flex flex-col justify-center text-center flex-wrap m-4 rounded-md">
             <div className="m-2 text-lg">
               {" "}
               <img

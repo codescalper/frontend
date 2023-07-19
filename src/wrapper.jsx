@@ -12,6 +12,7 @@ import { ENVIRONMENT } from "./services/env";
 import App from "./App";
 import LoginComp from "./tokengating/LoginComp";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TwitterAuth from "./components/TwitterAuth";
 
 const { chains, provider } = configureChains(
   [polygon],
@@ -45,8 +46,12 @@ export const Wrapper = () => {
               <Routes>
                 <Route path="/" element={<App />} />
                 <Route path="/ifUserEligible" element={<LoginComp />} />
+                <Route
+                  path="/api/auth/callback/twitter"
+                  element={<TwitterAuth />}
+                />
               </Routes>
-                {ENVIRONMENT === "development" && <ReactQueryDevtools />}
+              {ENVIRONMENT === "development" && <ReactQueryDevtools />}
             </BrowserRouter>
           </QueryClientProvider>
         </ContextProvider>
