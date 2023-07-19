@@ -23,7 +23,8 @@ export const DownloadButton = observer(({ store }) => {
 		});
 		const allWords = texts.join(" ").split(" ");
 		const words = allWords.slice(0, 6);
-		return words.join(" ").replace(/\s/g, "-").toLowerCase() || "lenspost";
+		return  "lenspost" || words.join(" ").replace(/\s/g, "-").toLowerCase();
+		// return "lenspost";
 	};
 	return (
 		<Popover2
@@ -87,7 +88,7 @@ export const DownloadButton = observer(({ store }) => {
 									{Math.round(store.height * quality)} px
 								</div>
 							)}
-							 {type === 'gif' && (
+							 {type === "gif" && (
 								<>
 									<li class="bp4-menu-header">
 									<h6 class="bp4-heading">FPS</h6>
@@ -131,11 +132,12 @@ export const DownloadButton = observer(({ store }) => {
 								});
 								setSaving(false);
 							}
-							else if (type === 'gif') {
+							else if (type === "gif") {
 								setSaving(true);
 								await store.saveAsGIF({
-								  fileName: getName() + '.gif',
-								  pixelRatio: quality,
+								//   fileName: getName() + ".gif",
+								  fileName: "lenspost" + ".gif",
+								  pixelRatio: quality,  
 								  fps,
 								});
 								setSaving(false);
