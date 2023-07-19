@@ -38,6 +38,8 @@ export default observer(({ store }) => {
         )}
         {isConnected && (
           <div className="flex items-center justify-center space-x-6">
+            {/* Discord Links - 19Jul2023 */}
+            <a className="w-8 h-8 text-gray-600 transition-transform transform-gpu hover:scale-125 hover:rotate-180 hover:duration-2000" target="_blank" href="https://discord.gg/yHMXQE2DNb"> <img src="/topbar-icons/iconDiscord.svg" alt="" /></a>
             
             {/* <div onClick={()=> setStIsDrawOpen(!stIsDrawOpen) }> 
               <ShareIcon/>
