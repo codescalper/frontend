@@ -106,7 +106,7 @@ const LoginComp = () => {
     >
       <div className="w-full md:w-3/4 lg:w-1/2">
         <div className="flex flex-col justify-between m-2 p-2">
-          <div className="flex  justify-center text-center flex-wrap m-4 rounded-md">
+          <div className="flex flex-col justify-center text-center flex-wrap m-4 rounded-md">
             <div className="m-2 text-lg">
               {" "}
               <img
