@@ -401,9 +401,18 @@ const WalletNFT = () => {
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
   const queryClient = useQueryClient();
-  const { data, isLoading, isError, error } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ["userNFTs"],
-    queryFn: getNFTs,
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) => getNFTs(pageParam),
   });
 
   const { mutateAsync } = useMutation({
@@ -446,6 +455,11 @@ const WalletNFT = () => {
       });
   };
 
+  useEffect(() => {
+    if (isDisconnected || !address) return;
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
+
   const goBack = () => {
     setDelayedQuery("");
     setQuery("");
@@ -476,20 +490,26 @@ const WalletNFT = () => {
 
       {isError ? (
         <ErrorComponent message={error} />
-      ) : data?.length ? (
+      ) : data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
-            {data.map((imgArray, index) => {
-              return (
-                <CustomImageComponent
-                  key={index}
-                  preview={imgArray?.imageURL}
-                  store={store}
-                  project={project}
-                />
-              );
-            })}
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item?.imageURL}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
           </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
       ) : (
         <MessageComponent message="No Results" />

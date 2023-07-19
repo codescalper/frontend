@@ -43,6 +43,8 @@ export default function App() {
     removeFromLocalStorage("usertAuthTmestamp");
     removeFromLocalStorage("userAddress");
     removeFromLocalStorage("lensAuth");
+    removeFromLocalStorage("ifUserEligible");
+    removeFromLocalStorage("hasUserSeenTheApp");
   };
 
   // remove jwt from localstorage if it is expired (24hrs)
@@ -142,9 +144,10 @@ export default function App() {
   useEffect(() => {
     // if false redirect to ifUserEligible page
     if (!isUserEligible()) {
+      // clearAllLocalStorageData();
       navigate("/ifUserEligible");
     }
-  }, []);
+  }, [address]);
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {

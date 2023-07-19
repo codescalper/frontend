@@ -159,8 +159,6 @@ export const twitterAuthenticate = async () => {
     // authenticated request
     const result = await api.get(`${API}/auth/twitter/authenticate`);
 
-    console.log("result", result);
-
     if (result?.status === 200) {
       return {
         data: result?.data,
@@ -264,9 +262,18 @@ export const refreshNFT = async () => {
 
 // gwt users' nft endpoint
 // need auth token (jwt)
-export const getNFTs = async () => {
-  const result = await api.get(`${API}/user/nft/owned?limit=50&offset=0`);
-  return result?.data;
+export const getNFTs = async (page) => {
+  const result = await api.get(`${API}/user/nft/owned`, {
+    params: {
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 
 // search users' nft by id endpoint
@@ -347,7 +354,7 @@ export const deleteCanvasById = async (id) => {
 
 // share canvas on lens endpoint
 // need auth token (jwt)
-export const shareOnLens = async (canvasId, name, content) => {
+export const shareOnSocials = async (canvasId, name, content, platform) => {
   try {
     const result = await api.post(`${API}/user/canvas/publish`, {
       canvasData: {
@@ -355,7 +362,7 @@ export const shareOnLens = async (canvasId, name, content) => {
         name: name,
         content: content,
       },
-      platform: "lens",
+      platform: platform,
       // titmeStamp: Date.now(),
     });
 

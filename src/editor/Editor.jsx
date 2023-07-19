@@ -29,6 +29,8 @@ import { useAccount } from "wagmi";
 import {
   createCanvas,
   getRemovedBgS3Link,
+  twitterAuthenticate,
+  twitterAuthenticateCallback,
   updateCanvas,
 } from "../services/backendApi";
 import { toast } from "react-toastify";
@@ -44,6 +46,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { wait } from "../utility/waitFn";
 import { fnMessage } from "../services/fnMessage";
 import _ from "lodash";
+import {
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from "../services/localStorage";
 
 unstable_setAnimationsEnabled(true);
 
@@ -77,8 +83,9 @@ const Editor = ({ store }) => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
-  const { contextCanvasIdRef } = useContext(Context);
+  const { contextCanvasIdRef, setText, setIsLoading } = useContext(Context);
   const timeoutRef = useRef(null);
+  const getTwitterAuth = getFromLocalStorage("twitterAuth");
 
   const load = () => {
     let url = new URL(window.location.href);

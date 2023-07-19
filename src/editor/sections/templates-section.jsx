@@ -12,6 +12,7 @@ import { replaceImageURL } from "../../services/replaceUrl";
 import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
+  ConnectWalletMsgComponent,
   ErrorComponent,
   MessageComponent,
   SearchComponent,
@@ -84,11 +85,16 @@ export const TemplatesPanel = observer(({ store }) => {
 });
 
 const LenspostTemplates = ({ store }) => {
+  const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lenspost-templates"],
     queryFn: getAllTemplates,
   });
+
+  if (isDisconnected || !address) {
+    return <ConnectWalletMsgComponent />;
+  }
 
   if (isError) {
     return <ErrorComponent message={error} />;
@@ -138,11 +144,16 @@ const LenspostTemplates = ({ store }) => {
 };
 
 const UserTemplates = ({ store }) => {
+  const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const { data, isLoading, isError, error, isSuccess } = useQuery({
     queryKey: ["user-templates"],
     queryFn: getUserPublicTemplates,
   });
+
+  if (isDisconnected || !address) {
+    return <ConnectWalletMsgComponent />;
+  }
 
   if (isError) {
     return <ErrorComponent message={error} />;
