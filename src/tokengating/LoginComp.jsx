@@ -202,7 +202,7 @@ const LoginComp = () => {
                   onClick={() => navigate("/")}
                   className="bg-blue-500 py-3 px-5 rounded-lg text-white"
                 >
-                  Lunch App
+                  Launch App
                 </button>
               </div>
             )}
