@@ -73,7 +73,6 @@ const LoginComp = () => {
           address: address,
           isUserEligible: true,
         });
-
       } else {
         // user is not whitelisted
         // keep showing the login page
@@ -83,7 +82,7 @@ const LoginComp = () => {
   };
 
   useEffect(() => {
-    // if false redirect to ifUserEligible page
+    // if true redirect to home page
     if (isUserEligibleFn()) {
       navigate("/");
     }
@@ -105,9 +104,9 @@ const LoginComp = () => {
       className="flex justify-center items-center h-screen"
       style={{ background: "linear-gradient(90deg, #E598D8 0%, #E1F16B 100%)" }}
     >
-      <div className="md:w-3/4 lg:w-1/2">
+      <div className="w-full md:w-3/4 lg:w-1/2">
         <div className="flex flex-col justify-between m-2 p-2">
-          <div className="flex flex-col justify-center text-center flex-wrap m-4 rounded-md">
+          <div className="flex  justify-center text-center flex-wrap m-4 rounded-md">
             <div className="m-2 text-lg">
               {" "}
               <img

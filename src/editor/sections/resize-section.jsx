@@ -6,9 +6,9 @@ import { ResizeIcon } from "../editor-icon";
 
 const AVAILABLE_SIZES = [
 	{ width: 1080, height: 1350, imgUrl: "/other-icons/resize-sizes/resize1.svg" },
-	{ width: 1200, height: 630, imgUrl: "/other-icons/resize-sizes/resize2.svg" },
-	{ width: 820, height: 312, imgUrl: "/other-icons/resize-sizes/resize3.svg" },
-	{ width: 1080, height: 1080, imgUrl: "/other-icons/resize-sizes/resize4.svg" },
+	// { width: 1200, height: 630, imgUrl: "/other-icons/resize-sizes/resize2.svg" },
+	// { width: 820, height: 312, imgUrl: "/other-icons/resize-sizes/resize3.svg" },
+	// { width: 1080, height: 1080, imgUrl: "/other-icons/resize-sizes/resize4.svg" },
 	{ width: 1080, height: 1080, imgUrl: "/other-icons/resize-sizes/resize5.svg" },
 	{ width: 1080, height: 1920, imgUrl: "/other-icons/resize-sizes/resize6.svg" },
 	{ width: 1080, height: 1080, imgUrl: "/other-icons/resize-sizes/resize7.svg" },
