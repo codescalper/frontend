@@ -9,6 +9,7 @@ import { setContext } from "@apollo/client/link/context";
 import omitDeep from "omit-deep";
 import LENS_HUB_ABI from "./ABI.json";
 import request from "graphql-request";
+import { ENVIRONMENT } from "./src/services/env";
 
 // export const LENS_HUB_CONTRACT = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d";// mainnet
 export const LENS_HUB_CONTRACT = "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"; // mumbai
@@ -18,7 +19,15 @@ export const lensHub = new ethers.Contract(
   getSigner()
 );
 
-const API_URL = "https://api-mumbai.lens.dev";
+const API_URL = `https://${
+  ENVIRONMENT === "production"
+    ? "api"
+    : ENVIRONMENT === "development"
+    ? "api-mumbai"
+    : ENVIRONMENT === "local"
+    ? "api-mumbai"
+    : "api-mumbai"
+}.lens.dev`;
 
 // export const client = new ApolloClient({
 //   uri: API_URL,
