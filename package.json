@@ -20,6 +20,7 @@
     "axios": "^1.4.0",
     "buffer": "^6.0.3",
     "csv-parser": "^3.0.0",
+    "emoji-picker-react": "^4.4.10",
     "ethers": "5.7.2",
     "fs": "^0.0.1-security",
     "graphql": "^16.6.0",
