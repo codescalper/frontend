@@ -144,10 +144,9 @@ export default function App() {
   useEffect(() => {
     // if false redirect to ifUserEligible page
     if (!isUserEligible()) {
-      // clearAllLocalStorageData();
       navigate("/ifUserEligible");
     }
-  }, [address]);
+  }, []);
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
@@ -170,20 +169,16 @@ export default function App() {
 
   useEffect(() => {
     // Skip the effect on the initial render
-    if (initialRender) {
-      setInitialRender(false);
-      return;
-    }
+    // if (initialRender) {
+    //   setInitialRender(false);
+    //   return;
+    // }
 
     // Run the effect when isConnected and address change
     if (isConnected && address) {
       genarateSignature();
     }
   }, [isConnected, address, initialRender]);
-
-  // useEffect(() => {
-  //   saveToLocalStorage("hasUserSeenTheApp", true);
-  // }, []);
 
   return (
     <>

@@ -14,15 +14,11 @@ const TwitterAuth = () => {
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
   const { setIsLoading, setText, isLoading, text } = useContext(Context);
 
-  const url = new URL(window.location.href);
-  const oauth_token = url.searchParams.get("oauth_token");
-  const oauth_verifier = url.searchParams.get("oauth_verifier");
-
   // twitter auth start
-  const twitterCallback = async (oauth_token, oauth_verifier) => {
+  const twitterCallback = async (state, code) => {
     if (getTwitterAuth) return;
     setIsLoading(true);
-    const res = await twitterAuthenticateCallback(oauth_token, oauth_verifier);
+    const res = await twitterAuthenticateCallback(state, code);
     if (res?.data) {
       saveToLocalStorage("twitterAuth", true);
       setIsLoading(false);
@@ -38,7 +34,14 @@ const TwitterAuth = () => {
   };
 
   useEffect(() => {
-    twitterCallback(oauth_token, oauth_verifier);
+    const url = new URL(window.location.href);
+    const state = url.searchParams.get("state");
+    const code = url.searchParams.get("code");
+
+    console.log("state", state);
+    console.log("code", code);
+
+    twitterCallback(state, code);
   }, []);
   // twitter auth end
 

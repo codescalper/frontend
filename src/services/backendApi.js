@@ -205,9 +205,12 @@ export const twitterAuthenticate = async () => {
 export const twitterAuthenticateCallback = async (state, code) => {
   try {
     // authenticated request
-    const result = await api.get(
-      `${API}/auth/twitter/callback?oauth_token=${state}&oauth_verifier=${code}`
-    );
+    const result = await api.get(`${API}/auth/twitter/callback`, {
+      params: {
+        state: state,
+        code: code,
+      },
+    });
 
     console.log("result", result);
 

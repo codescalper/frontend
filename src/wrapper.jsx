@@ -47,7 +47,7 @@ export const Wrapper = () => {
                 <Route path="/" element={<App />} />
                 <Route path="/ifUserEligible" element={<LoginComp />} />
                 <Route
-                  path="/api/auth/callback/twitter"
+                  path="/auth/twitter"
                   element={<TwitterAuth />}
                 />
               </Routes>

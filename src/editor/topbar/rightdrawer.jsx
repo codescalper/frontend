@@ -262,30 +262,10 @@ const Share = () => {
   const twitterAuth = async () => {
     const res = await twitterAuthenticate();
     if (res?.data) {
+      // console.log(res?.data?.message);
       window.open(res?.data?.message, "_parent");
     } else if (res?.error) {
       toast.error(res?.error);
-    }
-  };
-
-  const twitterCallback = async () => {
-    setText("Authenticating...");
-    const res = await twitterAuthenticateCallback(
-      queryParams?.oauth_token,
-      queryParams?.oauth_verifier
-    );
-    if (res?.data) {
-      saveToLocalStorage("twitterAuth", true);
-      toast.success("Successfully authenticated");
-      setIsLoading(false);
-      setText("");
-      setTimeout(() => {
-        sharePost("twitter");
-      }, 6000);
-    } else if (res?.error) {
-      toast.error(res?.error);
-      setIsLoading(false);
-      setText("");
     }
   };
 

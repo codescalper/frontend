@@ -61,6 +61,11 @@ const LoginComp = () => {
       const isWhitelisted = allowlistAddresses.includes(address);
       if (isWhitelisted) {
         setIsUserEligible(true);
+        
+        saveToLocalStorage("ifUserEligible", {
+          address: address,
+          isUserEligible: true,
+        });
 
         const jsConfetti = new JSConfetti();
         jsConfetti.addConfetti({
@@ -69,10 +74,6 @@ const LoginComp = () => {
         });
         // user is whitelisted
         // store the address in local storage
-        saveToLocalStorage("ifUserEligible", {
-          address: address,
-          isUserEligible: true,
-        });
       } else {
         // user is not whitelisted
         // keep showing the login page
@@ -215,5 +216,3 @@ const LoginComp = () => {
   );
 };
 export default LoginComp;
-
-// test supducks holder address = 0xa6bcB89f21E0BF71E08dEd426C142757791e17cf
