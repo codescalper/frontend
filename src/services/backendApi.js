@@ -11,9 +11,9 @@ import { getFromLocalStorage } from "./localStorage";
 const API =
   ENVIRONMENT === "production"
     ? BACKEND_PROD_URL
-    : ENVIRONMENT === "staging"
-    ? BACKEND_DEV_URL
     : ENVIRONMENT === "development"
+    ? BACKEND_DEV_URL
+    : ENVIRONMENT === "local"
     ? BACKEND_LOCAL_URL
     : BACKEND_LOCAL_URL;
 
