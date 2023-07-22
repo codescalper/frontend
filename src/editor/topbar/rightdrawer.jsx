@@ -189,7 +189,7 @@ const Share = () => {
     setText("Authenticating...");
     const res = await lensAuthenticate(signature);
     if (res?.data) {
-      saveToLocalStorage("lensAuth", res?.data?.status);
+      saveToLocalStorage("lensAuth", true);
       toast.success("Successfully authenticated");
       setIsLoading(false);
       setText("");
@@ -307,6 +307,7 @@ const Share = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      console.log({ signature, address });
       lensAuth();
     }
   }, [isSuccess]);
