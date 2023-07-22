@@ -26,6 +26,17 @@ import {
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import { useNavigate } from "react-router-dom";
 
+// Emoji Implementation - 21Jul2023
+import EmojiPicker,{
+  EmojiStyle,
+  SkinTones,
+  Theme,
+  Categories,
+  Emoji,
+  SuggestionMode,
+  SkinTonePickerLocation
+} from "emoji-picker-react";
+
 export default function RightDrawer({}) {
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState("share");
@@ -153,6 +164,7 @@ export default function RightDrawer({}) {
 }
 
 const Share = () => {
+  
   const { contextCanvasIdRef } = useContext(Context);
   const [stShareClicked, setStShareClicked] = useState(false);
   const [stCalendarClicked, setStCalendarClicked] = useState(false);
@@ -311,6 +323,20 @@ const Share = () => {
       lensAuth();
     }
   }, [isSuccess]);
+  
+  const [stSelectedEmoji, setStSelectedEmoji] = useState("")
+  const [stClickedEmojiIcon, setStClickedEmojiIcon] = useState(false)
+  
+  // Function to handle emoji click 
+  // Callback sends (data, event) - Currently using data only
+  function fnEmojiClick(emojiData) {
+  
+    console.log("Selected Emoji");
+    // console.log(emojiData);
+    setStSelectedEmoji(emojiData?.unified);
+    setDescription(description + emojiData?.emoji) //Add emoji to description
+  }
+
 
   return (
     <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
@@ -322,13 +348,86 @@ const Share = () => {
       <div className="relative mt-16 px-4 pt-2 pb-1 sm:px-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between"></div>
-          <div className="space-x-4">
+          <div className="space-x-2">
             <textarea
               onChange={(e) => setDescription(e.target.value)}
               value={description}
-              className="border border-b-8 w-full h-40"
+              className="border border-b-4 w-full h-40 mb-2"
             />
+       
+          <div className="flex flex-row justify-between">
+
+          {/* Open the emoji panel - 22Jul2023 */}
+          {/* Dynamic Emoji on the screen based on click */}
+          
+          <button title="Open emoji panel" className={`"m-2 p-2 rounded-md ${stClickedEmojiIcon && "border border-red-400" }"`} onClick={() => setStClickedEmojiIcon(!stClickedEmojiIcon)}>
+          {stSelectedEmoji ? (
+            <Emoji 
+            unified={stSelectedEmoji}
+            emojiStyle={EmojiStyle.NATIVE}
+            size={24}
+            />
+            ) : 
+            <Emoji unified={"1f92a"} emojiStyle={EmojiStyle.NATIVE} size={24}/>
+          }
+          </button>
+          
+          {/* X - button to close the emoji panel - 22Jul2023 */}
+          {stClickedEmojiIcon &&
+          <div className="m-4 mr-4">
+            <button className={""} onClick={() => setStClickedEmojiIcon(false)}> ❌ </button>
+          </div>  
+          } 
           </div>
+
+          {/* Emoji Implementation - 21Jul2023 */}
+          {stClickedEmojiIcon && 
+
+          <div className="shadow-lg mt-2">
+
+          <EmojiPicker 
+            onEmojiClick={fnEmojiClick}
+            autoFocusSearch={true}
+            // theme={Theme.AUTO}
+            // searchDisabled
+            // skinTonePickerLocation={SkinTonePickerLocation.PREVIEW}
+            // height={}
+            width="96%"
+            // emojiVersion="0.6"
+            lazyLoadEmojis={true}
+            previewConfig={{
+              defaultCaption: "Pick one!",
+              defaultEmoji: "1f92a" // 🤪
+            }}
+            // suggestedEmojisMode={SuggestionMode.RECENT}
+            // skinTonesDisabled
+            searchPlaceHolder="Filter"
+            // defaultSkinTone={SkinTones.MEDIUM}
+            emojiStyle={EmojiStyle.NATIVE}
+            // categories={[
+            //   {
+            //     name: "Fun and Games",
+            //     category: Categories.ACTIVITIES
+            //   },
+            //   {
+            //     name: "Smiles & Emotions",
+            //     category: Categories.SMILEYS_PEOPLE
+            //   },
+            //   {
+            //     name: "Flags",
+            //     category: Categories.FLAGS
+            //   },
+            //   {
+            //     name: "Yum Yum",
+            //     category: Categories.FOOD_DRINK
+            //   }
+            // ]}
+          />
+          </div>}
+          
+          
+          </div>
+
           <div className="flex items-center justify-between ">
             <div
               onClick={() => {
