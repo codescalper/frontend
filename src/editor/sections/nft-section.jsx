@@ -433,14 +433,14 @@ const WalletNFT = () => {
   }, [query]);
 
   const refreshNFTs = () => {
-    const id = toast.loading("Updating NFTs...");
+    const id = toast.loading("Hang on, While we fetch your NFTs, check out some cool stickers from the menu.");
     mutateAsync()
       .then((res) => {
         toast.update(id, {
           render: res?.data,
           type: "success",
           isLoading: false,
-          autoClose: 5000,
+          autoClose: 3000,
           closeButton: true,
         });
       })
@@ -449,7 +449,7 @@ const WalletNFT = () => {
           render: fnMessage(err),
           type: "error",
           isLoading: false,
-          autoClose: 5000,
+          autoClose: 3000,
           closeButton: true,
         });
       });

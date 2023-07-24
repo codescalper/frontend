@@ -7,6 +7,7 @@ import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import { Switch } from "@headlessui/react";
 import { Icon } from "@blueprintjs/core";
 import {
+  checkDispatcher,
   lensAuthenticate,
   shareOnSocials,
   twitterAuthenticate,
@@ -27,14 +28,14 @@ import { DateTimePicker } from "@atlaskit/datetime-picker";
 import { useNavigate } from "react-router-dom";
 
 // Emoji Implementation - 21Jul2023
-import EmojiPicker,{
+import EmojiPicker, {
   EmojiStyle,
   SkinTones,
   Theme,
   Categories,
   Emoji,
   SuggestionMode,
-  SkinTonePickerLocation
+  SkinTonePickerLocation,
 } from "emoji-picker-react";
 
 export default function RightDrawer({}) {
@@ -164,7 +165,6 @@ export default function RightDrawer({}) {
 }
 
 const Share = () => {
-  
   const { contextCanvasIdRef } = useContext(Context);
   const [stShareClicked, setStShareClicked] = useState(false);
   const [stCalendarClicked, setStCalendarClicked] = useState(false);
@@ -196,6 +196,18 @@ const Share = () => {
     setText("Sign the message to authenticate");
   };
 
+  // check for dispatcher
+  const checkDispatcherFn = async () => {
+    const res = await checkDispatcher();
+    if (res?.data === true) {
+      return true;
+    } else if (res?.data === false) {
+      return false;
+    } else if (res?.error) {
+      toast.error(res?.error);
+    }
+  };
+
   // authenticating signature on lens
   const lensAuth = async () => {
     setText("Authenticating...");
@@ -205,9 +217,17 @@ const Share = () => {
       toast.success("Successfully authenticated");
       setIsLoading(false);
       setText("");
-      setTimeout(() => {
-        sharePost("lens");
-      }, 6000);
+      // check the dispatcher
+      // if true => sharePost
+      // else => set the dispatcher
+      // then sharePost
+      if (checkDispatcherFn()) {
+        // sharePost("lens");
+        console.log("sharePost");
+      } else if (!checkDispatcherFn()) {
+        // set the dispatcher
+        console.log("set the dispatcher");
+      }
     } else if (res?.error) {
       toast.error(res?.error);
       setIsLoading(false);
@@ -245,7 +265,7 @@ const Share = () => {
         render: `Successfully shared on ${platform}`,
         type: "success",
         isLoading: false,
-        autoClose: 5000,
+        autoClose: 3000,
         closeButton: true,
       });
       setCanvasId("");
@@ -255,7 +275,7 @@ const Share = () => {
         render: res?.error,
         type: "error",
         isLoading: false,
-        autoClose: 5000,
+        autoClose: 3000,
         closeButton: true,
       });
     }
@@ -263,9 +283,13 @@ const Share = () => {
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
   const handleLensClick = () => {
-    if (isConnected && getLensAuth) {
-      sharePost("lens");
-    } else {
+    if (isConnected && getLensAuth && checkDispatcherFn()) {
+      // sharePost("lens");
+      console.log("sharePost");
+    } else if (isConnected && getLensAuth && !checkDispatcherFn()) {
+      // set the dispatcher
+      console.log("set the dispatcher");
+    } else if (isConnected && !getLensAuth) {
       generateSignature();
     }
   };
@@ -319,24 +343,21 @@ const Share = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log({ signature, address });
       lensAuth();
     }
   }, [isSuccess]);
-  
-  const [stSelectedEmoji, setStSelectedEmoji] = useState("")
-  const [stClickedEmojiIcon, setStClickedEmojiIcon] = useState(false)
-  
-  // Function to handle emoji click 
+
+  const [stSelectedEmoji, setStSelectedEmoji] = useState("");
+  const [stClickedEmojiIcon, setStClickedEmojiIcon] = useState(false);
+
+  // Function to handle emoji click
   // Callback sends (data, event) - Currently using data only
   function fnEmojiClick(emojiData) {
-  
     console.log("Selected Emoji");
     // console.log(emojiData);
     setStSelectedEmoji(emojiData?.unified);
-    setDescription(description + emojiData?.emoji) //Add emoji to description
+    setDescription(description + emojiData?.emoji); //Add emoji to description
   }
-
 
   return (
     <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
@@ -354,78 +375,90 @@ const Share = () => {
               value={description}
               className="border border-b-4 w-full h-40 mb-2"
             />
-       
-          <div className="flex flex-row justify-between">
 
-          {/* Open the emoji panel - 22Jul2023 */}
-          {/* Dynamic Emoji on the screen based on click */}
-          
-          <button title="Open emoji panel" className={`"m-2 p-2 rounded-md ${stClickedEmojiIcon && "border border-red-400" }"`} onClick={() => setStClickedEmojiIcon(!stClickedEmojiIcon)}>
-          {stSelectedEmoji ? (
-            <Emoji 
-            unified={stSelectedEmoji}
-            emojiStyle={EmojiStyle.NATIVE}
-            size={24}
-            />
-            ) : 
-            <Emoji unified={"1f92a"} emojiStyle={EmojiStyle.NATIVE} size={24}/>
-          }
-          </button>
-          
-          {/* X - button to close the emoji panel - 22Jul2023 */}
-          {stClickedEmojiIcon &&
-          <div className="m-4 mr-4">
-            <button className={""} onClick={() => setStClickedEmojiIcon(false)}> ❌ </button>
-          </div>  
-          } 
-          </div>
+            <div className="flex flex-row justify-between">
+              {/* Open the emoji panel - 22Jul2023 */}
+              {/* Dynamic Emoji on the screen based on click */}
 
-          {/* Emoji Implementation - 21Jul2023 */}
-          {stClickedEmojiIcon && 
+              <button
+                title="Open emoji panel"
+                className={`"m-2 p-2 rounded-md ${
+                  stClickedEmojiIcon && "border border-red-400"
+                }"`}
+                onClick={() => setStClickedEmojiIcon(!stClickedEmojiIcon)}
+              >
+                {stSelectedEmoji ? (
+                  <Emoji
+                    unified={stSelectedEmoji}
+                    emojiStyle={EmojiStyle.NATIVE}
+                    size={24}
+                  />
+                ) : (
+                  <Emoji
+                    unified={"1f92a"}
+                    emojiStyle={EmojiStyle.NATIVE}
+                    size={24}
+                  />
+                )}
+              </button>
 
-          <div className="shadow-lg mt-2">
+              {/* X - button to close the emoji panel - 22Jul2023 */}
+              {stClickedEmojiIcon && (
+                <div className="m-4 mr-4">
+                  <button
+                    className={""}
+                    onClick={() => setStClickedEmojiIcon(false)}
+                  >
+                    {" "}
+                    ❌{" "}
+                  </button>
+                </div>
+              )}
+            </div>
 
-          <EmojiPicker 
-            onEmojiClick={fnEmojiClick}
-            autoFocusSearch={true}
-            // theme={Theme.AUTO}
-            // searchDisabled
-            // skinTonePickerLocation={SkinTonePickerLocation.PREVIEW}
-            // height={}
-            width="96%"
-            // emojiVersion="0.6"
-            lazyLoadEmojis={true}
-            previewConfig={{
-              defaultCaption: "Pick one!",
-              defaultEmoji: "1f92a" // 🤪
-            }}
-            // suggestedEmojisMode={SuggestionMode.RECENT}
-            // skinTonesDisabled
-            searchPlaceHolder="Filter"
-            // defaultSkinTone={SkinTones.MEDIUM}
-            emojiStyle={EmojiStyle.NATIVE}
-            // categories={[
-            //   {
-            //     name: "Fun and Games",
-            //     category: Categories.ACTIVITIES
-            //   },
-            //   {
-            //     name: "Smiles & Emotions",
-            //     category: Categories.SMILEYS_PEOPLE
-            //   },
-            //   {
-            //     name: "Flags",
-            //     category: Categories.FLAGS
-            //   },
-            //   {
-            //     name: "Yum Yum",
-            //     category: Categories.FOOD_DRINK
-            //   }
-            // ]}
-          />
-          </div>}
-          
-          
+            {/* Emoji Implementation - 21Jul2023 */}
+            {stClickedEmojiIcon && (
+              <div className="shadow-lg mt-2">
+                <EmojiPicker
+                  onEmojiClick={fnEmojiClick}
+                  autoFocusSearch={true}
+                  // theme={Theme.AUTO}
+                  // searchDisabled
+                  // skinTonePickerLocation={SkinTonePickerLocation.PREVIEW}
+                  // height={}
+                  width="96%"
+                  // emojiVersion="0.6"
+                  lazyLoadEmojis={true}
+                  previewConfig={{
+                    defaultCaption: "Pick one!",
+                    defaultEmoji: "1f92a", // 🤪
+                  }}
+                  // suggestedEmojisMode={SuggestionMode.RECENT}
+                  // skinTonesDisabled
+                  searchPlaceHolder="Filter"
+                  // defaultSkinTone={SkinTones.MEDIUM}
+                  emojiStyle={EmojiStyle.NATIVE}
+                  // categories={[
+                  //   {
+                  //     name: "Fun and Games",
+                  //     category: Categories.ACTIVITIES
+                  //   },
+                  //   {
+                  //     name: "Smiles & Emotions",
+                  //     category: Categories.SMILEYS_PEOPLE
+                  //   },
+                  //   {
+                  //     name: "Flags",
+                  //     category: Categories.FLAGS
+                  //   },
+                  //   {
+                  //     name: "Yum Yum",
+                  //     category: Categories.FOOD_DRINK
+                  //   }
+                  // ]}
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between ">
