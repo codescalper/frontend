@@ -13,7 +13,7 @@ const API =
     ? BACKEND_PROD_URL
     : ENVIRONMENT === "development"
     ? BACKEND_DEV_URL
-    : ENVIRONMENT === "local"
+    : ENVIRONMENT === "localhost"
     ? BACKEND_LOCAL_URL
     : BACKEND_LOCAL_URL;
 
@@ -453,20 +453,18 @@ export const getCollectionNftById = async (id, contractAddress) => {
 // collection apis start
 
 // utils apis
-// export const checkDispatcher = async (profileId) => {
-//   if (!profileId) return console.log("missing profileId");
+export const checkDispatcher = async (profileId) => {
+  if (!profileId) return console.log("missing profileId");
 
-//   try {
-//     const result = await axios.get(`${API}/util/checkDispatcher`, {
-//       profileId,
-//     });
+  try {
+    const result = await api.get(`${API}/util/check-dispatcher?profileId=${profileId}`);
 
-//     console.log("result", result);
-//     return result.data;
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+    console.log("result", result);
+    return result.data;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
 
 // template apis start
 // no need auth token (jwt)
@@ -518,7 +516,9 @@ export const getBGAssetByQuery = async (query, page) => {
 // Remove Background API
 export const getRemovedBgS3Link = async (query) => {
   try {
-    const result = await api.post(`${API}/util/remove-bg?image=${query}`);
+    const result = await api.post(
+      `${API}/util/remove-bg?image=${encodeURIComponent(query)}`
+    );
 
     if (result?.status === 200) {
       return {
