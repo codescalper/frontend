@@ -183,7 +183,7 @@ const Editor = ({ store }) => {
   };
 
   const fnRemoveBg = async (varImageUrl) => {
-    const res = await getRemovedBgS3Link(encodeURI(varImageUrl));
+    const res = await getRemovedBgS3Link(varImageUrl);
     if (res?.data) {
       console.log(res.data);
       return res.data.s3link;
