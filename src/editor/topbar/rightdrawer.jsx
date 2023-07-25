@@ -14,7 +14,7 @@ import {
   twitterAuthenticateCallback,
 } from "../../services/backendApi";
 import { useAccount, useSignMessage } from "wagmi";
-import { lensChallenge } from "../../../lensApi";
+import { lensChallenge, lensHub, signSetDispatcherTypedData, splitSignature } from "../../../lensApi";
 import ContextProvider, { Context } from "../../context/ContextProvider";
 import { toast } from "react-toastify";
 import {
@@ -173,6 +173,10 @@ const Share = () => {
   const [stFormattedTime, setStFormattedTime] = useState("");
   const { address, isConnected } = useAccount();
   const [description, setDescription] = useState("");
+  const [dispatcher, setDispatcher] = useState({
+    message: false,
+    profileId: "",
+  });
   const { isLoading, setIsLoading, text, setText, queryParams } =
     useContext(Context);
   const {
@@ -199,12 +203,49 @@ const Share = () => {
   // check for dispatcher
   const checkDispatcherFn = async () => {
     const res = await checkDispatcher();
-    if (res?.data === true) {
-      return true;
-    } else if (res?.data === false) {
-      return false;
+    if (res?.message === true) {
+      setDispatcher({
+        message: true,
+        profileId: res?.profileId,
+      });
+    } else if (res?.message === false) {
+      setDispatcher({
+        message: false,
+        profileId: res?.profileId,
+      });
     } else if (res?.error) {
-      toast.error(res?.error);
+      return toast.error(res?.error);
+    }
+  };
+  console.log("dispatcher: ", dispatcher);
+
+  const setDispatcherFn = async () => {
+    try {
+      const setDispatcherRequest = {
+        profileId: dispatcher.profileId,
+      };
+
+      const signedResult = await signSetDispatcherTypedData(
+        setDispatcherRequest
+      );
+
+      console.log("signedResult: ", signedResult);
+
+      const typedData = signedResult.result.typedData;
+      const { v, r, s } = splitSignature(signedResult.signature);
+      const tx = await lensHub.setDispatcherWithSig({
+        profileId: typedData.value.profileId,
+        dispatcher: typedData.value.dispatcher,
+        sig: {
+          v,
+          r,
+          s,
+          deadline: typedData.value.deadline,
+        },
+      });
+      console.log("successfully set dispatcher: tx hash", tx.hash);
+    } catch (err) {
+      console.log("error setting dispatcher: ", err);
     }
   };
 
@@ -221,13 +262,6 @@ const Share = () => {
       // if true => sharePost
       // else => set the dispatcher
       // then sharePost
-      if (checkDispatcherFn()) {
-        // sharePost("lens");
-        console.log("sharePost");
-      } else if (!checkDispatcherFn()) {
-        // set the dispatcher
-        console.log("set the dispatcher");
-      }
     } else if (res?.error) {
       toast.error(res?.error);
       setIsLoading(false);
@@ -283,14 +317,14 @@ const Share = () => {
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
   const handleLensClick = () => {
-    if (isConnected && getLensAuth && checkDispatcherFn()) {
+    if (isConnected && !getLensAuth) {
+      generateSignature();
+      console.log("generateSignature");
+    } else if (isConnected && getLensAuth && !dispatcher.message) {
+      console.log("set the dispatcher");
+    } else if (isConnected && getLensAuth && dispatcher.message) {
       // sharePost("lens");
       console.log("sharePost");
-    } else if (isConnected && getLensAuth && !checkDispatcherFn()) {
-      // set the dispatcher
-      console.log("set the dispatcher");
-    } else if (isConnected && !getLensAuth) {
-      generateSignature();
     }
   };
 
@@ -346,6 +380,11 @@ const Share = () => {
       lensAuth();
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    checkDispatcherFn();
+    console.log("dispatcher: ", dispatcher);
+  }, []);
 
   const [stSelectedEmoji, setStSelectedEmoji] = useState("");
   const [stClickedEmojiIcon, setStClickedEmojiIcon] = useState(false);
@@ -529,7 +568,7 @@ const Share = () => {
       >
         <p className="text-lg">Share on socials</p>
         <div className="flex items-center justify-center space-x-12 py-5">
-          <div onClick={handleLensClick}>
+          <div onClick={setDispatcherFn}>
             {" "}
             <img
               className="w-10 cursor-pointer"

@@ -460,7 +460,8 @@ export const checkDispatcher = async () => {
     if (result?.status === 200) {
       if (result?.data?.status === "success") {
         return {
-          data: result?.data?.message,
+          message: result?.data?.message,
+          profileId: result?.data?.profileId,
         };
       }
     }

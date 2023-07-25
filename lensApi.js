@@ -19,8 +19,8 @@ export const lensHub = new ethers.Contract(
   getSigner()
 );
 
-// const API_URL = "https://api.lens.dev";
-const API_URL = ENVIRONMENT === "production" ? "https://api.lens.dev" : "https://api-mumbai.lens.dev";
+const API_URL = "https://api-mumbai.lens.dev";
+// const API_URL = ENVIRONMENT === "production" ? "https://api.lens.dev" : "https://api-mumbai.lens.dev";
 
 // export const client = new ApolloClient({
 //   uri: API_URL,
@@ -180,6 +180,35 @@ export const validateMetadata = gql`
   }
 `;
 
+export const createSetDispatcherTypedData = gql`
+  mutation CreateSetDispatcherTypedData($profileId: ProfileId!) {
+    createSetDispatcherTypedData(request: { profileId: $profileId }) {
+      id
+      expiresAt
+      typedData {
+        types {
+          SetDispatcherWithSig {
+            name
+            type
+          }
+        }
+        domain {
+          name
+          chainId
+          version
+          verifyingContract
+        }
+        value {
+          nonce
+          deadline
+          profileId
+          dispatcher
+        }
+      }
+    }
+  }
+`;
+
 /* helper functions */
 function getSigner() {
   if (typeof window.ethereum !== "undefined") {
@@ -236,4 +265,29 @@ export const lensChallenge = async (address) => {
   const variables = { address };
   let resp = await request(API_URL, challengeQuery, variables);
   return resp.challenge.text;
+};
+
+export const createSetDispatcherTypedDataMutation = async (request) => {
+  console.log("request: ", request);
+  const result = await client.mutate({
+    mutation: createSetDispatcherTypedData,
+    variables: {
+      profileId: request.profileId,
+    },
+  });
+
+  return result.data.createSetDispatcherTypedData;
+};
+
+export const signSetDispatcherTypedData = async (request) => {
+  console.log("request", request);
+  const result = await createSetDispatcherTypedDataMutation(request);
+  console.log("result", result);
+  const typedData = result.typedData;
+  const signature = await signedTypeData(
+    typedData.domain,
+    typedData.types,
+    typedData.value
+  );
+  return { result, signature };
 };
