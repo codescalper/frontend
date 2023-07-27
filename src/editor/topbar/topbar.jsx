@@ -6,7 +6,10 @@ import RightDrawer from "./rightdrawer";
 
 // New imports:
 import { ShareIcon } from "../editor-icon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+// New imports: - reactour
+import { useTour } from '@reactour/tour'
 
 export default observer(({ store }) => {
   
@@ -16,8 +19,14 @@ export default observer(({ store }) => {
   
   const { address, isConnecting, isConnected, isDisconnected } = useAccount();
 
+  // Reactour
+  const { setIsOpen } = useTour()
+  useEffect(()=>{
+    // setIsOpen(true);
+  },[])
+
   return (
-    <div className="bg-white h-[75px]  w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
+    <div id="first-step" className="bg-white h-[75px]  w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
       <div className="flex items-center justify-between">
         <a href="https://lenspost.xyz" target="_blank">
           <div className="flex items-center justify-between cursor-pointer">
@@ -30,11 +39,13 @@ export default observer(({ store }) => {
           </div>
         </a>
         {isDisconnected && (
+
           <ConnectButton   
            label="Connect Wallet"
            chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
            showBalance={{ smallScreen: false, largeScreen: true }}
-          />
+           />
+
         )}
         {isConnected && (
           <div className="flex items-center justify-center space-x-6">
@@ -44,7 +55,10 @@ export default observer(({ store }) => {
             {/* <div onClick={()=> setStIsDrawOpen(!stIsDrawOpen) }> 
               <ShareIcon/>
             </div> */}
-            <RightDrawer/>
+
+            <div id="fifth-step">
+              <RightDrawer/>
+            </div>
             {/* <Drawer classNames={{"inner": "mantine-Drawer-inner"}} position='right' onClose={()=> setStIsDrawOpen(!stIsDrawOpen)} opened={stIsDrawOpen}> 
                 <RightDrawerNew/>
             </Drawer> */}
