@@ -19,8 +19,8 @@ export const lensHub = new ethers.Contract(
   getSigner()
 );
 
-const API_URL = "https://api-mumbai.lens.dev";
-// const API_URL = ENVIRONMENT === "production" ? "https://api.lens.dev" : "https://api-mumbai.lens.dev";
+// const API_URL = "https://api-mumbai.lens.dev";
+const API_URL = ENVIRONMENT === "production" ? "https://api.lens.dev" : "https://api-mumbai.lens.dev";
 
 // export const client = new ApolloClient({
 //   uri: API_URL,
