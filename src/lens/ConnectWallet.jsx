@@ -1,7 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState, useContext, useEffect } from "react";
 import "@rainbow-me/rainbowkit/styles.css";
-import { client, challenge, authenticate, getDefaultProfile } from "../../api";
+import { client, challenge, authenticate, getDefaultProfile } from "../../lensApi";
 
 import { ethers } from "ethers";
 
