@@ -1,5 +1,5 @@
 // ---- ----
-// ---- Working yet - Under DEV - 20Jul2023 ----
+// ---- Working yet - Under DEV - Created: 20Jul2023  Updated:27Jul2023 ----
 // ---- This section is same as stable-diffusion-section.jsx ----
 // ---- ----
 
@@ -31,6 +31,7 @@ import { useTour } from '@reactour/tour'
 const RANDOM_QUERIES = [
 "A serene lakeside scene at sunset with vibrant orange and purple hues reflecting off the calm waters.",
 "An otherworldly forest with bioluminescent plants and colorful creatures lurking in the shadows.",
+"Sea turtles gracefully gliding through the water, and a hidden shipwreck waiting to be explored.",
 ];
 
 // This array is to display other queries on the frontend - 22Jul2023
@@ -38,7 +39,6 @@ const RANDOM_QUERIES2 = [
 // "A bustling marketplace in a medieval fantasy setting",
 "Merchants selling exotic goods and performers entertaining the crowd.",
 "An underwater paradise with coral reefs teeming with colorful fish",
-// "Sea turtles gracefully gliding through the water, and a hidden shipwreck waiting to be explored.",
 ]
 
 // This array is to display short words as prompts on the frontend - 22Jul2023
@@ -65,14 +65,14 @@ const CompSearch = observer(({ store }) => {
 	useEffect(() => {
 		requestTimeout.current = setTimeout(() => {
 			 setDelayedQuery(query);
-		}, 1000);
+		}, 2000);
 		return () => {
 			clearTimeout(requestTimeout.current);
 		};
 	}, [query]);
-
+ 
 	
-	const fnGenerateImages = () =>{
+	const fnGenerateImages = () => {
 		if (!delayedQuery) {
 			return;
 		}
@@ -83,14 +83,21 @@ const CompSearch = observer(({ store }) => {
 				const data = await axios.get(
 					`https://lexica.art/api/v1/search?q=${delayedQuery}`
 				);
-				// const data = await req.json();
-				console.log(data);
+				console.log(data.status);
 				setStStatusCode(data.status)
-				setData(data.data.images);
+				if(data.status === 200){
+					setStStatusCode(200)
+					setData(data.data.images);
+				}
+				else if(data.status === 429){
+					setStStatusCode(429)
+				}
 			} catch (e) {
 				console.log("There is an error");
 				console.log(e);
-				setError(e);
+				// setError(e);
+				setError(e.message);
+				setStStatusCode(429)
 			}
 			setIsLoading(false);
 		}
@@ -101,9 +108,6 @@ const CompSearch = observer(({ store }) => {
 			fnGenerateImages();
 	}, [delayedQuery]);
 
-	// useEffect(()=>{
-	// 	fnGenerateImages
-	// },[])
 	return (
 		<>	
 			<div className="">
@@ -123,8 +127,8 @@ const CompSearch = observer(({ store }) => {
 				value={query}
 				type="search"
 				/> 
-
-			<button className="bg-[#E1F26C] w-full px-4 p-1  mb-4 rounded-md hover:bg-[#e0f26cce]" onClick={fnGenerateImages}>Generate</button>
+{/* 
+			<button className="bg-[#E1F26C] w-full px-4 p-1  mb-4 rounded-md hover:bg-[#e0f26cce]" onClick={fnGenerateImages}>Generate</button> */}
 			</div>
 			<div className="flex flex-row overflow-x-scroll">
 
@@ -144,8 +148,8 @@ const CompSearch = observer(({ store }) => {
 				})
 			}
 			</div>
-		{
-			stStatusCode == "200" && 
+		
+		{	stStatusCode === 200 && 
 		
 			<ImagesGrid
 				shadowEnabled={false}
@@ -193,10 +197,12 @@ const CompSearch = observer(({ store }) => {
 			/>
 		}
 		{
-			stStatusCode == "429" && 
-			<div className="mt-4 p-2 text-orange-600">
-				Rate Limited for now, Please check back after 30s
+			stStatusCode === 429 &&
+			(
+			<div className="mt-4 p-2 text-orange-600 bg-orange-100 rounded-md">
+				You are Rate limited for now, Please check back after 60s
 			</div>
+			)
 		}
 			{/* {!data && "Start exploring"} */}
 		</>

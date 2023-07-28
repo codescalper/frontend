@@ -13,6 +13,7 @@ import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
   ConnectWalletMsgComponent,
+  CustomImageComponent,
   ErrorComponent,
   MessageComponent,
   SearchComponent,
@@ -21,33 +22,44 @@ import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner } from "@blueprintjs/core";
 import { Context } from "../../context/ContextProvider";
+import ModalComponent from "../../elements/ModalComponent";
 
 // Design card component start
 
 const DesignCard = observer(
   ({ design, preview, json, onDelete, onPublic, tab }) => {
     const { contextCanvasIdRef } = useContext(Context);
+    // console.log(json);
 
     return (
       <Card
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
         onDragEnd={() => {
-          store.loadJSON(json);
+          // store.addPage()
+          // store.loadJSON(json, true);
         }}
         onClick={() => {
-          store.loadJSON(json);
+          // Save current canvas
+          const oldJson = store.toJSON();
+
+          store.loadJSON(json, true);    
+          // store.loadJSON(oldJson)
+          // console.log(oldJson)
+          // store.loadJSON(oldJson)
+          // console.log(store.activePage)
+          // console.log(store.activePage.children)
         }}
       >
-        <div className="">
-          <LazyLoadImage
-            placeholderSrc={replaceImageURL(preview)}
-            effect="blur"
-            src={tab === "user" ? preview : replaceImageURL(preview)}
-            alt="Preview Image"
-          />
-        </div>
-      </Card>
+      <div className="">
+        <LazyLoadImage
+          placeholderSrc={replaceImageURL(preview)}
+          effect="blur"
+          src={tab === "user" ? preview : replaceImageURL(preview)}
+          alt="Preview Image"
+        />
+      </div>
+    </Card>
     );
   }
 );
@@ -56,6 +68,7 @@ const DesignCard = observer(
 
 export const TemplatesPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
+  const [stIsModalOpen, setStIsModalOpen] = useState(false)
 
   return (
     <div className="h-full flex flex-col">

@@ -1,3 +1,7 @@
+// --------
+// Onboarding steps - currently use id [#step-number]
+// --------
+
 export const onboardingSteps = [
     {
       selector: '#first-step',

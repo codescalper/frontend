@@ -12,9 +12,12 @@ const radius = 8
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <TourProvider steps={onboardingSteps}
+
+    {/* Reactour wrap around Start */}
+
+    {/* <TourProvider steps={onboardingSteps}
       padding={{ 
-      mask: 0, 
+        mask: 0, 
       popover: [-16, 16], 
       wrapper: 0 
     }}  
@@ -32,8 +35,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       controls: (base) => ({ ...base, marginTop: 24 }),
       close: (base) => ({ ...base, left: 'auto', right: 16, top: 24,}),
     }}
-    >
+    > */}
       <Wrapper />
-    </TourProvider>
+    {/* </TourProvider> */}
+
+    {/* Reactour wrap around End */}
+
   </React.StrictMode>
 );
