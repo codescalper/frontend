@@ -256,7 +256,7 @@ export const AIImageSection = {
 	name: "AIImage",
 	Tab: (props) => (
 		<SectionTab
-			name="AI Image DEV"
+			name="AI Image"
 			{...props}>
 			<AIIcon />
 		</SectionTab>
