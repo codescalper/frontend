@@ -87,7 +87,11 @@ export const CompIcons = observer(({ store }) => {
 
   return (
     <>
-      <SearchComponent query={query} setQuery={setQuery} placeholder="Search icons" />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder="Search icons"
+      />
       <ImagesGrid
         shadowEnabled={false}
         images={data?.map((data) => data.icons).flat()}
@@ -191,7 +195,11 @@ export const CompSupducks = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} placeholder="Saerch stickers" />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder="Saerch stickers"
+      />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -277,7 +285,11 @@ export const CompLens = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} placeholder="Saerch stickers" />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder="Saerch stickers"
+      />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -361,7 +373,11 @@ export const CompNouns = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} placeholder="Saerch stickers" />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder="Saerch stickers"
+      />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -445,7 +461,11 @@ export const CompAssorted = observer(({ store }) => {
     <ErrorComponent message={error} />
   ) : (
     <>
-      <SearchComponent query={query} setQuery={setQuery} placeholder="Saerch stickers" />
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder="Saerch stickers"
+      />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -475,6 +495,93 @@ export const CompAssorted = observer(({ store }) => {
 });
 
 // New Tab Assorted End - 11Jul2023
+
+// new tab for Fam Leady Society start
+export const CompFLS = observer(({ store }) => {
+  const { address, isDisconnected } = useAccount();
+  const [query, setQuery] = useState("");
+  const requestTimeout = useRef();
+  const [delayedQuery, setDelayedQuery] = useState(query);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["assets", delayedQuery || "fls"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) =>
+      getAssetByQuery(delayedQuery || "fls", pageParam),
+  });
+
+  useEffect(() => {
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query);
+    }, 500);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    if (isDisconnected || !address) return;
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
+
+  if (isDisconnected || !address) {
+    return <ConnectWalletMsgComponent />;
+  }
+
+  // Show Loading - 06Jul2023
+  if (isLoading) {
+    return (
+      <div className="flex flex-col">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return isError ? (
+    <ErrorComponent message={error} />
+  ) : (
+    <>
+      <SearchComponent
+        query={query}
+        setQuery={setQuery}
+        placeholder="Saerch stickers"
+      />
+      {data?.pages[0]?.data.length > 0 ? (
+        <div className="h-full overflow-y-auto">
+          <div className="grid grid-cols-2 overflow-y-auto">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item.image}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
+          </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+        </div>
+      ) : (
+        <MessageComponent message="No results found" />
+      )}
+    </>
+  );
+});
+// New Tab Fam Leady Society ens
 
 // ----------- New Tabs - Nouns, Lens, Assorted END - 11Jul2023 -----------
 
@@ -529,6 +636,16 @@ export const IconsPanel = ({ store }) => {
         <Button
           className="m-2 rounded-md"
           onClick={() => {
+            setCurrentTab("tabFLS");
+          }}
+          active={currentTab === "tabFLS"}
+          // icon=""
+        >
+          FLS
+        </Button>
+        <Button
+          className="m-2 rounded-md"
+          onClick={() => {
             setCurrentTab("tabAssorted");
           }}
           active={currentTab === "tabAssorted"}
@@ -543,6 +660,7 @@ export const IconsPanel = ({ store }) => {
       {currentTab === "tabSupducks" && <CompSupducks store={store} />}
       {currentTab === "tabLens" && <CompLens store={store} />}
       {currentTab === "tabNouns" && <CompNouns store={store} />}
+      {currentTab === "tabFLS" && <CompFLS store={store} />}
       {currentTab === "tabAssorted" && <CompAssorted store={store} />}
     </div>
   );
