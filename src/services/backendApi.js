@@ -265,8 +265,8 @@ export const refreshNFT = async () => {
 
 // gwt users' nft endpoint
 // need auth token (jwt)
-export const getNFTs = async (page) => {
-  const result = await api.get(`${API}/user/nft/owned`, {
+export const getNFTs = async (query, page) => {
+  const result = await api.get(`${API}/user/nft?query=${query}`, {
     params: {
       page: page,
     },
@@ -578,16 +578,16 @@ export const getRemovedBgS3Link = async (query) => {
   }
 };
 
-export const isHolderOfCollection = async (walletAddress, contractAddress) => {
-  const result = await axios.get(
-    `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API}/isHolderOfCollection`,
-    {
-      params: {
-        wallet: walletAddress,
-        contractAddress: contractAddress,
-      },
-    }
+// user is holder of collection apis start
+export const getIsUserWhitelisted = async (walletAddress) => {
+  const result = await api.get(
+    `${API}/util/whitelisted?wallet=${walletAddress}`
   );
 
-  return result?.data;
+  if (result?.data?.status === "success") {
+    return {
+      data: result?.data?.message,
+    };
+  }
 };
+// user is holder of collection apis end
