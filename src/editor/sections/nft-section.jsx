@@ -410,9 +410,9 @@ const WalletNFT = () => {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: ["userNFTs"],
+    queryKey: ["userNFTs", delayedQuery || "userNFTs"],
     getNextPageParam: (prevData) => prevData.nextPage,
-    queryFn: ({ pageParam = 1 }) => getNFTs(pageParam),
+    queryFn: ({ pageParam = 1 }) => getNFTs(delayedQuery || "", pageParam),
   });
 
   const { mutateAsync } = useMutation({
@@ -433,7 +433,9 @@ const WalletNFT = () => {
   }, [query]);
 
   const refreshNFTs = () => {
-    const id = toast.loading("Hang on, While we fetch your NFTs, check out some cool stickers from the menu.");
+    const id = toast.loading(
+      "Hang on, While we fetch your NFTs, check out some cool stickers from the menu."
+    );
     mutateAsync()
       .then((res) => {
         toast.update(id, {
@@ -477,9 +479,10 @@ const WalletNFT = () => {
     );
   }
 
-  return delayedQuery ? (
-    <RenderSearchedWalletNFT delayedQuery={delayedQuery} goBack={goBack} />
-  ) : (
+  return (
+    // delayedQuery ? (
+    //   <RenderSearchedWalletNFT delayedQuery={delayedQuery} goBack={goBack} />
+    // ) : (
     <>
       <SearchComponent
         onClick={refreshNFTs}

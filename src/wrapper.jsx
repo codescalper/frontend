@@ -51,7 +51,7 @@ export const Wrapper = () => {
                   element={<TwitterAuth />}
                 />
               </Routes>
-              {ENVIRONMENT === "development" && <ReactQueryDevtools />}
+              {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
             </BrowserRouter>
           </QueryClientProvider>
         </ContextProvider>
