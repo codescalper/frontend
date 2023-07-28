@@ -50,6 +50,8 @@ import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "../services/localStorage";
+import { AIImageSection } from "./sections/ai-image-section";
+import { useTour } from "@reactour/tour";
 
 unstable_setAnimationsEnabled(true);
 
@@ -65,7 +67,8 @@ const sections = [
   UploadSection,
   LayersSection,
   CustomSizesPanel,
-  StableDiffusionSection,
+  // StableDiffusionSection,
+  AIImageSection
 ];
 
 const useHeight = () => {
@@ -308,6 +311,11 @@ const Editor = ({ store }) => {
 
   // store the canvas and update it by traching the changes end
 
+  const { setIsOpen } = useTour()
+  useEffect(()=>{
+    setIsOpen(true);
+  },[])
+
   return (
     <>
       <div
@@ -322,9 +330,11 @@ const Editor = ({ store }) => {
         <div style={{ height: "calc(100% - 75px)" }}>
           <Topbar store={store} />
           <PolotnoContainer>
-            <SidePanelWrap>
-              <SidePanel store={store} sections={sections} />
-            </SidePanelWrap>
+            <div id="second-step">
+              <SidePanelWrap>
+                <SidePanel store={store} sections={sections} />
+              </SidePanelWrap>
+            </div>
             <WorkspaceWrap>
               <Toolbar store={store} />
               <Workspace store={store} />
@@ -333,6 +343,7 @@ const Editor = ({ store }) => {
               <div className="rf">
                 <ZoomButtons store={store} />
                 <Button
+                  id="fourth-step"
                   icon="clean"
                   onClick={fnCallToast}
                   title={isConnected ? "" : "Please connect your wallet"}
