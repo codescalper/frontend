@@ -11,19 +11,22 @@ import LENS_HUB_ABI from "./ABI.json";
 import request from "graphql-request";
 import { ENVIRONMENT } from "./src/services/env";
 
-export const LENS_HUB_CONTRACT = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d"; // mainnet
+// export const LENS_HUB_CONTRACT = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d"; // mainnet
 // export const LENS_HUB_CONTRACT = "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"; // mumbai
+export const LENS_HUB_CONTRACT =
+  ENVIRONMENT === "localhost"
+    ? "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"
+    : "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d";
 export const lensHub = new ethers.Contract(
   LENS_HUB_CONTRACT,
   LENS_HUB_ABI,
   getSigner()
 );
 
-// const API_URL = "https://api-mumbai.lens.dev";
 const API_URL =
-  ENVIRONMENT === "production"
-    ? "https://api.lens.dev"
-    : "https://api-mumbai.lens.dev";
+  ENVIRONMENT === "localhost"
+    ? "https://api-mumbai.lens.dev"
+    : "https://api.lens.dev";
 
 // export const client = new ApolloClient({
 //   uri: API_URL,
@@ -282,51 +285,51 @@ export const createSetDispatcherTypedDataMutation = async (request) => {
   return result.data.createSetDispatcherTypedData;
 };
 
-export const signSetDispatcherTypedData = async (request) => {
+export const signSetDispatcherTypedData = async (typedData) => {
   // TODO - call /auth/lens/set-dispatcher to get the typed data.
   // console.log("request", request);
   // const result = await createSetDispatcherTypedDataMutation(request);
   // console.log("result", result);
   // const typedData = result.typedData;
-  let typedData = {
-    types: {
-      SetDispatcherWithSig: [
-        {
-          name: "profileId",
-          type: "uint256",
-        },
-        {
-          name: "dispatcher",
-          type: "address",
-        },
-        {
-          name: "nonce",
-          type: "uint256",
-        },
-        {
-          name: "deadline",
-          type: "uint256",
-        },
-      ],
-    },
-    domain: {
-      name: "Lens Protocol Profiles",
-      chainId: 137,
-      version: "1",
-      verifyingContract: "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d",
-    },
-    value: {
-      nonce: 1,
-      deadline: 1690642081,
-      profileId: "0x01cf1a",
-      dispatcher: "0x761010EFc8826fFdcb8Ad005BD935698ed38DfE7",
-    },
-  };
+  // let typedData = {
+  //   types: {
+  //     SetDispatcherWithSig: [
+  //       {
+  //         name: "profileId",
+  //         type: "uint256",
+  //       },
+  //       {
+  //         name: "dispatcher",
+  //         type: "address",
+  //       },
+  //       {
+  //         name: "nonce",
+  //         type: "uint256",
+  //       },
+  //       {
+  //         name: "deadline",
+  //         type: "uint256",
+  //       },
+  //     ],
+  //   },
+  //   domain: {
+  //     name: "Lens Protocol Profiles",
+  //     chainId: 137,
+  //     version: "1",
+  //     verifyingContract: "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82",
+  //   },
+  //   value: {
+  //     nonce: 1,
+  //     deadline: 1690642081,
+  //     profileId: request.profileId,
+  //     dispatcher: "0x761010EFc8826fFdcb8Ad005BD935698ed38DfE7",
+  //   },
+  // };
   const signature = await signedTypeData(
-    typedData.domain,
-    typedData.types,
-    typedData.value
+    typedData?.domain,
+    typedData?.types,
+    typedData?.value
   );
   console.log("signature", signature);
-  return { typedData , signature };
+  return { typedData, signature };
 };
