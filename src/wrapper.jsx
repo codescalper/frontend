@@ -15,7 +15,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TwitterAuth from "./components/TwitterAuth";
 
 const { chains, provider } = configureChains(
-  [polygon],
+  [ENVIRONMENT === "localhost" ? polygonMumbai : polygon],
   [
     // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),
@@ -46,10 +46,7 @@ export const Wrapper = () => {
               <Routes>
                 <Route path="/" element={<App />} />
                 <Route path="/ifUserEligible" element={<LoginComp />} />
-                <Route
-                  path="/auth/twitter"
-                  element={<TwitterAuth />}
-                />
+                <Route path="/auth/twitter" element={<TwitterAuth />} />
               </Routes>
               {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
             </BrowserRouter>

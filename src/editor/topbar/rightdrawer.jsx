@@ -9,12 +9,18 @@ import { Icon } from "@blueprintjs/core";
 import {
   checkDispatcher,
   lensAuthenticate,
+  setDispatcher,
   shareOnSocials,
   twitterAuthenticate,
   twitterAuthenticateCallback,
 } from "../../services/backendApi";
 import { useAccount, useSignMessage } from "wagmi";
-import { lensChallenge, lensHub, signSetDispatcherTypedData, splitSignature } from "../../../lensApi";
+import {
+  lensChallenge,
+  lensHub,
+  signSetDispatcherTypedData,
+  splitSignature,
+} from "../../../lensApi";
 import ContextProvider, { Context } from "../../context/ContextProvider";
 import { toast } from "react-toastify";
 import {
@@ -37,6 +43,7 @@ import EmojiPicker, {
   SuggestionMode,
   SkinTonePickerLocation,
 } from "emoji-picker-react";
+import { fnMessage } from "../../services/fnMessage";
 
 export default function RightDrawer({}) {
   const [open, setOpen] = useState(false);
@@ -173,7 +180,7 @@ const Share = () => {
   const [stFormattedTime, setStFormattedTime] = useState("");
   const { address, isConnected } = useAccount();
   const [description, setDescription] = useState("");
-  const [dispatcher, setDispatcher] = useState({
+  const [dispatcherState, setDispatcherState] = useState({
     message: false,
     profileId: "",
   });
@@ -204,12 +211,12 @@ const Share = () => {
   const checkDispatcherFn = async () => {
     const res = await checkDispatcher();
     if (res?.message === true) {
-      setDispatcher({
+      setDispatcherState({
         message: true,
         profileId: res?.profileId,
       });
     } else if (res?.message === false) {
-      setDispatcher({
+      setDispatcherState({
         message: false,
         profileId: res?.profileId,
       });
@@ -217,19 +224,17 @@ const Share = () => {
       return toast.error(res?.error);
     }
   };
-  console.log("dispatcher: ", dispatcher);
 
   const setDispatcherFn = async () => {
     try {
-      const setDispatcherRequest = {
-        profileId: dispatcher.profileId,
-      };
+      setIsLoading(true);
+      setText("Sign the message to enable dispatcher");
+
+      const setDispatcherRequest = await setDispatcher();
 
       const signedResult = await signSetDispatcherTypedData(
         setDispatcherRequest
       );
-
-      console.log("signedResult: ", signedResult);
 
       const typedData = signedResult.typedData;
       const { v, r, s } = splitSignature(signedResult.signature);
@@ -243,9 +248,22 @@ const Share = () => {
           deadline: typedData.value.deadline,
         },
       });
-      console.log("successfully set dispatcher: tx hash", tx.hash);
+      // checkDispatcherFn();
+      // console.log("successfully set dispatcher: tx hash", tx.hash);
+      // if tx.hash? => sharePost()
+      if (tx.hash) {
+        setIsLoading(false);
+        setText("");
+        toast.success("Dispatcher enabled");
+        setTimeout(() => {
+          sharePost("lens");
+        }, 4000);
+      }
     } catch (err) {
       console.log("error setting dispatcher: ", err);
+      toast.error("Error setting dispatcher");
+      setIsLoading(false);
+      setText("");
     }
   };
 
@@ -258,10 +276,18 @@ const Share = () => {
       toast.success("Successfully authenticated");
       setIsLoading(false);
       setText("");
-      // check the dispatcher
-      // if true => sharePost
-      // else => set the dispatcher
-      // then sharePost
+      checkDispatcherFn();
+      setTimeout(() => {
+        // check the dispatcher
+        // if true => sharePost
+        if (dispatcherState.message === true) {
+          sharePost("lens");
+          // console.log("share on lens");
+        } else if (dispatcherState.message === false) {
+          // else => set the dispatcher
+          setDispatcherFn();
+        }
+      }, 4000);
     } else if (res?.error) {
       toast.error(res?.error);
       setIsLoading(false);
@@ -289,7 +315,7 @@ const Share = () => {
       description,
       platform
     );
-    if (res?.data) {
+    if (res?.data?.txHash) {
       const jsConfetti = new JSConfetti();
       jsConfetti.addConfetti({
         emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
@@ -302,7 +328,7 @@ const Share = () => {
         autoClose: 3000,
         closeButton: true,
       });
-      setCanvasId("");
+      // setCanvasId("");
       setDescription("");
     } else if (res?.error) {
       toast.update(id, {
@@ -319,12 +345,10 @@ const Share = () => {
   const handleLensClick = () => {
     if (isConnected && !getLensAuth) {
       generateSignature();
-      console.log("generateSignature");
-    } else if (isConnected && getLensAuth && !dispatcher.message) {
-      console.log("set the dispatcher");
-    } else if (isConnected && getLensAuth && dispatcher.message) {
-      // sharePost("lens");
-      console.log("sharePost");
+    } else if (isConnected && getLensAuth && !dispatcherState.message) {
+      setDispatcherFn();
+    } else if (isConnected && getLensAuth && dispatcherState.message) {
+      sharePost("lens");
     }
   };
 
@@ -383,7 +407,6 @@ const Share = () => {
 
   useEffect(() => {
     checkDispatcherFn();
-    console.log("dispatcher: ", dispatcher);
   }, []);
 
   const [stSelectedEmoji, setStSelectedEmoji] = useState("");
@@ -568,7 +591,7 @@ const Share = () => {
       >
         <p className="text-lg">Share on socials</p>
         <div className="flex items-center justify-center space-x-12 py-5">
-          <div onClick={setDispatcherFn}>
+          <div onClick={handleLensClick}>
             {" "}
             <img
               className="w-10 cursor-pointer"
