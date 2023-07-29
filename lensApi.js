@@ -23,6 +23,7 @@ export const lensHub = new ethers.Contract(
   getSigner()
 );
 
+// const API_URL = "https://api-mumbai.lens.dev";
 const API_URL =
   ENVIRONMENT === "localhost"
     ? "https://api-mumbai.lens.dev"

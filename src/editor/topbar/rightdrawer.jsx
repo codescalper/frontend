@@ -338,6 +338,14 @@ const Share = () => {
         autoClose: 3000,
         closeButton: true,
       });
+    } else {
+      toast.update(id, {
+        render: "Something went wrong",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+        closeButton: true,
+      });
     }
   };
 
