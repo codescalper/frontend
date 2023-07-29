@@ -231,7 +231,7 @@ const Share = () => {
 
       console.log("signedResult: ", signedResult);
 
-      const typedData = signedResult.result.typedData;
+      const typedData = signedResult.typedData;
       const { v, r, s } = splitSignature(signedResult.signature);
       const tx = await lensHub.setDispatcherWithSig({
         profileId: typedData.value.profileId,
