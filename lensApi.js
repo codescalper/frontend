@@ -20,7 +20,10 @@ export const lensHub = new ethers.Contract(
 );
 
 // const API_URL = "https://api-mumbai.lens.dev";
-const API_URL = ENVIRONMENT === "production" ? "https://api.lens.dev" : "https://api-mumbai.lens.dev";
+const API_URL =
+  ENVIRONMENT === "production"
+    ? "https://api.lens.dev"
+    : "https://api-mumbai.lens.dev";
 
 // export const client = new ApolloClient({
 //   uri: API_URL,
@@ -280,14 +283,50 @@ export const createSetDispatcherTypedDataMutation = async (request) => {
 };
 
 export const signSetDispatcherTypedData = async (request) => {
-  console.log("request", request);
-  const result = await createSetDispatcherTypedDataMutation(request);
-  console.log("result", result);
-  const typedData = result.typedData;
+  // TODO - call /auth/lens/set-dispatcher to get the typed data.
+  // console.log("request", request);
+  // const result = await createSetDispatcherTypedDataMutation(request);
+  // console.log("result", result);
+  // const typedData = result.typedData;
+  let typedData = {
+    types: {
+      SetDispatcherWithSig: [
+        {
+          name: "profileId",
+          type: "uint256",
+        },
+        {
+          name: "dispatcher",
+          type: "address",
+        },
+        {
+          name: "nonce",
+          type: "uint256",
+        },
+        {
+          name: "deadline",
+          type: "uint256",
+        },
+      ],
+    },
+    domain: {
+      name: "Lens Protocol Profiles",
+      chainId: 137,
+      version: "1",
+      verifyingContract: "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d",
+    },
+    value: {
+      nonce: 1,
+      deadline: 1690642081,
+      profileId: "0x01cf1a",
+      dispatcher: "0x761010EFc8826fFdcb8Ad005BD935698ed38DfE7",
+    },
+  };
   const signature = await signedTypeData(
     typedData.domain,
     typedData.types,
     typedData.value
   );
-  return { result, signature };
+  console.log("signature", signature);
+  return { typedData , signature };
 };
