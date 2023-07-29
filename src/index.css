@@ -15,7 +15,7 @@ img {
 
 /* css for designed scrollbar start here */
 ::-webkit-scrollbar {
-	width: 8px;
+	width: 5px;
 }
 
 /* Track */

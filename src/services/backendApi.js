@@ -11,9 +11,9 @@ import { getFromLocalStorage } from "./localStorage";
 const API =
   ENVIRONMENT === "production"
     ? BACKEND_PROD_URL
-    : ENVIRONMENT === "staging"
-    ? BACKEND_DEV_URL
     : ENVIRONMENT === "development"
+    ? BACKEND_DEV_URL
+    : ENVIRONMENT === "localhost"
     ? BACKEND_LOCAL_URL
     : BACKEND_LOCAL_URL;
 
@@ -159,8 +159,6 @@ export const twitterAuthenticate = async () => {
     // authenticated request
     const result = await api.get(`${API}/auth/twitter/authenticate`);
 
-    console.log("result", result);
-
     if (result?.status === 200) {
       return {
         data: result?.data,
@@ -207,9 +205,12 @@ export const twitterAuthenticate = async () => {
 export const twitterAuthenticateCallback = async (state, code) => {
   try {
     // authenticated request
-    const result = await api.get(
-      `${API}/auth/twitter/callback?oauth_token=${state}&oauth_verifier=${code}`
-    );
+    const result = await api.get(`${API}/auth/twitter/callback`, {
+      params: {
+        state: state,
+        code: code,
+      },
+    });
 
     console.log("result", result);
 
@@ -264,9 +265,18 @@ export const refreshNFT = async () => {
 
 // gwt users' nft endpoint
 // need auth token (jwt)
-export const getNFTs = async () => {
-  const result = await api.get(`${API}/user/nft/owned?limit=50&offset=0`);
-  return result?.data;
+export const getNFTs = async (query, page) => {
+  const result = await api.get(`${API}/user/nft?query=${query}`, {
+    params: {
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 
 // search users' nft by id endpoint
@@ -347,7 +357,7 @@ export const deleteCanvasById = async (id) => {
 
 // share canvas on lens endpoint
 // need auth token (jwt)
-export const shareOnLens = async (canvasId, name, content) => {
+export const shareOnSocials = async (canvasId, name, content, platform) => {
   try {
     const result = await api.post(`${API}/user/canvas/publish`, {
       canvasData: {
@@ -355,7 +365,7 @@ export const shareOnLens = async (canvasId, name, content) => {
         name: name,
         content: content,
       },
-      platform: "lens",
+      platform: platform,
       // titmeStamp: Date.now(),
     });
 
@@ -443,20 +453,44 @@ export const getCollectionNftById = async (id, contractAddress) => {
 // collection apis start
 
 // utils apis
-// export const checkDispatcher = async (profileId) => {
-//   if (!profileId) return console.log("missing profileId");
+export const checkDispatcher = async () => {
+  try {
+    const result = await api.get(`${API}/util/check-dispatcher`);
 
-//   try {
-//     const result = await axios.get(`${API}/util/checkDispatcher`, {
-//       profileId,
-//     });
-
-//     console.log("result", result);
-//     return result.data;
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// };
+    if (result?.status === 200) {
+      if (result?.data?.status === "success") {
+        return {
+          message: result?.data?.message,
+          profileId: result?.data?.profileId,
+        };
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 401) {
+      console.log({ 401: error?.response?.statusText });
+      return {
+        error: error?.response?.data?.message,
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
 
 // template apis start
 // no need auth token (jwt)
@@ -508,7 +542,9 @@ export const getBGAssetByQuery = async (query, page) => {
 // Remove Background API
 export const getRemovedBgS3Link = async (query) => {
   try {
-    const result = await api.post(`${API}/util/remove-bg?image=${query}`);
+    const result = await api.post(
+      `${API}/util/remove-bg?image=${encodeURIComponent(query)}`
+    );
 
     if (result?.status === 200) {
       return {
@@ -542,16 +578,16 @@ export const getRemovedBgS3Link = async (query) => {
   }
 };
 
-export const isHolderOfCollection = async (walletAddress, contractAddress) => {
-  const result = await axios.get(
-    `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_API}/isHolderOfCollection`,
-    {
-      params: {
-        wallet: walletAddress,
-        contractAddress: contractAddress,
-      },
-    }
+// user is holder of collection apis start
+export const getIsUserWhitelisted = async (walletAddress) => {
+  const result = await api.get(
+    `${API}/util/whitelisted?wallet=${walletAddress}`
   );
 
-  return result?.data;
+  if (result?.data?.status === "success") {
+    return {
+      data: result?.data?.message,
+    };
+  }
 };
+// user is holder of collection apis end

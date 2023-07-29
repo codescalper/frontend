@@ -43,6 +43,8 @@ export default function App() {
     removeFromLocalStorage("usertAuthTmestamp");
     removeFromLocalStorage("userAddress");
     removeFromLocalStorage("lensAuth");
+    removeFromLocalStorage("ifUserEligible");
+    removeFromLocalStorage("hasUserSeenTheApp");
   };
 
   // remove jwt from localstorage if it is expired (24hrs)
@@ -167,20 +169,16 @@ export default function App() {
 
   useEffect(() => {
     // Skip the effect on the initial render
-    if (initialRender) {
-      setInitialRender(false);
-      return;
-    }
+    // if (initialRender) {
+    //   setInitialRender(false);
+    //   return;
+    // }
 
     // Run the effect when isConnected and address change
     if (isConnected && address) {
       genarateSignature();
     }
   }, [isConnected, address, initialRender]);
-
-  // useEffect(() => {
-  //   saveToLocalStorage("hasUserSeenTheApp", true);
-  // }, []);
 
   return (
     <>
@@ -189,7 +187,7 @@ export default function App() {
       {isLoading && <LoadingComponent text={text} />}
       <ToastContainer
         position="top-center"
-        autoClose={5000}
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

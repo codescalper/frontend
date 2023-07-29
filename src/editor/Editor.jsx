@@ -29,6 +29,8 @@ import { useAccount } from "wagmi";
 import {
   createCanvas,
   getRemovedBgS3Link,
+  twitterAuthenticate,
+  twitterAuthenticateCallback,
   updateCanvas,
 } from "../services/backendApi";
 import { toast } from "react-toastify";
@@ -44,6 +46,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { wait } from "../utility/waitFn";
 import { fnMessage } from "../services/fnMessage";
 import _ from "lodash";
+import {
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from "../services/localStorage";
+import { AIImageSection } from "./sections/ai-image-section";
+import { useTour } from "@reactour/tour";
 
 unstable_setAnimationsEnabled(true);
 
@@ -59,7 +67,8 @@ const sections = [
   UploadSection,
   LayersSection,
   CustomSizesPanel,
-  StableDiffusionSection,
+  // StableDiffusionSection,
+  AIImageSection
 ];
 
 const useHeight = () => {
@@ -77,8 +86,9 @@ const Editor = ({ store }) => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
-  const { contextCanvasIdRef } = useContext(Context);
+  const { contextCanvasIdRef, setText, setIsLoading } = useContext(Context);
   const timeoutRef = useRef(null);
+  const getTwitterAuth = getFromLocalStorage("twitterAuth");
 
   const load = () => {
     let url = new URL(window.location.href);
@@ -176,7 +186,7 @@ const Editor = ({ store }) => {
   };
 
   const fnRemoveBg = async (varImageUrl) => {
-    const res = await getRemovedBgS3Link(encodeURI(varImageUrl));
+    const res = await getRemovedBgS3Link(varImageUrl);
     if (res?.data) {
       console.log(res.data);
       return res.data.s3link;
@@ -301,6 +311,11 @@ const Editor = ({ store }) => {
 
   // store the canvas and update it by traching the changes end
 
+  const { setIsOpen } = useTour()
+  useEffect(()=>{
+    setIsOpen(true);
+  },[])
+
   return (
     <>
       <div
@@ -315,9 +330,11 @@ const Editor = ({ store }) => {
         <div style={{ height: "calc(100% - 75px)" }}>
           <Topbar store={store} />
           <PolotnoContainer>
-            <SidePanelWrap>
-              <SidePanel store={store} sections={sections} />
-            </SidePanelWrap>
+            <div id="second-step">
+              <SidePanelWrap>
+                <SidePanel store={store} sections={sections} />
+              </SidePanelWrap>
+            </div>
             <WorkspaceWrap>
               <Toolbar store={store} />
               <Workspace store={store} />
@@ -326,6 +343,7 @@ const Editor = ({ store }) => {
               <div className="rf">
                 <ZoomButtons store={store} />
                 <Button
+                  id="fourth-step"
                   icon="clean"
                   onClick={fnCallToast}
                   title={isConnected ? "" : "Please connect your wallet"}

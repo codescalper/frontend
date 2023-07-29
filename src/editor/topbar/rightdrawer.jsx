@@ -7,13 +7,14 @@ import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import { Switch } from "@headlessui/react";
 import { Icon } from "@blueprintjs/core";
 import {
+  checkDispatcher,
   lensAuthenticate,
-  shareOnLens,
+  shareOnSocials,
   twitterAuthenticate,
   twitterAuthenticateCallback,
 } from "../../services/backendApi";
 import { useAccount, useSignMessage } from "wagmi";
-import { lensChallenge } from "../../../lensApi";
+import { lensChallenge, lensHub, signSetDispatcherTypedData, splitSignature } from "../../../lensApi";
 import ContextProvider, { Context } from "../../context/ContextProvider";
 import { toast } from "react-toastify";
 import {
@@ -24,6 +25,18 @@ import {
 // New Imports :
 // import { DatePicker, Space } from "antd"
 import { DateTimePicker } from "@atlaskit/datetime-picker";
+import { useNavigate } from "react-router-dom";
+
+// Emoji Implementation - 21Jul2023
+import EmojiPicker, {
+  EmojiStyle,
+  SkinTones,
+  Theme,
+  Categories,
+  Emoji,
+  SuggestionMode,
+  SkinTonePickerLocation,
+} from "emoji-picker-react";
 
 export default function RightDrawer({}) {
   const [open, setOpen] = useState(false);
@@ -160,7 +173,12 @@ const Share = () => {
   const [stFormattedTime, setStFormattedTime] = useState("");
   const { address, isConnected } = useAccount();
   const [description, setDescription] = useState("");
-  const { isLoading, setIsLoading, text, setText } = useContext(Context);
+  const [dispatcher, setDispatcher] = useState({
+    message: false,
+    profileId: "",
+  });
+  const { isLoading, setIsLoading, text, setText, queryParams } =
+    useContext(Context);
   const {
     data: signature,
     isError,
@@ -169,6 +187,8 @@ const Share = () => {
     signMessage,
   } = useSignMessage();
   const getLensAuth = getFromLocalStorage("lensAuth");
+  const getTwitterAuth = getFromLocalStorage("twitterAuth");
+  const navigate = useNavigate();
 
   // generating signature
   const generateSignature = async () => {
@@ -180,18 +200,68 @@ const Share = () => {
     setText("Sign the message to authenticate");
   };
 
+  // check for dispatcher
+  const checkDispatcherFn = async () => {
+    const res = await checkDispatcher();
+    if (res?.message === true) {
+      setDispatcher({
+        message: true,
+        profileId: res?.profileId,
+      });
+    } else if (res?.message === false) {
+      setDispatcher({
+        message: false,
+        profileId: res?.profileId,
+      });
+    } else if (res?.error) {
+      return toast.error(res?.error);
+    }
+  };
+  console.log("dispatcher: ", dispatcher);
+
+  const setDispatcherFn = async () => {
+    try {
+      const setDispatcherRequest = {
+        profileId: dispatcher.profileId,
+      };
+
+      const signedResult = await signSetDispatcherTypedData(
+        setDispatcherRequest
+      );
+
+      console.log("signedResult: ", signedResult);
+
+      const typedData = signedResult.result.typedData;
+      const { v, r, s } = splitSignature(signedResult.signature);
+      const tx = await lensHub.setDispatcherWithSig({
+        profileId: typedData.value.profileId,
+        dispatcher: typedData.value.dispatcher,
+        sig: {
+          v,
+          r,
+          s,
+          deadline: typedData.value.deadline,
+        },
+      });
+      console.log("successfully set dispatcher: tx hash", tx.hash);
+    } catch (err) {
+      console.log("error setting dispatcher: ", err);
+    }
+  };
+
   // authenticating signature on lens
   const lensAuth = async () => {
     setText("Authenticating...");
     const res = await lensAuthenticate(signature);
     if (res?.data) {
-      saveToLocalStorage("lensAuth", res?.data?.status);
+      saveToLocalStorage("lensAuth", true);
       toast.success("Successfully authenticated");
       setIsLoading(false);
       setText("");
-      setTimeout(() => {
-        sharePost();
-      }, 6000);
+      // check the dispatcher
+      // if true => sharePost
+      // else => set the dispatcher
+      // then sharePost
     } else if (res?.error) {
       toast.error(res?.error);
       setIsLoading(false);
@@ -200,7 +270,7 @@ const Share = () => {
   };
 
   // share post on lens
-  const sharePost = async () => {
+  const sharePost = async (platform) => {
     // check if canvasId is provided
     if (contextCanvasIdRef.current === null) {
       toast.error("Please select a design");
@@ -212,11 +282,12 @@ const Share = () => {
       return;
     }
 
-    const id = toast.loading("Sharing on Lens...");
-    const res = await shareOnLens(
+    const id = toast.loading(`Sharing on ${platform}...`);
+    const res = await shareOnSocials(
       contextCanvasIdRef.current,
       "post",
-      description
+      description,
+      platform
     );
     if (res?.data) {
       const jsConfetti = new JSConfetti();
@@ -225,10 +296,10 @@ const Share = () => {
         confettiNumber: 100,
       });
       toast.update(id, {
-        render: "Successfully shared on Lens",
+        render: `Successfully shared on ${platform}`,
         type: "success",
         isLoading: false,
-        autoClose: 5000,
+        autoClose: 3000,
         closeButton: true,
       });
       setCanvasId("");
@@ -238,18 +309,22 @@ const Share = () => {
         render: res?.error,
         type: "error",
         isLoading: false,
-        autoClose: 5000,
+        autoClose: 3000,
         closeButton: true,
       });
     }
   };
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
-  const handleClick = () => {
-    if (isConnected && getLensAuth) {
-      sharePost();
-    } else {
+  const handleLensClick = () => {
+    if (isConnected && !getLensAuth) {
       generateSignature();
+      console.log("generateSignature");
+    } else if (isConnected && getLensAuth && !dispatcher.message) {
+      console.log("set the dispatcher");
+    } else if (isConnected && getLensAuth && dispatcher.message) {
+      // sharePost("lens");
+      console.log("sharePost");
     }
   };
 
@@ -257,24 +332,18 @@ const Share = () => {
   const twitterAuth = async () => {
     const res = await twitterAuthenticate();
     if (res?.data) {
-      window.open(res?.data?.message, "_blank");
+      // console.log(res?.data?.message);
+      window.open(res?.data?.message, "_parent");
     } else if (res?.error) {
       toast.error(res?.error);
     }
   };
 
-  // http://localhost:5173/?state=&code=
-
-  const state = "m9VXpQAAAAABo2s1AAABiWXb3ro";
-  const code =
-    "98ti9QJDFXVfuGIMiCJKOgu5uvX9zshv";
-
-  const twitterAuthCallback = async () => {
-    const res = await twitterAuthenticateCallback(state, code);
-    if (res?.data) {
-      toast.success("Successfully authenticated");
-    } else if (res?.error) {
-      toast.error(res?.error);
+  const handleTwitterClick = () => {
+    if (isConnected && getTwitterAuth) {
+      sharePost("twitter");
+    } else {
+      twitterAuth();
     }
   };
 
@@ -312,6 +381,23 @@ const Share = () => {
     }
   }, [isSuccess]);
 
+  useEffect(() => {
+    checkDispatcherFn();
+    console.log("dispatcher: ", dispatcher);
+  }, []);
+
+  const [stSelectedEmoji, setStSelectedEmoji] = useState("");
+  const [stClickedEmojiIcon, setStClickedEmojiIcon] = useState(false);
+
+  // Function to handle emoji click
+  // Callback sends (data, event) - Currently using data only
+  function fnEmojiClick(emojiData) {
+    console.log("Selected Emoji");
+    // console.log(emojiData);
+    setStSelectedEmoji(emojiData?.unified);
+    setDescription(description + emojiData?.emoji); //Add emoji to description
+  }
+
   return (
     <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
       <div className="">
@@ -322,13 +408,98 @@ const Share = () => {
       <div className="relative mt-16 px-4 pt-2 pb-1 sm:px-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between"></div>
-          <div className="space-x-4">
+          <div className="space-x-2">
             <textarea
               onChange={(e) => setDescription(e.target.value)}
               value={description}
-              className="border border-b-8 w-full h-40"
+              className="border border-b-4 w-full h-40 mb-2"
             />
+
+            <div className="flex flex-row justify-between">
+              {/* Open the emoji panel - 22Jul2023 */}
+              {/* Dynamic Emoji on the screen based on click */}
+
+              <button
+                title="Open emoji panel"
+                className={`"m-2 p-2 rounded-md ${
+                  stClickedEmojiIcon && "border border-red-400"
+                }"`}
+                onClick={() => setStClickedEmojiIcon(!stClickedEmojiIcon)}
+              >
+                {stSelectedEmoji ? (
+                  <Emoji
+                    unified={stSelectedEmoji}
+                    emojiStyle={EmojiStyle.NATIVE}
+                    size={24}
+                  />
+                ) : (
+                  <Emoji
+                    unified={"1f92a"}
+                    emojiStyle={EmojiStyle.NATIVE}
+                    size={24}
+                  />
+                )}
+              </button>
+
+              {/* X - button to close the emoji panel - 22Jul2023 */}
+              {stClickedEmojiIcon && (
+                <div className="m-4 mr-4">
+                  <button
+                    className={""}
+                    onClick={() => setStClickedEmojiIcon(false)}
+                  >
+                    {" "}
+                    ❌{" "}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Emoji Implementation - 21Jul2023 */}
+            {stClickedEmojiIcon && (
+              <div className="shadow-lg mt-2">
+                <EmojiPicker
+                  onEmojiClick={fnEmojiClick}
+                  autoFocusSearch={true}
+                  // theme={Theme.AUTO}
+                  // searchDisabled
+                  // skinTonePickerLocation={SkinTonePickerLocation.PREVIEW}
+                  // height={}
+                  width="96%"
+                  // emojiVersion="0.6"
+                  lazyLoadEmojis={true}
+                  previewConfig={{
+                    defaultCaption: "Pick one!",
+                    defaultEmoji: "1f92a", // 🤪
+                  }}
+                  // suggestedEmojisMode={SuggestionMode.RECENT}
+                  // skinTonesDisabled
+                  searchPlaceHolder="Filter"
+                  // defaultSkinTone={SkinTones.MEDIUM}
+                  emojiStyle={EmojiStyle.NATIVE}
+                  // categories={[
+                  //   {
+                  //     name: "Fun and Games",
+                  //     category: Categories.ACTIVITIES
+                  //   },
+                  //   {
+                  //     name: "Smiles & Emotions",
+                  //     category: Categories.SMILEYS_PEOPLE
+                  //   },
+                  //   {
+                  //     name: "Flags",
+                  //     category: Categories.FLAGS
+                  //   },
+                  //   {
+                  //     name: "Yum Yum",
+                  //     category: Categories.FOOD_DRINK
+                  //   }
+                  // ]}
+                />
+              </div>
+            )}
           </div>
+
           <div className="flex items-center justify-between ">
             <div
               onClick={() => {
@@ -397,7 +568,7 @@ const Share = () => {
       >
         <p className="text-lg">Share on socials</p>
         <div className="flex items-center justify-center space-x-12 py-5">
-          <div onClick={handleClick}>
+          <div onClick={setDispatcherFn}>
             {" "}
             <img
               className="w-10 cursor-pointer"
@@ -405,7 +576,7 @@ const Share = () => {
               alt="Lens"
             />{" "}
           </div>
-          <div onClick={twitterAuthCallback}>
+          <div onClick={handleTwitterClick}>
             {" "}
             <img
               className="w-10 cursor-pointer"

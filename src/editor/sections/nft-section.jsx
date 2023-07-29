@@ -401,9 +401,18 @@ const WalletNFT = () => {
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
   const queryClient = useQueryClient();
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["userNFTs"],
-    queryFn: getNFTs,
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["userNFTs", delayedQuery || "userNFTs"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) => getNFTs(delayedQuery || "", pageParam),
   });
 
   const { mutateAsync } = useMutation({
@@ -424,14 +433,16 @@ const WalletNFT = () => {
   }, [query]);
 
   const refreshNFTs = () => {
-    const id = toast.loading("Updating NFTs...");
+    const id = toast.loading(
+      "Hang on, While we fetch your NFTs, check out some cool stickers from the menu."
+    );
     mutateAsync()
       .then((res) => {
         toast.update(id, {
           render: res?.data,
           type: "success",
           isLoading: false,
-          autoClose: 5000,
+          autoClose: 3000,
           closeButton: true,
         });
       })
@@ -440,11 +451,16 @@ const WalletNFT = () => {
           render: fnMessage(err),
           type: "error",
           isLoading: false,
-          autoClose: 5000,
+          autoClose: 3000,
           closeButton: true,
         });
       });
   };
+
+  useEffect(() => {
+    if (isDisconnected || !address) return;
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   const goBack = () => {
     setDelayedQuery("");
@@ -463,9 +479,10 @@ const WalletNFT = () => {
     );
   }
 
-  return delayedQuery ? (
-    <RenderSearchedWalletNFT delayedQuery={delayedQuery} goBack={goBack} />
-  ) : (
+  return (
+    // delayedQuery ? (
+    //   <RenderSearchedWalletNFT delayedQuery={delayedQuery} goBack={goBack} />
+    // ) : (
     <>
       <SearchComponent
         onClick={refreshNFTs}
@@ -476,20 +493,26 @@ const WalletNFT = () => {
 
       {isError ? (
         <ErrorComponent message={error} />
-      ) : data?.length ? (
+      ) : data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
-            {data.map((imgArray, index) => {
-              return (
-                <CustomImageComponent
-                  key={index}
-                  preview={imgArray?.imageURL}
-                  store={store}
-                  project={project}
-                />
-              );
-            })}
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    key={index}
+                    preview={item?.imageURL}
+                    store={store}
+                    project={project}
+                  />
+                );
+              })}
           </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
       ) : (
         <MessageComponent message="No Results" />
