@@ -492,6 +492,38 @@ export const checkDispatcher = async () => {
   }
 };
 
+export const setDispatcher = async () => {
+  try {
+    const result = await api.get(`${API}/auth/lens/set-dispatcher`);
+
+    return result?.data?.message;
+  } catch (error) {
+    if (error?.response?.status === 500) {
+      console.log({
+        InternalServerError:
+          error?.response?.data?.message || error?.response?.data?.name,
+      });
+      return {
+        error: "Internal Server Error, please try again later",
+      };
+    } else if (error?.response?.status === 401) {
+      console.log({ 401: error?.response?.statusText });
+      return {
+        error: error?.response?.data?.message,
+      };
+    } else if (error?.response?.status === 404) {
+      console.log({ 404: error?.response?.statusText });
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    } else {
+      return {
+        error: "Something went wrong, please try again later",
+      };
+    }
+  }
+};
+
 // template apis start
 // no need auth token (jwt)
 export const getAllTemplates = async () => {

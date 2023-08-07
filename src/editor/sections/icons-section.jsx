@@ -292,7 +292,7 @@ export const CompLens = observer(({ store }) => {
       <SearchComponent
         query={query}
         setQuery={setQuery}
-        placeholder="Saerch stickers"
+        placeholder="Search stickers"
       />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
@@ -380,7 +380,7 @@ export const CompNouns = observer(({ store }) => {
       <SearchComponent
         query={query}
         setQuery={setQuery}
-        placeholder="Saerch stickers"
+        placeholder="Search stickers"
       />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
@@ -468,7 +468,7 @@ export const CompAssorted = observer(({ store }) => {
       <SearchComponent
         query={query}
         setQuery={setQuery}
-        placeholder="Saerch stickers"
+        placeholder="Search stickers"
       />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
@@ -556,7 +556,7 @@ export const CompFLS = observer(({ store }) => {
       <SearchComponent
         query={query}
         setQuery={setQuery}
-        placeholder="Saerch stickers"
+        placeholder="Search stickers"
       />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
