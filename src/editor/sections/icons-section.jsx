@@ -25,6 +25,7 @@ import {
 } from "../../elements";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { fnLoadMore } from "../../services/fnLoadMore";
+import { StickerReacTour } from "../../elements/ReacTour";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -87,11 +88,14 @@ export const CompIcons = observer(({ store }) => {
 
   return (
     <>
+      <div className=""  id="stickerSearch">
+
       <SearchComponent
         query={query}
         setQuery={setQuery}
         placeholder="Search icons"
-      />
+        />
+      </div>
       <ImagesGrid
         shadowEnabled={false}
         images={data?.map((data) => data.icons).flat()}
@@ -198,7 +202,7 @@ export const CompSupducks = observer(({ store }) => {
       <SearchComponent
         query={query}
         setQuery={setQuery}
-        placeholder="Saerch stickers"
+        placeholder="Search stickers"
       />
       {data?.pages[0]?.data.length > 0 ? (
         <div className="h-full overflow-y-auto">
@@ -590,7 +594,7 @@ export const IconsPanel = ({ store }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="">
+      <div className="" id="stickerCategories">
         <Button
           className="m-2 rounded-md"
           onClick={() => {
@@ -654,6 +658,7 @@ export const IconsPanel = ({ store }) => {
           Assorted
         </Button>
       </div>
+      <StickerReacTour/>
       {/* New Tabs Lens, Nouns, Assorted END - 11Jul2023 */}
 
       {currentTab === "tabIcons" && <CompIcons store={store} />}

@@ -52,23 +52,25 @@ import {
 } from "../services/localStorage";
 import { AIImageSection } from "./sections/ai-image-section";
 import { useTour } from "@reactour/tour";
+import FcIdea from "@meronex/icons/fc/FcIdea";
+import { onboardingSteps, onboardingStepsWithShare } from "../utility/onboardingSteps";
 
 unstable_setAnimationsEnabled(true);
 
 const sections = [
-  TemplatesSection,
   NFTSection,
+  TemplatesSection,
   TextSection,
   MyDesignsSection,
   IconsSection,
-  BackgroundSection,
   BackgroundSection2,
+  AIImageSection,
+  BackgroundSection,
   ShapesSection,
   UploadSection,
   LayersSection,
   CustomSizesPanel,
   // StableDiffusionSection,
-  AIImageSection
 ];
 
 const useHeight = () => {
@@ -311,14 +313,28 @@ const Editor = ({ store }) => {
 
   // store the canvas and update it by traching the changes end
 
-  const { setIsOpen } = useTour()
-  useEffect(()=>{
-    setIsOpen(true);
-  },[])
+  const { setSteps, setIsOpen, setCurrentStep } = useTour()
+
+  // useEffect(()=>{
+  //   if(!getFromLocalStorage("hasTakenTour")){
+
+  //     if(isConnected){
+  //       setIsOpen(true)
+  //       setSteps(onboardingStepsWithShare)
+  //     }
+  //     else{
+  //       setIsOpen(true)
+  //       setSteps(onboardingSteps)
+  //     }
+  //   }
+
+  //   setTimeout(()=> saveToLocalStorage("hasTakenTour", true), 20000)
+  // },[])
 
   return (
     <>
       <div
+        className=""
         style={{
           width: "100vw",
           height: height + "px",
@@ -327,35 +343,59 @@ const Editor = ({ store }) => {
         }}
         onDrop={handleDrop}
       >
-        <div style={{ height: "calc(100% - 75px)" }}>
-          <Topbar store={store} />
+        <div style={{ height: "calc(100% - 75px)" }} >
+          <div className="">
+             <Topbar store={store} />
+          </div>
           <PolotnoContainer>
-            <div id="second-step">
+            <div id="second-step" className="ml-2 mr-2">
               <SidePanelWrap>
                 <SidePanel store={store} sections={sections} />
               </SidePanelWrap>
             </div>
             <WorkspaceWrap>
-              <Toolbar store={store} />
-              <Workspace store={store} />
+              <div className="mb-2 mr-2">
+                <Toolbar store={store} />
+              </div>
+              <Workspace store={store}/>
 
               {/* ai_integration Start */}
-              <div className="rf">
-                <ZoomButtons store={store} />
-                <Button
-                  id="fourth-step"
-                  icon="clean"
-                  onClick={fnCallToast}
-                  title={isConnected ? "" : "Please connect your wallet"}
-                  disabled={!isConnected}
-                  className="m-2 ml-6"
-                >
-                  Remove background
-                </Button>
+              {/* <div className="mt-2 mb-2 mr-2 border border-gray-300"> */}
+              <div className="mt-2 mb-2 mr-2 flex flex-row justify-between">
+         
+                  <ZoomButtons store={store} />
+              
+                <div className="">
+                  <Button
+                    id="fourth-step"
+                    icon="clean"
+                    onClick={fnCallToast}
+                    title={isConnected ? "" : "Please connect your wallet"}
+                    disabled={!isConnected}
+                    className="mt-2 mb-2 ml-3 p-1 "
+                  >
+                    Remove background
+                  </Button>
+                </div>
 
                 {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
+                
+                {/* Quick Tour on the main page */}
+                <div onClick={async   ()=> {
+                    setCurrentStep(0)
+                    if(isConnected){
+                      setIsOpen(true)
+                      setSteps(onboardingStepsWithShare)
+                    }
+                    else{
+                      setIsOpen(true)
+                      setSteps(onboardingSteps)
+                    }}
+                } 
+                  className="cursor-pointer flex flex-row justify-end align-middle">
+                  <FcIdea className="m-2" size="16"/> <div className="m-2 ml-0 text-sm text-orange-600"> Need an Intro? </div>
+                </div>
               </div>
-
               {/* ai_integration End */}
 
               {/* <ZoomButtons store={store} /> */}
