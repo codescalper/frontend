@@ -41,9 +41,12 @@ export const NFTReacTour = () => {
             }
           }
         > 
-        <div className="flex flex-row justify-end align-middle">
+        {/* <div className="flex flex-row justify-end align-middle">
           <SuJumpUp className="ml-2 mt-2" size="18"/> <div className="m-2 text-xs"> Quick tour </div>
-        </div>  
+        </div>   */}
+        <div className="flex flex-row justify-end align-middle">
+          <FcIdea className="m-2" size="16"/> <div className="m-2 ml-0 text-sm text-yellow-600"> Quick tour </div>
+        </div>
         </button>
  
     </>
@@ -72,8 +75,8 @@ export const MyDesignReacTour = () => {
             }
           >       
           <div className="flex flex-row justify-end align-middle">
-              <SuJumpUp className="ml-2 mt-1 mb-1" size="18"/> <div className="m-1 text-xs"> Quick tour </div>
-          </div> 
+            <FcIdea className="m-2" size="16"/> <div className="m-2 ml-0 text-sm text-yellow-600"> Quick tour </div>
+          </div>
         </button>
    
       </>
@@ -110,7 +113,7 @@ export const StickerReacTour = () => {
           }
         > 
         <div className="flex flex-row justify-end align-middle">
-            <FcIdea className="m-2" size="16"/> <div className="m-2 ml-0 text-sm text-orange-600"> Quick tour </div>
+            <FcIdea className="m-2" size="16"/> <div className="m-2 ml-0 text-sm text-yellow-600"> Quick tour </div>
         </div>
         </button>
  

@@ -3,7 +3,7 @@
 // Created : 27Jul2023
 // --------
 // import { useAccount } from "wagmi"
-import shareGif from "../../public/gifs/Sharegif.gif"
+import shareGif from "../assets/gifs/shareGif.gif"
 
 export const onboardingSteps = () =>{
 

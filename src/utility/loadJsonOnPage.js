@@ -22,14 +22,16 @@ export const fnLoadJsonOnPage = (store, json) =>{
       const deepCopyJson = JSON.parse(JSON.stringify(json));
       // not if size of new template is not the same as current store
       // we need to assign sizes of pages manually
+      console.log(oldJSON.width)
+      console.log(deepCopyJson.width)
       if (
         oldJSON.width !== deepCopyJson.width ||
         oldJSON.height !== deepCopyJson.height
       ) {
         // manually set width from store
         deepCopyJson.pages.forEach((page) => {
-          page.width = page.width || deepCopyJson.width;
-          page.height = page.height || deepCopyJson.height;
+          page.width = deepCopyJson.width || page.width;
+          page.height = deepCopyJson.height || page.height;
         });
       }
       // replace ids to make sure there is not duplicates

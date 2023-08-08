@@ -312,7 +312,8 @@ const Editor = ({ store }) => {
   }, []);
 
   // store the canvas and update it by traching the changes end
-
+  
+  // React tour Setup : 
   const { setSteps, setIsOpen, setCurrentStep } = useTour()
 
   // useEffect(()=>{
@@ -381,7 +382,8 @@ const Editor = ({ store }) => {
                 {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
                 
                 {/* Quick Tour on the main page */}
-                <div onClick={async   ()=> {
+                <div className="flex flex-row justify-end align-middle cursor-pointer"
+                    onClick={async   ()=> {
                     setCurrentStep(0)
                     if(isConnected){
                       setIsOpen(true)
@@ -391,10 +393,9 @@ const Editor = ({ store }) => {
                       setIsOpen(true)
                       setSteps(onboardingSteps)
                     }}
-                } 
-                  className="cursor-pointer flex flex-row justify-end align-middle">
-                  <FcIdea className="m-2" size="16"/> <div className="m-2 ml-0 text-sm text-orange-600"> Need an Intro? </div>
-                </div>
+                }>
+                <FcIdea className="m-2" size="16"/> <div className="m-2 ml-0 text-sm text-yellow-600"> Need an intro? </div>
+              </div>
               </div>
               {/* ai_integration End */}
 
