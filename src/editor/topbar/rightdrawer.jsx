@@ -517,7 +517,7 @@ const Monetization = () => {
       };
     }
 
-    if (enabled.splitRevenue) {
+    if (enabled.chargeForCollect) {
       canvasParams.collectModule.multirecipientFeeCollectModule = {
         ...canvasParams.collectModule.multirecipientFeeCollectModule,
         recipients: enabled.splitRevenueRecipients,
@@ -705,12 +705,6 @@ const Monetization = () => {
   };
 
   const removeRecipient = (index) => {
-    if (enabled.splitRevenueRecipients.length === 1) {
-      return setEnabled({
-        ...enabled,
-        splitRevenue: false,
-      });
-    }
     const updatedRecipients = enabled.splitRevenueRecipients.filter(
       (_, i) => i !== index
     );
@@ -936,26 +930,8 @@ const Monetization = () => {
                   <Switch.Label className="w-4/5">
                     Set multiple recipients for the collect fee
                   </Switch.Label>
-                  <Switch
-                    checked={enabled.splitRevenue}
-                    onChange={() =>
-                      setEnabled({
-                        ...enabled,
-                        splitRevenue: !enabled.splitRevenue,
-                      })
-                    }
-                    className={`${
-                      enabled.splitRevenue ? "bg-[#E1F26C]" : "bg-gray-200"
-                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
-                  >
-                    <span
-                      className={`${
-                        enabled.splitRevenue ? "translate-x-6" : "translate-x-1"
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                    />
-                  </Switch>
                 </div>
-                <div className={`${!enabled.splitRevenue && "hidden"}`}>
+                <div className={``}>
                   <p>Small fee to support our team!</p>
                   {enabled.splitRevenueRecipients.map((recipient, index) => {
                     return (
@@ -994,11 +970,13 @@ const Monetization = () => {
                                 );
                               }}
                             />
-                            <AiFillDelete
-                              className="h-6 w-6 cursor-pointer"
-                              color="red"
-                              onClick={() => removeRecipient(index)}
-                            />
+                            {index != 0 && (
+                              <AiFillDelete
+                                className="h-6 w-6 cursor-pointer"
+                                color="red"
+                                onClick={() => removeRecipient(index)}
+                              />
+                            )}
                           </div>
                         </div>
                       </>
