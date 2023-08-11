@@ -28,38 +28,26 @@ import ModalComponent from "../../elements/ModalComponent";
 
 const DesignCard = observer(
   ({ design, preview, json, onDelete, onPublic, tab }) => {
-    const { contextCanvasIdRef } = useContext(Context);
-    // console.log(json);
-
     return (
       <Card
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
         onDragEnd={() => {
-          // store.addPage()
-          // store.loadJSON(json, true);
+          store.loadJSON(json);
         }}
         onClick={() => {
-          // Save current canvas
-          const oldJson = store.toJSON();
-
-          store.loadJSON(json, true);    
-          // store.loadJSON(oldJson)
-          // console.log(oldJson)
-          // store.loadJSON(oldJson)
-          // console.log(store.activePage)
-          // console.log(store.activePage.children)
+          store.loadJSON(json);
         }}
       >
-      <div className="">
-        <LazyLoadImage
-          placeholderSrc={replaceImageURL(preview)}
-          effect="blur"
-          src={tab === "user" ? preview : replaceImageURL(preview)}
-          alt="Preview Image"
-        />
-      </div>
-    </Card>
+        <div className="">
+          <LazyLoadImage
+            placeholderSrc={replaceImageURL(preview)}
+            effect="blur"
+            src={tab === "user" ? preview : replaceImageURL(preview)}
+            alt="Preview Image"
+          />
+        </div>
+      </Card>
     );
   }
 );
@@ -68,7 +56,7 @@ const DesignCard = observer(
 
 export const TemplatesPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
-  const [stIsModalOpen, setStIsModalOpen] = useState(false)
+  const [stIsModalOpen, setStIsModalOpen] = useState(false);
 
   return (
     <div className="h-full flex flex-col">

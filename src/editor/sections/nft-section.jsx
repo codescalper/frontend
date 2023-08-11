@@ -502,7 +502,7 @@ const WalletNFT = () => {
                 return (
                   <CustomImageComponent
                     key={index}
-                    preview={item?.imageURL}
+                    preview={item?.imageURL ? item?.imageURL : item?.permaLink}
                     store={store}
                     project={project}
                   />
