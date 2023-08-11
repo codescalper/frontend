@@ -642,7 +642,7 @@ const Monetization = () => {
     if (isPercentageMoreThan100() === 91) {
       return setPercentageError("Split caannot exceed 90%");
     } else if (isPercentageMoreThan100() === 89) {
-      return setPercentageError("Split cannot be less than 10%");
+      return setPercentageError("Split cannot be less than 90%");
     }
 
     const canvasData = {
