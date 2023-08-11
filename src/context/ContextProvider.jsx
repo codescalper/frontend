@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 export const Context = createContext();
 
 const ContextProvider = ({ children }) => {
-  const {address} = useAccount();
+  const { address, isConnected } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
   const contextCanvasIdRef = useRef(null);
@@ -16,7 +16,7 @@ const ContextProvider = ({ children }) => {
   const [enabled, setEnabled] = useState({
     chargeForCollect: false,
     chargeForCollectPrice: "1",
-    chargeForCollectCurrency: "USDC",
+    chargeForCollectCurrency: "WMATIC",
 
     mirrorReferralReward: false,
     mirrorReferralRewardFee: 25.0,
@@ -24,7 +24,7 @@ const ContextProvider = ({ children }) => {
     splitRevenue: false,
     splitRevenueRecipients: [
       {
-        recipient: address,
+        recipient: isConnected ? address : "",
         split: 90.0,
       },
     ],

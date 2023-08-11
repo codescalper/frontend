@@ -53,7 +53,10 @@ import {
 import { AIImageSection } from "./sections/ai-image-section";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
-import { onboardingSteps, onboardingStepsWithShare } from "../utility/onboardingSteps";
+import {
+  onboardingSteps,
+  onboardingStepsWithShare,
+} from "../utility/onboardingSteps";
 
 unstable_setAnimationsEnabled(true);
 
@@ -88,7 +91,8 @@ const Editor = ({ store }) => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
-  const { contextCanvasIdRef, setText, setIsLoading } = useContext(Context);
+  const { contextCanvasIdRef, setText, setIsLoading, enabled, setEnabled } =
+    useContext(Context);
   const timeoutRef = useRef(null);
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
 
@@ -312,25 +316,22 @@ const Editor = ({ store }) => {
   }, []);
 
   // store the canvas and update it by traching the changes end
-  
-  // React tour Setup : 
-  const { setSteps, setIsOpen, setCurrentStep } = useTour()
 
-  // useEffect(()=>{
-  //   if(!getFromLocalStorage("hasTakenTour")){
+  // React tour Setup :
+  const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
-  //     if(isConnected){
-  //       setIsOpen(true)
-  //       setSteps(onboardingStepsWithShare)
-  //     }
-  //     else{
-  //       setIsOpen(true)
-  //       setSteps(onboardingSteps)
-  //     }
-  //   }
-
-  //   setTimeout(()=> saveToLocalStorage("hasTakenTour", true), 20000)
-  // },[])
+  useEffect(() => {
+    // if wallet is connected set the recipient address only in the first index for the first time
+    if (isConnected) {
+      setEnabled((prevEnabled) => ({
+        ...prevEnabled,
+        splitRevenueRecipients: [
+          { recipient: address, split: 90.0 },
+          ...prevEnabled.splitRevenueRecipients.slice(1),
+        ],
+      }));
+    }
+  }, [address]);
 
   return (
     <>
@@ -344,9 +345,9 @@ const Editor = ({ store }) => {
         }}
         onDrop={handleDrop}
       >
-        <div style={{ height: "calc(100% - 75px)" }} >
+        <div style={{ height: "calc(100% - 75px)" }}>
           <div className="">
-             <Topbar store={store} />
+            <Topbar store={store} />
           </div>
           <PolotnoContainer>
             <div id="second-step" className="ml-2 mr-2">
@@ -358,14 +359,13 @@ const Editor = ({ store }) => {
               <div className="mb-2 mr-2">
                 <Toolbar store={store} />
               </div>
-              <Workspace store={store}/>
+              <Workspace store={store} />
 
               {/* ai_integration Start */}
               {/* <div className="mt-2 mb-2 mr-2 border border-gray-300"> */}
               <div className="mt-2 mb-2 mr-2 flex flex-row justify-between">
-         
-                  <ZoomButtons store={store} />
-              
+                <ZoomButtons store={store} />
+
                 <div className="">
                   <Button
                     id="fourth-step"
@@ -380,22 +380,27 @@ const Editor = ({ store }) => {
                 </div>
 
                 {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
-                
+
                 {/* Quick Tour on the main page */}
-                <div className="flex flex-row justify-end align-middle cursor-pointer"
-                    onClick={async   ()=> {
-                    setCurrentStep(0)
-                    if(isConnected){
-                      setIsOpen(true)
-                      setSteps(onboardingStepsWithShare)
+                <div
+                  className="flex flex-row justify-end align-middle cursor-pointer"
+                  onClick={async () => {
+                    setCurrentStep(0);
+                    if (isConnected) {
+                      setIsOpen(true);
+                      setSteps(onboardingStepsWithShare);
+                    } else {
+                      setIsOpen(true);
+                      setSteps(onboardingSteps);
                     }
-                    else{
-                      setIsOpen(true)
-                      setSteps(onboardingSteps)
-                    }}
-                }>
-                <FcIdea className="m-2" size="16"/> <div className="m-2 ml-0 text-sm text-yellow-600"> Need an intro? </div>
-              </div>
+                  }}
+                >
+                  <FcIdea className="m-2" size="16" />{" "}
+                  <div className="m-2 ml-0 text-sm text-yellow-600">
+                    {" "}
+                    Need an intro?{" "}
+                  </div>
+                </div>
               </div>
               {/* ai_integration End */}
 

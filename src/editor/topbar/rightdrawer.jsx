@@ -399,7 +399,7 @@ const Monetization = () => {
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
   const navigate = useNavigate();
   const [duplicateAddressError, setDuplicateAddressError] = useState(false);
-  const [percentageError, setPercentageError] = useState(false);
+  const [percentageError, setPercentageError] = useState("");
 
   const tokenList = () => {
     if (ENVIRONMENT === "localhost" || ENVIRONMENT === "development") {
@@ -639,10 +639,11 @@ const Monetization = () => {
       return;
     }
 
-    // if (isPercentageMoreThan100()) {
-    //   setPercentageError(true);
-    //   return;
-    // }
+    if (isPercentageMoreThan100() === 91) {
+      return setPercentageError("Split caannot exceed 90%");
+    } else if (isPercentageMoreThan100() === 89) {
+      return setPercentageError("Split cannot be less than 10%");
+    }
 
     const canvasData = {
       id: contextCanvasIdRef.current,
@@ -744,10 +745,14 @@ const Monetization = () => {
     const arr = enabled.splitRevenueRecipients;
     let totalPercentage = 0;
     for (let i = 0; i < arr.length; i++) {
-      totalPercentage += arr[i].percentage;
+      totalPercentage += arr[i].split;
     }
 
-    return totalPercentage > 80 ? true : false;
+    if (totalPercentage > 90) {
+      return 91;
+    } else if (totalPercentage < 90) {
+      return 89;
+    }
   };
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
@@ -943,7 +948,7 @@ const Monetization = () => {
                           <input
                             className="border border-black w-full rounded-md p-2"
                             type="text"
-                            placeholder="er20 address or lens handle"
+                            placeholder="erc20 address"
                             value={recipient.recipient}
                             onChange={(e) => {
                               handleRecipientChange(
@@ -989,7 +994,7 @@ const Monetization = () => {
                   )}
                   {percentageError && (
                     <p className="text-red-500 font-semibold italic">
-                      Splits cannot exceed 100%
+                      {percentageError}
                     </p>
                   )}
                   {enabled.splitRevenueRecipients.length < 4 && (
