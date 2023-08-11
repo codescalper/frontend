@@ -70,25 +70,31 @@ export const AIIcon = () => {
 		/>
 	);
 };
+import SuDownloadAlt from '@meronex/icons/su/SuDownloadAlt';
 export const ExportIcon = () => {
 	return (
 		<div className="flex flex-col justify-center items-center cursor-pointer">
-			<img
+			{/* <img
 				src="/topbar-icons/export.svg"
 				alt="export"
-			/>
-			<p className="text-md ">Export</p>
+			/> */}
+			
+				<SuDownloadAlt size="24"/> 
+			<p className="mt-1 text-md">Export</p>
 		</div>
 	);
 };
+import SuForward from '@meronex/icons/su/SuForward';
 export const ShareIcon = () => {
 	return (
 		<div className="flex flex-col items-center justify-center cursor-pointer">
-			<img
+			{/* <img
 				src="/topbar-icons/share.svg"
 				alt="share"
-			/>
-			<p className="text-md mt-1">Share</p>
+			/> 
+			*/}
+			<SuForward size="26"/>
+			<p className="text-md">Share</p>
 		</div>
 	);
 };

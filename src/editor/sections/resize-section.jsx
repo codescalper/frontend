@@ -5,24 +5,11 @@ import { useEffect, useState } from "react";
 import { ResizeIcon } from "../editor-icon";
 
 const AVAILABLE_SIZES = [
-  {
-    width: 1080,
-    height: 1350,
-    imgUrl: "/other-icons/resize-sizes/resize1.svg",
-  },
-  // { width: 1200, height: 630, imgUrl: "/other-icons/resize-sizes/resize2.svg" },
-  // { width: 820, height: 312, imgUrl: "/other-icons/resize-sizes/resize3.svg" },
-  // { width: 1080, height: 1080, imgUrl: "/other-icons/resize-sizes/resize4.svg" },
-  {
-    width: 1080,
-    height: 1080,
-    imgUrl: "/other-icons/resize-sizes/resize5.svg",
-  },
-  {
-    width: 1080,
-    height: 1920,
-    imgUrl: "/other-icons/resize-sizes/resize6.svg",
-  },
+  // {
+  //   width: 1080,
+  //   height: 1350,
+  //   imgUrl: "/other-icons/resize-sizes/resize1.svg",
+  // },
   {
     width: 1080,
     height: 1080,
@@ -33,20 +20,60 @@ const AVAILABLE_SIZES = [
     height: 1920,
     imgUrl: "/other-icons/resize-sizes/resize8.svg",
   },
+  // {
+  //   width: 1080,
+  //   height: 1920,
+  //   imgUrl: "/other-icons/resize-sizes/resize9.svg",
+  // },
+  // {
+  //   width: 1080,
+  //   height: 1080,
+  //   imgUrl: "/other-icons/resize-sizes/resize10.svg",
+  // },
   {
-    width: 1080,
-    height: 1920,
-    imgUrl: "/other-icons/resize-sizes/resize9.svg",
+    width: 1500,
+    height: 500,
+    imgUrl: "/other-icons/resize-sizes/resize12.svg",
+  },
+  {
+    width: 1600,
+    height: 900,
+    imgUrl: "/other-icons/resize-sizes/resize13.svg",
+  },
+  {
+    width: 460,
+    height: 460,
+    imgUrl: "/other-icons/resize-sizes/resize14.svg",
+  },
+  {
+    width: 1280,
+    height: 720,
+    imgUrl: "/other-icons/resize-sizes/resize15.svg",
+  },
+  {
+    width: 720,
+    height: 360,
+    imgUrl: "/other-icons/resize-sizes/resize16.svg",
+  },
+  {
+    width: 1600,
+    height: 900,
+    imgUrl: "/other-icons/resize-sizes/resize17.svg",
+  },
+  {
+    width: 800,
+    height: 800,
+    imgUrl: "/other-icons/resize-sizes/resize19.svg",
   },
   {
     width: 1080,
     height: 1080,
-    imgUrl: "/other-icons/resize-sizes/resize10.svg",
+    imgUrl: "/other-icons/resize-sizes/resize6.svg",
   },
   {
-    width: 1500,
-    height: 500,
-    imgUrl: "/other-icons/resize-sizes/resize11.svg",
+    width: 1080,
+    height: 1920,
+    imgUrl: "/other-icons/resize-sizes/resize5.svg",
   },
 ];
 
@@ -78,7 +105,7 @@ export const CustomSizesPanel = {
               name="width"
               type="number"
               min="0"
-              value={width}
+              value={store.width}
               onChange={(e) => setWidth(Number(e.target.value))}
             />
             {/* <br /> */}
@@ -90,7 +117,7 @@ export const CustomSizesPanel = {
               name="height"
               type="number"
               min="0"
-              value={height}
+              value={store.height}
               onChange={(e) => setHeight(Number(e.target.value))}
             />
           </div>

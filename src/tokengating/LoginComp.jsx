@@ -11,6 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { fnMessage } from "../services/fnMessage";
 import { useNavigate } from "react-router-dom";
 import { allowlistAddresses } from "../utility/allowlistAddresses";
+import SuMailNew from '@meronex/icons/su/SuMailNew';
 
 const LoginComp = () => {
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
@@ -95,7 +96,7 @@ const LoginComp = () => {
       <div
         className="flex justify-center items-center h-screen"
         style={{
-          background: "linear-gradient(90deg, #E598D8 0%, #E1F16B 100%)",
+          background: "linear-gradient(90deg, #E598D8 10%, #E1F16B 100%)",
         }}
       >
         <div className="w-full md:w-3/4 lg:w-1/2">
@@ -104,7 +105,7 @@ const LoginComp = () => {
               <div className="m-2 text-lg">
                 {" "}
                 <img
-                  className="h-16"
+                  className="h-16 mb-8"
                   src="/LenspostAlphaLogoRemovedBG.png"
                   alt=""
                 />{" "}
@@ -113,13 +114,12 @@ const LoginComp = () => {
               {!address && (
                 <div className="m-2 text-lg">
                   {" "}
-                  Step into a world of endless possibilities! Connect your
-                  wallet now to unlock exclusive access and discover if you're
-                  eligible for an extraordinary app experience.{" "}
+                  Welcome to the future of creating DOPE content with your collectibles!
+                  <br/> Word on the street is we’re THE WEB<span className="text-xl">3 </span> Canva killer ;){" "}
                 </div>
               )}
 
-              {/* if wallet if connected but not eligible */}
+              {/* if wallet is connected but not eligible */}
               {!isUserEligible && address && (
                 <>
                   <h1
@@ -136,14 +136,31 @@ const LoginComp = () => {
                       Checking your eligibility...{" "}
                     </div>
                   ) : (
-                    <div className="m-2 text-lg">
-                      {" "}
-                      While you're not eligible this time, your support and
-                      participation mean the world to us. Stay tuned for more
-                      amazing opportunities and thank you for being part of our
-                      community.{" "}
-                    </div>
-                  )}
+                    <div className="flex flex-col text-center align-middle justify-center m-2 text-lg">
+                      <div >
+                          {/* Opps! */}
+                          Looks like you’re not eligible at this time!
+                          <br/> Sign up for the waitlist and we’ll hook you up shortly.
+                      </div>
+
+                      {/* Zootools Form Start */}
+                        <div className="inline-table m-4 flex-col text-center align-middle justify-center">
+                          <a target="_blank" href="https://form.zootools.co/go/VtPPU3VRY6t5cvhtLK3H" data-waitlist-id="VtPPU3VRY6t5cvhtLK3H" style={{"all" : "unset"}} >
+                            <div className="inline w-fit text-gray-50 rounded-md px-4 py-2 bg-[#2c346b]
+                            hover:bg-[#2c346b] 
+                            hover:shadow-xl      
+                            hover:cursor-pointer "> 
+                            {/* Very Important to add inline/ inline-table */}
+                              Join the Waitlist
+                            </div>
+                          </a>
+                        
+                        </div>
+                        {/* Zootools Form End */}
+                      </div>
+                          
+         
+                )}
                 </>
               )}
 
@@ -156,7 +173,7 @@ const LoginComp = () => {
                       letterSpacing: "0.1em",
                     }}
                   >
-                    {!isLoading && "Congratulations! 🥳"}
+                    {!isLoading && "Congratulations! You’re in!  🥳"}
                   </h1>
                   {isLoading ? (
                     <div className="m-2 text-lg italic">
@@ -167,9 +184,9 @@ const LoginComp = () => {
                     <>
                       <div className="m-2 text-lg">
                         {" "}
-                        You've just unlocked a world of extraordinary
-                        possibilities. Get ready to embark on an exciting
-                        journey like no other!{" "}
+                        {/* Congratulations! You’re in!  */}
+                        <br/> Come and Remix your NFTs, Share and monetize your creations to lens and explore 1000s of creative assets!
+                        {" "}
                       </div>
                     </>
                   )}
@@ -194,7 +211,7 @@ const LoginComp = () => {
                 <div className="mb-2 p-2 flex flex-row justify-center">
                   <button
                     onClick={() => navigate("/")}
-                    className="bg-blue-500 py-3 px-5 rounded-lg text-white"
+                    className="bg-blue-500 py-3 px-5 rounded-md text-white hover:shadow-xl"
                   >
                     Launch App
                   </button>

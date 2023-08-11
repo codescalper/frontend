@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { onboardingSteps } from "./utility/onboardingSteps";
 import { TourProvider } from "@reactour/tour";
+import { saveToLocalStorage } from "./services/localStorage";
 
 const radius = 8
 
@@ -15,9 +16,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
     {/* Reactour wrap around Start */}
 
-    {/* <TourProvider steps={onboardingSteps}
+    <TourProvider steps={onboardingSteps}
       padding={{ 
-        mask: 0, 
+      mask: 0, 
       popover: [-16, 16], 
       wrapper: 0 
     }}  
@@ -27,7 +28,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         '--reactour-accent': '#2c346b',
         borderRadius: radius,
         // top: 32,
-        marginTop: 8
+        marginTop: 24,
       }),
       maskArea: (base) => ({ ...base, rx: radius }),
       maskWrapper: (base) => ({ ...base, color: '' }),
@@ -35,11 +36,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       controls: (base) => ({ ...base, marginTop: 24 }),
       close: (base) => ({ ...base, left: 'auto', right: 16, top: 24,}),
     }}
-    > */}
+    >
       <Wrapper />
-    {/* </TourProvider> */}
+    </TourProvider>
 
     {/* Reactour wrap around End */}
 
+  {/* </React.StrictMode> */}
   </React.StrictMode>
 );

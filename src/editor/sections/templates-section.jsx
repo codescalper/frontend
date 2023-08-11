@@ -22,7 +22,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner } from "@blueprintjs/core";
 import { Context } from "../../context/ContextProvider";
-import ModalComponent from "../../elements/ModalComponent";
+import { CompModal } from "../../elements/ModalComponent";
+import { fnLoadJsonOnPage } from "../../utility/loadJsonOnPage";
+
+
 
 // Design card component start
 
@@ -30,26 +33,27 @@ const DesignCard = observer(
   ({ design, preview, json, onDelete, onPublic, tab }) => {
     const { contextCanvasIdRef } = useContext(Context);
     // console.log(json);
+    
+    // To check is the Modal is open or not
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
       <Card
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
-        onDragEnd={() => {
-          // store.addPage()
-          // store.loadJSON(json, true);
-        }}
-        onClick={() => {
-          // Save current canvas
-          const oldJson = store.toJSON();
+        // onDragEnd={() => {
 
-          store.loadJSON(json, true);    
-          // store.loadJSON(oldJson)
-          // console.log(oldJson)
-          // store.loadJSON(oldJson)
-          // console.log(store.activePage)
-          // console.log(store.activePage.children)
-        }}
+        // }}
+        onClick={ async () => {
+          // Check if there are any elements on the page - to open the Modal or not
+          if(store.activePage.children.length > 1){ 
+            setIsOpen(!isOpen)
+          } 
+          else{
+            fnLoadJsonOnPage(store, json);
+          }
+        }
+        }
       >
       <div className="">
         <LazyLoadImage
@@ -59,9 +63,19 @@ const DesignCard = observer(
           alt="Preview Image"
         />
       </div>
+
+      {isOpen &&
+       <CompModal 
+          store={store} json={json}
+          ModalTitle={"Are you sure to replace the canvas with this template?"}
+          ModalMessage={"This will remove all the content from your canvas"} 
+          onClickFunction = {()=> fnLoadJsonOnPage(store, json)}
+       />
+      }
+
     </Card>
     );
-  }
+  } 
 );
 
 // Design card component end
@@ -88,7 +102,8 @@ export const TemplatesPanel = observer(({ store }) => {
           } ${tab === "user" && "text-white"}`}
           onClick={() => setTab("user")}
         >
-          User Templates
+          {/* User Templates */}
+          Community Pool
         </button>
       </div>
       {tab === "lenspost" && <LenspostTemplates store={store} />}
@@ -157,6 +172,7 @@ const LenspostTemplates = ({ store }) => {
 };
 
 const UserTemplates = ({ store }) => {
+  const [stOpenedModal, setStOpenedModal] = useState(true)
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const { data, isLoading, isError, error, isSuccess } = useQuery({
