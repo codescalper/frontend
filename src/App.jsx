@@ -11,6 +11,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { Context } from "./context/ContextProvider";
 import { CheckInternetConnection, LoadingComponent } from "./elements";
 import { useNavigate } from "react-router-dom";
+import { useTour } from "@reactour/tour";
+import { onboardingSteps, onboardingStepsWithShare } from "./utility/onboardingSteps";
 
 export default function App() {
   const [initialRender, setInitialRender] = useState(true);
@@ -179,6 +181,27 @@ export default function App() {
       genarateSignature();
     }
   }, [isConnected, address, initialRender]);
+
+  const { setSteps, setIsOpen, setCurrentStep } = useTour()
+
+
+  useEffect(()=>{
+    if(isUserEligible){
+      if(!getFromLocalStorage("hasTakenTour")){
+
+      if(isConnected){
+        setIsOpen(true)
+        setSteps(onboardingStepsWithShare)
+      }
+      else{
+        setIsOpen(true)
+        setSteps(onboardingSteps)
+      }
+      setTimeout(()=> saveToLocalStorage("hasTakenTour", true), 20000)
+     }
+    }
+  },[])
+
 
   return (
     <>

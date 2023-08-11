@@ -127,12 +127,11 @@ const CompSearch = observer(({ store }) => {
 				value={query}
 				type="search"
 				/> 
-{/* 
-			<button className="bg-[#E1F26C] w-full px-4 p-1  mb-4 rounded-md hover:bg-[#e0f26cce]" onClick={fnGenerateImages}>Generate</button> */}
+			{/* 
+			<button className="bg-[#E1F26C] w-full px-4 p-1  mb-4 rounded-md hover:bg-[#e0f26cce]" onClick={fnGenerateImages}>Generate</button>
+			*/}
 			</div>
 			<div className="flex flex-row overflow-x-scroll">
-
-
 			{RANDOM_QUERIES3.map((val, key)=>{
 				return(
 					<div onClick={ () => setQuery(val)} className="m-1 mb-2 px-2 py-1 text-xs rounded-md cursor-pointer bg-slate-200 hover:bg-slate-100">{val}</div>
@@ -210,6 +209,61 @@ const CompSearch = observer(({ store }) => {
 });
 
 
+import FormData from "form-data";
+
+const CompDesignify = observer(({ store }) => {
+
+		const callApi = async () => {
+			console.log("Designify API Start")
+		  const form = new FormData();
+		  // Assuming you have access to the image file through a file input element.
+		  const fileInput = document.getElementById("fileInput");
+		  form.append("image_file", fileInput.files[0]);
+	
+		  try {
+			const response = await axios({
+			  method: "post",
+			  url: "https://api.designify.com/v1.0/designify/:designId",
+			  data: form,
+			  responseType: "arraybuffer",
+			  headers: {
+				"Content-Type": "multipart/form-data",
+				// "X-Api-Key": "9822b7f73ff3bea87eee20370ac3982e",
+				"X-Api-Key": "2f9772c386495a636efc72709d1a312f",
+			  },
+			});
+	
+			if (response.status !== 200) {
+			  console.error("Error:", response.status, response.statusText);
+			} else {
+			  // Assuming you want to display the image or do something else with it.
+			  // For example, displaying it in an <img> tag:
+			  console.log(response)
+			  const blob = new Blob([response.data], { type: "image/png" });
+			  const imageUrl = URL.createObjectURL(blob);
+			  const imageElement = document.getElementById("imageElement");
+			  imageElement.src = imageUrl;
+			}
+		  } catch (error) {
+			console.error("Error:", error);
+		  }
+		};
+	
+	
+	
+	  return (
+		<div>
+		  {/* Input element for selecting the image file */}
+		  <input type="file" id="fileInput" />
+		  {/* Image element to display the retrieved image */}
+		  <img id="imageElement" src="" alt="Design" />
+		  <button onClick={callApi}>Generate</button>
+		</div>
+	  );
+});
+
+
+
 const AIImagePanel = observer(({ store }) => {
 	const [currentTab, setCurrentTab] = useState("tabPrompt");
 	
@@ -230,10 +284,10 @@ const AIImagePanel = observer(({ store }) => {
 					id="tabPrompt"
 					title="Prompt"
 				/>
-				{/* <Tab
-					id="textToImage"
-					title="Text to Image"
-				/> */}
+				<Tab
+					id="tabDesignify"
+					title="Designify"
+				/>
 			</Tabs>
 
 			<div
@@ -244,6 +298,7 @@ const AIImagePanel = observer(({ store }) => {
 					paddingTop: "20px",
 				}}>
                 {currentTab === "tabPrompt" && <CompSearch store={store} />}
+                {currentTab === "tabDesignify" && <CompDesignify store={store} />}
 
 			</div>
 		</div>

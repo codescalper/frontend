@@ -33,33 +33,38 @@ import {
 import { fnLoadMore } from "../../services/fnLoadMore";
 import { fnMessage } from "../../services/fnMessage";
 import { replaceImageURL } from "../../services/replaceUrl";
+import { NFTReacTour } from "../../elements/ReacTour";
 
 const NFTPanel = observer(({ store }) => {
-  const [tab, setTab] = useState("lenspost");
+  const [tab, setTab] = useState("wallet");
   const { isConnected } = useAccount();
   return (
     <div className="h-full flex flex-col">
       <h1 className="text-lg">NFT</h1>
       <div className="flex items-center justify-center space-x-2 my-4">
         <button
-          className={`w-1/2 border px-2 py-1 border-black rounded-md ${
-            tab === "lenspost" && "bg-[#1B1A1D]"
-          } ${tab === "lenspost" && "text-white"}`}
-          onClick={() => setTab("lenspost")}
-        >
-          Lenspost NFT Library
-        </button>
-        <button
           className={`w-1/2 border border-black px-2 py-1 rounded-md ${
             tab === "wallet" && "bg-[#1B1A1D]"
           } ${tab === "wallet" && "text-white"}`}
           onClick={() => setTab("wallet")}
+          id="walletNFTS"
         >
           My Wallet NFTs
         </button>
+
+        <button
+          className={`w-1/2 border px-2 py-1 border-black rounded-md ${
+            tab === "lenspost" && "bg-[#1B1A1D]"
+          } ${tab === "lenspost" && "text-white"}`}
+          onClick={() => setTab("lenspost")}
+          id="cc0collections"
+        >
+          CC<span className="text-base">0</span> Collections 
+        </button>
+
       </div>
-      {tab === "lenspost" && <LenspostNFT />}
       {tab === "wallet" && <WalletNFT />}
+      {tab === "lenspost" && <LenspostNFT />}
     </div>
   );
 });
@@ -490,7 +495,7 @@ const WalletNFT = () => {
         setQuery={setQuery}
         placeholder="Search NFTs by id"
       />
-
+      <NFTReacTour/>
       {isError ? (
         <ErrorComponent message={error} />
       ) : data?.pages[0]?.data.length > 0 ? (

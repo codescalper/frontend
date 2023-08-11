@@ -38,6 +38,8 @@ import {
 } from "../../elements";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fnMessage } from "../../services/fnMessage";
+import { CompModal } from "../../elements/ModalComponent";
+import { MyDesignReacTour } from "../../elements/ReacTour.jsx"
 
 // Design card component start - 23Jun2023
 
@@ -105,8 +107,9 @@ const DesignCard = observer(
                   onClick={() => {
                     // implement share function here
                   }}
-                /> */}
+                /> */}               
                 <MenuItem
+                 
                   icon="globe"
                   text={isPublic(design.id) ? "Make Private" : "Make Public"}
                   onClick={onPublic}
@@ -116,7 +119,9 @@ const DesignCard = observer(
             }
             position={Position.BOTTOM}
           >
-            <Button icon="more" />
+            <div  id="makePublic">
+                <Button icon="more" />
+            </div>
           </Popover2>
         </div>
       </Card>
@@ -128,8 +133,8 @@ const DesignCard = observer(
 
 export const MyDesignsPanel = observer(({ store }) => {
   const { isDisconnected, address, isConnected } = useAccount();
-  const [stOpenedModal, setStOpenedModal] = useState(false);
-  const [stConfirmNew, setStConfirmNew] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  // const [stConfirmNew, setStConfirmNew] = useState("");
   const [query, setQuery] = useState("");
 
   const queryClient = useQueryClient();
@@ -176,7 +181,7 @@ export const MyDesignsPanel = observer(({ store }) => {
   });
 
   // funtion to check if canvas is public or not
-  const isCanacsPublic = (canvasId) => {
+  const isCanvasPublic = (canvasId) => {
     if (publicTemplates) {
       return publicTemplates.some((obj) => obj.id === canvasId);
     }
@@ -211,70 +216,45 @@ export const MyDesignsPanel = observer(({ store }) => {
 
   // Function to delete all the canvas on confirmation - 25Jun2023
   const fnDeleteCanvas = () => {
-    const pagesIds = store.pages.map((p) => p.id);
-    store.deletePages(pagesIds);
+    store.clear({ keepHistory: true });
     store.addPage();
-    setStOpenedModal(!stOpenedModal);
+    setIsOpen(false);
   };
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="text-lg">My Designs</h1>
+      <h1 className="text-lg">My Files</h1>
 
       <Button
         className="m-2 p-1"
         onClick={() => {
-          const ids = store.pages
-            .map((page) => page.children.map((child) => child.id))
-            .flat();
-          const hasObjects = ids?.length;
+          // const ids = store.pages
+          //   .map((page) => page.children.map((child) => child.id))
+          //   .flat();
+          // const hasObjects = ids?.length;
 
-          if (hasObjects) {
-            setStOpenedModal(true);
-            if (stConfirmNew) {
-              return;
-            }
-          }
+          // if (hasObjects) {
+          //   isOpen(true);
+          //   // if (stConfirmNew) {
+          //   //   return;
+          //   // }
+          // }
+          setIsOpen(true)
         }}
       >
-        {" "}
-        Create new design{" "}
+        Create new design
       </Button>
-
+      {isOpen &&
+      <CompModal
+      ModalTitle={"Are you sure to create a new design?"}
+      ModalMessage={"This will remove all the content from your canvas"} 
+      onClickFunction = {()=> fnDeleteCanvas()}
+      />
+    }
       <SearchComponent onClick={false} query={query} setQuery={setQuery} placeholder="Search designs by id" />
+      <MyDesignReacTour />
+    {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
-      {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
-
-      <Dialog
-        title="Are you sure to create a new design?"
-        icon="info-sign"
-        isOpen={stOpenedModal}
-        canOutsideClickClose="true"
-        onClose={() => {
-          setStOpenedModal(!stOpenedModal);
-        }}
-      >
-        <DialogBody>This will remove all the content.</DialogBody>
-        <DialogFooter
-          actions={
-            <div>
-              <Button
-                intent="danger"
-                text="Yes"
-                onClick={() => {
-                  fnDeleteCanvas();
-                }}
-              />
-              <Button
-                text="No"
-                onClick={() => {
-                  setStOpenedModal(false);
-                }}
-              />
-            </div>
-          }
-        />
-      </Dialog>
 
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
@@ -282,7 +262,8 @@ export const MyDesignsPanel = observer(({ store }) => {
       {isError ? (
         <ErrorComponent error={error} />
       ) : data.length > 0 ? (
-        <div className="overflow-y-auto grid grid-cols-2">
+        
+        <div className="overflow-y-auto grid grid-cols-2" id="RecentDesigns">
           {data.map((design) => {
             return (
               <DesignCard
@@ -298,17 +279,19 @@ export const MyDesignsPanel = observer(({ store }) => {
                 project={project}
                 onDelete={() => deleteCanvas(design.id)}
                 onPublic={() =>
-                  isCanacsPublic(design.id)
+                  isCanvasPublic(design.id)
                     ? changeVisibility({ id: design.id, isPublic: false })
                     : changeVisibility({ id: design.id, isPublic: true })
                 }
-                isPublic={isCanacsPublic}
+                isPublic={isCanvasPublic}
               />
-            );
-          })}
+            );  
+          })}     
         </div>
       ) : (
-        <MessageComponent message="You have not created any design" />
+        <div id="RecentDesigns">
+          <MessageComponent message="You have not created any design yet" />
+        </div>
       )}
 
       {/* New Design card end - 23Jun2023 */}
@@ -320,7 +303,7 @@ export const MyDesignsPanel = observer(({ store }) => {
 export const MyDesignsSection = {
   name: "My Designs",
   Tab: (props) => (
-    <SectionTab name="My Designs" {...props}>
+    <SectionTab name="My Files" {...props}>
       <TemplatesIcon />
     </SectionTab>
   ),

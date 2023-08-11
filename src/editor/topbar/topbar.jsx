@@ -26,7 +26,7 @@ export default observer(({ store }) => {
   },[])
 
   return (
-    <div id="first-step" className="bg-white h-[75px]  w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
+    <div className="bg-white h-[75px]  w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
       <div className="flex items-center justify-between">
         <a href="https://lenspost.xyz" target="_blank">
           <div className="flex items-center justify-between cursor-pointer">
@@ -38,13 +38,15 @@ export default observer(({ store }) => {
               />
           </div>
         </a>
-        {isDisconnected && (
+        {!isConnected && (
 
+          <div id="first-step" >
           <ConnectButton   
            label="Connect Wallet"
            chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
            showBalance={{ smallScreen: false, largeScreen: true }}
            />
+           </div>
 
         )}
         {isConnected && (
@@ -56,7 +58,7 @@ export default observer(({ store }) => {
               <ShareIcon/>
             </div> */}
 
-            <div id="fifth-step">
+            <div id={`${isConnected? "fifth-step" : ""}`} >
               <RightDrawer/>
             </div>
             {/* <Drawer classNames={{"inner": "mantine-Drawer-inner"}} position='right' onClose={()=> setStIsDrawOpen(!stIsDrawOpen)} opened={stIsDrawOpen}> 
@@ -66,14 +68,16 @@ export default observer(({ store }) => {
             <DownloadButton store={store} />
             {/* <button
 							onClick={() => {
-								disconnect();
+                disconnect();
 							}}>
 							Disconnect
 						</button> */}
-            <ConnectButton
-              chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
-              showBalance={{ smallScreen: false, largeScreen: true }}
-            />
+            <div id="first-step"> 
+              <ConnectButton
+                chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
+                showBalance={{ smallScreen: false, largeScreen: true }}
+              />
+          </div>
           </div>
         )}
       </div>

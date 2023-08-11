@@ -22,7 +22,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner } from "@blueprintjs/core";
 import { Context } from "../../context/ContextProvider";
-import ModalComponent from "../../elements/ModalComponent";
+import { CompModal } from "../../elements/ModalComponent";
+import { fnLoadJsonOnPage } from "../../utility/loadJsonOnPage";
+
+
 
 // Design card component start
 
@@ -48,8 +51,41 @@ const DesignCard = observer(
           />
         </div>
       </Card>
+        // onDragEnd={() => {
+
+        // }}
+        onClick={ async () => {
+          // Check if there are any elements on the page - to open the Modal or not
+          if(store.activePage.children.length > 1){ 
+            setIsOpen(!isOpen)
+          } 
+          else{
+            fnLoadJsonOnPage(store, json);
+          }
+        }
+        }
+      >
+      <div className="">
+        <LazyLoadImage
+          placeholderSrc={replaceImageURL(preview)}
+          effect="blur"
+          src={tab === "user" ? preview : replaceImageURL(preview)}
+          alt="Preview Image"
+        />
+      </div>
+
+      {isOpen &&
+       <CompModal 
+          store={store} json={json}
+          ModalTitle={"Are you sure to replace the canvas with this template?"}
+          ModalMessage={"This will remove all the content from your canvas"} 
+          onClickFunction = {()=> fnLoadJsonOnPage(store, json)}
+       />
+      }
+
+    </Card>
     );
-  }
+  } 
 );
 
 // Design card component end
@@ -76,7 +112,8 @@ export const TemplatesPanel = observer(({ store }) => {
           } ${tab === "user" && "text-white"}`}
           onClick={() => setTab("user")}
         >
-          User Templates
+          {/* User Templates */}
+          Community Pool
         </button>
       </div>
       {tab === "lenspost" && <LenspostTemplates store={store} />}
@@ -145,6 +182,7 @@ const LenspostTemplates = ({ store }) => {
 };
 
 const UserTemplates = ({ store }) => {
+  const [stOpenedModal, setStOpenedModal] = useState(true)
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const { data, isLoading, isError, error, isSuccess } = useQuery({
