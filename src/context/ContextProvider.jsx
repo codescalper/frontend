@@ -16,7 +16,7 @@ const ContextProvider = ({ children }) => {
   const [enabled, setEnabled] = useState({
     chargeForCollect: false,
     chargeForCollectPrice: "1",
-    chargeForCollectCurrency: "wmatic",
+    chargeForCollectCurrency: "USDC",
 
     mirrorReferralReward: false,
     mirrorReferralRewardFee: 25.0,

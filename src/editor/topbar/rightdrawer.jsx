@@ -47,6 +47,9 @@ import EmojiPicker, {
 import { fnMessage } from "../../services/fnMessage";
 import { AiFillDelete } from "react-icons/ai";
 import { data } from "autoprefixer";
+import testnetTokenAddress from "../../utility/testnet-token-list.json";
+import mainnetTokenAddress from "../../utility/mainnet-token-list.json";
+import { ENVIRONMENT } from "../../services/env";
 
 export default function RightDrawer({}) {
   const [open, setOpen] = useState(false);
@@ -398,6 +401,14 @@ const Monetization = () => {
   const [duplicateAddressError, setDuplicateAddressError] = useState(false);
   const [percentageError, setPercentageError] = useState(false);
 
+  const tokenList = () => {
+    if (ENVIRONMENT === "localhost" || ENVIRONMENT === "development") {
+      return testnetTokenAddress.tokens;
+    } else {
+      return mainnetTokenAddress.tokens;
+    }
+  };
+
   // Calendar Functions:
   const onCalChange = (value, dateString) => {
     // console.log("Selected Time: ", value);
@@ -426,15 +437,12 @@ const Monetization = () => {
   };
 
   // get contract address acoording to currency
-  const getContractAddressOfCurrency = (currency) => {
-    if (currency === "wmatic") {
-      return "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889";
-    } else if (currency === "weth") {
-      return "0x3C68CE8504087f89c640D02d133646d98e64ddd9";
-    } else if (currency === "dai") {
-      return "0x001B3B4d0F3714Ca98ba10F6042DaEbF0B1B7b6F";
-    } else if (currency === "usdc") {
-      return "0x2058A9D7613eEE744279e3856Ef0eAda5FCbaA7e";
+  const tokenAddress = (currency) => {
+    const tokenListArr = tokenList();
+    for (let i = 0; i < tokenListArr.length; i++) {
+      if (tokenListArr[i].symbol === currency) {
+        return tokenListArr[i].address;
+      }
     }
   };
 
@@ -503,9 +511,7 @@ const Monetization = () => {
       canvasParams.collectModule.multirecipientFeeCollectModule = {
         ...canvasParams.collectModule.multirecipientFeeCollectModule,
         amount: {
-          currency: getContractAddressOfCurrency(
-            enabled.chargeForCollectCurrency
-          ),
+          currency: tokenAddress(enabled.chargeForCollectCurrency),
           value: enabled.chargeForCollectPrice,
         },
       };
@@ -857,10 +863,13 @@ const Monetization = () => {
                       onChange={handleChange}
                       value={enabled.chargeForCollectCurrency}
                     >
-                      <option value="wmatic">Wrapped MATIC</option>
-                      <option value="weth">Wrapped ETH</option>
-                      <option value="dai">DAI</option>
-                      <option value="usdc">USDC</option>
+                      {tokenList().map((token, index) => {
+                        return (
+                          <option key={index} value={token.symbol}>
+                            {token.name}
+                          </option>
+                        );
+                      })}
                     </select>
                   </div>
                 </div>
