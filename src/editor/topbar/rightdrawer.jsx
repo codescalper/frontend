@@ -633,10 +633,10 @@ const Monetization = () => {
       return;
     }
 
-    if (isPercentageMoreThan100()) {
-      setPercentageError(true);
-      return;
-    }
+    // if (isPercentageMoreThan100()) {
+    //   setPercentageError(true);
+    //   return;
+    // }
 
     const canvasData = {
       id: contextCanvasIdRef.current,
