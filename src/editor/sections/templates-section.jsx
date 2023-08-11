@@ -31,16 +31,26 @@ import { fnLoadJsonOnPage } from "../../utility/loadJsonOnPage";
 
 const DesignCard = observer(
   ({ design, preview, json, onDelete, onPublic, tab }) => {
-    const { contextCanvasIdRef } = useContext(Context);
-    // console.log(json);
-    
-    // To check is the Modal is open or not
-    const [isOpen, setIsOpen] = useState(false);
-
     return (
       <Card
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
+        onDragEnd={() => {
+          store.loadJSON(json);
+        }}
+        onClick={() => {
+          store.loadJSON(json);
+        }}
+      >
+        <div className="">
+          <LazyLoadImage
+            placeholderSrc={replaceImageURL(preview)}
+            effect="blur"
+            src={tab === "user" ? preview : replaceImageURL(preview)}
+            alt="Preview Image"
+          />
+        </div>
+      </Card>
         // onDragEnd={() => {
 
         // }}
@@ -82,7 +92,7 @@ const DesignCard = observer(
 
 export const TemplatesPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
-  const [stIsModalOpen, setStIsModalOpen] = useState(false)
+  const [stIsModalOpen, setStIsModalOpen] = useState(false);
 
   return (
     <div className="h-full flex flex-col">

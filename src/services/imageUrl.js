@@ -4,24 +4,12 @@ export const convertIPFSUrl = (ipfsUrl) => {
 };
 
 export const getImageUrl = (res) => {
-  let obj = {};
-  let arr = [];
-  for (let i = 0; i < res.length; i++) {
-    if (res[i].ipfsLink?.includes("ipfs://")) {
-      res[i].ipfsLink = convertIPFSUrl(res[i].ipfsLink);
-      obj = { url: res[i].ipfsLink };
-      arr.push(obj);
-    } else if (res[i].permaLink?.includes("ipfs://")) {
-      res[i].permaLink = convertIPFSUrl(res[i].permaLink);
-      obj = { url: res[i].permaLink };
-      arr.push(obj);
-    } else if (res[i].imageURL) {
-      obj = { url: res[i].imageURL };
-      arr.push(obj);
-    } else {
-      obj = { url: res[i].ipfsLink };
-      arr.push(obj);
-    }
+  if (res === "ipfsLink" && res?.includes("ipfs://")) {
+    ipfsLink = convertIPFSUrl(res);
+    return ipfsLink;
+  } else if (res === "permaLink") {
+    return res;
+  } else if (res === "imageURL") {
+    return res;
   }
-  return arr;
 };

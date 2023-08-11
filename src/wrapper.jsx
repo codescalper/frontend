@@ -15,7 +15,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TwitterAuth from "./components/TwitterAuth";
 
 const { chains, provider } = configureChains(
-  [ENVIRONMENT === "localhost" ? polygonMumbai : polygon],
+  [polygon],
   [
     // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),

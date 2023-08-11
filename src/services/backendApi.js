@@ -357,19 +357,15 @@ export const deleteCanvasById = async (id) => {
 
 // share canvas on lens endpoint
 // need auth token (jwt)
-export const shareOnSocials = async (canvasId, name, content, platform) => {
+export const shareOnSocials = async (canvasData, canvasParams, platform, timeStamp) => {
+
   try {
     const result = await api.post(`${API}/user/canvas/publish`, {
-      canvasData: {
-        id: canvasId,
-        name: name,
-        content: content,
-      },
+      canvasData: canvasData,
+      canvasParams: canvasParams,
       platform: platform,
-      // titmeStamp: Date.now(),
+      timeStamp: timeStamp,
     });
-
-    console.log("result", result);
 
     if (result?.status === 200) {
       return {
