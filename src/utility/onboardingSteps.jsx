@@ -3,7 +3,7 @@
 // Created : 27Jul2023
 // --------
 // import { useAccount } from "wagmi"
-import shareGif from "../assets/gifs/shareGif.gif"
+import shareGif from "../assets/gifs/ShareGif.gif"
 
 export const onboardingSteps = () =>{
 
@@ -79,7 +79,7 @@ export const onboardingStepsWithShare = () =>{
       selector: '#fifth-step',
       content:  <>
         <div className="flex flex-col justify-center align-middle text-center">
-          <iframe src={shareGif} width="120"></iframe>
+          <img src={shareGif} width="120"></img>
           <div className=""> Share on socials </div>
         </div>
     </> 

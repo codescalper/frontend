@@ -206,7 +206,7 @@ export default function App() {
   return (
     <>
       <Editor />
-      <CheckInternetConnection />
+      {/* <CheckInternetConnection /> */}
       {isLoading && <LoadingComponent text={text} />}
       <ToastContainer
         position="top-center"

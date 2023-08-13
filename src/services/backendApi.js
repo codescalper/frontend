@@ -357,19 +357,19 @@ export const deleteCanvasById = async (id) => {
 
 // share canvas on lens endpoint
 // need auth token (jwt)
-export const shareOnSocials = async (canvasId, name, content, platform) => {
+export const shareOnSocials = async (
+  canvasData,
+  canvasParams,
+  platform,
+  timeStamp
+) => {
   try {
     const result = await api.post(`${API}/user/canvas/publish`, {
-      canvasData: {
-        id: canvasId,
-        name: name,
-        content: content,
-      },
+      canvasData: canvasData,
+      canvasParams: canvasParams,
       platform: platform,
-      // titmeStamp: Date.now(),
+      timeStamp: timeStamp,
     });
-
-    console.log("result", result);
 
     if (result?.status === 200) {
       return {
@@ -395,7 +395,10 @@ export const shareOnSocials = async (canvasId, name, content, platform) => {
           error?.response?.data?.message || error?.response?.data?.name,
       });
       return {
-        error: "Internal Server Error, please try again later",
+        error:
+          error?.response?.data?.message ||
+          error?.response?.data?.name ||
+          "Internal Server Error, please try again later",
       };
     } else if (error?.response?.status === 404) {
       console.log({ 404: error?.response?.statusText });

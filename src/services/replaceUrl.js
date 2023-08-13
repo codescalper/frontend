@@ -13,8 +13,14 @@ export const replaceImageURL = (url) => {
   } else if (url.includes("nft-cdn.alchemy.com")) {
     const replacedURL = url.replace("https://nft-cdn.alchemy.com/", "");
     return `http://lenspost-alchemy.b-cdn.net/${replacedURL}`;
-  } else if (url.includes("ipfs.io")) {
+  } else if (url.includes("https://ipfs.io/ipfs/ipfs/")) {
+    const replacedURL = url.replace("https://ipfs.io/ipfs/ipfs/", "");
+    return `http://lenspost-ipfs.b-cdn.net/${replacedURL}`;
+  } else if (url.includes("https://ipfs.io/ipfs/")) {
     const replacedURL = url.replace("https://ipfs.io/ipfs/", "");
+    return `http://lenspost-ipfs.b-cdn.net/${replacedURL}`;
+  } else if (url.includes("https://ipfs.infura.io/ipfs/")) {
+    const replacedURL = url.replace("https://ipfs.infura.io/ipfs/", "");
     return `http://lenspost-ipfs.b-cdn.net/${replacedURL}`;
   } else {
     return url;

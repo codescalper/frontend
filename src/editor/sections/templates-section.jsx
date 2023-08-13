@@ -26,15 +26,10 @@ import { Context } from "../../context/ContextProvider";
 import { CompModal } from "../../elements/ModalComponent";
 import { fnLoadJsonOnPage } from "../../utility/loadJsonOnPage";
 
-
-
 // Design card component start
 
 const DesignCard = observer(
   ({ design, preview, json, onDelete, onPublic, tab }) => {
-    const { contextCanvasIdRef } = useContext(Context);
-    // console.log(json);
-    
     // To check is the Modal is open or not
     const [isOpen, setIsOpen] = useState(false);
     const [isTokengated, setIsTokengated] = useState(true); // For Displaying the Tokengated Asset Icon
@@ -45,14 +40,9 @@ const DesignCard = observer(
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
         onDragEnd={() => async () => {
-          // Check if there are any elements on the page - to open the Modal or not
-          if(store.activePage.children.length > 1){ 
-            setIsOpen(!isOpen)
-          } 
-          else{
-            fnLoadJsonOnPage(store, json);
-          }
+        
         }}
+        
         onClick={ async () => {
           
           // Show Modal: if it's tokengated
@@ -108,26 +98,37 @@ const DesignCard = observer(
           onClickFunction = {()=> window.open("https://opensea.io/assets/ethereum/0x3fe1a4c1481c8351e91b64d5c398b159de07cbc5", "_blank")}
        />
       }  
+      
+        <div className="">
+          <LazyLoadImage
+            placeholderSrc={replaceImageURL(preview)}
+            effect="blur"
+            src={tab === "user" ? preview : replaceImageURL(preview)}
+            alt="Preview Image"
+          />
+        </div>
 
-      {isOpen &&
-       <CompModal 
-          store={store} json={json}
-          ModalTitle={"Are you sure to replace the canvas with this template?"}
-          ModalMessage={"This will remove all the content from your canvas"} 
-          onClickFunction = {()=> fnLoadJsonOnPage(store, json)}
-       />
-      }
-
-    </Card>
+        {isOpen && (
+          <CompModal
+            store={store}
+            json={json}
+            ModalTitle={
+              "Are you sure to replace the canvas with this template?"
+            }
+            ModalMessage={"This will remove all the content from your canvas"}
+            onClickFunction={() => fnLoadJsonOnPage(store, json)}
+          />
+        )}
+      </Card>
     );
-  } 
+  }
 );
 
 // Design card component end
 
 export const TemplatesPanel = observer(({ store }) => {
   const [tab, setTab] = useState("lenspost");
-  const [stIsModalOpen, setStIsModalOpen] = useState(false)
+  const [stIsModalOpen, setStIsModalOpen] = useState(false);
 
   return (
     <div className="h-full flex flex-col">
@@ -217,7 +218,7 @@ const LenspostTemplates = ({ store }) => {
 };
 
 const UserTemplates = ({ store }) => {
-  const [stOpenedModal, setStOpenedModal] = useState(true)
+  const [stOpenedModal, setStOpenedModal] = useState(true);
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const { data, isLoading, isError, error, isSuccess } = useQuery({
