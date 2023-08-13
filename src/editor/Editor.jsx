@@ -54,6 +54,7 @@ import { AIImageSection } from "./sections/ai-image-section";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
 import { onboardingSteps, onboardingStepsWithShare } from "../utility/onboardingSteps";
+import { CustomUploadSection } from "./sections/upload-section";
 
 unstable_setAnimationsEnabled(true);
 
@@ -67,7 +68,8 @@ const sections = [
   AIImageSection,
   BackgroundSection,
   ShapesSection,
-  UploadSection,
+  // UploadSection,
+  CustomUploadSection,
   LayersSection,
   CustomSizesPanel,
   // StableDiffusionSection,
@@ -373,7 +375,7 @@ const Editor = ({ store }) => {
                     onClick={fnCallToast}
                     title={isConnected ? "" : "Please connect your wallet"}
                     disabled={!isConnected}
-                    className="mt-2 mb-2 ml-3 p-1 "
+                    className="mt-2 mb-2 ml-3 py-1 px-4"
                   >
                     Remove background
                   </Button>
