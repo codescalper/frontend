@@ -44,10 +44,10 @@ import { MyDesignReacTour } from "../../elements/ReacTour.jsx"
 // Design card component start - 23Jun2023
 
 const DesignCard = observer(
-  ({ design, preview, json, onDelete, onPublic, isPublic }) => {
+  ({ design, preview, json, onDelete, onPublic, isPublic, openTokengateModal }) => {
     const [loading, setLoading] = useState(false);
-    const { contextCanvasIdRef, isTokengated, setIsTokengated } = useContext(Context);
-
+    const { contextCanvasIdRef } = useContext(Context);
+  
     return (
       <Card
         className="relative p-0 m-1 rounded-lg"
@@ -114,7 +114,7 @@ const DesignCard = observer(
                   text={isPublic(design.id) ? "Make Private" : "Make Public"}
                   onClick={onPublic}
                 />
-                <MenuItem icon="layout-circle" text="Tokengate & Make Public" onClick={() => setIsTokengated(true)} />
+                <MenuItem icon="layout-circle" text="Tokengate & Make Public" onClick={openTokengateModal} />
                 <MenuItem icon="trash" text="Delete" onClick={onDelete} />
               </Menu>
             }
@@ -137,7 +137,7 @@ export const MyDesignsPanel = observer(({ store }) => {
   const [isOpen, setIsOpen] = useState(false);
   // const [stConfirmNew, setStConfirmNew] = useState("");
   const [query, setQuery] = useState("");
-  const [isTokengated, setIsTokengated] = useState(false);
+
   const [openTokengateModal, setOpenTokengateModal] = useState(false);
 
   const queryClient = useQueryClient();
@@ -224,6 +224,15 @@ export const MyDesignsPanel = observer(({ store }) => {
     setIsOpen(false);
   };
 
+  // Function to make the canvas public & also Tokengated
+  const fnTokengateDesign = () => {
+    console.log(document.getElementById("iDTokengateDesign").value);
+    // use this to fetch input field data : - 
+    // document.getElementById("iDTokengateDesign").value
+    
+    setOpenTokengateModal(!openTokengateModal);
+  } 
+
   return (
     <div className="h-full flex flex-col">
       <h1 className="text-lg">My Files</h1>
@@ -231,18 +240,15 @@ export const MyDesignsPanel = observer(({ store }) => {
       <Button
         className="m-2 p-1"
         onClick={() => {
-          // const ids = store.pages
-          //   .map((page) => page.children.map((child) => child.id))
-          //   .flat();
-          // const hasObjects = ids?.length;
+          const ids = store.pages
+            .map((page) => page.children.map((child) => child.id))
+            .flat();
+          const hasObjects = ids?.length;
 
-          // if (hasObjects) {
-          //   isOpen(true);
-          //   // if (stConfirmNew) {
-          //   //   return;
-          //   // }
-          // }
-          setIsOpen(!isOpen)
+          if (hasObjects) {
+            setIsOpen(!isOpen)
+            // isOpen(true);
+          }
         }}
       >
         Create new design
@@ -250,7 +256,8 @@ export const MyDesignsPanel = observer(({ store }) => {
       
       {openTokengateModal &&
       <CompModal
-          tokengatingIp = "0x00123"
+          openTokengateModal
+          tokengatingIp = "0x001230000000 / Lenster post link"
           // store={store} 
           icon={"lock"}
           ModalTitle={"Tokengate this template"}
@@ -258,7 +265,7 @@ export const MyDesignsPanel = observer(({ store }) => {
           Please enter the Contract Address or the Lenster Post Link to tokengate this template.
           `}            
           customBtn={"Confirm"}
-          onClickFunction = {()=> ""}
+          onClickFunction = {fnTokengateDesign}
        />
       }  
       {isOpen &&
@@ -301,6 +308,8 @@ export const MyDesignsPanel = observer(({ store }) => {
                     : changeVisibility({ id: design.id, isPublic: true })
                 }
                 isPublic={isCanvasPublic}
+                openTokengateModal = {()=> setOpenTokengateModal(!openTokengateModal)}
+                
               />
             );  
           })}     

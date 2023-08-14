@@ -70,6 +70,12 @@ color: rgb(255, 255, 255);
 .go2941063172:hover, .go2941063172.active {
 	background-color: #e1f16ba1 !important;
 }
+/* .go1430256704 .polotno-side-tabs-container::-webkit-scrollbar-track {
+  background: #eb0ac5;
+} 
+.polotno-side-tabs-container::-webkit-scrollbar {
+  width:32px !important;
+}  */
 
 /* Styling the Sidepanel */
 .bp4-navbar{
@@ -83,7 +89,9 @@ color: rgb(255, 255, 255);
 .go2941063172:hover{
   border-radius: 8px; 
 }
-
+.go1236784588{
+  height: 99% !important;
+}
 /* Styling the Buttons */
 .bp4-button{
   /* all:unset; */
@@ -94,9 +102,9 @@ color: rgb(255, 255, 255);
 .polotno-side-tabs-inner,
 .polotno-side-panel-tab{
   display:flex ;
-  flex-direction: column !important;
+  flex-direction: column;
   justify-content:center;
-  align-items:center;
+  align-items:center; 
   text-align: center;
 } 
 /* Styling the Popovers */
@@ -113,6 +121,14 @@ color: rgb(255, 255, 255);
 .bp4-input-group .bp4-input {
   border-radius: 8px;
 }
+/* Styling the bottom bar (zoom btn, remove bg ..)*/
+
+.go1534176008{
+  position: absolute !important;
+  bottom: 15px !important;
+}
+
+
 /* Under DEV */
 /* overwrite colors for side-panel tabs */
 .bp4-dark .polotno-side-tabs-container .polotno-side-panel-tab:hover,

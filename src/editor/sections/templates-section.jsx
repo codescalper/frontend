@@ -32,11 +32,12 @@ const DesignCard = observer(
   ({ design, preview, json, onDelete, onPublic, tab }) => {
     // To check is the Modal is open or not
     const [isOpen, setIsOpen] = useState(false);
-    const [isTokengated, setIsTokengated] = useState(true); // For Displaying the Tokengated Asset Icon
+    const [isTokengated, setIsTokengated] = useState(false); // For Displaying the Tokengated Asset Icon
     const [stOpenTokengatedModal, setStOpenTokengatedModal] = useState(false); //For Modal Interaction
 
     return (
       <Card
+        className="rounded-lg"
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
         onDragEnd={() => async () => {
@@ -47,7 +48,7 @@ const DesignCard = observer(
           
           // Show Modal: if it's tokengated
           if(isTokengated){
-            setStOpenTokengatedModal(true)
+            setStOpenTokengatedModal(!stOpenTokengatedModal)
           } 
           if(!isTokengated){
           // Check if there are any elements on the page - to open the Modal or not
@@ -62,18 +63,20 @@ const DesignCard = observer(
         }
       }
       >
-      <div className="">
+      <div className="rounded-lg">
         <LazyLoadImage
+          className="rounded-lg"
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={tab === "user" ? preview : replaceImageURL(preview)}
           alt="Preview Image"
         />
       </div>
-      {
-        isTokengated && 
+
+      {/* Show Icon only if it's tokengated, i.e: `isTokengated` === true  */}
+      { isTokengated && 
         <div
-        className="bg-white p-1 rounded-sm "
+        className="bg-white p-1 rounded-lg "
         style={{ position: "absolute", top: "8px", left: "8px" }}
         onClick={(e) => {
           e.stopPropagation();  
@@ -82,6 +85,8 @@ const DesignCard = observer(
           <Icon icon="endorsed" intent="primary" size={16} />
         </div>
       }
+
+      {/* Show Modal only if it's tokengated, i.e: `isTokengated` & `stOpenTokengatedModal` === true */}
       {
       isTokengated && 
       stOpenTokengatedModal &&
@@ -98,15 +103,6 @@ const DesignCard = observer(
           onClickFunction = {()=> window.open("https://opensea.io/assets/ethereum/0x3fe1a4c1481c8351e91b64d5c398b159de07cbc5", "_blank")}
        />
       }  
-      
-        <div className="">
-          <LazyLoadImage
-            placeholderSrc={replaceImageURL(preview)}
-            effect="blur"
-            src={tab === "user" ? preview : replaceImageURL(preview)}
-            alt="Preview Image"
-          />
-        </div>
 
         {isOpen && (
           <CompModal

@@ -12,7 +12,7 @@ import { Context } from "./context/ContextProvider";
 import { CheckInternetConnection, LoadingComponent } from "./elements";
 import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
-import { onboardingSteps, onboardingStepsWithShare } from "./utility/onboardingSteps";
+import { onboardingSteps, onboardingStepsWithShare } from "./elements/onboardingSteps";
 
 export default function App() {
   const [initialRender, setInitialRender] = useState(true);

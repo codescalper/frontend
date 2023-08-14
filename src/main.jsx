@@ -5,7 +5,7 @@ import "./index.css";
 import "../polyfills";
 import "react-toastify/dist/ReactToastify.css";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import { onboardingSteps } from "./utility/onboardingSteps";
+import { onboardingSteps } from "./elements/onboardingSteps";
 import { TourProvider } from "@reactour/tour";
 import { saveToLocalStorage } from "./services/localStorage";
 
@@ -18,17 +18,19 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
     <TourProvider steps={onboardingSteps}
       padding={{ 
-      mask: 0, 
-      popover: [-16, 16], 
+      mask: 4, 
+      popover: [64, 8],       
       wrapper: 0 
     }}  
     styles={{
-      popover: (base) => ({
+      popover: (base) => ({    
         ...base,
         '--reactour-accent': '#2c346b',
         borderRadius: radius,
         // top: 32,
-        marginTop: 24,
+        marginTop: "24",
+        marginRight: "64",
+        marginBottom: "32"
       }),
       maskArea: (base) => ({ ...base, rx: radius }),
       maskWrapper: (base) => ({ ...base, color: '' }),

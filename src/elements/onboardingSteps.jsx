@@ -58,7 +58,7 @@ export const onboardingStepsWithShare = () =>{
       content: <>
       <div className="flex flex-col justify-center align-middle text-center">
         {/* <iframe src="https://giphy.com/embed/IhIsxGk9FqOSI7a0Nn" width="240" height="120" ></iframe> */}
-        <img src={"/svgs/ConnectWalletIntroTour.svg"} height="280" ></img>
+        <img height="320" src={"/svgs/ConnectWalletIntroTour.svg"}></img>
         <div className="mt-2"> Connect your wallet </div>
       </div>
       </>

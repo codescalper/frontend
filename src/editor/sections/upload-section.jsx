@@ -26,6 +26,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UploadIcon } from "../editor-icon";
 
 import {FileInput} from "@blueprintjs/core"
+import UploadFileDropzone from "../../elements/UploadFileDropzone";
 
 
 
@@ -103,16 +104,19 @@ const CustomUploadPanel = observer(({ store }) => {
 
       {/* <SearchComponent onClick={false} query={""} setQuery={""} placeholder="Search designs by id" /> */}
         <div className="m-2 mt-4">
-             <FileInput disabled={false} text="Choose file" fill buttonText="Upload" onInputChange={""} />       
+            {/* <FileInput disabled={false} text="Choose file" fill buttonText="Upload" onInputChange={""} />        */}
+           
+            {/* DropZone component Start*/}
+            <UploadFileDropzone/>
+            {/* DropZone component End*/}
         </div>
         
-        <hr className="mt-4 mb-4"/>     
+        <hr className="mt-2 mb-4"/>     
 
       {isError ? (
         <ErrorComponent error={error} />
       ) : data.length > 0 ? (<>
       
-        
         <div className="m-2"> Recent Uploads</div>
         <div className="overflow-y-auto grid grid-cols-2">
           {data.map((design) => {
@@ -121,10 +125,9 @@ const CustomUploadPanel = observer(({ store }) => {
                 design={design}
                 // json={design.data}
                 preview={
-                //   design?.imageLink != null &&
-                //   design?.imageLink.length > 0 &&
-                //   design?.imageLink[0]
-                  design?.imageLink
+                  design?.imageLink != null &&
+                  design?.imageLink.length > 0 &&
+                  design?.imageLink[0]
                 }
                 key={design.id}
                 store={store}
