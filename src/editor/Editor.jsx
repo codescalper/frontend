@@ -91,8 +91,14 @@ const Editor = ({ store }) => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
-  const { contextCanvasIdRef, setText, setIsLoading, enabled, setEnabled } =
-    useContext(Context);
+  const {
+    contextCanvasIdRef,
+    setText,
+    setIsLoading,
+    enabled,
+    setEnabled,
+    setFastPreview,
+  } = useContext(Context);
   const timeoutRef = useRef(null);
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
 
@@ -237,7 +243,7 @@ const Editor = ({ store }) => {
     }
 
     // schedule saving to the backend
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = setTimeout(async () => {
       // reset timeout
       timeoutRef.current = null;
 
@@ -261,11 +267,18 @@ const Editor = ({ store }) => {
 
       // save it to the backend
       if (canvasChildren.length > 0) {
-        // if (!address) return;
+        const imgBase64 = await store.toDataURL();
+
+        // remove data:image/png;base64, from the base64 string
+        const imgBase64Stripped = imgBase64.replace(
+          "data:image/png;base64,",
+          ""
+        );
 
         if (!canvasIdRef.current) {
           createCanvasAsync({
-            jsonCanvasData: json,
+            data: json,
+            preview: imgBase64Stripped,
           })
             .then((res) => {
               if (res?.status === "success") {
@@ -282,9 +295,9 @@ const Editor = ({ store }) => {
         if (canvasIdRef.current) {
           updateCanvasAsync({
             id: canvasIdRef.current,
-            jsonCanvasData: json,
-            followCollectModule: "canvas",
+            data: json,
             isPublic: false,
+            preview: imgBase64Stripped,
           })
             .then((res) => {
               if (res?.status === "success") {
@@ -320,18 +333,49 @@ const Editor = ({ store }) => {
   // React tour Setup :
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
+  // default split revenue recipient
   useEffect(() => {
     // if wallet is connected set the recipient address only in the first index for the first time
     if (isConnected) {
       setEnabled((prevEnabled) => ({
         ...prevEnabled,
         splitRevenueRecipients: [
+          { recipient: "Lespost", split: 10.0 },
           { recipient: address, split: 90.0 },
-          ...prevEnabled.splitRevenueRecipients.slice(1),
+          ...prevEnabled.splitRevenueRecipients.slice(2),
         ],
       }));
     }
   }, [address]);
+
+  // funtion for fast preview
+  useEffect(() => {
+    const requestSave = async () => {
+      const json = store.toJSON();
+      const canvasChildren = json.pages[0].children;
+
+      if (canvasChildren.length === 0) {
+        contextCanvasIdRef.current = null;
+        setFastPreview("");
+      } else {
+        const imgBase64 = await store.toDataURL();
+        setFastPreview(imgBase64);
+      }
+    };
+
+    // request saving operation on any changes
+    const handleChange = () => {
+      requestSave();
+    };
+
+    // Add the change event listener
+    const off = store.on("change", handleChange);
+
+    // Clean up the event listener on unmount
+    return () => {
+      off();
+    };
+  }, []);
 
   return (
     <>

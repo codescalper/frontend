@@ -45,6 +45,7 @@ const ContextProvider = ({ children }) => {
   const [stFormattedDate, setStFormattedDate] = useState("");
   const [stFormattedTime, setStFormattedTime] = useState("");
   const [stCalendarClicked, setStCalendarClicked] = useState(false);
+  const [fastPreview, setFastPreview] = useState("");
 
   return (
     <Context.Provider
@@ -70,6 +71,8 @@ const ContextProvider = ({ children }) => {
         setStFormattedTime,
         stCalendarClicked,
         setStCalendarClicked,
+        fastPreview,
+        setFastPreview,
       }}
     >
       {children}

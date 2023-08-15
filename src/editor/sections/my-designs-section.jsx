@@ -39,14 +39,14 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fnMessage } from "../../services/fnMessage";
 import { CompModal } from "../../elements/ModalComponent";
-import { MyDesignReacTour } from "../../elements/ReacTour.jsx"
+import { MyDesignReacTour } from "../../elements/ReacTour.jsx";
 
 // Design card component start - 23Jun2023
 
 const DesignCard = observer(
-  ({ design, preview, json, onDelete, onPublic, isPublic }) => {
+  ({ design, preview, json, onDelete, onPublic, isPublic, store }) => {
     const [loading, setLoading] = useState(false);
-    const { contextCanvasIdRef } = useContext(Context);
+    const { fastPreview, contextCanvasIdRef } = useContext(Context);
 
     return (
       <Card
@@ -65,7 +65,9 @@ const DesignCard = observer(
           <LazyLoadImage
             placeholderSrc={replaceImageURL(preview)}
             effect="blur"
-            src={preview}
+            src={
+              contextCanvasIdRef.current === design.id ? fastPreview : preview
+            }
             alt="Preview Image"
           />
         </div>
@@ -107,9 +109,8 @@ const DesignCard = observer(
                   onClick={() => {
                     // implement share function here
                   }}
-                /> */}               
+                /> */}
                 <MenuItem
-                 
                   icon="globe"
                   text={isPublic(design.id) ? "Make Private" : "Make Public"}
                   onClick={onPublic}
@@ -119,8 +120,8 @@ const DesignCard = observer(
             }
             position={Position.BOTTOM}
           >
-            <div  id="makePublic">
-                <Button icon="more" />
+            <div id="makePublic">
+              <Button icon="more" />
             </div>
           </Popover2>
         </div>
@@ -132,6 +133,7 @@ const DesignCard = observer(
 // Design card component end - 23Jun2023
 
 export const MyDesignsPanel = observer(({ store }) => {
+  const { fastPreview, contextCanvasIdRef } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
   // const [stConfirmNew, setStConfirmNew] = useState("");
@@ -239,22 +241,26 @@ export const MyDesignsPanel = observer(({ store }) => {
           //   //   return;
           //   // }
           // }
-          setIsOpen(true)
+          setIsOpen(true);
         }}
       >
         Create new design
       </Button>
-      {isOpen &&
-      <CompModal
-      ModalTitle={"Are you sure to create a new design?"}
-      ModalMessage={"This will remove all the content from your canvas"} 
-      onClickFunction = {()=> fnDeleteCanvas()}
+      {isOpen && (
+        <CompModal
+          ModalTitle={"Are you sure to create a new design?"}
+          ModalMessage={"This will remove all the content from your canvas"}
+          onClickFunction={() => fnDeleteCanvas()}
+        />
+      )}
+      <SearchComponent
+        onClick={false}
+        query={query}
+        setQuery={setQuery}
+        placeholder="Search designs by id"
       />
-    }
-      <SearchComponent onClick={false} query={query} setQuery={setQuery} placeholder="Search designs by id" />
       <MyDesignReacTour />
-    {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
-
+      {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
@@ -262,7 +268,6 @@ export const MyDesignsPanel = observer(({ store }) => {
       {isError ? (
         <ErrorComponent error={error} />
       ) : data.length > 0 ? (
-        
         <div className="overflow-y-auto grid grid-cols-2" id="RecentDesigns">
           {data.map((design) => {
             return (
@@ -285,8 +290,13 @@ export const MyDesignsPanel = observer(({ store }) => {
                 }
                 isPublic={isCanvasPublic}
               />
-            );  
-          })}     
+            );
+          })}
+          {contextCanvasIdRef.current === null && fastPreview && (
+            <Card className="relative p-0 m-1" interactive>
+              <img src={fastPreview} alt="" />
+            </Card>
+          )}
         </div>
       ) : (
         <div id="RecentDesigns">
