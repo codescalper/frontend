@@ -53,10 +53,8 @@ import {
 import { AIImageSection } from "./sections/ai-image-section";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
-import {
-  onboardingSteps,
-  onboardingStepsWithShare,
-} from "../utility/onboardingSteps";
+import { onboardingSteps, onboardingStepsWithShare } from "../elements/onboardingSteps";
+import { CustomUploadSection } from "./sections/upload-section";
 
 unstable_setAnimationsEnabled(true);
 
@@ -70,7 +68,8 @@ const sections = [
   AIImageSection,
   BackgroundSection,
   ShapesSection,
-  UploadSection,
+  // UploadSection,
+  CustomUploadSection,
   LayersSection,
   CustomSizesPanel,
   // StableDiffusionSection,
@@ -105,6 +104,13 @@ const Editor = ({ store }) => {
   };
 
   const handleDrop = (ev) => {
+    
+    // Do not load the upload dropzone content directly to canvas
+    // Avoids Duplication issue
+    if(store.openedSidePanel == "Upload"){
+      return
+    }
+    console.log(store.openedSidePanel)
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
 
@@ -361,29 +367,27 @@ const Editor = ({ store }) => {
               </div>
               <Workspace store={store} />
 
-              {/* ai_integration Start */}
               {/* <div className="mt-2 mb-2 mr-2 border border-gray-300"> */}
-              <div className="mt-2 mb-2 mr-2 flex flex-row justify-between">
-                <ZoomButtons store={store} />
+              <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg">
 
-                <div className="">
-                  <Button
+                <div className=""> 
+                  <Button 
                     id="fourth-step"
                     icon="clean"
                     onClick={fnCallToast}
                     title={isConnected ? "" : "Please connect your wallet"}
                     disabled={!isConnected}
-                    className="mt-2 mb-2 ml-3 p-1 "
+                    className="mt-2 mb-2 ml-3 py-1 px-4"  
                   >
-                    Remove background
+                    {`Remove background`} 
                   </Button>
                 </div>
-
-                {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
+                
+                <ZoomButtons store={store} />
 
                 {/* Quick Tour on the main page */}
                 <div
-                  className="flex flex-row justify-end align-middle cursor-pointer"
+                  className="m-1 ml-2 flex flex-row justify-end align-middle cursor-pointer"
                   onClick={async () => {
                     setCurrentStep(0);
                     if (isConnected) {
@@ -397,8 +401,7 @@ const Editor = ({ store }) => {
                 >
                   <FcIdea className="m-2" size="16" />{" "}
                   <div className="m-2 ml-0 text-sm text-yellow-600">
-                    {" "}
-                    Need an intro?{" "}
+                    Need an intro?
                   </div>
                 </div>
               </div>

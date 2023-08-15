@@ -45,7 +45,9 @@ const NFTPanel = observer(({ store }) => {
         <button
           className={`w-1/2 border border-black px-2 py-1 rounded-md ${
             tab === "wallet" && "bg-[#1B1A1D]"
+            // tab === "wallet" && "bg-[#ecf6a1]" //Brand Colors
           } ${tab === "wallet" && "text-white"}`}
+          // } ${tab === "wallet" && "text-black"}`} //Brand Colors
           onClick={() => setTab("wallet")}
           id="walletNFTS"
         >
@@ -55,7 +57,9 @@ const NFTPanel = observer(({ store }) => {
         <button
           className={`w-1/2 border px-2 py-1 border-black rounded-md ${
             tab === "lenspost" && "bg-[#1B1A1D]"
+            // tab === "lenspost" && "bg-[#ecf6a1]" //Brand Colors
           } ${tab === "lenspost" && "text-white"}`}
+          // } ${tab === "lenspost" && "text-black-100"}`} //Brand Colors
           onClick={() => setTab("lenspost")}
           id="cc0collections"
         >

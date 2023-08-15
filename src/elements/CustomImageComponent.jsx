@@ -33,7 +33,7 @@ const CustomImageComponent = ({
 
   return (
     <Card
-      className="relative p-0 m-1"
+      className="relative p-0 m-1 rounded-lg"
       interactive
       onDragEnd={() => {
         fnDropImageOnCanvas();
@@ -41,8 +41,8 @@ const CustomImageComponent = ({
       onClick={() => {
         fnDropImageOnCanvas();
       }}
-    >
-      <div className="">
+    >   
+      <div className="rounded-lg"> 
         <LazyLoadImage
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"

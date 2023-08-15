@@ -1,3 +1,6 @@
+import SuUploadAlt from '@meronex/icons/su/SuUploadAlt';
+// CSS className - go2941063172 polotno-side-panel-tab"
+
 export const TemplatesIcon = () => {
 	return (
 		<img
@@ -38,12 +41,25 @@ export const BackgroundIcon = () => {
 		/>
 	);
 };
+
+
 export const UploadIcon = () => {
 	return (
-		<img
-			src="/sidebar-icons/upload.svg"
-			alt="upload"
-		/>
+		// <img
+		// 	src="/sidebar-icons/upload.svg"
+		// 	alt="upload"
+		// />
+		<div className="flex flex-col">
+			<SuUploadAlt size="24"/>
+		</div>
+	);
+};
+import SuFolderClosed from '@meronex/icons/su/SuFolderClosed';
+export const MyDesignIcon = () => {
+	return (
+		<div className="flex flex-col">
+			<SuFolderClosed size="24"/>
+		</div>
 	);
 };
 export const LayersIcon = () => {
