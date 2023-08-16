@@ -1,19 +1,16 @@
 import { Fragment, useContext, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ShareIcon } from "../editor-icon";
-
-
 import { LensMonetization, Share } from "../../components";
 import { Context } from "../../context/ContextProvider";
 
-
-export default function RightDrawer({}) {
+const RightDrawer = () => {
   const [open, setOpen] = useState(false);
   const { menu, setMenu } = useContext(Context);
 
   return (
     <>
-      <button onClick={() => setOpen(!open)}>
+      <button onClick={() => setOpen(!open)} className="outline-none">
         <ShareIcon />
       </button>
       <Transition.Root show={open} as={Fragment}>
@@ -43,7 +40,6 @@ export default function RightDrawer({}) {
                   leaveTo="translate-x-full"
                 >
                   <Dialog.Panel className="pointer-events-auto relative w-screen max-w-sm">
-
                     {menu === "share" && <Share />}
                     {menu === "lensmonetization" && <LensMonetization />}
                   </Dialog.Panel>
@@ -55,4 +51,6 @@ export default function RightDrawer({}) {
       </Transition.Root>
     </>
   );
-}
+};
+
+export default RightDrawer;

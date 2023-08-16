@@ -4,42 +4,22 @@ import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
 import {
   SidePanel,
-  DEFAULT_SECTIONS,
-  // TemplatesSection,
   TextSection,
   BackgroundSection,
-  UploadSection,
   LayersSection,
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 import { loadFile } from "./file";
-import { CustomSizesPanel } from "./sections/resize-section";
-import { BackgroundSection2 } from "./sections/backgrounds-section";
-import { ShapesSection } from "./sections/shapes-section";
-import { IconsSection } from "./sections/icons-section";
-import { NFTSection } from "./sections/nft-section";
-import { StableDiffusionSection } from "./sections/stable-diffusion-section";
-import { MyDesignsSection } from "./sections/my-designs-section";
 import { useProject } from "./project";
-
-import Topbar from "./topbar/topbar";
-
-import { TemplatesSection } from "./sections/templates-section";
 import { useAccount } from "wagmi";
 import {
   createCanvas,
   getRemovedBgS3Link,
-  twitterAuthenticate,
-  twitterAuthenticateCallback,
   updateCanvas,
 } from "../services/backendApi";
 import { toast } from "react-toastify";
-
-// New Imports :
 import { Button } from "@blueprintjs/core";
-import axios from "axios";
 import { Context } from "../context/ContextProvider";
-import { BACKEND_DEV_URL } from "../services/env";
 import { replaceImageURL } from "../services/replaceUrl";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -50,14 +30,24 @@ import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "../services/localStorage";
-import { AIImageSection } from "./sections/ai-image-section";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
 import {
   onboardingSteps,
   onboardingStepsWithShare,
 } from "../elements/onboardingSteps";
-import { CustomUploadSection } from "./sections/upload-section";
+import {
+  AIImageSection,
+  BackgroundSection2,
+  CustomSizesPanel,
+  CustomUploadSection,
+  IconsSection,
+  MyDesignsSection,
+  NFTSection,
+  ShapesSection,
+  TemplatesSection,
+} from "./sections";
+import { Topbar } from "./topbar";
 
 unstable_setAnimationsEnabled(true);
 
@@ -71,11 +61,9 @@ const sections = [
   AIImageSection,
   BackgroundSection,
   ShapesSection,
-  // UploadSection,
   CustomUploadSection,
   LayersSection,
   CustomSizesPanel,
-  // StableDiffusionSection,
 ];
 
 const useHeight = () => {
@@ -133,8 +121,8 @@ const Editor = ({ store }) => {
     }
   };
   // ------ ai_integration branch
-  // Cutout pro API start
 
+  // Cutout pro API start
   const [file, setFile] = useState(null);
   const [imgResponse, setImgResponse] = useState(null);
   const [removedBgImageUrl, setRemovedBgImageUrl] = useState("");
@@ -158,13 +146,8 @@ const Editor = ({ store }) => {
     },
   });
 
-  //   const handleFileChange = (event) => {
-  // 		setFile(event.target.files[0]);
-  // 		setFile(event.target.files[0]);
-  //   };
-
   const handleRemoveBg = async () => {
-    const varImageUrl = store.selectedElements[0].src;
+    const varImageUrl = store.selectedElements[0]?.src;
     fnFindPageNo();
 
     var removedBgURL = await fnRemoveBg(varImageUrl);
@@ -221,6 +204,12 @@ const Editor = ({ store }) => {
 
   //  Toast Setup
   const fnCallToast = async () => {
+    // check if image is selected on canvas
+    const varImageUrl = store.selectedElements[0]?.src;
+    if (varImageUrl === undefined) {
+      toast.error("Please select an image to remove background");
+      return;
+    }
     const id = toast.loading("Removing Background", { autoClose: 4000 });
     const res = await handleRemoveBg();
     if (res) {
