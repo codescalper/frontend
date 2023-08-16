@@ -284,10 +284,12 @@ const AIImagePanel = observer(({ store }) => {
 					id="tabPrompt"
 					title="Prompt"
 				/>
-				<Tab
+
+				{/* under DEV */}
+				{/* <Tab
 					id="tabDesignify"
 					title="Designify"
-				/>
+				/> */}
 			</Tabs>
 
 			<div

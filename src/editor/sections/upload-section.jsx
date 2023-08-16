@@ -83,7 +83,7 @@ const CustomUploadPanel = observer(({ store }) => {
   if (isDisconnected || !address) {
     return (
       <div className="h-full flex flex-col">
-        <h1 className="text-lg">Gallery</h1>
+        <h1 className="text-lg">Upload Gallery</h1>
         <ConnectWalletMsgComponent />
       </div>
     );

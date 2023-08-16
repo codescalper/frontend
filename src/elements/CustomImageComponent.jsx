@@ -12,6 +12,7 @@ const CustomImageComponent = ({
   store,
   dimensions,
   isBackground,
+  lensUserName
 }) => {
   // function for random 3 digit number
   const randomThreeDigitNumber = () => {
@@ -43,6 +44,35 @@ const CustomImageComponent = ({
       }}
     >   
       <div className="rounded-lg"> 
+        {lensUserName && 
+        // <div className="bg-[#9aff154b] flex flex-row align-middle justify-normal rounded-t-lg" >
+        <div className="bg-[#8a5cf61c] flex flex-row align-middle justify-normal rounded-t-lg" >
+            {/* <div className="p-0.5 pb-1"> <img src="/lensLogo.jpg" alt="" className="h-5 rounded-l-md rounded-sm" /></div> */}
+            <div className="p-0.5 pb-1" 
+              onClick={(e) => {
+                e.stopPropagation()
+                window.open(`https://lenster.xyz/`, "_blank")
+              }}
+            > 
+              <img src="/svgs/lensterLogo.svg" alt="" className="h-4 pl-1 rounded-l-md rounded-sm" /></div>
+              <div className="p-1 pl-1 text-xs hover:text-slate-500" 
+                onClick={(e) => {
+                  e.stopPropagation()
+                  window.open(`https://lenster.xyz/u/${lensUserName}`, "_blank")
+                }
+              }
+            > 
+             { 
+              // Check if the lensUserName length is more than a specific number, to avoid overflow
+             `${lensUserName.length > 16 ?  
+              `@${lensUserName.substring(0,16)} ...` : 
+                `@${lensUserName.substring(0,16)}`
+              }`} 
+
+            </div>
+            <hr className="mt-1"/>  
+        </div> 
+        }
         <LazyLoadImage
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"

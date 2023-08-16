@@ -509,7 +509,9 @@ const WalletNFT = () => {
               .flatMap((item) => item?.data)
               .map((item, index) => {
                 return (
+                  // only if the lensUserName param is passed, The artist name from which it is collected is displayed
                   <CustomImageComponent
+                    // lensUserName = {"lenspostxyz"}
                     key={index}
                     preview={item?.imageURL ? item?.imageURL : item?.permaLink}
                     store={store}
@@ -520,7 +522,7 @@ const WalletNFT = () => {
           </div>
           <LoadMoreComponent
             hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
+            isFetchingNextPage={isFetchingNextPage}  
           />
         </div>
       ) : (
