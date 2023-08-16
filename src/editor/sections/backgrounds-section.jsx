@@ -143,9 +143,9 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
             setStTab("tabNFTBgs");
           }}
           active={stTab === "tabNFTBgs"}
-          icon="build"
+          // icon="build"
         >
-          Supducks Backgrounds
+          Supducks
         </Button>
       </div>
 

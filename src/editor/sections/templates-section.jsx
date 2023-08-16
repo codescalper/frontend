@@ -63,7 +63,7 @@ const DesignCard = observer(
         }
       }
       >
-      <div className="rounded-lg">
+      <div className="rounded-lg overflow-hidden">
         <LazyLoadImage
           className="rounded-lg"
           placeholderSrc={replaceImageURL(preview)}

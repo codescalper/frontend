@@ -39,15 +39,24 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fnMessage } from "../../services/fnMessage";
 import { CompModal } from "../../elements/ModalComponent";
-import { MyDesignReacTour } from "../../elements/ReacTour.jsx"
+import { MyDesignReacTour } from "../../elements/ReacTour.jsx";
 
 // Design card component start - 23Jun2023
 
 const DesignCard = observer(
-  ({ design, preview, json, onDelete, onPublic, isPublic, openTokengateModal }) => {
+  ({
+    design,
+    preview,
+    json,
+    onDelete,
+    onPublic,
+    isPublic,
+    store,
+    openTokengateModal,
+  }) => {
     const [loading, setLoading] = useState(false);
-    const { contextCanvasIdRef } = useContext(Context);
-  
+    const { fastPreview, contextCanvasIdRef } = useContext(Context);
+
     return (
       <Card
         className="relative p-0 m-1 rounded-lg"
@@ -61,11 +70,15 @@ const DesignCard = observer(
           contextCanvasIdRef.current = design.id;
         }}
       >
-        <div className="rounded-lg">
+        <div className="rounded-lg overflow-hidden">
           <LazyLoadImage
             placeholderSrc={replaceImageURL(preview)}
             effect="blur"
-            src={preview}
+            src={
+              contextCanvasIdRef.current === design.id
+                ? fastPreview[0]
+                : preview
+            }
             alt="Preview Image"
           />
         </div>
@@ -107,21 +120,24 @@ const DesignCard = observer(
                   onClick={() => {
                     // implement share function here
                   }}
-                /> */}               
+                /> */}
                 <MenuItem
-                 
                   icon="globe"
                   text={isPublic(design.id) ? "Make Private" : "Make Public"}
                   onClick={onPublic}
                 />
-                <MenuItem icon="layout-circle" text="Tokengate & Make Public" onClick={openTokengateModal} />
+                <MenuItem
+                  icon="layout-circle"
+                  text="Tokengate & Make Public"
+                  onClick={openTokengateModal}
+                />
                 <MenuItem icon="trash" text="Delete" onClick={onDelete} />
               </Menu>
             }
             position={Position.BOTTOM}
           >
-            <div  id="makePublic">
-                <Button icon="more" />
+            <div id="makePublic">
+              <Button icon="more" />
             </div>
           </Popover2>
         </div>
@@ -133,6 +149,7 @@ const DesignCard = observer(
 // Design card component end - 23Jun2023
 
 export const MyDesignsPanel = observer(({ store }) => {
+  const { fastPreview, contextCanvasIdRef } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
   // const [stConfirmNew, setStConfirmNew] = useState("");
@@ -227,11 +244,11 @@ export const MyDesignsPanel = observer(({ store }) => {
   // Function to make the canvas public & also Tokengated
   const fnTokengateDesign = () => {
     console.log(document.getElementById("iDTokengateDesign").value);
-    // use this to fetch input field data : - 
+    // use this to fetch input field data : -
     // document.getElementById("iDTokengateDesign").value
-    
+
     setOpenTokengateModal(!openTokengateModal);
-  } 
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -246,39 +263,42 @@ export const MyDesignsPanel = observer(({ store }) => {
           const hasObjects = ids?.length;
 
           if (hasObjects) {
-            setIsOpen(!isOpen)
+            setIsOpen(!isOpen);
             // isOpen(true);
           }
         }}
       >
         Create new design
       </Button>
-      
-      {openTokengateModal &&
-      <CompModal
+      {openTokengateModal && (
+        <CompModal
           openTokengateModal
-          tokengatingIp = "0x001230000000 / Lenster post link"
-          // store={store} 
+          tokengatingIp="0x001230000000 / Lenster post link"
+          // store={store}
           icon={"lock"}
           ModalTitle={"Tokengate this template"}
           ModalMessage={`
           Please enter the Contract Address or the Lenster Post Link to tokengate this template.
-          `}            
+          `}
           customBtn={"Confirm"}
-          onClickFunction = {fnTokengateDesign}
-       />
-      }  
-      {isOpen &&
-      <CompModal
-      ModalTitle={"Are you sure to create a new design?"}
-      ModalMessage={"This will remove all the content from your canvas"} 
-      onClickFunction = {()=> fnDeleteCanvas()}
+          onClickFunction={fnTokengateDesign}
+        />
+      )}
+      {isOpen && (
+        <CompModal
+          ModalTitle={"Are you sure to create a new design?"}
+          ModalMessage={"This will remove all the content from your canvas"}
+          onClickFunction={() => fnDeleteCanvas()}
+        />
+      )}
+      <SearchComponent
+        onClick={false}
+        query={query}
+        setQuery={setQuery}
+        placeholder="Search designs by id"
       />
-    }
-      <SearchComponent onClick={false} query={query} setQuery={setQuery} placeholder="Search designs by id" />
       <MyDesignReacTour />
-    {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
-
+      {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
@@ -286,7 +306,6 @@ export const MyDesignsPanel = observer(({ store }) => {
       {isError ? (
         <ErrorComponent error={error} />
       ) : data.length > 0 ? (
-        
         <div className="overflow-y-auto grid grid-cols-2" id="RecentDesigns">
           {data.map((design) => {
             return (
@@ -308,11 +327,17 @@ export const MyDesignsPanel = observer(({ store }) => {
                     : changeVisibility({ id: design.id, isPublic: true })
                 }
                 isPublic={isCanvasPublic}
-                openTokengateModal = {()=> setOpenTokengateModal(!openTokengateModal)}
-                
+                openTokengateModal={() =>
+                  setOpenTokengateModal(!openTokengateModal)
+                }
               />
-            );  
-          })}     
+            );
+          })}
+          {contextCanvasIdRef.current === null && fastPreview[0] && (
+            <Card className="relative p-0 m-1" interactive>
+              <img src={fastPreview[0]} alt="" />
+            </Card>
+          )}
         </div>
       ) : (
         <div id="RecentDesigns">

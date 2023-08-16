@@ -4,57 +4,50 @@ import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
 import {
   SidePanel,
-  DEFAULT_SECTIONS,
-  // TemplatesSection,
   TextSection,
   BackgroundSection,
-  UploadSection,
   LayersSection,
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 import { loadFile } from "./file";
-import { CustomSizesPanel } from "./sections/resize-section";
-import { BackgroundSection2 } from "./sections/backgrounds-section";
-import { ShapesSection } from "./sections/shapes-section";
-import { IconsSection } from "./sections/icons-section";
-import { NFTSection } from "./sections/nft-section";
-import { StableDiffusionSection } from "./sections/stable-diffusion-section";
-import { MyDesignsSection } from "./sections/my-designs-section";
 import { useProject } from "./project";
-
-import Topbar from "./topbar/topbar";
-
-import { TemplatesSection } from "./sections/templates-section";
 import { useAccount } from "wagmi";
 import {
   createCanvas,
   getRemovedBgS3Link,
-  twitterAuthenticate,
-  twitterAuthenticateCallback,
   updateCanvas,
 } from "../services/backendApi";
 import { toast } from "react-toastify";
-
-// New Imports :
 import { Button } from "@blueprintjs/core";
-import axios from "axios";
 import { Context } from "../context/ContextProvider";
-import { BACKEND_DEV_URL } from "../services/env";
 import { replaceImageURL } from "../services/replaceUrl";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { wait } from "../utility/waitFn";
 import { fnMessage } from "../services/fnMessage";
-import _ from "lodash";
+import _, { set } from "lodash";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "../services/localStorage";
-import { AIImageSection } from "./sections/ai-image-section";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
-import { onboardingSteps, onboardingStepsWithShare } from "../elements/onboardingSteps";
-import { CustomUploadSection } from "./sections/upload-section";
+import {
+  onboardingSteps,
+  onboardingStepsWithShare,
+} from "../elements/onboardingSteps";
+import {
+  AIImageSection,
+  BackgroundSection2,
+  CustomSizesPanel,
+  CustomUploadSection,
+  IconsSection,
+  MyDesignsSection,
+  NFTSection,
+  ShapesSection,
+  TemplatesSection,
+} from "./sections";
+import { Topbar } from "./topbar";
 
 unstable_setAnimationsEnabled(true);
 
@@ -68,11 +61,9 @@ const sections = [
   AIImageSection,
   BackgroundSection,
   ShapesSection,
-  // UploadSection,
   CustomUploadSection,
   LayersSection,
   CustomSizesPanel,
-  // StableDiffusionSection,
 ];
 
 const useHeight = () => {
@@ -90,8 +81,14 @@ const Editor = ({ store }) => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
-  const { contextCanvasIdRef, setText, setIsLoading, enabled, setEnabled } =
-    useContext(Context);
+  const {
+    contextCanvasIdRef,
+    setText,
+    setIsLoading,
+    enabled,
+    setEnabled,
+    setFastPreview,
+  } = useContext(Context);
   const timeoutRef = useRef(null);
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
 
@@ -104,13 +101,12 @@ const Editor = ({ store }) => {
   };
 
   const handleDrop = (ev) => {
-    
     // Do not load the upload dropzone content directly to canvas
     // Avoids Duplication issue
-    if(store.openedSidePanel == "Upload"){
-      return
+    if (store.openedSidePanel == "Upload") {
+      return;
     }
-    console.log(store.openedSidePanel)
+    console.log(store.openedSidePanel);
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
 
@@ -125,8 +121,8 @@ const Editor = ({ store }) => {
     }
   };
   // ------ ai_integration branch
-  // Cutout pro API start
 
+  // Cutout pro API start
   const [file, setFile] = useState(null);
   const [imgResponse, setImgResponse] = useState(null);
   const [removedBgImageUrl, setRemovedBgImageUrl] = useState("");
@@ -150,13 +146,8 @@ const Editor = ({ store }) => {
     },
   });
 
-  //   const handleFileChange = (event) => {
-  // 		setFile(event.target.files[0]);
-  // 		setFile(event.target.files[0]);
-  //   };
-
   const handleRemoveBg = async () => {
-    const varImageUrl = store.selectedElements[0].src;
+    const varImageUrl = store.selectedElements[0]?.src;
     fnFindPageNo();
 
     var removedBgURL = await fnRemoveBg(varImageUrl);
@@ -213,6 +204,12 @@ const Editor = ({ store }) => {
 
   //  Toast Setup
   const fnCallToast = async () => {
+    // check if image is selected on canvas
+    const varImageUrl = store.selectedElements[0]?.src;
+    if (varImageUrl === undefined) {
+      toast.error("Please select an image to remove background");
+      return;
+    }
     const id = toast.loading("Removing Background", { autoClose: 4000 });
     const res = await handleRemoveBg();
     if (res) {
@@ -243,14 +240,14 @@ const Editor = ({ store }) => {
     }
 
     // schedule saving to the backend
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = setTimeout(async () => {
       // reset timeout
       timeoutRef.current = null;
 
       // export the design
       const json = store.toJSON();
 
-      const canvasChildren = json.pages[0].children;
+      const canvasChildren = json.pages[0]?.children;
       if (contextCanvasIdRef.current) {
         canvasIdRef.current = contextCanvasIdRef.current;
       }
@@ -267,11 +264,18 @@ const Editor = ({ store }) => {
 
       // save it to the backend
       if (canvasChildren.length > 0) {
-        // if (!address) return;
+        const imgBase64 = await store.toDataURL();
+
+        // remove data:image/png;base64, from the base64 string
+        const imgBase64Stripped = imgBase64.replace(
+          "data:image/png;base64,",
+          ""
+        );
 
         if (!canvasIdRef.current) {
           createCanvasAsync({
-            jsonCanvasData: json,
+            data: json,
+            preview: imgBase64Stripped,
           })
             .then((res) => {
               if (res?.status === "success") {
@@ -288,9 +292,9 @@ const Editor = ({ store }) => {
         if (canvasIdRef.current) {
           updateCanvasAsync({
             id: canvasIdRef.current,
-            jsonCanvasData: json,
-            followCollectModule: "canvas",
+            data: json,
             isPublic: false,
+            preview: imgBase64Stripped,
           })
             .then((res) => {
               if (res?.status === "success") {
@@ -326,18 +330,62 @@ const Editor = ({ store }) => {
   // React tour Setup :
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
+  // default split revenue recipient
   useEffect(() => {
     // if wallet is connected set the recipient address only in the first index for the first time
     if (isConnected) {
       setEnabled((prevEnabled) => ({
         ...prevEnabled,
         splitRevenueRecipients: [
+          { recipient: "@lenspostxyz.lens", split: 10.0 },
           { recipient: address, split: 90.0 },
-          ...prevEnabled.splitRevenueRecipients.slice(1),
+          ...prevEnabled.splitRevenueRecipients.slice(2),
         ],
       }));
     }
   }, [address]);
+
+  // funtion for fast preview
+  useEffect(() => {
+    const requestSave = async () => {
+      const json = store.toJSON();
+      const canvasChildren = json.pages[0]?.children;
+
+      if (canvasChildren.length === 0) {
+        contextCanvasIdRef.current = null;
+        setFastPreview("");
+      } else {
+        // check if the canvas has more than 1 page
+        if (store.pages.length > 1) {
+          // if yes, get the base64 for all the pages
+          let arr = [];
+          for (let i = 0; i < store.pages.length; i++) {
+            const imgBase64 = await store.toDataURL({
+              pageId: store.pages[i].id,
+            });
+            arr.push(imgBase64);
+          }
+          setFastPreview(arr);
+        } else {
+          const imgBase64 = await store.toDataURL();
+          setFastPreview([imgBase64]);
+        }
+      }
+    };
+
+    // request saving operation on any changes
+    const handleChange = () => {
+      requestSave();
+    };
+
+    // Add the change event listener
+    const off = store.on("change", handleChange);
+
+    // Clean up the event listener on unmount
+    return () => {
+      off();
+    };
+  }, []);
 
   return (
     <>
@@ -369,20 +417,19 @@ const Editor = ({ store }) => {
 
               {/* <div className="mt-2 mb-2 mr-2 border border-gray-300"> */}
               <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg">
-
-                <div className=""> 
-                  <Button 
+                <div className="">
+                  <Button
                     id="fourth-step"
                     icon="clean"
                     onClick={fnCallToast}
                     title={isConnected ? "" : "Please connect your wallet"}
                     disabled={!isConnected}
-                    className="mt-2 mb-2 ml-3 py-1 px-4"  
+                    className="mt-2 mb-2 ml-3 py-1 px-4"
                   >
-                    {`Remove background`} 
+                    {`Remove background`}
                   </Button>
                 </div>
-                
+
                 <ZoomButtons store={store} />
 
                 {/* Quick Tour on the main page */}
