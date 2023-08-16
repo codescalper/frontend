@@ -20,7 +20,8 @@ import {
 } from "../../elements";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
-import { Spinner } from "@blueprintjs/core";
+import { Spinner, Button, MenuItem, Menu, Icon } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 import { Context } from "../../context/ContextProvider";
 import { CompModal } from "../../elements/ModalComponent";
 import { fnLoadJsonOnPage } from "../../utility/loadJsonOnPage";
@@ -31,31 +32,77 @@ const DesignCard = observer(
   ({ design, preview, json, onDelete, onPublic, tab }) => {
     // To check is the Modal is open or not
     const [isOpen, setIsOpen] = useState(false);
+    const [isTokengated, setIsTokengated] = useState(false); // For Displaying the Tokengated Asset Icon
+    const [stOpenTokengatedModal, setStOpenTokengatedModal] = useState(false); //For Modal Interaction
 
     return (
       <Card
+        className="rounded-lg"
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
-        // onDragEnd={() => {
-
-        // }}
-        onClick={async () => {
+        onDragEnd={() => async () => {
+        
+        }}
+        
+        onClick={ async () => {
+          
+          // Show Modal: if it's tokengated
+          if(isTokengated){
+            setStOpenTokengatedModal(!stOpenTokengatedModal)
+          } 
+          if(!isTokengated){
           // Check if there are any elements on the page - to open the Modal or not
-          if (store.activePage.children.length > 1) {
-            setIsOpen(!isOpen);
-          } else {
+          if(store.activePage.children.length > 1){ 
+            setIsOpen(!isOpen)
+          } 
+          else{
+          // If not load the clicked JSON 
             fnLoadJsonOnPage(store, json);
           }
-        }}
+        }
+        }
+      }
       >
-        <div className="">
-          <LazyLoadImage
-            placeholderSrc={replaceImageURL(preview)}
-            effect="blur"
-            src={tab === "user" ? preview : replaceImageURL(preview)}
-            alt="Preview Image"
-          />
+      <div className="rounded-lg overflow-hidden">
+        <LazyLoadImage
+          className="rounded-lg"
+          placeholderSrc={replaceImageURL(preview)}
+          effect="blur"
+          src={tab === "user" ? preview : replaceImageURL(preview)}
+          alt="Preview Image"
+        />
+      </div>
+
+      {/* Show Icon only if it's tokengated, i.e: `isTokengated` === true  */}
+      { isTokengated && 
+        <div
+        className="bg-white p-1 rounded-lg "
+        style={{ position: "absolute", top: "8px", left: "8px" }}
+        onClick={(e) => {
+          e.stopPropagation();  
+        }}
+        >
+          <Icon icon="endorsed" intent="primary" size={16} />
         </div>
+      }
+
+      {/* Show Modal only if it's tokengated, i.e: `isTokengated` & `stOpenTokengatedModal` === true */}
+      {
+      isTokengated && 
+      stOpenTokengatedModal &&
+      <CompModal 
+          store={store} json={json}
+          icon={"endorsed"}
+          ModalTitle={"Access Restricted for this template"}
+          ModalMessage={`
+          This is a tokengated Template, Please collect this post to get Access.${""}
+          https://opensea.io/collection/supducks
+          `}            
+          customBtn={"Visit Link"}
+          // Example - Supducks Opensea Link
+          onClickFunction = {()=> window.open("https://opensea.io/assets/ethereum/0x3fe1a4c1481c8351e91b64d5c398b159de07cbc5", "_blank")}
+       />
+      }  
 
         {isOpen && (
           <CompModal

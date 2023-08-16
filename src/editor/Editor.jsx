@@ -45,7 +45,7 @@ import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { wait } from "../utility/waitFn";
 import { fnMessage } from "../services/fnMessage";
-import _ from "lodash";
+import _, { set } from "lodash";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
@@ -56,7 +56,8 @@ import FcIdea from "@meronex/icons/fc/FcIdea";
 import {
   onboardingSteps,
   onboardingStepsWithShare,
-} from "../utility/onboardingSteps";
+} from "../elements/onboardingSteps";
+import { CustomUploadSection } from "./sections/upload-section";
 
 unstable_setAnimationsEnabled(true);
 
@@ -70,7 +71,8 @@ const sections = [
   AIImageSection,
   BackgroundSection,
   ShapesSection,
-  UploadSection,
+  // UploadSection,
+  CustomUploadSection,
   LayersSection,
   CustomSizesPanel,
   // StableDiffusionSection,
@@ -111,6 +113,12 @@ const Editor = ({ store }) => {
   };
 
   const handleDrop = (ev) => {
+    // Do not load the upload dropzone content directly to canvas
+    // Avoids Duplication issue
+    if (store.openedSidePanel == "Upload") {
+      return;
+    }
+    console.log(store.openedSidePanel);
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
 
@@ -250,7 +258,7 @@ const Editor = ({ store }) => {
       // export the design
       const json = store.toJSON();
 
-      const canvasChildren = json.pages[0].children;
+      const canvasChildren = json.pages[0]?.children;
       if (contextCanvasIdRef.current) {
         canvasIdRef.current = contextCanvasIdRef.current;
       }
@@ -340,7 +348,7 @@ const Editor = ({ store }) => {
       setEnabled((prevEnabled) => ({
         ...prevEnabled,
         splitRevenueRecipients: [
-          { recipient: "Lespost", split: 10.0 },
+          { recipient: "@lenspostxyz.lens", split: 10.0 },
           { recipient: address, split: 90.0 },
           ...prevEnabled.splitRevenueRecipients.slice(2),
         ],
@@ -352,14 +360,27 @@ const Editor = ({ store }) => {
   useEffect(() => {
     const requestSave = async () => {
       const json = store.toJSON();
-      const canvasChildren = json.pages[0].children;
+      const canvasChildren = json.pages[0]?.children;
 
       if (canvasChildren.length === 0) {
         contextCanvasIdRef.current = null;
         setFastPreview("");
       } else {
-        const imgBase64 = await store.toDataURL();
-        setFastPreview(imgBase64);
+        // check if the canvas has more than 1 page
+        if (store.pages.length > 1) {
+          // if yes, get the base64 for all the pages
+          let arr = [];
+          for (let i = 0; i < store.pages.length; i++) {
+            const imgBase64 = await store.toDataURL({
+              pageId: store.pages[i].id,
+            });
+            arr.push(imgBase64);
+          }
+          setFastPreview(arr);
+        } else {
+          const imgBase64 = await store.toDataURL();
+          setFastPreview([imgBase64]);
+        }
       }
     };
 
@@ -405,11 +426,8 @@ const Editor = ({ store }) => {
               </div>
               <Workspace store={store} />
 
-              {/* ai_integration Start */}
               {/* <div className="mt-2 mb-2 mr-2 border border-gray-300"> */}
-              <div className="mt-2 mb-2 mr-2 flex flex-row justify-between">
-                <ZoomButtons store={store} />
-
+              <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg">
                 <div className="">
                   <Button
                     id="fourth-step"
@@ -417,17 +435,17 @@ const Editor = ({ store }) => {
                     onClick={fnCallToast}
                     title={isConnected ? "" : "Please connect your wallet"}
                     disabled={!isConnected}
-                    className="mt-2 mb-2 ml-3 p-1 "
+                    className="mt-2 mb-2 ml-3 py-1 px-4"
                   >
-                    Remove background
+                    {`Remove background`}
                   </Button>
                 </div>
 
-                {/* <Button onClick={fnDeletePrevImage}> Remove Element </Button> */}
+                <ZoomButtons store={store} />
 
                 {/* Quick Tour on the main page */}
                 <div
-                  className="flex flex-row justify-end align-middle cursor-pointer"
+                  className="m-1 ml-2 flex flex-row justify-end align-middle cursor-pointer"
                   onClick={async () => {
                     setCurrentStep(0);
                     if (isConnected) {
@@ -441,8 +459,7 @@ const Editor = ({ store }) => {
                 >
                   <FcIdea className="m-2" size="16" />{" "}
                   <div className="m-2 ml-0 text-sm text-yellow-600">
-                    {" "}
-                    Need an intro?{" "}
+                    Need an intro?
                   </div>
                 </div>
               </div>

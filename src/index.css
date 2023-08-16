@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root{
+	--varLogoPink : #e598d8;
+	--varLogoYellow: #e1f16b;
+	--varLogoYellow2: #fff559;
+	--varLogoBlue: #a0f8ee;
+	--varLogoDarkBlue: #2c346b;
+}
 html{
 	margin: 0;
 }
@@ -42,6 +49,111 @@ img {
 }
 /* css for designed scrollbar ends here */
 
+
+/* CSS Style Guide */
+/* Following  border-radius - 8px / 16px */
+/* Tailwind - rounded-lg */
+
+/* Overwriting Polotno defaults Start */
+
+.polotno-app-container
+.bp4-button:not([class*="bp4-intent-"])
+.bp4-icon:not([class*="bp4-intent-"]) {
+color: rgb(255, 255, 255);
+}
+.bp4-button:not([class*="bp4-intent-"]):hover {
+  background-color:rgb(255, 255, 255);
+}
+
+/* Styling Sidepanel Icons on Click */
+
+.go2941063172:hover, .go2941063172.active {
+	background-color: #e1f16ba1 !important;
+}
+/* .go1430256704 .polotno-side-tabs-container::-webkit-scrollbar-track {
+  background: #eb0ac5;
+} 
+.polotno-side-tabs-container::-webkit-scrollbar {
+  width:32px !important;
+}  */
+
+/* Styling the Sidepanel */
+.bp4-navbar{
+  border-radius: 8px; 
+  background-color: #ffffff;
+}
+.go2941063172{
+  /* border-radius: 64px; */
+  border-radius: 8px;
+} 
+.go2941063172:hover{
+  border-radius: 8px; 
+}
+.go1236784588{
+  height: 99% !important;
+}
+/* Styling the Buttons */
+.bp4-button{
+  /* all:unset; */
+  border-radius: 8px; 
+  background-color: #e1f16ba1;
+} 
+
+.polotno-side-tabs-inner,
+.polotno-side-panel-tab{
+  display:flex ;
+  flex-direction: column;
+  justify-content:center;
+  align-items:center; 
+  text-align: center;
+} 
+/* Styling the Popovers */
+ .bp4-popover2{
+  border-radius: 8px;
+}
+
+.bp4-popover2 .bp4-popover2-content{
+  border-radius: 8px;
+}
+.bp4-menu{
+	border-radius: 8px;
+}
+.bp4-input-group .bp4-input {
+  border-radius: 8px;
+}
+/* Styling the bottom bar (zoom btn, remove bg ..)*/
+
+.go1534176008{
+  position: absolute !important;
+  bottom: 15px !important;
+}
+
+
+/* Under DEV */
+/* overwrite colors for side-panel tabs */
+.bp4-dark .polotno-side-tabs-container .polotno-side-panel-tab:hover,
+.bp4-dark .polotno-side-tabs-container .polotno-side-panel-tab.active {
+  background-color: #fafafa;
+  /* color: white; */
+}
+
+/* change hover style of all buttons */
+.bp4-dark .bp4-button:not([class*="bp4-intent-"]):hover {
+  background-color: #fafafa;
+}
+
+/* change main color of all active buttons */
+.bp4-dark
+  .polotno-app-container
+  .bp4-button:not([class*="bp4-intent-"])
+  .bp4-icon:not([class*="bp4-intent-"]) {
+  color: white;
+}
+.bp4-dark .polotno-app-container .bp4-button.bp4-minimal.bp4-disabled {
+  color: rgba(117, 186, 255, 0.6);
+}
+
+/* Overwriting Polotno defaults End */
 /* Add these custom classes to your Tailwind CSS configuration or your stylesheets */
 
 @keyframes fadeInUp {

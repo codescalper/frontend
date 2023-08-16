@@ -6,6 +6,7 @@ import CustomImageComponent from "./CustomImageComponent";
 import MessageComponent from "./MessageComponent";
 import SearchComponent from "./SearchComponent";
 import LoadMoreComponent from "./LoadMoreComponent";
+import UploadFileDropzone from "./UploadFileDropzone";
 
 export {
   ErrorComponent,
@@ -16,4 +17,5 @@ export {
   MessageComponent,
   SearchComponent,
   LoadMoreComponent,
+  UploadFileDropzone,
 };

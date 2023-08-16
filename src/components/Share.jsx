@@ -83,7 +83,7 @@ const Share = () => {
               onChange={(e) => setPostDescription(e.target.value)}
               value={postDescription}
               placeholder="Write a description..."
-              className="border border-b-4 w-full h-40 mb-2 text-lg outline-none p-2 ring-0 focus:ring-2 rounded-md"
+              className="border border-b-4 w-full h-40 mb-2 text-lg outline-none p-2 ring-0 focus:ring-2 rounded-lg"
             />
 
             <div className="flex flex-row">

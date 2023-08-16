@@ -21,7 +21,7 @@ const CustomImageComponent = ({
     return Math.floor(100 + Math.random() * 900);
   };
 
-  // conert to base64
+  // convert to base64
   const getBase64 = async (image) => {
     const response = await fetch(image);
     const blob = await response.blob();
@@ -74,7 +74,7 @@ const CustomImageComponent = ({
 
   return (
     <Card
-      className="relative p-0 m-1"
+      className="relative p-0 m-1 rounded-lg"
       interactive
       onDragEnd={() => {
         fnDropImageOnCanvas();
@@ -82,8 +82,8 @@ const CustomImageComponent = ({
       onClick={() => {
         fnDropImageOnCanvas();
       }}
-    >
-      <div className="">
+    >   
+      <div className="rounded-lg overflow-hidden"> 
         <LazyLoadImage
           placeholderSrc={base64Data}
           effect="blur"
