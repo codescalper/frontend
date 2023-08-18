@@ -1,15 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { DownloadButton } from "./DownloadButton";
-import { useDisconnect, useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useEffect, useState } from "react";
-
-// New imports: - reactour
-import { useTour } from "@reactour/tour";
 import RightDrawer from "./rightdrawer";
 
 const Topbar = observer(({ store }) => {
-  // 18Jun2023
   const { isConnected } = useAccount();
 
   return (
