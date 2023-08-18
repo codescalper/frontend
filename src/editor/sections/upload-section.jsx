@@ -3,40 +3,79 @@
 // ---- This section is the custom image upload section ----
 // ---- ----
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-
 import { SectionTab } from "polotno/side-panel";
-
 import { Spinner } from "@blueprintjs/core";
-
 import { useAccount } from "wagmi";
-
 import {
   ConnectWalletMsgComponent,
   CustomImageComponent,
   ErrorComponent,
+  LoadMoreComponent,
   MessageComponent,
-  SearchComponent,
   UploadFileDropzone,
 } from "../../elements";
-import { getAllCanvas } from "../../services/backendApi";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteUserAsset, getUserAssets } from "../../services/backendApi";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { UploadIcon } from "../editor-icon";
-
-import { FileInput } from "@blueprintjs/core";
+import { fnLoadMore } from "../../services/fnLoadMore";
+import { fnMessage } from "../../services/fnMessage";
+import { toast } from "react-toastify";
 
 const CustomUploadPanel = observer(({ store }) => {
-  const { isDisconnected, address, isConnected } = useAccount();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const [query, setQuery] = useState("");
-
+  const { isDisconnected, address } = useAccount();
   const queryClient = useQueryClient();
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["my-designs"],
-    queryFn: getAllCanvas,
+
+  // get all user assets
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["userAssets"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) => getUserAssets(pageParam),
+    enabled: address ? true : false,
   });
+
+  // delete user asset
+  const {
+    mutate: deleteAsset,
+    isError: isDeleteError,
+    error: deleteError,
+  } = useMutation({
+    mutationKey: "delete-user-asset",
+    mutationFn: deleteUserAsset,
+    onSuccess: (data) => {
+      toast.success(data?.message);
+      queryClient.invalidateQueries(["userAssets"], { exact: true });
+    },
+    onError: (error) => {
+      toast.error(error);
+    },
+  });
+
+  // delete error message
+  useEffect(() => {
+    if (isDeleteError) {
+      toast.error(fnMessage(deleteError));
+    }
+  }, [isDeleteError]);
+
+  // load more
+  useEffect(() => {
+    if (isDisconnected || !address) return;
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isDisconnected || !address) {
     return (
@@ -60,39 +99,40 @@ const CustomUploadPanel = observer(({ store }) => {
     <div className="h-full flex flex-col">
       <h1 className="text-lg">Gallery</h1>
 
-      {/* <SearchComponent onClick={false} query={""} setQuery={""} placeholder="Search designs by id" /> */}
       <div className="m-2 mt-4">
-        {/* <FileInput disabled={false} text="Choose file" fill buttonText="Upload" onInputChange={""} />        */}
-
         {/* DropZone component Start*/}
         <UploadFileDropzone />
         {/* DropZone component End*/}
       </div>
 
       <hr className="my-2" />
+      {/* <SearchComponent onClick={false} query={""} setQuery={""} placeholder="Search designs by id" /> */}
 
       {isError ? (
         <ErrorComponent error={error} />
-      ) : data.length > 0 ? (
+      ) : data?.pages[0]?.data.length > 0 ? (
         <>
           <div className="m-2"> Recent Uploads</div>
           <div className="overflow-y-auto grid grid-cols-2">
-            {data.map((design) => {
-              return (
-                <CustomImageComponent
-                  design={design}
-                  // json={design.data}
-                  preview={
-                    design?.imageLink != null &&
-                    design?.imageLink.length > 0 &&
-                    design?.imageLink[0]
-                  }
-                  key={design.id}
-                  store={store}
-                />
-              );
-            })}
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <CustomImageComponent
+                    design={item}
+                    preview={item?.image}
+                    key={index}
+                    store={store}
+                    hasOptionBtn={true}
+                    onDelete={() => deleteAsset(item?.id)}
+                  />
+                );
+              })}
           </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </>
       ) : (
         <div>

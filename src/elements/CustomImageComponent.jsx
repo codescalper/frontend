@@ -1,7 +1,8 @@
 // Seperate component for Lazy loading (CustomImage) - 29Jun2023
 
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Card } from "@blueprintjs/core";
+import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 import { replaceImageURL } from "../services/replaceUrl";
 import { useEffect, useState } from "react";
 
@@ -13,6 +14,8 @@ const CustomImageComponent = ({
   store,
   dimensions,
   isBackground,
+  hasOptionBtn,
+  onDelete,
 }) => {
   const [base64Data, setBase64Data] = useState("");
 
@@ -53,7 +56,7 @@ const CustomImageComponent = ({
       x: isBackground ? 0 : store.width / 4,
       y: isBackground ? 0 : store.height / 4,
     });
-};
+  };
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -82,8 +85,8 @@ const CustomImageComponent = ({
       onClick={() => {
         fnDropImageOnCanvas();
       }}
-    >   
-      <div className="rounded-lg overflow-hidden"> 
+    >
+      <div className="rounded-lg overflow-hidden">
         <LazyLoadImage
           placeholderSrc={base64Data}
           effect="blur"
@@ -91,6 +94,28 @@ const CustomImageComponent = ({
           alt="Preview Image"
         />
       </div>
+
+      {hasOptionBtn && (
+        <div
+          style={{ position: "absolute", top: "5px", right: "5px" }}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <Popover2
+            content={
+              <Menu>
+                <MenuItem icon="trash" text="Delete" onClick={onDelete} />
+              </Menu>
+            }
+            position={Position.BOTTOM}
+          >
+            <div id="makePublic">
+              <Button icon="more" />
+            </div>
+          </Popover2>
+        </div>
+      )}
     </Card>
   );
 };

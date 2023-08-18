@@ -81,6 +81,7 @@ const Editor = ({ store }) => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
+  const canvasBase64Ref = useRef([]);
   const {
     contextCanvasIdRef,
     setText,
@@ -88,6 +89,7 @@ const Editor = ({ store }) => {
     enabled,
     setEnabled,
     setFastPreview,
+    fastPreview,
   } = useContext(Context);
   const timeoutRef = useRef(null);
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
@@ -256,26 +258,18 @@ const Editor = ({ store }) => {
         contextCanvasIdRef: contextCanvasIdRef.current,
       });
 
-      if (canvasChildren.length === 0) {
+      if (canvasChildren?.length === 0) {
         console.log("Canvas is empty. Its stopped from saving");
         canvasIdRef.current = null;
         contextCanvasIdRef.current = null;
       }
 
       // save it to the backend
-      if (canvasChildren.length > 0) {
-        const imgBase64 = await store.toDataURL();
-
-        // remove data:image/png;base64, from the base64 string
-        const imgBase64Stripped = imgBase64.replace(
-          "data:image/png;base64,",
-          ""
-        );
-
+      if (canvasChildren?.length > 0) {
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
-            preview: imgBase64Stripped,
+            preview: canvasBase64Ref.current,
           })
             .then((res) => {
               if (res?.status === "success") {
@@ -294,7 +288,7 @@ const Editor = ({ store }) => {
             id: canvasIdRef.current,
             data: json,
             isPublic: false,
-            preview: imgBase64Stripped,
+            preview: canvasBase64Ref.current,
           })
             .then((res) => {
               if (res?.status === "success") {
@@ -351,24 +345,29 @@ const Editor = ({ store }) => {
       const json = store.toJSON();
       const canvasChildren = json.pages[0]?.children;
 
-      if (canvasChildren.length === 0) {
+      if (canvasChildren?.length === 0) {
         contextCanvasIdRef.current = null;
+        canvasBase64Ref.current = [];
         setFastPreview("");
       } else {
         // check if the canvas has more than 1 page
-        if (store.pages.length > 1) {
+        if (store.pages.length > 0) {
           // if yes, get the base64 for all the pages
-          let arr = [];
+          let previewBase64Arr = [];
+          let storeBase64Arr = [];
           for (let i = 0; i < store.pages.length; i++) {
             const imgBase64 = await store.toDataURL({
               pageId: store.pages[i].id,
             });
-            arr.push(imgBase64);
+
+            // remove data:image/png;base,
+            const imgBase64Stripped = imgBase64.split(",")[1];
+
+            storeBase64Arr.push(imgBase64Stripped);
+            previewBase64Arr.push(imgBase64);
           }
-          setFastPreview(arr);
-        } else {
-          const imgBase64 = await store.toDataURL();
-          setFastPreview([imgBase64]);
+          canvasBase64Ref.current = storeBase64Arr;
+          setFastPreview(previewBase64Arr);
         }
       }
     };
