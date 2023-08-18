@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import TiDelete from "@meronex/icons/ti/TiDelete";
 import { uploadUserAssets } from "../services/backendApi";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { fnMessage } from "../services/fnMessage";
 
 const UploadFileDropzone = () => {
   const [stFiles, setStFiles] = useState([]);
+  const queryClient = useQueryClient();
 
   // get the base64 string of the file
   const getBase64 = (file) => {
@@ -45,6 +46,9 @@ const UploadFileDropzone = () => {
   const { mutateAsync } = useMutation({
     mutationKey: "uploadUaserAssets",
     mutationFn: uploadUserAssets,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["userAssets"], { exact: true });
+    },
   });
 
   // function for remove image from dropzone
