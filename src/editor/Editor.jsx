@@ -47,7 +47,7 @@ import {
   ShapesSection,
   TemplatesSection,
 } from "./sections";
-import Topbar from "./topbar/Topbar";
+import { Topbar } from "./topbar";
 
 unstable_setAnimationsEnabled(true);
 
