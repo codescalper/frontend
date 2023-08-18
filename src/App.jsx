@@ -170,11 +170,6 @@ export default function App() {
   }, [isSuccess]);
 
   useEffect(() => {
-    // Skip the effect on the initial render
-    // if (initialRender) {
-    //   setInitialRender(false);
-    //   return;
-    // }
 
     // Run the effect when isConnected and address change
     if (isConnected && address) {
@@ -206,7 +201,7 @@ export default function App() {
   return (
     <>
       <Editor />
-      {/* <CheckInternetConnection /> */}
+      <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
       <ToastContainer
         position="top-center"
