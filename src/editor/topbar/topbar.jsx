@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 // New imports: - reactour
 import { useTour } from "@reactour/tour";
-import RightDrawer from "./RightDrawer";
+import RightDrawer from "./rightdrawer";
 
 const Topbar = observer(({ store }) => {
   // 18Jun2023
