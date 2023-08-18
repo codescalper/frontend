@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import RightDrawer from "./rightdrawer";
 
-const Topbar = ({ store }) => {
+export const Topbar = observer(({ store }) => {
   const { isConnected } = useAccount();
 
   return (
@@ -56,6 +56,4 @@ const Topbar = ({ store }) => {
       </div>
     </div>
   );
-};
-
-export default Topbar;
+});
