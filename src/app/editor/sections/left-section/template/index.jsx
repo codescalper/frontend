@@ -3,33 +3,33 @@ import { observer } from "mobx-react-lite";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { SectionTab } from "polotno/side-panel";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
-import { TemplatesIcon } from "../../../assets";
+import { TemplatesIcon } from "../../../../../assets";
 import {
   getAllTemplates,
   getUserPublicTemplates,
-} from "../../services/backendApi";
-import { replaceImageURL } from "../../services/replaceUrl";
+} from "../../../../../services";
 import { Card } from "@blueprintjs/core";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
   ConnectWalletMsgComponent,
-  CustomImageComponent,
+  CompModal,
   ErrorComponent,
   MessageComponent,
   SearchComponent,
-} from "../../elements";
+} from "../../../common";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner, Button, MenuItem, Menu, Icon } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
-import { Context } from "../../context/ContextProvider";
-import { CompModal } from "../../elements/ModalComponent";
-import { fnLoadJsonOnPage } from "../../utility/loadJsonOnPage";
+import { useStore } from "../../../../../hooks";
+import { Context } from "../../../../../context/ContextProvider";
+import { fnLoadJsonOnPage, replaceImageURL } from "../../../../../utils";
 
 // Design card component start
 
 const DesignCard = observer(
   ({ design, preview, json, onDelete, onPublic, tab }) => {
+    const store = useStore();
     // To check is the Modal is open or not
     const [isOpen, setIsOpen] = useState(false);
     const [isTokengated, setIsTokengated] = useState(false); // For Displaying the Tokengated Asset Icon
@@ -40,69 +40,67 @@ const DesignCard = observer(
         className="rounded-lg"
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
-        onDragEnd={() => async () => {
-        
-        }}
-        
-        onClick={ async () => {
-          
+        onDragEnd={() => async () => {}}
+        onClick={async () => {
           // Show Modal: if it's tokengated
-          if(isTokengated){
-            setStOpenTokengatedModal(!stOpenTokengatedModal)
-          } 
-          if(!isTokengated){
-          // Check if there are any elements on the page - to open the Modal or not
-          if(store.activePage.children.length > 1){ 
-            setIsOpen(!isOpen)
-          } 
-          else{
-          // If not load the clicked JSON 
-            fnLoadJsonOnPage(store, json);
+          if (isTokengated) {
+            setStOpenTokengatedModal(!stOpenTokengatedModal);
           }
-        }
-        }
-      }
-      >
-      <div className="rounded-lg overflow-hidden">
-        <LazyLoadImage
-          className="rounded-lg"
-          placeholderSrc={replaceImageURL(preview)}
-          effect="blur"
-          src={tab === "user" ? preview : replaceImageURL(preview)}
-          alt="Preview Image"
-        />
-      </div>
-
-      {/* Show Icon only if it's tokengated, i.e: `isTokengated` === true  */}
-      { isTokengated && 
-        <div
-        className="bg-white p-1 rounded-lg "
-        style={{ position: "absolute", top: "8px", left: "8px" }}
-        onClick={(e) => {
-          e.stopPropagation();  
+          if (!isTokengated) {
+            // Check if there are any elements on the page - to open the Modal or not
+            if (store.activePage.children.length > 1) {
+              setIsOpen(!isOpen);
+            } else {
+              // If not load the clicked JSON
+              fnLoadJsonOnPage(store, json);
+            }
+          }
         }}
-        >
-          <Icon icon="endorsed" intent="primary" size={16} />
+      >
+        <div className="rounded-lg overflow-hidden">
+          <LazyLoadImage
+            className="rounded-lg"
+            placeholderSrc={replaceImageURL(preview)}
+            effect="blur"
+            src={tab === "user" ? preview : replaceImageURL(preview)}
+            alt="Preview Image"
+          />
         </div>
-      }
 
-      {/* Show Modal only if it's tokengated, i.e: `isTokengated` & `stOpenTokengatedModal` === true */}
-      {
-      isTokengated && 
-      stOpenTokengatedModal &&
-      <CompModal 
-          store={store} json={json}
-          icon={"endorsed"}
-          ModalTitle={"Access Restricted for this template"}
-          ModalMessage={`
+        {/* Show Icon only if it's tokengated, i.e: `isTokengated` === true  */}
+        {isTokengated && (
+          <div
+            className="bg-white p-1 rounded-lg "
+            style={{ position: "absolute", top: "8px", left: "8px" }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Icon icon="endorsed" intent="primary" size={16} />
+          </div>
+        )}
+
+        {/* Show Modal only if it's tokengated, i.e: `isTokengated` & `stOpenTokengatedModal` === true */}
+        {isTokengated && stOpenTokengatedModal && (
+          <CompModal
+            store={store}
+            json={json}
+            icon={"endorsed"}
+            ModalTitle={"Access Restricted for this template"}
+            ModalMessage={`
           This is a tokengated Template, Please collect this post to get Access.${""}
           https://opensea.io/collection/supducks
-          `}            
-          customBtn={"Visit Link"}
-          // Example - Supducks Opensea Link
-          onClickFunction = {()=> window.open("https://opensea.io/assets/ethereum/0x3fe1a4c1481c8351e91b64d5c398b159de07cbc5", "_blank")}
-       />
-      }  
+          `}
+            customBtn={"Visit Link"}
+            // Example - Supducks Opensea Link
+            onClickFunction={() =>
+              window.open(
+                "https://opensea.io/assets/ethereum/0x3fe1a4c1481c8351e91b64d5c398b159de07cbc5",
+                "_blank"
+              )
+            }
+          />
+        )}
 
         {isOpen && (
           <CompModal
@@ -122,7 +120,7 @@ const DesignCard = observer(
 
 // Design card component end
 
-export const TemplatesPanel = observer(({ store }) => {
+export const TemplatesPanel = () => {
   const [tab, setTab] = useState("lenspost");
   const [stIsModalOpen, setStIsModalOpen] = useState(false);
 
@@ -148,13 +146,14 @@ export const TemplatesPanel = observer(({ store }) => {
           Community Pool
         </button>
       </div>
-      {tab === "lenspost" && <LenspostTemplates store={store} />}
-      {tab === "user" && <UserTemplates store={store} />}
+      {tab === "lenspost" && <LenspostTemplates />}
+      {tab === "user" && <UserTemplates />}
     </div>
   );
-});
+};
 
-const LenspostTemplates = ({ store }) => {
+const LenspostTemplates = () => {
+  const store = useStore();
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const { data, isLoading, isError, error } = useQuery({
@@ -197,7 +196,6 @@ const LenspostTemplates = ({ store }) => {
                 json={design.data}
                 preview={design?.image}
                 key={design.id}
-                store={store}
                 tab="lenspost"
               />
             );
@@ -212,7 +210,8 @@ const LenspostTemplates = ({ store }) => {
   );
 };
 
-const UserTemplates = ({ store }) => {
+const UserTemplates = () => {
+  const store = useStore();
   const [stOpenedModal, setStOpenedModal] = useState(true);
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
@@ -260,7 +259,6 @@ const UserTemplates = ({ store }) => {
                   design?.imageLink[0]
                 }
                 key={design.id}
-                store={store}
                 tab="user"
               />
             );
@@ -276,7 +274,7 @@ const UserTemplates = ({ store }) => {
 };
 
 // define the new custom section
-export const TemplatesSection = {
+const TemplatesSection = {
   name: "Templates",
   Tab: (props) => (
     <SectionTab name="Templates" {...props}>
@@ -286,3 +284,5 @@ export const TemplatesSection = {
   // we need observer to update component automatically on any store changes
   Panel: TemplatesPanel,
 };
+
+export default TemplatesSection;

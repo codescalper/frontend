@@ -5,15 +5,10 @@ import { isAlive } from "mobx-state-tree";
 import { svgToURL } from "polotno/utils/svg";
 import { SectionTab } from "polotno/side-panel";
 import { getKey } from "polotno/utils/validate-key";
-import { getImageSize } from "polotno/utils/image";
 import styled from "polotno/utils/styled";
-import { t } from "polotno/utils/l10n";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
-import { ElementsIcon, LayersIcon } from "../../../assets";
-import { getAssetByQuery } from "../../services/backendApi";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-// Custom Image card component end - 01Jul2023
+import { getAssetByQuery } from "../../../../../services";
 import { useAccount } from "wagmi";
 import {
   ConnectWalletMsgComponent,
@@ -22,10 +17,11 @@ import {
   LoadMoreComponent,
   MessageComponent,
   SearchComponent,
-} from "../../elements";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { fnLoadMore } from "../../services/fnLoadMore";
-import { StickerReacTour } from "../../elements/ReacTour";
+  StickerReacTour,
+} from "../../../common";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useStore } from "../../../../../hooks";
+import { fnLoadMore } from "../../../../../utils";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -50,7 +46,8 @@ const NounContainer = styled("div")`
   }
 `;
 
-export const CompIcons = observer(({ store }) => {
+export const CompIcons = () => {
+  const store = useStore();
   const requestTimeout = React.useRef();
   const [query, setQuery] = React.useState("");
   const [delayedQuery, setDelayedQuery] = React.useState(query);
@@ -88,12 +85,11 @@ export const CompIcons = observer(({ store }) => {
 
   return (
     <>
-      <div className=""  id="stickerSearch">
-
-      <SearchComponent
-        query={query}
-        setQuery={setQuery}
-        placeholder="Search icons"
+      <div className="" id="stickerSearch">
+        <SearchComponent
+          query={query}
+          setQuery={setQuery}
+          placeholder="Search icons"
         />
       </div>
       <ImagesGrid
@@ -141,11 +137,11 @@ export const CompIcons = observer(({ store }) => {
       />
     </>
   );
-});
+};
 
 // New Tab NFT Elements/Stickers Start - 24Jun2023
 // export const CompSupducks = observer(({ store, query }) => {
-export const CompSupducks = observer(({ store }) => {
+export const CompSupducks = () => {
   const [query, setQuery] = useState("");
   const requestTimeout = useRef();
   const [delayedQuery, setDelayedQuery] = useState(query);
@@ -211,11 +207,7 @@ export const CompSupducks = observer(({ store }) => {
               .flatMap((item) => item?.data)
               .map((item, index) => {
                 return (
-                  <CustomImageComponent
-                    key={index}
-                    preview={item.image}
-                    store={store}
-                  />
+                  <CustomImageComponent key={index} preview={item.image} />
                 );
               })}
           </div>
@@ -229,14 +221,14 @@ export const CompSupducks = observer(({ store }) => {
       )}
     </>
   );
-});
+};
 
 // New Tab NFT Elements/Stickers End - 24Jun2023
 
 // ----------- New Tabs - Nouns, Lens, Assorted START - 11Jul2023 -----------
 
 // New Tab Lens Start - 11Jul2023
-export const CompLens = observer(({ store }) => {
+export const CompLens = () => {
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const requestTimeout = useRef();
@@ -300,11 +292,7 @@ export const CompLens = observer(({ store }) => {
               .flatMap((item) => item?.data)
               .map((item, index) => {
                 return (
-                  <CustomImageComponent
-                    key={index}
-                    preview={item.image}
-                    store={store}
-                  />
+                  <CustomImageComponent key={index} preview={item.image} />
                 );
               })}
           </div>
@@ -318,12 +306,12 @@ export const CompLens = observer(({ store }) => {
       )}
     </>
   );
-});
+};
 
 // New Tab Lens End - 11Jul2023
 
 // New Tab Nouns Start - 11Jul2023
-export const CompNouns = observer(({ store }) => {
+export const CompNouns = () => {
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const requestTimeout = useRef();
@@ -387,11 +375,7 @@ export const CompNouns = observer(({ store }) => {
               .flatMap((item) => item?.data)
               .map((item, index) => {
                 return (
-                  <CustomImageComponent
-                    key={index}
-                    preview={item.image}
-                    store={store}
-                  />
+                  <CustomImageComponent key={index} preview={item.image} />
                 );
               })}
           </div>
@@ -405,12 +389,12 @@ export const CompNouns = observer(({ store }) => {
       )}
     </>
   );
-});
+};
 
 // New Tab Nouns End - 11Jul2023
 
 // New Tab Assorted Start - 11Jul2023
-export const CompAssorted = observer(({ store }) => {
+export const CompAssorted = () => {
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const requestTimeout = useRef();
@@ -474,11 +458,7 @@ export const CompAssorted = observer(({ store }) => {
               .flatMap((item) => item?.data)
               .map((item, index) => {
                 return (
-                  <CustomImageComponent
-                    key={index}
-                    preview={item.image}
-                    store={store}
-                  />
+                  <CustomImageComponent key={index} preview={item.image} />
                 );
               })}
           </div>
@@ -492,12 +472,12 @@ export const CompAssorted = observer(({ store }) => {
       )}
     </>
   );
-});
+};
 
 // New Tab Assorted End - 11Jul2023
 
 // new tab for Fam Leady Society start
-export const CompFLS = observer(({ store }) => {
+export const CompFLS = () => {
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const requestTimeout = useRef();
@@ -561,11 +541,7 @@ export const CompFLS = observer(({ store }) => {
               .flatMap((item) => item?.data)
               .map((item, index) => {
                 return (
-                  <CustomImageComponent
-                    key={index}
-                    preview={item.image}
-                    store={store}
-                  />
+                  <CustomImageComponent key={index} preview={item.image} />
                 );
               })}
           </div>
@@ -579,12 +555,12 @@ export const CompFLS = observer(({ store }) => {
       )}
     </>
   );
-});
+};
 // New Tab Fam Leady Society ens
 
 // ----------- New Tabs - Nouns, Lens, Assorted END - 11Jul2023 -----------
 
-export const IconsPanel = ({ store }) => {
+export const IconsPanel = () => {
   const [currentTab, setCurrentTab] = useState("tabIcons");
 
   return (
@@ -653,21 +629,21 @@ export const IconsPanel = ({ store }) => {
           Assorted
         </Button>
       </div>
-      <StickerReacTour/>
+      <StickerReacTour />
       {/* New Tabs Lens, Nouns, Assorted END - 11Jul2023 */}
 
-      {currentTab === "tabIcons" && <CompIcons store={store} />}
-      {currentTab === "tabSupducks" && <CompSupducks store={store} />}
-      {currentTab === "tabLens" && <CompLens store={store} />}
-      {currentTab === "tabNouns" && <CompNouns store={store} />}
-      {currentTab === "tabFLS" && <CompFLS store={store} />}
-      {currentTab === "tabAssorted" && <CompAssorted store={store} />}
+      {currentTab === "tabIcons" && <CompIcons />}
+      {currentTab === "tabSupducks" && <CompSupducks />}
+      {currentTab === "tabLens" && <CompLens />}
+      {currentTab === "tabNouns" && <CompNouns />}
+      {currentTab === "tabFLS" && <CompFLS />}
+      {currentTab === "tabAssorted" && <CompAssorted />}
     </div>
   );
 };
 
 // define the new custom section
-export const IconsSection = {
+const StickerSection = {
   name: "Elements",
   Tab: (props) => (
     <SectionTab name="Stickers" {...props}>
@@ -677,3 +653,5 @@ export const IconsSection = {
   // we need observer to update component automatically on any store changes
   Panel: IconsPanel,
 };
+
+export default StickerSection;

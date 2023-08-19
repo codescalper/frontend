@@ -1,5 +1,5 @@
 import React from "react";
-import { fnMessage } from "../utils/fnMessage";
+import { fnMessage } from "../../../../utils/fnMessage";
 
 
 const ErrorComponent = ({ error }) => {

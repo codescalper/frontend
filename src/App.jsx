@@ -7,15 +7,12 @@ import {
   removeFromLocalStorage,
 } from "./utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
-import { Context } from "./context/ContextProvider";
-import { CheckInternetConnection, LoadingComponent } from "./elements";
+import { Context } from "./context/ContextProvider"; 
 import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
-import {
-  onboardingSteps,
-  onboardingStepsWithShare,
-} from "./elements/onboardingSteps";
+
 import Editor from "./app/editor/Editor";
+import { CheckInternetConnection, LoadingComponent, OnboardingSteps, OnboardingStepsWithShare } from "./app/editor/common";
 
 const App = () => {
   const [initialRender, setInitialRender] = useState(true);

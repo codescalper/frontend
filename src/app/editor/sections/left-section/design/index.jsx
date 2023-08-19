@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { observer } from "mobx-react-lite";
 
 import { SectionTab } from "polotno/side-panel";
-import { MyDesignIcon, TemplatesIcon } from "../../../assets";
+import { MyDesignIcon, TemplatesIcon } from "../../../../../assets";
 
 import {
   Button,
@@ -20,130 +19,126 @@ import {
   deleteCanvasById,
   getAllCanvas,
   getUserPublicTemplates,
-} from "../../services/backendApi";
+} from "../../../../../services";
 import { toast } from "react-toastify";
-import { Context } from "../../context/ContextProvider";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { replaceImageURL } from "../../services/replaceUrl";
 import {
+  CompModal,
   ConnectWalletMsgComponent,
   ErrorComponent,
   MessageComponent,
+  MyDesignReacTour,
   SearchComponent,
-} from "../../elements";
+} from "../../../common";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fnMessage } from "../../services/fnMessage";
-import { CompModal } from "../../elements/ModalComponent";
-import { MyDesignReacTour } from "../../elements/ReacTour.jsx";
+import { useStore } from "../../../../../hooks";
+import { Context } from "../../../../../context/ContextProvider";
+import { fnMessage, replaceImageURL } from "../../../../../utils";
 
 // Design card component start - 23Jun2023
 
-const DesignCard = observer(
-  ({
-    design,
-    preview,
-    json,
-    onDelete,
-    onPublic,
-    isPublic,
-    store,
-    openTokengateModal,
-  }) => {
-    const [loading, setLoading] = useState(false);
-    const { fastPreview, contextCanvasIdRef } = useContext(Context);
+const DesignCard = ({
+  design,
+  preview,
+  json,
+  onDelete,
+  onPublic,
+  isPublic,
+  openTokengateModal,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const { fastPreview, contextCanvasIdRef } = useContext(Context);
+  const store = useStore();
 
-    return (
-      <Card
-        className="relative p-0 m-1 rounded-lg"
-        interactive
-        onDragEnd={() => {
-          store.loadJSON(json);
-          contextCanvasIdRef.current = design.id;
-        }}
-        onClick={() => {
-          store.loadJSON(json);
-          contextCanvasIdRef.current = design.id;
+  return (
+    <Card
+      className="relative p-0 m-1 rounded-lg"
+      interactive
+      onDragEnd={() => {
+        store.loadJSON(json);
+        contextCanvasIdRef.current = design.id;
+      }}
+      onClick={() => {
+        store.loadJSON(json);
+        contextCanvasIdRef.current = design.id;
+      }}
+    >
+      <div className="rounded-lg overflow-hidden">
+        <LazyLoadImage
+          placeholderSrc={replaceImageURL(preview)}
+          effect="blur"
+          src={
+            contextCanvasIdRef.current === design.id ? fastPreview[0] : preview
+          }
+          alt="Preview Image"
+        />
+      </div>
+
+      <div
+        style={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          // padding: "3px",
         }}
       >
-        <div className="rounded-lg overflow-hidden">
-          <LazyLoadImage
-            placeholderSrc={replaceImageURL(preview)}
-            effect="blur"
-            src={
-              contextCanvasIdRef.current === design.id
-                ? fastPreview[0]
-                : preview
-            }
-            alt="Preview Image"
-          />
-        </div>
-
+        {/* {design.name} */}
+      </div>
+      {loading && (
         <div
           style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            // padding: "3px",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
           }}
         >
-          {/* {design.name} */}
+          <Spinner />
         </div>
-        {loading && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <Spinner />
-          </div>
-        )}
-        <div
-          style={{ position: "absolute", top: "5px", right: "5px" }}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <Popover2
-            content={
-              <Menu>
-                {/* <MenuItem
+      )}
+      <div
+        style={{ position: "absolute", top: "5px", right: "5px" }}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <Popover2
+          content={
+            <Menu>
+              {/* <MenuItem
                   icon="share"
                   text="Share"
                   onClick={() => {
                     // implement share function here
                   }}
                 /> */}
-                <MenuItem
-                  icon="globe"
-                  text={isPublic(design.id) ? "Make Private" : "Make Public"}
-                  onClick={onPublic}
-                />
-                <MenuItem
-                  icon="layout-circle"
-                  text="Tokengate & Make Public"
-                  onClick={openTokengateModal}
-                />
-                <MenuItem icon="trash" text="Delete" onClick={onDelete} />
-              </Menu>
-            }
-            position={Position.BOTTOM}
-          >
-            <div id="makePublic">
-              <Button icon="more" />
-            </div>
-          </Popover2>
-        </div>
-      </Card>
-    );
-  }
-);
+              <MenuItem
+                icon="globe"
+                text={isPublic(design.id) ? "Make Private" : "Make Public"}
+                onClick={onPublic}
+              />
+              <MenuItem
+                icon="layout-circle"
+                text="Tokengate & Make Public"
+                onClick={openTokengateModal}
+              />
+              <MenuItem icon="trash" text="Delete" onClick={onDelete} />
+            </Menu>
+          }
+          position={Position.BOTTOM}
+        >
+          <div id="makePublic">
+            <Button icon="more" />
+          </div>
+        </Popover2>
+      </div>
+    </Card>
+  );
+};
 
 // Design card component end - 23Jun2023
 
-export const MyDesignsPanel = observer(({ store }) => {
+export const MyDesignsPanel = ({ store }) => {
   const { fastPreview, contextCanvasIdRef } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
@@ -312,7 +307,6 @@ export const MyDesignsPanel = observer(({ store }) => {
                   design?.imageLink[0]
                 }
                 key={design.id}
-                store={store}
                 onDelete={() => deleteCanvas(design.id)}
                 onPublic={() =>
                   isCanvasPublic(design.id)
@@ -341,10 +335,10 @@ export const MyDesignsPanel = observer(({ store }) => {
       {/* New Design card end - 23Jun2023 */}
     </div>
   );
-});
+};
 
 // define the new custom section
-export const MyDesignsSection = {
+const MyDesignsSection = {
   name: "My Designs",
   Tab: (props) => (
     <SectionTab name="My Files" {...props}>
@@ -354,3 +348,5 @@ export const MyDesignsSection = {
   // we need observer to update component automatically on any store changes
   Panel: MyDesignsPanel,
 };
+
+export default MyDesignsSection;

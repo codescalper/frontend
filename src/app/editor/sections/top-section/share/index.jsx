@@ -1,12 +1,12 @@
 import { Fragment, useContext, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ShareIcon } from "../../../../../assets";
-import { LensMonetization, Share } from "../../components";
 import { Context } from "../../../../../context/ContextProvider";
+import { LensShare, Share } from "../../right-section";
 
 const ShareButton = () => {
   const [open, setOpen] = useState(false);
-  const { menu, setMenu } = useContext(Context);
+  const { menu } = useContext(Context);
 
   return (
     <>
@@ -41,7 +41,7 @@ const ShareButton = () => {
                 >
                   <Dialog.Panel className="pointer-events-auto relative w-screen max-w-sm">
                     {menu === "share" && <Share />}
-                    {menu === "lensmonetization" && <LensMonetization />}
+                    {menu === "lensmonetization" && <LensShare />}
                   </Dialog.Panel>
                 </Transition.Child>
               </div>

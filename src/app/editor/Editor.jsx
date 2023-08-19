@@ -28,22 +28,19 @@ import {
 } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
-import {
-  onboardingSteps,
-  onboardingStepsWithShare,
-} from "../elements/onboardingSteps";
+import { useStore } from "../../hooks";
+import { Topbar } from "./sections/top-section";
 import {
   AIImageSection,
-  BackgroundSection2,
   CustomSizesPanel,
   CustomUploadSection,
-  IconsSection,
   MyDesignsSection,
+  NFTBanner,
   NFTSection,
   ShapesSection,
+  StickerSection,
   TemplatesSection,
-} from "./sections";
-import { Topbar } from "./topbar/topbar";
+} from "./sections/left-section";
 
 unstable_setAnimationsEnabled(true);
 
@@ -52,8 +49,8 @@ const sections = [
   TemplatesSection,
   TextSection,
   MyDesignsSection,
-  IconsSection,
-  BackgroundSection2,
+  StickerSection,
+  NFTBanner,
   AIImageSection,
   BackgroundSection,
   ShapesSection,
@@ -72,8 +69,8 @@ const useHeight = () => {
   return height;
 };
 
-const Editor = ({ store }) => {
-  // const project = useProject();
+const Editor = () => {
+  const store = useStore();
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
@@ -396,7 +393,7 @@ const Editor = ({ store }) => {
       >
         <div style={{ height: "calc(100% - 75px)" }}>
           <div className="">
-            <Topbar store={store} />
+            <Topbar />
           </div>
           <PolotnoContainer>
             <div id="second-step" className="ml-2 mr-2">

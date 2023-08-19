@@ -1,10 +1,9 @@
-import { observer } from "mobx-react-lite";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { DownloadButton } from "./download";
 import ShareButton from "./share";
+import DownloadBtn from "./download";
 
-const Topbar = ({ store }) => {
+const Topbar = () => {
   const { isConnected } = useAccount();
 
   return (
@@ -44,7 +43,7 @@ const Topbar = ({ store }) => {
             <div id={`${isConnected ? "fifth-step" : ""}`}>
               <ShareButton />
             </div>
-            <DownloadButton store={store} />
+            <DownloadBtn />
             <div id="first-step">
               <ConnectButton
                 chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
@@ -58,4 +57,4 @@ const Topbar = ({ store }) => {
   );
 };
 
-export default observer(Topbar);
+export default Topbar;

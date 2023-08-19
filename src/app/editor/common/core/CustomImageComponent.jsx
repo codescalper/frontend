@@ -3,20 +3,21 @@
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
-import { replaceImageURL } from "../utils/replaceUrl";
+import { replaceImageURL } from "../../../../utils/replaceUrl";
 import { useEffect, useState } from "react";
+import { useStore } from "../../../../hooks";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
   design,
   preview,
   json,
-  store,
   dimensions,
   isBackground,
   hasOptionBtn,
   onDelete,
 }) => {
+  const store = useStore();
   const [base64Data, setBase64Data] = useState("");
 
   // function for random 3 digit number

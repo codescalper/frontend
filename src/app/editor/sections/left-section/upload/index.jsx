@@ -14,20 +14,19 @@ import {
   ErrorComponent,
   LoadMoreComponent,
   MessageComponent,
-  UploadFileDropzone,
-} from "../../elements";
-import { deleteUserAsset, getUserAssets } from "../../services/backendApi";
+} from "../../../common";
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { UploadIcon } from "../../../assets";
-import { fnLoadMore } from "../../services/fnLoadMore";
-import { fnMessage } from "../../services/fnMessage";
+import { UploadIcon } from "../../../../../assets";
 import { toast } from "react-toastify";
+import { deleteUserAsset, getUserAssets } from "../../../../../services";
+import { fnLoadMore } from "../../../../../utils";
+import { UploadFileDropzone } from "./components";
 
-const CustomUploadPanel = observer(({ store }) => {
+const CustomUploadPanel = () => {
   const { isDisconnected, address } = useAccount();
   const queryClient = useQueryClient();
 
@@ -122,7 +121,6 @@ const CustomUploadPanel = observer(({ store }) => {
                     design={item}
                     preview={item?.image}
                     key={index}
-                    store={store}
                     hasOptionBtn={true}
                     onDelete={() => deleteAsset(item?.id)}
                   />
@@ -141,10 +139,10 @@ const CustomUploadPanel = observer(({ store }) => {
       )}
     </div>
   );
-});
+};
 
 // define the new custom section
-export const CustomUploadSection = {
+const CustomUploadSection = {
   name: "Upload",
   Tab: (props) => (
     <SectionTab name="Upload" {...props}>
@@ -154,3 +152,5 @@ export const CustomUploadSection = {
   // we need observer to update component automatically on any store changes
   Panel: CustomUploadPanel,
 };
+
+export default CustomUploadSection;

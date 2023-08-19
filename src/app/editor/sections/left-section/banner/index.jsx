@@ -3,9 +3,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Button, Icon, Spinner } from "@blueprintjs/core";
 import { SectionTab } from "polotno/side-panel";
-import { BackgroundIcon } from "../../../assets";
+import { BackgroundIcon } from "../../../../../assets";
 import { useAccount } from "wagmi";
-import { getBGAssetByQuery } from "../../services/backendApi";
+import { getBGAssetByQuery } from "../../../../../services";
 import {
   ConnectWalletMsgComponent,
   CustomImageComponent,
@@ -13,24 +13,24 @@ import {
   LoadMoreComponent,
   MessageComponent,
   SearchComponent,
-} from "../../elements";
+} from "../../../common";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { fnLoadMore } from "../../services/fnLoadMore";
+import { fnLoadMore } from "../../../../../utils";
 
 // New Tab Colors Start - 24Jun2023
-export const TabColors = observer(({ store, query }) => {
+export const TabColors = () => {
   return (
     <>
       In Colors
       {/* Code for Colors here */}
     </>
   );
-});
+};
 
 // New Tab Colors End - 24Jun2023
 
 // New Tab NFT Backgrounds Start - 24Jun2023
-export const TabNFTBgs = observer(({ store }) => {
+export const TabNFTBgs = () => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -100,7 +100,6 @@ export const TabNFTBgs = observer(({ store }) => {
                   <CustomImageComponent
                     key={index}
                     preview={item.image}
-                    store={store}
                     dimensions={item?.dimensions != null && item.dimensions}
                     isBackground={true}
                   />
@@ -117,11 +116,11 @@ export const TabNFTBgs = observer(({ store }) => {
       )}
     </>
   );
-});
+};
 
 // New Tab NFT Backgrounds End - 24Jun2023
 
-export const BackgroundPanel2 = observer(({ store, query }) => {
+export const BackgroundPanel2 = () => {
   const [stTab, setStTab] = useState("tabNFTBgs");
 
   return (
@@ -149,14 +148,14 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
       </div>
 
       {/* The Tab Elements start to appear here - 24Jun2023 */}
-      {stTab === "tabColors" && <TabColors store={store} />}
-      {stTab === "tabNFTBgs" && <TabNFTBgs store={store} />}
+      {stTab === "tabColors" && <TabColors />}
+      {stTab === "tabNFTBgs" && <TabNFTBgs />}
     </div>
   );
-});
+};
 
 // define the new custom section
-export const BackgroundSection2 = {
+const NFTBanner = {
   name: "Backgrounds2",
   Tab: (props) => (
     <SectionTab name="NFT Banners" {...props}>
@@ -166,3 +165,5 @@ export const BackgroundSection2 = {
   // we need observer to update component automatically on any store changes
   Panel: BackgroundPanel2,
 };
+
+export default NFTBanner;

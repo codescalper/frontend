@@ -1,9 +1,5 @@
 import { useContext, useState, useEffect } from "react";
 import { useAccount, useSignMessage } from "wagmi";
-import { Context } from "../context/ContextProvider";
-import testnetTokenAddress from "../utility/testnet-token-list.json";
-import mainnetTokenAddress from "../utility/mainnet-token-list.json";
-import { ENVIRONMENT } from "../services/env";
 import TiDelete from "@meronex/icons/ti/TiDelete";
 import BsArrowLeft from "@meronex/icons/bs/BsArrowLeft";
 import { Dialog, Switch } from "@headlessui/react";
@@ -12,26 +8,28 @@ import {
   lensAuthenticate,
   setDispatcher,
   shareOnSocials,
-} from "../services/backendApi";
-import {
   lensChallenge,
   lensHub,
   signSetDispatcherTypedData,
   splitSignature,
-} from "../services/lensApi";
+  ENVIRONMENT,
+} from "../../../../../services";
 import { toast } from "react-toastify";
-import {
-  getFromLocalStorage,
-  saveToLocalStorage,
-} from "../services/localStorage";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
 import GrCircleInformation from "@meronex/icons/gr/GrCircleInformation";
 import { useMutation } from "@tanstack/react-query";
-import { fnMessage } from "../services/fnMessage";
+import { Context } from "../../../../../context/ContextProvider";
+import {
+  getFromLocalStorage,
+  saveToLocalStorage,
+  fnMessage,
+} from "../../../../../utils";
+import testnetTokenAddress from "../../../../../data/json/testnet-token-list.json";
+import mainnetTokenAddress from "../../../../../data/json/mainnet-token-list.json";
 
-const LensMonetization = () => {
+const LensShare = () => {
   const { address, isConnected } = useAccount();
   const [dispatcherState, setDispatcherState] = useState({
     message: false,
@@ -859,4 +857,4 @@ const LensMonetization = () => {
   );
 };
 
-export default LensMonetization;
+export default LensShare;

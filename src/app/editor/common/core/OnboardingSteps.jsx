@@ -3,9 +3,9 @@
 // Created : 27Jul2023
 // --------
 // import { useAccount } from "wagmi"
-import shareGif from "../assets/gifs/ShareGif.gif"
+import shareGif from "../../../../assets/gifs/ShareGif.gif"
 
-export const onboardingSteps = () =>{
+export const OnboardingSteps = () =>{
 
   // const {isConnected} = useAccount();
 
@@ -46,7 +46,7 @@ export const onboardingSteps = () =>{
   ])
 // }
 }
-export const onboardingStepsWithShare = () =>{
+export const OnboardingStepsWithShare = () =>{
 
   // const {isConnected} = useAccount();
 

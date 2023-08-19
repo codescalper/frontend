@@ -1,5 +1,5 @@
 import { ImagesGrid, SectionTab } from "polotno/side-panel";
-import { NFTIcon } from "../../../assets";
+import { NFTIcon } from "../../../../../assets";
 import { observer } from "mobx-react-lite";
 import { useState, useEffect, useRef } from "react";
 import { Button, Spinner } from "@blueprintjs/core";
@@ -11,10 +11,8 @@ import {
   getNftByCollection,
   getCollectionNftById,
   refreshNFT,
-  getRemovedBgS3Link,
-} from "../../services/backendApi";
+} from "../../../../../services";
 import { useAccount } from "wagmi";
-import { convertIPFSUrl, getImageUrl } from "../../services/imageUrl";
 import { toast } from "react-toastify";
 import {
   ConnectWalletMsgComponent,
@@ -23,19 +21,17 @@ import {
   LoadMoreComponent,
   MessageComponent,
   SearchComponent,
-} from "../../elements";
+  NFTReacTour,
+} from "../../../common";
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { fnLoadMore } from "../../services/fnLoadMore";
-import { fnMessage } from "../../services/fnMessage";
-import { replaceImageURL } from "../../services/replaceUrl";
-import { NFTReacTour } from "../../elements/ReacTour";
+import { fnLoadMore, fnMessage, replaceImageURL } from "../../../../../utils";
 
-const NFTPanel = observer(({ store }) => {
+const NFTPanel = () => {
   const [tab, setTab] = useState("wallet");
   const { isConnected } = useAccount();
   return (
@@ -63,18 +59,17 @@ const NFTPanel = observer(({ store }) => {
           onClick={() => setTab("lenspost")}
           id="cc0collections"
         >
-          CC<span className="text-base">0</span> Collections 
+          CC<span className="text-base">0</span> Collections
         </button>
-
       </div>
       {tab === "wallet" && <WalletNFT />}
       {tab === "lenspost" && <LenspostNFT />}
     </div>
   );
-});
+};
 
 // define the new custom section
-export const NFTSection = {
+const NFTSection = {
   name: "NFT",
   Tab: (props) => (
     <SectionTab name="NFT" {...props}>
@@ -84,6 +79,8 @@ export const NFTSection = {
   // we need observer to update component automatically on any store changes
   Panel: NFTPanel,
 };
+
+export default NFTSection;
 
 // catogoery component (child component of LenspostNFT component)
 const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
@@ -247,7 +244,6 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
                     <CustomImageComponent
                       key={index}
                       preview={item?.imageURL}
-                      store={store}
                     />
                   );
                 })}
@@ -309,10 +305,7 @@ const RenderSearchedNFTs = ({
           //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
           <div className="h-full overflow-y-auto">
             <div className="grid grid-cols-2 overflow-y-auto">
-              <CustomImageComponent
-                preview={data?.imageURL}
-                store={store}
-              />
+              <CustomImageComponent preview={data?.imageURL} />
             </div>
           </div>
         ) : (
@@ -386,10 +379,7 @@ const RenderSearchedWalletNFT = ({ goBack, delayedQuery }) => {
           //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
           <div className="h-full overflow-y-auto">
             <div className="grid grid-cols-2 overflow-y-auto">
-              <CustomImageComponent
-                preview={data?.imageURL}
-                store={store}
-              />
+              <CustomImageComponent preview={data?.imageURL} />
             </div>
           </div>
         ) : (
@@ -496,7 +486,7 @@ const WalletNFT = () => {
         setQuery={setQuery}
         placeholder="Search NFTs by id"
       />
-      <NFTReacTour/>
+      <NFTReacTour />
       {isError ? (
         <ErrorComponent message={error} />
       ) : data?.pages[0]?.data.length > 0 ? (
@@ -509,7 +499,6 @@ const WalletNFT = () => {
                   <CustomImageComponent
                     key={index}
                     preview={item?.imageURL ? item?.imageURL : item?.permaLink}
-                    store={store}
                   />
                 );
               })}
