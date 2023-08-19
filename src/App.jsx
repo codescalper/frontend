@@ -1,12 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import EditorWrapper from "./editor/EditorWrapper";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
-import { login, refreshNFT } from "./services/backendApi";
+import { login, refreshNFT } from "./services/apis/BE-apis/backendApi";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   removeFromLocalStorage,
-} from "./services/localStorage";
+} from "./utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
 import { Context } from "./context/ContextProvider";
 import { CheckInternetConnection, LoadingComponent } from "./elements";
@@ -16,8 +15,9 @@ import {
   onboardingSteps,
   onboardingStepsWithShare,
 } from "./elements/onboardingSteps";
+import Editor from "./app/editor/Editor";
 
-export default function App() {
+const App = () => {
   const [initialRender, setInitialRender] = useState(true);
   const { isLoading, setIsLoading, text, setText } = useContext(Context);
   const [message, setMessage] = useState(
@@ -198,7 +198,7 @@ export default function App() {
 
   return (
     <>
-      <EditorWrapper />
+      <Editor />
       <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
       <ToastContainer
@@ -215,4 +215,6 @@ export default function App() {
       />
     </>
   );
-}
+};
+
+export default App;

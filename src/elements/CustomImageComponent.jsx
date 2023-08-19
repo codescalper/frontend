@@ -3,7 +3,7 @@
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
-import { replaceImageURL } from "../services/replaceUrl";
+import { replaceImageURL } from "../utils/replaceUrl";
 import { useEffect, useState } from "react";
 
 // Custom Image card component start - 23Jun2023

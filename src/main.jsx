@@ -7,7 +7,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { onboardingSteps } from "./elements/onboardingSteps";
 import { TourProvider } from "@reactour/tour";
-import { saveToLocalStorage } from "./services/localStorage";
 
 const radius = 8
 

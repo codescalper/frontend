@@ -8,11 +8,10 @@ import { publicProvider } from "wagmi/providers/public";
 import ContextProvider from "./context/ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ENVIRONMENT } from "./services/env";
-import App from "./App";
-import LoginComp from "./tokengating/LoginComp";
+import { ENVIRONMENT } from "./services/env/env";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import TwitterAuth from "./components/TwitterAuth";
+import { AuthComponent } from "./app/auth";
+import App from "./App";
 
 const { chains, provider } = configureChains(
   [polygon],
@@ -45,8 +44,7 @@ export const Wrapper = () => {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<App />} />
-                <Route path="/ifUserEligible" element={<LoginComp />} />
-                <Route path="/auth/twitter" element={<TwitterAuth />} />
+                <Route path="/ifUserEligible" element={<AuthComponent />} />
               </Routes>
               {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
             </BrowserRouter>

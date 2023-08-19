@@ -1,9 +1,16 @@
+import createStore from "polotno/model/store";
 import React, { createContext, useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
+import { POLOTNO_API_KEY } from "../services";
 
 export const Context = createContext();
 
 const ContextProvider = ({ children }) => {
+  // create canvas store
+  const store = createStore({ key: POLOTNO_API_KEY });
+  window.store = store;
+  store.addPage();
+
   const { address, isConnected } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
@@ -83,6 +90,7 @@ const ContextProvider = ({ children }) => {
         setStCalendarClicked,
         fastPreview,
         setFastPreview,
+        store,
       }}
     >
       {children}

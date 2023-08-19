@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
-} from "../services/localStorage";
+} from "../utils/localStorage";
 import { Context } from "../context/ContextProvider";
 import { ToastContainer, toast } from "react-toastify";
-import { twitterAuthenticateCallback } from "../services/backendApi";
+import { twitterAuthenticateCallback } from "../services/apis/BE-apis/backendApi";
 import { Spinner } from "@blueprintjs/core";
 
 const TwitterAuth = () => {

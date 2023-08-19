@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import TiDelete from "@meronex/icons/ti/TiDelete";
-import { uploadUserAssets } from "../services/backendApi";
+import { uploadUserAssets } from "../services/apis/BE-apis/backendApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { fnMessage } from "../services/fnMessage";
+import { fnMessage } from "../utils/fnMessage";
 
 const UploadFileDropzone = () => {
   const [stFiles, setStFiles] = useState([]);
