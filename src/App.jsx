@@ -7,12 +7,17 @@ import {
   removeFromLocalStorage,
 } from "./utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
-import { Context } from "./context/ContextProvider"; 
+import { Context } from "./context/ContextProvider";
 import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
 
 import Editor from "./app/editor/Editor";
-import { CheckInternetConnection, LoadingComponent, OnboardingSteps, OnboardingStepsWithShare } from "./app/editor/common";
+import {
+  CheckInternetConnection,
+  LoadingComponent,
+  OnboardingSteps,
+  OnboardingStepsWithShare,
+} from "./app/editor/common";
 
 const App = () => {
   const [initialRender, setInitialRender] = useState(true);
@@ -183,10 +188,10 @@ const App = () => {
       if (!getFromLocalStorage("hasTakenTour")) {
         if (isConnected) {
           setIsOpen(true);
-          setSteps(onboardingStepsWithShare);
+          setSteps(OnboardingStepsWithShare);
         } else {
           setIsOpen(true);
-          setSteps(onboardingSteps);
+          setSteps(OnboardingSteps);
         }
         setTimeout(() => saveToLocalStorage("hasTakenTour", true), 20000);
       }
