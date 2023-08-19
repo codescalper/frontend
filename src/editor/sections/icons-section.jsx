@@ -215,7 +215,6 @@ export const CompSupducks = observer(({ store }) => {
                     key={index}
                     preview={item.image}
                     store={store}
-                    project={project}
                   />
                 );
               })}
@@ -305,7 +304,6 @@ export const CompLens = observer(({ store }) => {
                     key={index}
                     preview={item.image}
                     store={store}
-                    project={project}
                   />
                 );
               })}
@@ -393,7 +391,6 @@ export const CompNouns = observer(({ store }) => {
                     key={index}
                     preview={item.image}
                     store={store}
-                    project={project}
                   />
                 );
               })}
@@ -481,7 +478,6 @@ export const CompAssorted = observer(({ store }) => {
                     key={index}
                     preview={item.image}
                     store={store}
-                    project={project}
                   />
                 );
               })}
@@ -569,7 +565,6 @@ export const CompFLS = observer(({ store }) => {
                     key={index}
                     preview={item.image}
                     store={store}
-                    project={project}
                   />
                 );
               })}

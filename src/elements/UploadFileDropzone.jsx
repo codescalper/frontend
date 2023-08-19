@@ -42,7 +42,7 @@ const UploadFileDropzone = () => {
     },
   });
 
-  // function for upload image to DB
+  // mutate function for upload image
   const { mutateAsync } = useMutation({
     mutationKey: "uploadUaserAssets",
     mutationFn: uploadUserAssets,
@@ -79,18 +79,37 @@ const UploadFileDropzone = () => {
 
   useEffect(() => {
     if (stFiles.length > 0) {
+      const id = toast.loading("Uploading file...");
       mutateAsync(stFiles[0].base64String)
         .then((res) => {
           if (res?.s3link) {
-            toast.success("File uploaded successfully");
+            toast.update(id, {
+              render: "File Uploaded Successfully",
+              type: "success",
+              isLoading: false,
+              autoClose: 3000,
+              closeButton: true,
+            });
             setStFiles([]);
           } else {
-            toast.error("Error uploading file");
+            toast.update(id, {
+              render: "Error uploading file",
+              type: "error",
+              isLoading: false,
+              autoClose: 3000,
+              closeButton: true,
+            });
             setStFiles([]);
           }
         })
         .catch((err) => {
-          toast.error(fnMessage(err));
+          toast.update(id, {
+            render: fnMessage(err),
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+            closeButton: true,
+          });
           setStFiles([]);
         });
     }

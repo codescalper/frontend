@@ -63,6 +63,7 @@ const LensMonetization = () => {
   const [duplicateAddressError, setDuplicateAddressError] = useState(false);
   const [percentageError, setPercentageError] = useState("");
   const [openInfo, setOpenInfo] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnLens",
     mutationFn: shareOnSocials,
@@ -376,6 +377,8 @@ const LensMonetization = () => {
       }
     }
 
+    setSharing(true);
+
     const canvasData = {
       id: contextCanvasIdRef.current,
       name: "post",
@@ -403,7 +406,7 @@ const LensMonetization = () => {
             autoClose: 3000,
             closeButton: true,
           });
-          // setCanvasId("");
+          setSharing(false);
           setPostDescription("");
         } else if (res?.error) {
           toast.update(id, {
@@ -413,6 +416,7 @@ const LensMonetization = () => {
             autoClose: 3000,
             closeButton: true,
           });
+          setSharing(false);
         }
       })
       .catch((err) => {
@@ -423,6 +427,7 @@ const LensMonetization = () => {
           autoClose: 3000,
           closeButton: true,
         });
+        setSharing(false);
       });
   };
 
@@ -842,6 +847,7 @@ const LensMonetization = () => {
           </div>
         </div>
         <button
+          disabled={sharing}
           onClick={handleLensClick}
           className="flex items-center justify-center w-full text-md bg-[#E1F26C]  py-2 h-10 rounded-md outline-none"
         >

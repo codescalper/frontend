@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { App as Editor } from "./editor";
+import EditorWrapper from "./editor/EditorWrapper";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import { login, refreshNFT } from "./services/backendApi";
 import {
@@ -12,7 +12,10 @@ import { Context } from "./context/ContextProvider";
 import { CheckInternetConnection, LoadingComponent } from "./elements";
 import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
-import { onboardingSteps, onboardingStepsWithShare } from "./elements/onboardingSteps";
+import {
+  onboardingSteps,
+  onboardingStepsWithShare,
+} from "./elements/onboardingSteps";
 
 export default function App() {
   const [initialRender, setInitialRender] = useState(true);
@@ -170,37 +173,32 @@ export default function App() {
   }, [isSuccess]);
 
   useEffect(() => {
-
     // Run the effect when isConnected and address change
     if (isConnected && address) {
       genarateSignature();
     }
   }, [isConnected, address, initialRender]);
 
-  const { setSteps, setIsOpen, setCurrentStep } = useTour()
+  const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
-
-  useEffect(()=>{
-    if(isUserEligible){
-      if(!getFromLocalStorage("hasTakenTour")){
-
-      if(isConnected){
-        setIsOpen(true)
-        setSteps(onboardingStepsWithShare)
+  useEffect(() => {
+    if (isUserEligible) {
+      if (!getFromLocalStorage("hasTakenTour")) {
+        if (isConnected) {
+          setIsOpen(true);
+          setSteps(onboardingStepsWithShare);
+        } else {
+          setIsOpen(true);
+          setSteps(onboardingSteps);
+        }
+        setTimeout(() => saveToLocalStorage("hasTakenTour", true), 20000);
       }
-      else{
-        setIsOpen(true)
-        setSteps(onboardingSteps)
-      }
-      setTimeout(()=> saveToLocalStorage("hasTakenTour", true), 20000)
-     }
     }
-  },[])
-
+  }, []);
 
   return (
     <>
-      <Editor />
+      <EditorWrapper />
       <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
       <ToastContainer

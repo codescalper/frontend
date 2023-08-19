@@ -198,7 +198,6 @@ const LenspostTemplates = ({ store }) => {
                 preview={design?.image}
                 key={design.id}
                 store={store}
-                project={project}
                 tab="lenspost"
               />
             );
@@ -262,7 +261,6 @@ const UserTemplates = ({ store }) => {
                 }
                 key={design.id}
                 store={store}
-                project={project}
                 tab="user"
               />
             );

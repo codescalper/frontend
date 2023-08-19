@@ -10,8 +10,6 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import { fnMessage } from "../services/fnMessage";
 import { useNavigate } from "react-router-dom";
-import { allowlistAddresses } from "../utility/allowlistAddresses";
-import SuMailNew from '@meronex/icons/su/SuMailNew';
 
 const LoginComp = () => {
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");

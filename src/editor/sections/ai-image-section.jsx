@@ -13,7 +13,6 @@ import { getImageSize } from "polotno/utils/image";
 import FaBrain from "@meronex/icons/fa/FaBrain";
 import { t } from "polotno/utils/l10n";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
-import { useCredits } from "../credits";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { getCrop } from "polotno/utils/image";
 import { AIIcon } from "../editor-icon";

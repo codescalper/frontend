@@ -313,7 +313,6 @@ export const MyDesignsPanel = observer(({ store }) => {
                 }
                 key={design.id}
                 store={store}
-                project={project}
                 onDelete={() => deleteCanvas(design.id)}
                 onPublic={() =>
                   isCanvasPublic(design.id)

@@ -248,7 +248,6 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
                       key={index}
                       preview={item?.imageURL}
                       store={store}
-                      project={project}
                     />
                   );
                 })}
@@ -313,7 +312,6 @@ const RenderSearchedNFTs = ({
               <CustomImageComponent
                 preview={data?.imageURL}
                 store={store}
-                project={project}
               />
             </div>
           </div>
@@ -391,7 +389,6 @@ const RenderSearchedWalletNFT = ({ goBack, delayedQuery }) => {
               <CustomImageComponent
                 preview={data?.imageURL}
                 store={store}
-                project={project}
               />
             </div>
           </div>
@@ -513,7 +510,6 @@ const WalletNFT = () => {
                     key={index}
                     preview={item?.imageURL ? item?.imageURL : item?.permaLink}
                     store={store}
-                    project={project}
                   />
                 );
               })}

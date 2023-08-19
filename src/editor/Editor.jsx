@@ -9,8 +9,6 @@ import {
   LayersSection,
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
-import { loadFile } from "./file";
-import { useProject } from "./project";
 import { useAccount } from "wagmi";
 import {
   createCanvas,
@@ -48,6 +46,8 @@ import {
   TemplatesSection,
 } from "./sections";
 import { Topbar } from "./topbar/topbar";
+import { loadFile } from "../services";
+import { base64Stripper } from "../utility/base64Stripper";
 
 unstable_setAnimationsEnabled(true);
 
@@ -77,7 +77,7 @@ const useHeight = () => {
 };
 
 const Editor = ({ store }) => {
-  const project = useProject();
+  // const project = useProject();
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
@@ -94,13 +94,13 @@ const Editor = ({ store }) => {
   const timeoutRef = useRef(null);
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
 
-  const load = () => {
-    let url = new URL(window.location.href);
-    // url example https://studio.polotno.com/design/5f9f1b0b
-    const reg = new RegExp("design/([a-zA-Z0-9_-]+)").exec(url.pathname);
-    const designId = (reg && reg[1]) || "local";
-    project.loadById(designId);
-  };
+  // const load = () => {
+  //   let url = new URL(window.location.href);
+  //   // url example https://studio.polotno.com/design/5f9f1b0b
+  //   const reg = new RegExp("design/([a-zA-Z0-9_-]+)").exec(url.pathname);
+  //   const designId = (reg && reg[1]) || "local";
+  //   project.loadById(designId);
+  // };
 
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
@@ -253,10 +253,10 @@ const Editor = ({ store }) => {
       if (contextCanvasIdRef.current) {
         canvasIdRef.current = contextCanvasIdRef.current;
       }
-      console.log({
-        canvasIdRef: canvasIdRef.current,
-        contextCanvasIdRef: contextCanvasIdRef.current,
-      });
+      // console.log({
+      //   canvasIdRef: canvasIdRef.current,
+      //   contextCanvasIdRef: contextCanvasIdRef.current,
+      // });
 
       if (canvasChildren?.length === 0) {
         console.log("Canvas is empty. Its stopped from saving");
@@ -361,7 +361,7 @@ const Editor = ({ store }) => {
             });
 
             // remove data:image/png;base,
-            const imgBase64Stripped = imgBase64.split(",")[1];
+            const imgBase64Stripped = base64Stripper(imgBase64);
 
             storeBase64Arr.push(imgBase64Stripped);
             previewBase64Arr.push(imgBase64);
@@ -451,9 +451,6 @@ const Editor = ({ store }) => {
                   </div>
                 </div>
               </div>
-              {/* ai_integration End */}
-
-              {/* <ZoomButtons store={store} /> */}
             </WorkspaceWrap>
           </PolotnoContainer>
         </div>
