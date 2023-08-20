@@ -11,7 +11,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ENVIRONMENT } from "./services/env/env";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import App from "./App";
+import App from "./app/App";
 import { AuthComponent } from "./app/auth";
 
 const { chains, provider } = configureChains(

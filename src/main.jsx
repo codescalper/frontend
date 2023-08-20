@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Wrapper } from "./wrapper";
-import "./index.css";
+import "./styles/index.css";
 import "../polyfills";
 import "react-toastify/dist/ReactToastify.css";
 import "react-lazy-load-image-component/src/effects/blur.css";
@@ -43,7 +43,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </TourProvider>
 
     {/* Reactour wrap around End */}
-
-    {/* </React.StrictMode> */}
   </React.StrictMode>
 );

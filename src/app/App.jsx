@@ -1,23 +1,23 @@
 import { useContext, useEffect, useState } from "react";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
-import { login, refreshNFT } from "./services/apis/BE-apis/backendApi";
+import { login, refreshNFT } from "../services/apis/BE-apis/backendApi";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   removeFromLocalStorage,
-} from "./utils/localStorage";
+} from "../utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
-import { Context } from "./context/ContextProvider";
+import { Context } from "../context/ContextProvider";
 import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
 
-import Editor from "./app/editor/Editor";
+import Editor from "./editor/Editor";
 import {
   CheckInternetConnection,
   LoadingComponent,
   OnboardingSteps,
   OnboardingStepsWithShare,
-} from "./app/editor/common";
+} from "./editor/common";
 
 const App = () => {
   const [initialRender, setInitialRender] = useState(true);
