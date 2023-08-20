@@ -8,7 +8,7 @@ import { observer } from "mobx-react-lite";
 
 import { SectionTab } from "polotno/side-panel";
 
-import {  Spinner } from "@blueprintjs/core";
+import { Spinner } from "@blueprintjs/core";
 
 import { useAccount } from "wagmi";
 
@@ -18,22 +18,17 @@ import {
   ErrorComponent,
   MessageComponent,
   SearchComponent,
+  UploadFileDropzone,
 } from "../../elements";
-import {
-    getAllCanvas,
-  } from "../../services/backendApi";
+import { getAllCanvas } from "../../services/backendApi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UploadIcon } from "../editor-icon";
 
-import {FileInput} from "@blueprintjs/core"
-import UploadFileDropzone from "../../elements/UploadFileDropzone";
-
-
+import { FileInput } from "@blueprintjs/core";
 
 const CustomUploadPanel = observer(({ store }) => {
   const { isDisconnected, address, isConnected } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
-  
 
   const [query, setQuery] = useState("");
 
@@ -42,43 +37,6 @@ const CustomUploadPanel = observer(({ store }) => {
     queryKey: ["my-designs"],
     queryFn: getAllCanvas,
   });
-
-//   const { data: publicTemplates } = useQuery({
-//     queryKey: ["user-templates"],
-//     queryFn: getUserPublicTemplates,
-//   });
-
-//   const {
-//     mutate: deleteCanvas,
-//     isError: isDeleteError,
-//     error: deleteError,
-//   } = useMutation({
-//     mutationKey: "delete-canvas",
-//     mutationFn: deleteCanvasById,
-//     onSuccess: (data) => {
-//       toast.success(data?.message);
-//       queryClient.invalidateQueries(["my-designs"], { exact: true });
-//     },
-//     onError: (error) => {
-//       toast.error(error);
-//     },
-//   });
-
-//   const {
-//     mutate: changeVisibility,
-//     isError: isVisibilityError,
-//     error: visibilityError,
-//   } = useMutation({
-//     mutationKey: "change-visibility",
-//     mutationFn: changeCanvasVisibility,
-//     onSuccess: (data) => {
-//       toast.success(data?.message);
-//       queryClient.invalidateQueries(["user-templates"], { exact: true });
-//     },
-//     onError: (error) => {
-//       toast.error(error);
-//     },
-//   });
 
   if (isDisconnected || !address) {
     return (
@@ -100,58 +58,57 @@ const CustomUploadPanel = observer(({ store }) => {
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="text-lg">Gallery</h1>
+      <h1 className="text-lg">Upload Gallery</h1>
 
       {/* <SearchComponent onClick={false} query={""} setQuery={""} placeholder="Search designs by id" /> */}
-        <div className="m-2 mt-4">
-            {/* <FileInput disabled={false} text="Choose file" fill buttonText="Upload" onInputChange={""} />        */}
-           
-            {/* DropZone component Start*/}
-            <UploadFileDropzone/>
-            {/* DropZone component End*/}
-        </div>
-        
-        <hr className="mt-2 mb-4"/>     
+      <div className="m-2 mt-4">
+        {/* <FileInput disabled={false} text="Choose file" fill buttonText="Upload" onInputChange={""} />        */}
+
+        {/* DropZone component Start*/}
+        <UploadFileDropzone />
+        {/* DropZone component End*/}
+      </div>
+
+      <hr className="my-2" />
 
       {isError ? (
         <ErrorComponent error={error} />
-      ) : data.length > 0 ? (<>
-      
-        <div className="m-2"> Recent Uploads</div>
-        <div className="overflow-y-auto grid grid-cols-2">
-          {data.map((design) => {
-            return (
-              <CustomImageComponent
-                design={design}
-                // json={design.data}
-                preview={
-                  design?.imageLink != null &&
-                  design?.imageLink.length > 0 &&
-                  design?.imageLink[0]
-                }
-                key={design.id}
-                store={store}
-              />
-            );  
-          })}     
-        </div>
-        </>) : (
+      ) : data.length > 0 ? (
+        <>
+          <div className="m-2"> Recent Uploads</div>
+          <div className="overflow-y-auto grid grid-cols-2">
+            {data.map((design) => {
+              return (
+                <CustomImageComponent
+                  design={design}
+                  // json={design.data}
+                  preview={
+                    design?.imageLink != null &&
+                    design?.imageLink.length > 0 &&
+                    design?.imageLink[0]
+                  }
+                  key={design.id}
+                  store={store}
+                />
+              );
+            })}
+          </div>
+        </>
+      ) : (
         <div>
           <MessageComponent message="You have not Uploaded any assets yet" />
         </div>
       )}
-
     </div>
   );
 });
-
 
 // define the new custom section
 export const CustomUploadSection = {
   name: "Upload",
   Tab: (props) => (
     <SectionTab name="Upload" {...props}>
-      <UploadIcon/>
+      <UploadIcon />
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes

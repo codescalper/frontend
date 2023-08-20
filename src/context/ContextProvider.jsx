@@ -8,11 +8,17 @@ const ContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
   const contextCanvasIdRef = useRef(null);
+
+  // for twitter auth
   const [queryParams, setQueryParams] = useState({
     oauth_token: "",
     oauth_verifier: "",
   });
+
+  // for open different menu in share
   const [menu, setMenu] = useState("share");
+
+  // for lens monetization
   const [enabled, setEnabled] = useState({
     chargeForCollect: false,
     chargeForCollectPrice: "1",
@@ -42,9 +48,14 @@ const ContextProvider = ({ children }) => {
   });
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);
+
+  // for calendar
   const [stFormattedDate, setStFormattedDate] = useState("");
   const [stFormattedTime, setStFormattedTime] = useState("");
   const [stCalendarClicked, setStCalendarClicked] = useState(false);
+
+  // for preview
+  const [fastPreview, setFastPreview] = useState([]);
 
   return (
     <Context.Provider
@@ -70,6 +81,8 @@ const ContextProvider = ({ children }) => {
         setStFormattedTime,
         stCalendarClicked,
         setStCalendarClicked,
+        fastPreview,
+        setFastPreview,
       }}
     >
       {children}

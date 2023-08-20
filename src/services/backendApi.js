@@ -290,11 +290,12 @@ export const getNftById = async (id) => {
 // canvas apis satrt
 // craete canvas endpoint
 // need auth token (jwt)
-export const createCanvas = async ({ jsonCanvasData }) => {
+export const createCanvas = async ({ data, preview }) => {
   const result = await api.post(`${API}/user/canvas/create`, {
     canvasData: {
-      data: jsonCanvasData,
+      data: data,
     },
+    preview: preview,
   });
 
   return result?.data;
@@ -302,21 +303,14 @@ export const createCanvas = async ({ jsonCanvasData }) => {
 
 // update current canvas endpoint
 // need auth token (jwt)
-export const updateCanvas = async ({
-  id,
-  jsonCanvasData,
-  followCollectModule,
-  isPublic,
-}) => {
+export const updateCanvas = async ({ id, data, isPublic, preview }) => {
   const result = await api.put(`${API}/user/canvas/update`, {
     canvasData: {
       id: id,
-      data: jsonCanvasData,
-      params: {
-        followCollectModule: followCollectModule,
-      },
+      data: data,
       isPublic: isPublic,
     },
+    preview: preview,
   });
 
   return result?.data;
@@ -626,3 +620,13 @@ export const getIsUserWhitelisted = async (walletAddress) => {
   }
 };
 // user is holder of collection apis end
+
+// upload image to s3 apis start
+export const uploadUserAssets = async (image) => {
+  const result = await api.post(`${API}/util/upload-image`, {
+    image: image,
+  });
+
+  return result?.data;
+};
+// upload image to s3 apis end
