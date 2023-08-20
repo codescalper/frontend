@@ -138,7 +138,7 @@ const DesignCard = ({
 
 // Design card component end - 23Jun2023
 
-export const MyDesignsPanel = ({ store }) => {
+export const DesignPanel = ({ store }) => {
   const { fastPreview, contextCanvasIdRef } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
@@ -338,7 +338,7 @@ export const MyDesignsPanel = ({ store }) => {
 };
 
 // define the new custom section
-const MyDesignsSection = {
+const DesignSection = {
   name: "My Designs",
   Tab: (props) => (
     <SectionTab name="My Files" {...props}>
@@ -346,7 +346,7 @@ const MyDesignsSection = {
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes
-  Panel: MyDesignsPanel,
+  Panel: DesignPanel,
 };
 
-export default MyDesignsSection;
+export default DesignSection;

@@ -560,7 +560,7 @@ export const CompFLS = () => {
 
 // ----------- New Tabs - Nouns, Lens, Assorted END - 11Jul2023 -----------
 
-export const IconsPanel = () => {
+export const StickerPanel = () => {
   const [currentTab, setCurrentTab] = useState("tabIcons");
 
   return (
@@ -651,7 +651,7 @@ const StickerSection = {
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes
-  Panel: IconsPanel,
+  Panel: StickerPanel,
 };
 
 export default StickerSection;

@@ -26,7 +26,7 @@ import { deleteUserAsset, getUserAssets } from "../../../../../services";
 import { fnLoadMore } from "../../../../../utils";
 import { UploadFileDropzone } from "./components";
 
-const CustomUploadPanel = () => {
+const UploadPanel = () => {
   const { isDisconnected, address } = useAccount();
   const queryClient = useQueryClient();
 
@@ -142,15 +142,14 @@ const CustomUploadPanel = () => {
 };
 
 // define the new custom section
-const CustomUploadSection = {
+const UploadSection = {
   name: "Upload",
   Tab: (props) => (
     <SectionTab name="Upload" {...props}>
       <UploadIcon />
     </SectionTab>
   ),
-  // we need observer to update component automatically on any store changes
-  Panel: CustomUploadPanel,
+  Panel: UploadPanel,
 };
 
-export default CustomUploadSection;
+export default UploadSection;

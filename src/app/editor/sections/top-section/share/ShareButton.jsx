@@ -2,7 +2,7 @@ import { Fragment, useContext, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ShareIcon } from "../../../../../assets";
 import { Context } from "../../../../../context/ContextProvider";
-import { LensShare, Share } from "../../right-section";
+import { LensShare, ShareSection } from "../../right-section";
 
 const ShareButton = () => {
   const [open, setOpen] = useState(false);
@@ -40,7 +40,7 @@ const ShareButton = () => {
                   leaveTo="translate-x-full"
                 >
                   <Dialog.Panel className="pointer-events-auto relative w-screen max-w-sm">
-                    {menu === "share" && <Share />}
+                    {menu === "share" && <ShareSection />}
                     {menu === "lensmonetization" && <LensShare />}
                   </Dialog.Panel>
                 </Transition.Child>

@@ -13,21 +13,21 @@ import {
   signSetDispatcherTypedData,
   splitSignature,
   ENVIRONMENT,
-} from "../../../../../services";
+} from "../../../../../../services";
 import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
 import GrCircleInformation from "@meronex/icons/gr/GrCircleInformation";
 import { useMutation } from "@tanstack/react-query";
-import { Context } from "../../../../../context/ContextProvider";
+import { Context } from "../../../../../../context/ContextProvider";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   fnMessage,
-} from "../../../../../utils";
-import testnetTokenAddress from "../../../../../data/json/testnet-token-list.json";
-import mainnetTokenAddress from "../../../../../data/json/mainnet-token-list.json";
+} from "../../../../../../utils";
+import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
+import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
 
 const LensShare = () => {
   const { address, isConnected } = useAccount();

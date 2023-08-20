@@ -136,7 +136,7 @@ const ResizePanel = () => {
   );
 };
 
- const CustomSizesPanel = {
+ const ResizeSection = {
   name: "sizes",
   Tab: (props) => (
     <SectionTab name="Sizes" {...props}>
@@ -146,4 +146,4 @@ const ResizePanel = () => {
   Panel: ResizePanel,
 };
 
-export default CustomSizesPanel;
+export default ResizeSection;

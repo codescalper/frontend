@@ -5,13 +5,13 @@ import { Shapes } from "polotno/side-panel/elements-panel";
 import { Icon } from "@blueprintjs/core";
 import { useStore } from "../../../../../hooks";
 
- const ShapesPanel = () => {
+ const ShapePanel = () => {
   const store = useStore();
   return <Shapes store={store} />;
 };
 
 // // define the new custom section
- const ShapesSection = {
+ const ShapeSection = {
   name: "shapes",
   Tab: (props) => (
     <SectionTab name="Shapes" {...props}>
@@ -19,7 +19,7 @@ import { useStore } from "../../../../../hooks";
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes
-  Panel: ShapesPanel,
+  Panel: ShapePanel,
 };
 
-export default ShapesSection;
+export default ShapeSection;

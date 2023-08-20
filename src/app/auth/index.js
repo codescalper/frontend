@@ -1,3 +1,3 @@
-import AuthComponent from "./token-gating";
+import AuthComponent from "./token-gating/AuthComponent";
 
 export { AuthComponent };

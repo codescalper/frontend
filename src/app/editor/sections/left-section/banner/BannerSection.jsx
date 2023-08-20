@@ -120,7 +120,7 @@ export const TabNFTBgs = () => {
 
 // New Tab NFT Backgrounds End - 24Jun2023
 
-export const BackgroundPanel2 = () => {
+export const BannerPanel = () => {
   const [stTab, setStTab] = useState("tabNFTBgs");
 
   return (
@@ -155,7 +155,7 @@ export const BackgroundPanel2 = () => {
 };
 
 // define the new custom section
-const NFTBanner = {
+const BannerSection = {
   name: "Backgrounds2",
   Tab: (props) => (
     <SectionTab name="NFT Banners" {...props}>
@@ -163,7 +163,7 @@ const NFTBanner = {
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes
-  Panel: BackgroundPanel2,
+  Panel: BannerPanel,
 };
 
-export default NFTBanner;
+export default BannerSection;

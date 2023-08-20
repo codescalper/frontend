@@ -1,3 +1,3 @@
-import Topbar from "./Topbar";
+import TopbarSection from "./TopbarSection";
 
-export { Topbar };
+export { TopbarSection };

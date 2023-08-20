@@ -120,7 +120,7 @@ const DesignCard = observer(
 
 // Design card component end
 
-export const TemplatesPanel = () => {
+const TemplatePanel = () => {
   const [tab, setTab] = useState("lenspost");
   const [stIsModalOpen, setStIsModalOpen] = useState(false);
 
@@ -274,7 +274,7 @@ const UserTemplates = () => {
 };
 
 // define the new custom section
-const TemplatesSection = {
+const TemplateSection = {
   name: "Templates",
   Tab: (props) => (
     <SectionTab name="Templates" {...props}>
@@ -282,7 +282,7 @@ const TemplatesSection = {
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes
-  Panel: TemplatesPanel,
+  Panel: TemplatePanel,
 };
 
-export default TemplatesSection;
+export default TemplateSection;

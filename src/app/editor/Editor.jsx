@@ -29,34 +29,35 @@ import {
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
 import { useStore } from "../../hooks";
-import { Topbar } from "./sections/top-section";
+import { TopbarSection } from "./sections/top-section";
 import {
   AIImageSection,
-  CustomSizesPanel,
-  CustomUploadSection,
-  MyDesignsSection,
-  NFTBanner,
+  BannerSection,
+  DesignSection,
   NFTSection,
-  ShapesSection,
+  ResizeSection,
+  ShapeSection,
   StickerSection,
-  TemplatesSection,
+  TemplateSection,
+  UploadSection,
 } from "./sections/left-section";
+import { BgRemover } from "./sections/bottom-section";
 
 unstable_setAnimationsEnabled(true);
 
 const sections = [
   NFTSection,
-  TemplatesSection,
+  TemplateSection,
   TextSection,
-  MyDesignsSection,
+  DesignSection,
   StickerSection,
-  NFTBanner,
+  BannerSection,
   AIImageSection,
   BackgroundSection,
-  ShapesSection,
-  CustomUploadSection,
+  ShapeSection,
+  UploadSection,
   LayersSection,
-  CustomSizesPanel,
+  ResizeSection,
 ];
 
 const useHeight = () => {
@@ -86,6 +87,7 @@ const Editor = () => {
   } = useContext(Context);
   const timeoutRef = useRef(null);
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
+  const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
   // const load = () => {
   //   let url = new URL(window.location.href);
@@ -117,13 +119,6 @@ const Editor = () => {
   };
   // ------ ai_integration branch
 
-  // Cutout pro API start
-  const [file, setFile] = useState(null);
-  const [imgResponse, setImgResponse] = useState(null);
-  const [removedBgImageUrl, setRemovedBgImageUrl] = useState("");
-  const [stActivePageNo, setStActivePageNo] = useState(0);
-  const [stShowRemoveBgBtn, setStShowRemoveBgBtn] = useState(false);
-  var varActivePageNo = 0;
   const queryClient = useQueryClient();
   const { mutateAsync: createCanvasAsync } = useMutation({
     mutationKey: "createCanvas",
@@ -140,92 +135,7 @@ const Editor = () => {
       queryClient.invalidateQueries(["my-designs"], { exact: true });
     },
   });
-
-  const handleRemoveBg = async () => {
-    const varImageUrl = store.selectedElements[0]?.src;
-    fnFindPageNo();
-
-    var removedBgURL = await fnRemoveBg(varImageUrl);
-    console.log(varActivePageNo);
-    console.log("removedBgURL", removedBgURL);
-    // // To Fix CORS error, we append the string with b-cdn url
-    fnAddImageToCanvas(`${replaceImageURL(removedBgURL)}`, varActivePageNo);
-
-    return removedBgURL;
-  };
   // 03June2023
-
-  // Find the index of the page for which the removed background image needs to be placed
-  const fnFindPageNo = () => {
-    store.pages.map((page) => {
-      page.identifier == store._activePageId;
-      setStActivePageNo(store.pages.indexOf(page));
-      varActivePageNo = store.pages.indexOf(page);
-    });
-  };
-  // Function to Add Removed BG image on the Canvas
-  const fnAddImageToCanvas = async (removedBgUrl, varActivePageNo) => {
-    // Add the new removed Bg Image to the Page
-    console.log(removedBgUrl);
-
-    await store.pages[stActivePageNo || varActivePageNo].addElement({
-      type: "image",
-      x: 0.5 * store.width,
-      y: 0.5 * store.height,
-      width: store.selectedElements[0].width,
-      height: store.selectedElements[0].height,
-      src: removedBgUrl,
-      selectable: true,
-      draggable: true,
-      removable: true,
-      resizable: true,
-      showInExport: true,
-    });
-  };
-
-  const fnRemoveBg = async (varImageUrl) => {
-    const res = await getRemovedBgS3Link(varImageUrl);
-    if (res?.data) {
-      console.log(res.data);
-      return res.data.s3link;
-    }
-  };
-
-  // delete the Previous Image: - 26Jun2023
-  const fnDeletePrevImage = async () => {
-    await store.deleteElements(store.selectedElements.map((x) => x.id));
-  };
-  // Cutout pro API end
-
-  //  Toast Setup
-  const fnCallToast = async () => {
-    // check if image is selected on canvas
-    const varImageUrl = store.selectedElements[0]?.src;
-    if (varImageUrl === undefined) {
-      toast.error("Please select an image to remove background");
-      return;
-    }
-    const id = toast.loading("Removing Background", { autoClose: 4000 });
-    const res = await handleRemoveBg();
-    if (res) {
-      toast.update(id, {
-        render: "Removed Background", //Check if The toast is working
-        type: "success",
-        isLoading: false,
-        autoClose: 4000,
-        closeButton: true,
-      });
-      console.log("res", res?.data);
-    } else if (!res) {
-      toast.update(id, {
-        render: "Error in removing background",
-        type: "error",
-        isLoading: false,
-        autoClose: 4000,
-        closeButton: true,
-      });
-    }
-  };
 
   // store the canvas and update it by traching the changes start
   const requestSave = () => {
@@ -315,7 +225,6 @@ const Editor = () => {
   // store the canvas and update it by traching the changes end
 
   // React tour Setup :
-  const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
   // default split revenue recipient
   useEffect(() => {
@@ -393,10 +302,10 @@ const Editor = () => {
       >
         <div style={{ height: "calc(100% - 75px)" }}>
           <div className="">
-            <Topbar />
+            <TopbarSection />
           </div>
           <PolotnoContainer>
-            <div id="second-step" className="ml-2 mr-2">
+            <div id="second-step" className="mx-2">
               <SidePanelWrap>
                 <SidePanel store={store} sections={sections} />
               </SidePanelWrap>
@@ -407,21 +316,9 @@ const Editor = () => {
               </div>
               <Workspace store={store} />
 
-              {/* <div className="mt-2 mb-2 mr-2 border border-gray-300"> */}
+              {/* Bottom section */}
               <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg">
-                <div className="">
-                  <Button
-                    id="fourth-step"
-                    icon="clean"
-                    onClick={fnCallToast}
-                    title={isConnected ? "" : "Please connect your wallet"}
-                    disabled={!isConnected}
-                    className="mt-2 mb-2 ml-3 py-1 px-4"
-                  >
-                    {`Remove background`}
-                  </Button>
-                </div>
-
+                <BgRemover />
                 <ZoomButtons store={store} />
 
                 {/* Quick Tour on the main page */}
@@ -431,10 +328,10 @@ const Editor = () => {
                     setCurrentStep(0);
                     if (isConnected) {
                       setIsOpen(true);
-                      setSteps(onboardingStepsWithShare);
+                      setSteps(OnboardingStepsWithShare);
                     } else {
                       setIsOpen(true);
-                      setSteps(onboardingSteps);
+                      setSteps(OnboardingSteps);
                     }
                   }}
                 >

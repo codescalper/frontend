@@ -1,9 +1,9 @@
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import ShareButton from "./share";
-import DownloadBtn from "./download";
+import ShareButton from "./share/ShareButton";
+import DownloadBtn from "./download/DownloadBtn";
 
-const Topbar = () => {
+const TopbarSection = () => {
   const { isConnected } = useAccount();
 
   return (
@@ -57,4 +57,4 @@ const Topbar = () => {
   );
 };
 
-export default Topbar;
+export default TopbarSection;

@@ -9,7 +9,7 @@ import { DateTimePicker } from "@atlaskit/datetime-picker";
 import { getFromLocalStorage } from "../../../../../utils";
 import { Context } from "../../../../../context/ContextProvider";
 
-const Share = () => {
+const ShareSection = () => {
   const { address, isConnected } = useAccount();
   const {
     setMenu,
@@ -183,4 +183,4 @@ const Share = () => {
   );
 };
 
-export default Share;
+export default ShareSection;
