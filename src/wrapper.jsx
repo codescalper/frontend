@@ -8,14 +8,14 @@ import { publicProvider } from "wagmi/providers/public";
 import ContextProvider from "./context/ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ENVIRONMENT } from "./services/env";
-import App from "./App";
-import LoginComp from "./tokengating/LoginComp";
+import { ENVIRONMENT } from "./services/env/env";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import TwitterAuth from "./components/TwitterAuth";
+
+import App from "./app/App";
+import { AuthComponent } from "./app/auth";
 
 const { chains, provider } = configureChains(
-  [polygon],
+  [ENVIRONMENT === "production" ? polygon : polygonMumbai],
   [
     // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),
@@ -45,8 +45,7 @@ export const Wrapper = () => {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<App />} />
-                <Route path="/ifUserEligible" element={<LoginComp />} />
-                <Route path="/auth/twitter" element={<TwitterAuth />} />
+                <Route path="/ifUserEligible" element={<AuthComponent />} />
               </Routes>
               {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
             </BrowserRouter>
