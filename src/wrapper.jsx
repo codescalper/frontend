@@ -15,7 +15,7 @@ import App from "./app/App";
 import { AuthComponent } from "./app/auth";
 
 const { chains, provider } = configureChains(
-  [polygon],
+  [ENVIRONMENT === "production" ? polygon : polygonMumbai],
   [
     // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),

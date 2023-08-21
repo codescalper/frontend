@@ -198,6 +198,22 @@ export const DesignPanel = ({ store }) => {
     return false;
   };
 
+  // Function to delete all the canvas on confirmation - 25Jun2023
+  const fnDeleteCanvas = () => {
+    store.clear({ keepHistory: true });
+    store.addPage();
+    setIsOpen(false);
+  };
+
+  // Function to make the canvas public & also Tokengated
+  const fnTokengateDesign = () => {
+    console.log(document.getElementById("iDTokengateDesign").value);
+    // use this to fetch input field data : -
+    // document.getElementById("iDTokengateDesign").value
+
+    setOpenTokengateModal(!openTokengateModal);
+  };
+
   useEffect(() => {
     if (isDeleteError) {
       toast.error(fnMessage(deleteError));
@@ -223,22 +239,6 @@ export const DesignPanel = ({ store }) => {
     );
   }
 
-  // Function to delete all the canvas on confirmation - 25Jun2023
-  const fnDeleteCanvas = () => {
-    store.clear({ keepHistory: true });
-    store.addPage();
-    setIsOpen(false);
-  };
-
-  // Function to make the canvas public & also Tokengated
-  const fnTokengateDesign = () => {
-    console.log(document.getElementById("iDTokengateDesign").value);
-    // use this to fetch input field data : -
-    // document.getElementById("iDTokengateDesign").value
-
-    setOpenTokengateModal(!openTokengateModal);
-  };
-
   return (
     <div className="h-full flex flex-col">
       <h1 className="text-lg">My Files</h1>
@@ -262,7 +262,7 @@ export const DesignPanel = ({ store }) => {
       {openTokengateModal && (
         <CompModal
           openTokengateModal
-          tokengatingIp="0x001230000000 / Lenster post link"
+          tokengatingIp="contract address / Lenster post link"
           // store={store}
           icon={"lock"}
           ModalTitle={"Tokengate this template"}

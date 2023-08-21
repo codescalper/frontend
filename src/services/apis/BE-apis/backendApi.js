@@ -349,6 +349,15 @@ export const deleteCanvasById = async (id) => {
   return result?.data;
 };
 
+export const gateCanvasById = async (id, gatewith) => {
+  const result = await api.get(`${API}/user/canvas/gate/${id}`, {
+    params: {
+      gatewith: gatewith,
+    },
+  });
+  return result?.data;
+};
+
 // share canvas on lens endpoint
 // need auth token (jwt)
 export const shareOnSocials = async ({

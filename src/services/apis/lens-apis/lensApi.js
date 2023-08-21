@@ -14,9 +14,9 @@ import { ENVIRONMENT } from "../../env/env";
 // export const LENS_HUB_CONTRACT = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d"; // mainnet
 // export const LENS_HUB_CONTRACT = "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"; // mumbai
 export const LENS_HUB_CONTRACT =
-  ENVIRONMENT === "localhost"
-    ? "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"
-    : "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d";
+  ENVIRONMENT === "production"
+    ? "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d" // mainnet
+    : "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"; // mumbai
 export const lensHub = new ethers.Contract(
   LENS_HUB_CONTRACT,
   LENS_HUB_ABI,
@@ -25,9 +25,9 @@ export const lensHub = new ethers.Contract(
 
 // const API_URL = "https://api-mumbai.lens.dev";
 const API_URL =
-  ENVIRONMENT === "localhost"
-    ? "https://api-mumbai.lens.dev"
-    : "https://api.lens.dev";
+  ENVIRONMENT === "production"
+    ? "https://api.lens.dev" // mainnet
+    : "https://api-mumbai.lens.dev"; // mumbai
 
 // export const client = new ApolloClient({
 //   uri: API_URL,
