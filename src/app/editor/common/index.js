@@ -1,13 +1,13 @@
 import CustomImageComponent from "./core/CustomImageComponent";
 import {
-  OnboardingSteps,
-  OnboardingStepsWithShare,
-} from "./core/onboardingSteps";
-import {
   MyDesignReacTour,
   NFTReacTour,
   StickerReacTour,
 } from "./core/ReacTour";
+import {
+  OnboardingSteps,
+  OnboardingStepsWithShare,
+} from "./core/OnboardingSteps";
 import ConnectWalletMsgComponent from "./elements/ConnectWalletMsgComponent";
 import ErrorComponent from "./elements/ErrorComponent";
 import LoadMoreComponent from "./elements/LoadMoreComponent";
