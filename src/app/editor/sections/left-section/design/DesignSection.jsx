@@ -300,6 +300,7 @@ export const DesignPanel = () => {
           }
         />
       )}
+
       {modal.isOpen && modal.isNewDesign && (
         <CompModal
           modal={modal}
@@ -309,12 +310,14 @@ export const DesignPanel = () => {
           onClickFunction={() => fnDeleteCanvas()}
         />
       )}
+
       <SearchComponent
         onClick={false}
         query={query}
         setQuery={setQuery}
         placeholder="Search designs by id"
       />
+      
       <MyDesignReacTour />
       {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
