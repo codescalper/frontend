@@ -115,6 +115,7 @@ const UploadPanel = () => {
           <div className="overflow-y-auto grid grid-cols-2">
             {data?.pages
               .flatMap((item) => item?.data)
+              .reverse()
               .map((item, index) => {
                 return (
                   <CustomImageComponent

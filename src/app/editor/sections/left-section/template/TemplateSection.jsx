@@ -1,8 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useInfiniteAPI } from "polotno/utils/use-api";
 import { SectionTab } from "polotno/side-panel";
-import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { TemplatesIcon } from "../../../../../assets";
 import {
   getAllTemplates,
@@ -19,43 +17,49 @@ import {
 } from "../../../common";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
-import { Spinner, Button, MenuItem, Menu, Icon } from "@blueprintjs/core";
-import { Popover2 } from "@blueprintjs/popover2";
+import { Spinner, Icon } from "@blueprintjs/core";
 import { useStore } from "../../../../../hooks";
-import { Context } from "../../../../../context/ContextProvider";
 import { fnLoadJsonOnPage, replaceImageURL } from "../../../../../utils";
 
 // Design card component start
 
 const DesignCard = observer(
-  ({ design, preview, json, onDelete, onPublic, tab }) => {
+  ({ preview, json, tab, isGated, allowList, modal, setModal }) => {
     const store = useStore();
-    // To check is the Modal is open or not
-    const [isOpen, setIsOpen] = useState(false);
-    const [isTokengated, setIsTokengated] = useState(false); // For Displaying the Tokengated Asset Icon
-    const [stOpenTokengatedModal, setStOpenTokengatedModal] = useState(false); //For Modal Interaction
+    const { address } = useAccount();
+    const isAllowed = allowList?.includes(address);
+
+    const handleClickOrDrop = () => {
+      // Show Modal: if it's tokengated
+      if (isGated && !isAllowed) {
+        setModal({
+          ...modal,
+          isOpen: true,
+          isTokengated: isGated,
+        });
+      } else {
+        // Check if there are any elements on the page - to open the Modal or not
+        if (store.activePage.children.length > 1) {
+          setModal({
+            ...modal,
+            isOpen: true,
+            isNewDesign: true,
+            json: json,
+          });
+        } else {
+          // If not load the clicked JSON
+          fnLoadJsonOnPage(store, json);
+        }
+      }
+    };
 
     return (
       <Card
         className="rounded-lg"
         style={{ margin: "4px", padding: "0px", position: "relative" }}
         interactive
-        onDragEnd={() => async () => {}}
-        onClick={async () => {
-          // Show Modal: if it's tokengated
-          if (isTokengated) {
-            setStOpenTokengatedModal(!stOpenTokengatedModal);
-          }
-          if (!isTokengated) {
-            // Check if there are any elements on the page - to open the Modal or not
-            if (store.activePage.children.length > 1) {
-              setIsOpen(!isOpen);
-            } else {
-              // If not load the clicked JSON
-              fnLoadJsonOnPage(store, json);
-            }
-          }
-        }}
+        onDragEnd={handleClickOrDrop}
+        onClick={handleClickOrDrop}
       >
         <div className="rounded-lg overflow-hidden">
           <LazyLoadImage
@@ -67,51 +71,14 @@ const DesignCard = observer(
           />
         </div>
 
-        {/* Show Icon only if it's tokengated, i.e: `isTokengated` === true  */}
-        {isTokengated && (
+        {/* if tab === "user" and  modal.isTokengate === true */}
+        {tab === "user" && isGated && (
           <div
             className="bg-white p-1 rounded-lg "
             style={{ position: "absolute", top: "8px", left: "8px" }}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
           >
             <Icon icon="endorsed" intent="primary" size={16} />
           </div>
-        )}
-
-        {/* Show Modal only if it's tokengated, i.e: `isTokengated` & `stOpenTokengatedModal` === true */}
-        {isTokengated && stOpenTokengatedModal && (
-          <CompModal
-            store={store}
-            json={json}
-            icon={"endorsed"}
-            ModalTitle={"Access Restricted for this template"}
-            ModalMessage={`
-          This is a tokengated Template, Please collect this post to get Access.${""}
-          https://opensea.io/collection/supducks
-          `}
-            customBtn={"Visit Link"}
-            // Example - Supducks Opensea Link
-            onClickFunction={() =>
-              window.open(
-                "https://opensea.io/assets/ethereum/0x3fe1a4c1481c8351e91b64d5c398b159de07cbc5",
-                "_blank"
-              )
-            }
-          />
-        )}
-
-        {isOpen && (
-          <CompModal
-            store={store}
-            json={json}
-            ModalTitle={
-              "Are you sure to replace the canvas with this template?"
-            }
-            ModalMessage={"This will remove all the content from your canvas"}
-            onClickFunction={() => fnLoadJsonOnPage(store, json)}
-          />
         )}
       </Card>
     );
@@ -189,13 +156,12 @@ const LenspostTemplates = () => {
       {/*   Pass these onto Line 25 */}
       {data.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
-          {data.map((design) => {
+          {data.map((item) => {
             return (
               <DesignCard
-                design={design}
-                json={design.data}
-                preview={design?.image}
-                key={design.id}
+                json={item.data}
+                preview={item?.image}
+                key={item.id}
                 tab="lenspost"
               />
             );
@@ -212,12 +178,18 @@ const LenspostTemplates = () => {
 
 const UserTemplates = () => {
   const store = useStore();
-  const [stOpenedModal, setStOpenedModal] = useState(true);
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
+  const [modal, setModal] = useState({
+    isOpen: false,
+    isTokengated: false,
+    isNewDesign: false,
+    json: null,
+  });
   const { data, isLoading, isError, error, isSuccess } = useQuery({
     queryKey: ["user-templates"],
     queryFn: getUserPublicTemplates,
+    enabled: address ? true : false,
   });
 
   if (isDisconnected || !address) {
@@ -238,6 +210,37 @@ const UserTemplates = () => {
 
   return (
     <>
+      {/* Show Modal only if it's tokengated, i.e: `isTokengated` & `stOpenTokengatedModal` === true */}
+      {modal?.isOpen && modal?.isTokengated && (
+        <CompModal
+          modal={modal}
+          setModal={setModal}
+          icon={"disable"}
+          ModalTitle={"Access Restricted for this template"}
+          ModalMessage={`
+          This is a tokengated Template, Please collect this post to get Access.${""}
+          https://opensea.io/collection/supducks
+          `}
+        />
+      )}
+
+      {modal?.isOpen && modal?.isNewDesign && (
+        <CompModal
+          modal={modal}
+          setModal={setModal}
+          ModalTitle={"Are you sure to replace the canvas with this template?"}
+          ModalMessage={"This will remove all the content from your canvas"}
+          onClickFunction={() => {
+            fnLoadJsonOnPage(store, modal?.json);
+            setModal({
+              isOpen: false,
+              isTokengated: false,
+              isNewDesign: false,
+              json: null,
+            });
+          }}
+        />
+      )}
       <SearchComponent
         query={query}
         setQuery={setQuery}
@@ -248,18 +251,21 @@ const UserTemplates = () => {
       {/*   Pass these onto Line 25 */}
       {data?.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
-          {data.map((design) => {
+          {data.map((item) => {
             return (
               <DesignCard
-                design={design}
-                json={design.data}
+                isGated={item.isGated}
+                allowList={item.allowList}
+                json={item.data}
                 preview={
-                  design?.imageLink != null &&
-                  design?.imageLink.length > 0 &&
-                  design?.imageLink[0]
+                  item?.imageLink != null &&
+                  item?.imageLink.length > 0 &&
+                  item?.imageLink[0]
                 }
-                key={design.id}
+                key={item.id}
                 tab="user"
+                modal={modal}
+                setModal={setModal}
               />
             );
           })}

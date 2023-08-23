@@ -19,6 +19,7 @@ import {
   deleteCanvasById,
   getAllCanvas,
   getUserPublicTemplates,
+  tokengateCanvasById,
 } from "../../../../../services";
 import { toast } from "react-toastify";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -50,18 +51,17 @@ const DesignCard = ({
   const { fastPreview, contextCanvasIdRef } = useContext(Context);
   const store = useStore();
 
+  const handleClickOrDrop = () => {
+    store.loadJSON(json);
+    contextCanvasIdRef.current = design.id;
+  };
+
   return (
     <Card
       className="relative p-0 m-1 rounded-lg"
       interactive
-      onDragEnd={() => {
-        store.loadJSON(json);
-        contextCanvasIdRef.current = design.id;
-      }}
-      onClick={() => {
-        store.loadJSON(json);
-        contextCanvasIdRef.current = design.id;
-      }}
+      onDragEnd={handleClickOrDrop}
+      onClick={handleClickOrDrop}
     >
       <div className="rounded-lg overflow-hidden">
         <LazyLoadImage
@@ -138,15 +138,22 @@ const DesignCard = ({
 
 // Design card component end - 23Jun2023
 
-export const DesignPanel = ({ store }) => {
+export const DesignPanel = () => {
+  const store = useStore();
   const { fastPreview, contextCanvasIdRef } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
-  const [isOpen, setIsOpen] = useState(false);
-  // const [stConfirmNew, setStConfirmNew] = useState("");
+  const [modal, setModal] = useState({
+    isOpen: false,
+    isTokengate: false,
+    isNewDesign: false,
+    stTokengateIpValue: "",
+    isError: false,
+    errorMsg: "",
+    canvasId: null,
+  });
   const [query, setQuery] = useState("");
 
-  const [openTokengateModal, setOpenTokengateModal] = useState(false);
-
+  // get all canvas
   const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["my-designs"],
@@ -158,6 +165,7 @@ export const DesignPanel = ({ store }) => {
     queryFn: getUserPublicTemplates,
   });
 
+  // mutationFn delete a canvas
   const {
     mutate: deleteCanvas,
     isError: isDeleteError,
@@ -169,11 +177,9 @@ export const DesignPanel = ({ store }) => {
       toast.success(data?.message);
       queryClient.invalidateQueries(["my-designs"], { exact: true });
     },
-    onError: (error) => {
-      toast.error(error);
-    },
   });
 
+  // mutationFn change canvas visibility (public/private)
   const {
     mutate: changeVisibility,
     isError: isVisibilityError,
@@ -182,15 +188,38 @@ export const DesignPanel = ({ store }) => {
     mutationKey: "change-visibility",
     mutationFn: changeCanvasVisibility,
     onSuccess: (data) => {
-      toast.success(data?.message);
+      if (modal.isTokengate) {
+        toast.success("Canvas is tokengated and made public"),
+          setModal({
+            isOpen: false,
+            isTokengate: false,
+            isNewDesign: false,
+            stTokengateIpValue: "",
+            isError: false,
+            errorMsg: "",
+            canvasId: null,
+          });
+      } else {
+        toast.success(data?.message);
+      }
       queryClient.invalidateQueries(["user-templates"], { exact: true });
-    },
-    onError: (error) => {
-      toast.error(error);
     },
   });
 
-  // funtion to check if canvas is public or not
+  // mutationFn to tokengate a canvas
+  const {
+    mutate: tokengateCanvas,
+    isError: isTokengateError,
+    error: tokengateError,
+  } = useMutation({
+    mutationKey: "tokengate-canvas",
+    mutationFn: tokengateCanvasById,
+    onSuccess: () => {
+      changeVisibility({ id: modal.canvasId, isPublic: true });
+    },
+  });
+
+  // mutationFn funtion to check if canvas is public or not
   const isCanvasPublic = (canvasId) => {
     if (publicTemplates) {
       return publicTemplates.some((obj) => obj.id === canvasId);
@@ -202,16 +231,7 @@ export const DesignPanel = ({ store }) => {
   const fnDeleteCanvas = () => {
     store.clear({ keepHistory: true });
     store.addPage();
-    setIsOpen(false);
-  };
-
-  // Function to make the canvas public & also Tokengated
-  const fnTokengateDesign = () => {
-    console.log(document.getElementById("iDTokengateDesign").value);
-    // use this to fetch input field data : -
-    // document.getElementById("iDTokengateDesign").value
-
-    setOpenTokengateModal(!openTokengateModal);
+    setModal({ ...modal, isOpen: false, isNewDesign: false });
   };
 
   useEffect(() => {
@@ -219,8 +239,10 @@ export const DesignPanel = ({ store }) => {
       toast.error(fnMessage(deleteError));
     } else if (isVisibilityError) {
       toast.error(fnMessage(visibilityError));
+    } else if (isTokengateError) {
+      toast.error(fnMessage(tokengateError));
     }
-  }, [isDeleteError, isVisibilityError]);
+  }, [isDeleteError, isVisibilityError, isTokengateError]);
 
   if (isDisconnected || !address) {
     return (
@@ -252,40 +274,50 @@ export const DesignPanel = ({ store }) => {
           const hasObjects = ids?.length;
 
           if (hasObjects) {
-            setIsOpen(!isOpen);
-            // isOpen(true);
+            setModal({ ...modal, isOpen: true, isNewDesign: true });
           }
         }}
       >
         Create new design
       </Button>
-      {openTokengateModal && (
+
+      {modal.isOpen && modal.isTokengate && (
         <CompModal
-          openTokengateModal
+          modal={modal}
+          setModal={setModal}
           tokengatingIp="contract address / Lenster post link"
-          // store={store}
           icon={"lock"}
           ModalTitle={"Tokengate this template"}
           ModalMessage={`
           Please enter the Contract Address or the Lenster Post Link to tokengate this template.
           `}
           customBtn={"Confirm"}
-          onClickFunction={fnTokengateDesign}
+          onClickFunction={() =>
+            tokengateCanvas({
+              id: modal.canvasId,
+              gatewith: modal.stTokengateIpValue,
+            })
+          }
         />
       )}
-      {isOpen && (
+
+      {modal.isOpen && modal.isNewDesign && (
         <CompModal
+          modal={modal}
+          setModal={setModal}
           ModalTitle={"Are you sure to create a new design?"}
           ModalMessage={"This will remove all the content from your canvas"}
           onClickFunction={() => fnDeleteCanvas()}
         />
       )}
+
       <SearchComponent
         onClick={false}
         query={query}
         setQuery={setQuery}
         placeholder="Search designs by id"
       />
+      
       <MyDesignReacTour />
       {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
@@ -296,7 +328,12 @@ export const DesignPanel = ({ store }) => {
         <ErrorComponent error={error} />
       ) : data.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2" id="RecentDesigns">
-          {data.map((design) => {
+          {contextCanvasIdRef.current === null && fastPreview[0] && (
+            <Card className="relative p-0 m-1" interactive>
+              <img src={fastPreview[0]} alt="" />
+            </Card>
+          )}
+          {[...data].reverse().map((design) => {
             return (
               <DesignCard
                 design={design}
@@ -315,16 +352,16 @@ export const DesignPanel = ({ store }) => {
                 }
                 isPublic={isCanvasPublic}
                 openTokengateModal={() =>
-                  setOpenTokengateModal(!openTokengateModal)
+                  setModal({
+                    ...modal,
+                    isOpen: true,
+                    isTokengate: true,
+                    canvasId: design.id,
+                  })
                 }
               />
             );
           })}
-          {contextCanvasIdRef.current === null && fastPreview[0] && (
-            <Card className="relative p-0 m-1" interactive>
-              <img src={fastPreview[0]} alt="" />
-            </Card>
-          )}
         </div>
       ) : (
         <div id="RecentDesigns">

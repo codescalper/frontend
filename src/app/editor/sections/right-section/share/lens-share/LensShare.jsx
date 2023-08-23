@@ -28,6 +28,7 @@ import {
 } from "../../../../../../utils";
 import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
 import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
+import { InputBox, NumberInputBox } from "../../../../common";
 
 const LensShare = () => {
   const { address, isConnected } = useAccount();
@@ -512,9 +513,7 @@ const LensShare = () => {
                 >
                   <div className="flex flex-col w-1/2 py-2">
                     <label htmlFor="price">Price</label>
-                    <input
-                      className="border border-black rounded-md p-2"
-                      type="number"
+                    <NumberInputBox
                       min={"1"}
                       step={"0.01"}
                       placeholder="0.0$"
@@ -532,7 +531,7 @@ const LensShare = () => {
                     <select
                       name="chargeForCollectCurrency"
                       id="chargeForCollectCurrency"
-                      className="border border-black rounded-md p-2"
+                      className="border rounded-md py-[10px] outline-none focus:ring-1 focus:ring-blue-500"
                       onChange={handleChange}
                       value={enabled.chargeForCollectCurrency}
                     >
@@ -583,9 +582,7 @@ const LensShare = () => {
                 >
                   <div className="flex flex-col w-full py-2">
                     <label htmlFor="price">Referral fee(%)</label>
-                    <input
-                      className="border border-black rounded-md p-2"
-                      type="number"
+                    <NumberInputBox
                       min={0.0}
                       max={100.0}
                       step={0.01}
@@ -618,9 +615,7 @@ const LensShare = () => {
                           key={index}
                           className="flex justify-between gap-2 items-center w-full py-2"
                         >
-                          <input
-                            className="border border-black w-full rounded-md p-2"
-                            type="text"
+                          <InputBox
                             placeholder="erc20 address"
                             value={recipient.recipient}
                             onChange={(e) => {
@@ -634,9 +629,7 @@ const LensShare = () => {
                             }}
                           />
                           <div className="flex justify-between items-center w-1/3">
-                            <input
-                              className="border border-black rounded-md p-2"
-                              type="number"
+                            <NumberInputBox
                               min={0}
                               max={90}
                               step={0.01}
@@ -743,9 +736,7 @@ const LensShare = () => {
                 <div className={`flex ${!enabled.limitedEdition && "hidden"}`}>
                   <div className="flex flex-col w-full py-2">
                     <label htmlFor="price">Collect limit</label>
-                    <input
-                      className="border border-black rounded-md p-2"
-                      type="number"
+                    <NumberInputBox
                       min={"1"}
                       step={"1"}
                       placeholder="1"

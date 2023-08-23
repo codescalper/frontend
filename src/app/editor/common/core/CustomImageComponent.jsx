@@ -45,7 +45,7 @@ const CustomImageComponent = ({
   };
 
   // function for drop/add image on canvas
-  const fnDropImageOnCanvas = () => {
+  const handleClickOrDrop = () => {
     isBackground && store.setSize(dimensions[0], dimensions[1]);
 
     store.activePage?.addElement({
@@ -80,12 +80,8 @@ const CustomImageComponent = ({
     <Card
       className="relative p-0 m-1 rounded-lg"
       interactive
-      onDragEnd={() => {
-        fnDropImageOnCanvas();
-      }}
-      onClick={() => {
-        fnDropImageOnCanvas();
-      }}
+      onDragEnd={handleClickOrDrop}
+      onClick={handleClickOrDrop}
     >
       <div className="rounded-lg overflow-hidden">
         <LazyLoadImage
