@@ -349,12 +349,11 @@ export const deleteCanvasById = async (id) => {
   return result?.data;
 };
 
-export const gateCanvasById = async (id, gatewith) => {
-  const result = await api.get(`${API}/user/canvas/gate/${id}`, {
-    params: {
-      gatewith: gatewith,
-    },
+export const tokengateCanvasById = async ({ id, gatewith }) => {
+  const result = await api.post(`${API}/user/canvas/gate/${id}`, {
+    gatewith: gatewith,
   });
+
   return result?.data;
 };
 

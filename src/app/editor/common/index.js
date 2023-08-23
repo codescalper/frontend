@@ -16,6 +16,8 @@ import SearchComponent from "./elements/SearchComponent";
 import CheckInternetConnection from "./modals/CheckInternetConnection";
 import LoadingComponent from "./modals/LoadingComponent";
 import CompModal from "./modals/ModalComponent";
+import InputBox from "./elements/InputBox";
+import NumberInputBox from "./elements/NumberInputBox";
 
 export {
   CustomImageComponent,
@@ -32,4 +34,6 @@ export {
   CheckInternetConnection,
   LoadingComponent,
   CompModal,
+  InputBox,
+  NumberInputBox,
 };
