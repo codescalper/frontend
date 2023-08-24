@@ -7,6 +7,7 @@
 import { Dialog, DialogBody, DialogFooter, Button } from "@blueprintjs/core";
 import { handleChange } from "../../sections/left-section/design/utils";
 import InputBox from "../elements/InputBox";
+import { gatedWith } from "../../sections/left-section/template/utils";
 
 // Dialog / Modal component start
 const CompModal = ({
@@ -30,6 +31,7 @@ const CompModal = ({
           setModal({
             isOpen: false,
             isTokengated: false,
+            gatedWith: "",
             isNewDesign: false,
             json: null,
           });
@@ -48,6 +50,19 @@ const CompModal = ({
     >
       <DialogBody>
         {ModalMessage}
+
+        {/* if tokengated */}
+        {modal?.isTokengated &&
+          gatedWith(modal).map((item, index) => (
+            <p
+              key={index}
+              onClick={() => window.open(item, "_blank")}
+              className="cursor-pointer w-full my-3 truncate text-base"
+            >
+              {item}
+            </p>
+          ))}
+        {/* if tokengated */}
 
         {/* for tokengating */}
         {modal?.isTokengate && (
