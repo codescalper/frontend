@@ -79,7 +79,7 @@ const CustomImageComponent = ({
   return (
     <Card
       className="relative p-0 m-1 rounded-lg cursor-pointer"
-      // interactive
+      interactive
       onDragEnd={handleClickOrDrop}
       onClick={handleClickOrDrop}
     >

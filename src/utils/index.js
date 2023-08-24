@@ -10,3 +10,4 @@ export * from "./localStorage";
 export * from "./replaceUrl";
 export * from "./waitFn";
 export * from "./validation";
+export * from "./firstLetterCapital";
