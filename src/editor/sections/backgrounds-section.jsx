@@ -127,7 +127,7 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex flex-row h-fit">
+      <div className="mx-2 flex flex-row h-fit">
         {/* <Button
 			className="m-1 rounded-md border-2 p-2"
 			onClick={() => {
@@ -138,7 +138,8 @@ export const BackgroundPanel2 = observer(({ store, query }) => {
 				Colors
 		</Button> */}
         <Button
-          className="m-2 rounded-md border-2 px-2"
+          small 
+          className="mx-1 my-1 rounded-md border-2 px-2"
           onClick={() => {
             setStTab("tabNFTBgs");
           }}

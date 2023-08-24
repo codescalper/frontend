@@ -20,6 +20,9 @@ const CustomPopover = ({ icon, isSplitPopover }) => {
 
   }
 
+  const fnHandleSplitConfirm = () => {
+    console.log(stIpValue);
+  } 
   return (
     <>
       {/* Donate more Modal components - Blueprintjs 20Aug2023 */}
@@ -68,6 +71,9 @@ const CustomPopover = ({ icon, isSplitPopover }) => {
                         value={stSliderValue}
                         labelRenderer={stSliderValue}
                       />
+                    </div>
+                    <div className="w-full mt-1">
+                      <Button intent="primary" small onClick={fnHandleSplitConfirm} className="w-full py-0">Confirm</Button>
                     </div>
                   </div>
                 </div>

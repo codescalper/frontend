@@ -28,6 +28,9 @@ import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
 import CustomPopover from "../elements/CustomPopover";
+import GrCircleInformation from "@meronex/icons/gr/GrCircleInformation";
+import { useMutation } from "@tanstack/react-query";
+import { fnMessage } from "../services/fnMessage";
 
 const LensMonetization = () => {
   const { address, isConnected } = useAccount();
@@ -60,6 +63,11 @@ const LensMonetization = () => {
   const getLensAuth = getFromLocalStorage("lensAuth");
   const [duplicateAddressError, setDuplicateAddressError] = useState(false);
   const [percentageError, setPercentageError] = useState("");
+  const [openInfo, setOpenInfo] = useState(false);
+  const { mutateAsync: shareOnLens } = useMutation({
+    mutationKey: "shareOnLens",
+    mutationFn: shareOnSocials,
+  });
 
   // generating signature
   const generateSignature = async () => {
@@ -248,7 +256,7 @@ const LensMonetization = () => {
     if (enabled.chargeForCollect) {
       canvasParams.collectModule.multirecipientFeeCollectModule = {
         ...canvasParams.collectModule.multirecipientFeeCollectModule,
-        recipients: enabled.splitRevenueRecipients,
+        recipients: enabled.splitRevenueRecipients.slice(1),
       };
     }
 
@@ -302,6 +310,7 @@ const LensMonetization = () => {
     });
   };
 
+  // function to handel recipient field change
   const handleRecipientChange = (index, field, value) => {
     const updatedRecipients = [...enabled.splitRevenueRecipients];
     updatedRecipients[index][field] = value;
@@ -375,44 +384,47 @@ const LensMonetization = () => {
     };
 
     const id = toast.loading(`Sharing on ${platform}...`);
-    const res = await shareOnSocials(
-      canvasData,
-      monatizationSettings(),
-      platform,
-      formatDateTimeUnix(stFormattedDate, stFormattedTime)
-    );
-    if (res?.data?.txHash) {
-      const jsConfetti = new JSConfetti();
-      jsConfetti.addConfetti({
-        emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
-        confettiNumber: 100,
+    shareOnLens({
+      canvasData: canvasData,
+      canvasParams: monatizationSettings(),
+      platform: platform,
+      timeStamp: formatDateTimeUnix(stFormattedDate, stFormattedTime),
+    })
+      .then((res) => {
+        if (res?.txHash) {
+          const jsConfetti = new JSConfetti();
+          jsConfetti.addConfetti({
+            emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
+            confettiNumber: 100,
+          });
+          toast.update(id, {
+            render: `Successfully shared on ${platform}`,
+            type: "success",
+            isLoading: false,
+            autoClose: 3000,
+            closeButton: true,
+          });
+          // setCanvasId("");
+          setPostDescription("");
+        } else if (res?.error) {
+          toast.update(id, {
+            render: res?.error,
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+            closeButton: true,
+          });
+        }
+      })
+      .catch((err) => {
+        toast.update(id, {
+          render: fnMessage(err),
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+          closeButton: true,
+        });
       });
-      toast.update(id, {
-        render: `Successfully shared on ${platform}`,
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-        closeButton: true,
-      });
-      // setCanvasId("");
-      setPostDescription("");
-    } else if (res?.error) {
-      toast.update(id, {
-        render: res?.error,
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-        closeButton: true,
-      });
-    } else {
-      toast.update(id, {
-        render: "Something went wrong",
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-        closeButton: true,
-      });
-    }
   };
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
@@ -508,7 +520,7 @@ const LensMonetization = () => {
                     <input
                       className="border border-black rounded-md p-2"
                       type="number"
-                      min={"0"}
+                      min={"1"}
                       step={"0.01"}
                       placeholder="0.0$"
                       onChange={(e) =>
@@ -603,7 +615,7 @@ const LensMonetization = () => {
                     Set multiple recipients for the collect fee
                   </Switch.Label>
                 </div>
-                <div className={``}>
+                <div className="relative">
                   {enabled.splitRevenueRecipients.map((recipient, index) => {
                     return (
                       <>
@@ -671,6 +683,20 @@ const LensMonetization = () => {
                       </>
                     );
                   })}
+                  {/* {openInfo && (
+                    <div className="absolute flex justify-between w-full h-36 p-2 bg-white border-2 border-solid border-[#E1F26C] shadow-[#4f542d] rounded-lg z-40 shadow-2xl top-0">
+                      <p className="w-[90%]">
+                        Small fee to supposrt our team. Small fee to supposrt
+                        our team. Small fee to supposrt our team. Small fee to
+                        supposrt our team.
+                      </p>
+                      <TiDelete
+                        color="red"
+                        className="h-5 w-5 cursor-pointer"
+                        onClick={() => setOpenInfo(false)}
+                      />
+                    </div>
+                  )} */}
                   {duplicateAddressError && (
                     <p className="text-red-500 font-semibold italic">
                       Duplicate recipient address found

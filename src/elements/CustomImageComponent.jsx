@@ -1,7 +1,8 @@
 // Seperate component for Lazy loading (CustomImage) - 29Jun2023
 
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Card } from "@blueprintjs/core";
+import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
 import { replaceImageURL } from "../services/replaceUrl";
 import { useEffect, useState } from "react";
 
@@ -13,7 +14,7 @@ const CustomImageComponent = ({
   store,
   dimensions,
   isBackground,
-  lensUserName
+  hasOptionBtn
 }) => {
   const [base64Data, setBase64Data] = useState("");
 
@@ -83,36 +84,8 @@ const CustomImageComponent = ({
       onClick={() => {
         fnDropImageOnCanvas();
       }}
-    >
-      <div className="rounded-lg">
-        {/* If the `lensUseName` is present only then show this: */}
-        {lensUserName &&
-          <div className="bg-[#9aff1534] flex flex-row align-middle justify-normal rounded-t-lg" >
-            <div className="p-0.5 pb-1"
-              onClick={(e) => {
-                e.stopPropagation()
-                window.open(`https://lens.xyz/`, "_blank")
-              }}>
-              <img src="/lensLogo.jpg" alt="" className="h-5 rounded-l-md rounded-sm" /></div>
-
-              <div className="p-1 pl-1 text-xs hover:text-slate-500"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  window.open(`https://lenster.xyz/u/${lensUserName}`, "_blank")
-                }
-                }
-              >
-                {
-                  // Check if the lensUserName length is more than a specific number, to avoid overflow
-                  `${lensUserName.length > 16 ?
-                    `@${lensUserName.substring(0, 16)} ...` :
-                    `@${lensUserName.substring(0, 16)}`
-                  }`
-                }
-            </div>
-            <hr className="mt-1" />
-          </div>
-        }
+    >   
+      <div className="rounded-lg overflow-hidden"> 
         <LazyLoadImage
           placeholderSrc={base64Data}
           effect="blur"
@@ -120,6 +93,28 @@ const CustomImageComponent = ({
           alt="Preview Image"
         />
       </div>
+
+      {hasOptionBtn && (
+        <div
+          style={{ position: "absolute", top: "5px", right: "5px" }}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <Popover2
+            content={
+              <Menu>
+                <MenuItem icon="trash" text="Delete" onClick={onDelete} />
+              </Menu>
+            }
+            position={Position.BOTTOM}
+          >
+            <div id="makePublic">
+              <Button icon="more" />
+            </div>
+          </Popover2>
+        </div>
+      )}
     </Card>
   );
 };

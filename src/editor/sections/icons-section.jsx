@@ -594,9 +594,10 @@ export const IconsPanel = ({ store }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="" id="stickerCategories">
+      <div className="mx-2 mt-1" id="stickerCategories">
         <Button
-          className="m-2 rounded-md"
+          small
+          className="mx-1 my-1 rounded-md"
           onClick={() => {
             setCurrentTab("tabIcons");
           }}
@@ -606,7 +607,8 @@ export const IconsPanel = ({ store }) => {
           Icons
         </Button>
         <Button
-          className="m-2 rounded-md"
+          small
+          className="mx-1 my-1 rounded-md"
           onClick={() => {
             setCurrentTab("tabSupducks");
           }}
@@ -618,7 +620,8 @@ export const IconsPanel = ({ store }) => {
 
         {/* New Tabs Lens, Nouns, Assorted START - 11Jul2023 */}
         <Button
-          className="m-2 rounded-md"
+          small
+          className="mx-1 my-1 rounded-md"
           onClick={() => {
             setCurrentTab("tabLens");
           }}
@@ -628,7 +631,8 @@ export const IconsPanel = ({ store }) => {
           Lens
         </Button>
         <Button
-          className="m-2 rounded-md"
+          small
+          className="mx-1 my-1 rounded-md"
           onClick={() => {
             setCurrentTab("tabNouns");
           }}
@@ -638,7 +642,8 @@ export const IconsPanel = ({ store }) => {
           Nouns
         </Button>
         <Button
-          className="m-2 rounded-md"
+          small
+          className="mx-1 my-1 rounded-md"
           onClick={() => {
             setCurrentTab("tabFLS");
           }}
@@ -648,7 +653,8 @@ export const IconsPanel = ({ store }) => {
           FLS
         </Button>
         <Button
-          className="m-2 rounded-md"
+          small
+          className="mx-1 my-1 rounded-md"
           onClick={() => {
             setCurrentTab("tabAssorted");
           }}

@@ -351,60 +351,20 @@ export const deleteCanvasById = async (id) => {
 
 // share canvas on lens endpoint
 // need auth token (jwt)
-export const shareOnSocials = async (
+export const shareOnSocials = async ({
   canvasData,
   canvasParams,
   platform,
-  timeStamp
-) => {
-  try {
-    const result = await api.post(`${API}/user/canvas/publish`, {
-      canvasData: canvasData,
-      canvasParams: canvasParams,
-      platform: platform,
-      timeStamp: timeStamp,
-    });
+  timeStamp,
+}) => {
+  const result = await api.post(`${API}/user/canvas/publish`, {
+    canvasData: canvasData,
+    canvasParams: canvasParams,
+    platform: platform,
+    timeStamp: timeStamp,
+  });
 
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else if (result?.status === 404) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error:
-          error?.response?.data?.message ||
-          error?.response?.data?.name ||
-          "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  return result?.data;
 };
 // canvas apis end
 
@@ -621,12 +581,36 @@ export const getIsUserWhitelisted = async (walletAddress) => {
 };
 // user is holder of collection apis end
 
-// upload image to s3 apis start
+// upload section apis start
+
+// upload user assets endpoint
 export const uploadUserAssets = async (image) => {
-  const result = await api.post(`${API}/util/upload-image`, {
+  const result = await api.post(`${API}/user/upload`, {
     image: image,
   });
 
   return result?.data;
 };
-// upload image to s3 apis end
+
+// get user assets endpoint
+export const getUserAssets = async (page) => {
+  const result = await api.get(`${API}/user/upload`, {
+    params: {
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
+};
+
+// delete user assets endpoint
+export const deleteUserAsset = async (id) => {
+  const result = await api.delete(`${API}/user/upload/${id}`);
+
+  return result?.data;
+};
+// upload section end

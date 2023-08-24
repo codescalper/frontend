@@ -5,16 +5,11 @@ import { SectionTab } from "polotno/side-panel";
 import { MyDesignIcon, TemplatesIcon } from "../editor-icon";
 
 import {
-  Icon,
-  IconSize,
   Button,
   Card,
   Menu,
   MenuItem,
   Position,
-  Dialog,
-  DialogBody,
-  DialogFooter,
   Spinner,
 } from "@blueprintjs/core";
 
@@ -219,7 +214,6 @@ export const MyDesignsPanel = observer(({ store }) => {
   if (isDisconnected || !address) {
     return (
       <div className="h-full flex flex-col">
-        <h1 className="text-lg">My Designs</h1>
         <ConnectWalletMsgComponent />
       </div>
     );

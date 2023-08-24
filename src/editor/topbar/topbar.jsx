@@ -1,28 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { DownloadButton } from "./DownloadButton";
-import { useDisconnect, useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import RightDrawer from "./rightdrawer";
 
-// New imports:
-import { ShareIcon } from "../editor-icon";
-import { useEffect, useState } from "react";
-
-// New imports: - reactour
-import { useTour } from "@reactour/tour";
-import RightDrawer from "./RightDrawer";
-
-const Topbar = observer(({ store }) => {
-  // 18Jun2023
-  const [stIsDrawOpen, setStIsDrawOpen] = useState(false);
-  const { disconnect } = useDisconnect();
-
-  const { address, isConnecting, isConnected, isDisconnected } = useAccount();
-
-  // Reactour
-  const { setIsOpen } = useTour();
-  useEffect(() => {
-    // setIsOpen(true);
-  }, []);
+export const Topbar = observer(({ store }) => {
+  const { isConnected } = useAccount();
 
   return (
     <div className="bg-white h-[75px]  w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
@@ -74,5 +57,3 @@ const Topbar = observer(({ store }) => {
     </div>
   );
 });
-
-export default Topbar;
