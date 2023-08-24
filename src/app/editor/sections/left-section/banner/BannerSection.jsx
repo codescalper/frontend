@@ -1,155 +1,35 @@
 // Imports:
-import React, { useEffect, useRef, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { Button, Icon, Spinner } from "@blueprintjs/core";
+import React, { useState } from "react";
+import { Button } from "@blueprintjs/core";
 import { SectionTab } from "polotno/side-panel";
 import { BackgroundIcon } from "../../../../../assets";
-import { useAccount } from "wagmi";
 import { getBGAssetByQuery } from "../../../../../services";
-import {
-  ConnectWalletMsgComponent,
-  CustomImageComponent,
-  ErrorComponent,
-  LoadMoreComponent,
-  MessageComponent,
-  SearchComponent,
-} from "../../../common";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { fnLoadMore } from "../../../../../utils";
-
-// New Tab Colors Start - 24Jun2023
-export const TabColors = () => {
-  return (
-    <>
-      In Colors
-      {/* Code for Colors here */}
-    </>
-  );
-};
-
-// New Tab Colors End - 24Jun2023
-
-// New Tab NFT Backgrounds Start - 24Jun2023
-export const TabNFTBgs = () => {
-  const [query, setQuery] = useState("");
-  const [delayedQuery, setDelayedQuery] = useState(query);
-  const requestTimeout = useRef();
-  const { isDisconnected, address, isConnected } = useAccount();
-
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["bg-assets", delayedQuery || "supducks"],
-    getNextPageParam: (prevData) => prevData.nextPage,
-    queryFn: ({ pageParam = 1 }) =>
-      getBGAssetByQuery(delayedQuery || "supducks", pageParam),
-  });
-
-  useEffect(() => {
-    requestTimeout.current = setTimeout(() => {
-      setDelayedQuery(query);
-    }, 500);
-    return () => {
-      clearTimeout(requestTimeout.current);
-    };
-  }, [query]);
-
-  useEffect(() => {
-    if (isDisconnected || !address) return;
-    fnLoadMore(hasNextPage, fetchNextPage);
-  }, [hasNextPage, fetchNextPage]);
-
-  if (isDisconnected || !address) {
-    return <ConnectWalletMsgComponent />;
-  }
-
-  if (isError) {
-    return <ErrorComponent message={error} />;
-  }
-
-  // Show Loading - 06Jul2023
-  if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        <Spinner />
-      </div>
-    );
-  }
-  return isError ? (
-    <ErrorComponent message={error} />
-  ) : (
-    <>
-      <SearchComponent
-        query={query}
-        setQuery={setQuery}
-        placeholder="Search backgrounds"
-      />
-      {data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  <CustomImageComponent
-                    key={index}
-                    preview={item.image}
-                    dimensions={item?.dimensions != null && item.dimensions}
-                    isBackground={true}
-                  />
-                );
-              })}
-          </div>
-          <LoadMoreComponent
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </div>
-      ) : (
-        <MessageComponent message="No results found" />
-      )}
-    </>
-  );
-};
-
-// New Tab NFT Backgrounds End - 24Jun2023
+import { Tabs } from "../../../common";
+import { firstLetterCapital } from "../../../../../utils";
 
 export const BannerPanel = () => {
-  const [stTab, setStTab] = useState("tabNFTBgs");
+  const [currentTab, setCurrentTab] = useState("supducks");
+  const tabArray = ["supducks", "moonrunners"];
 
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row h-fit">
-        {/* <Button
-			className="m-1 rounded-md border-2 p-2"
-			onClick={() => {
-				setStTab("tabColors");
-			}}
-			active={stTab === "tabColors"}
-			icon="color-fill">
-				Colors
-		</Button> */}
-        <Button
-          className="m-2 rounded-md border-2 px-2"
-          onClick={() => {
-            setStTab("tabNFTBgs");
-          }}
-          active={stTab === "tabNFTBgs"}
-          // icon="build"
-        >
-          Supducks
-        </Button>
+        {tabArray.map((tab, index) => (
+          <Button
+            key={index}
+            className="m-2 rounded-md border-2 px-2"
+            onClick={() => {
+              setCurrentTab(tab);
+            }}
+            active={currentTab === tab}
+            // icon="build"
+          >
+            {firstLetterCapital(tab)}
+          </Button>
+        ))}
       </div>
 
-      {/* The Tab Elements start to appear here - 24Jun2023 */}
-      {stTab === "tabColors" && <TabColors />}
-      {stTab === "tabNFTBgs" && <TabNFTBgs />}
+      <Tabs defaultQuery={currentTab} getAssetsFn={getBGAssetByQuery} />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { SectionTab } from "polotno/side-panel";
 import { TemplatesIcon } from "../../../../../assets";
@@ -20,14 +20,27 @@ import { useAccount } from "wagmi";
 import { Spinner, Icon } from "@blueprintjs/core";
 import { useStore } from "../../../../../hooks";
 import { fnLoadJsonOnPage, replaceImageURL } from "../../../../../utils";
+import { Context } from "../../../../../context/ContextProvider";
 
 // Design card component start
 
 const DesignCard = observer(
-  ({ preview, json, tab, isGated, allowList, modal, setModal }) => {
+  ({
+    id,
+    preview,
+    json,
+    tab,
+    isGated,
+    gatedWith,
+    allowList,
+    referredFrom,
+    modal,
+    setModal,
+  }) => {
     const store = useStore();
     const { address } = useAccount();
     const isAllowed = allowList?.includes(address);
+    const { setUserTemplateState } = useContext(Context);
 
     const handleClickOrDrop = () => {
       // Show Modal: if it's tokengated
@@ -36,6 +49,7 @@ const DesignCard = observer(
           ...modal,
           isOpen: true,
           isTokengated: isGated,
+          gatedWith: gatedWith,
         });
       } else {
         // Check if there are any elements on the page - to open the Modal or not
@@ -49,6 +63,13 @@ const DesignCard = observer(
         } else {
           // If not load the clicked JSON
           fnLoadJsonOnPage(store, json);
+          if (tab === "user") {
+            setUserTemplateState({
+              isUserTemplate: true,
+              canvasId: id,
+              referredFrom: referredFrom,
+            });
+          }
         }
       }
     };
@@ -183,10 +204,11 @@ const UserTemplates = () => {
   const [modal, setModal] = useState({
     isOpen: false,
     isTokengated: false,
+    gatedWith: "",
     isNewDesign: false,
     json: null,
   });
-  const { data, isLoading, isError, error, isSuccess } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["user-templates"],
     queryFn: getUserPublicTemplates,
     enabled: address ? true : false,
@@ -218,8 +240,7 @@ const UserTemplates = () => {
           icon={"disable"}
           ModalTitle={"Access Restricted for this template"}
           ModalMessage={`
-          This is a tokengated Template, Please collect this post to get Access.${""}
-          https://opensea.io/collection/supducks
+          This is a tokengated Template, Please collect this post or buy the NFT to get the access.
           `}
         />
       )}
@@ -254,15 +275,18 @@ const UserTemplates = () => {
           {data.map((item) => {
             return (
               <DesignCard
-                isGated={item.isGated}
-                allowList={item.allowList}
-                json={item.data}
+                id={item?.id}
+                referredFrom={item?.referredFrom}
+                isGated={item?.isGated}
+                gatedWith={item?.gatedWith}
+                allowList={item?.allowList}
+                json={item?.data}
                 preview={
                   item?.imageLink != null &&
                   item?.imageLink.length > 0 &&
                   item?.imageLink[0]
                 }
-                key={item.id}
+                key={item?.id}
                 tab="user"
                 modal={modal}
                 setModal={setModal}

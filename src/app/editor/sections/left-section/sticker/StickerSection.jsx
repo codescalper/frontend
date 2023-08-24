@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { InputGroup, Button, Card, Spinner, Icon } from "@blueprintjs/core";
+import React, { useRef, useState } from "react";
+import { Button, Icon } from "@blueprintjs/core";
 import { isAlive } from "mobx-state-tree";
 import { svgToURL } from "polotno/utils/svg";
 import { SectionTab } from "polotno/side-panel";
@@ -9,19 +8,9 @@ import styled from "polotno/utils/styled";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { getAssetByQuery } from "../../../../../services";
-import { useAccount } from "wagmi";
-import {
-  ConnectWalletMsgComponent,
-  CustomImageComponent,
-  ErrorComponent,
-  LoadMoreComponent,
-  MessageComponent,
-  SearchComponent,
-  StickerReacTour,
-} from "../../../common";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { SearchComponent, StickerReacTour, Tabs } from "../../../common";
 import { useStore } from "../../../../../hooks";
-import { fnLoadMore } from "../../../../../utils";
+import { firstLetterCapital, fnLoadMore } from "../../../../../utils";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -139,429 +128,9 @@ export const CompIcons = () => {
   );
 };
 
-// New Tab NFT Elements/Stickers Start - 24Jun2023
-// export const CompSupducks = observer(({ store, query }) => {
-export const CompSupducks = () => {
-  const [query, setQuery] = useState("");
-  const requestTimeout = useRef();
-  const [delayedQuery, setDelayedQuery] = useState(query);
-  const { address, isDisconnected } = useAccount();
-
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["assets", delayedQuery || "supducks"],
-    getNextPageParam: (prevData) => prevData.nextPage,
-    queryFn: ({ pageParam = 1 }) =>
-      getAssetByQuery(delayedQuery || "supducks", pageParam),
-  });
-
-  useEffect(() => {
-    requestTimeout.current = setTimeout(() => {
-      setDelayedQuery(query);
-    }, 500);
-    return () => {
-      clearTimeout(requestTimeout.current);
-    };
-  }, [query]);
-
-  useEffect(() => {
-    if (isDisconnected || !address) return;
-    fnLoadMore(hasNextPage, fetchNextPage);
-  }, [hasNextPage, fetchNextPage]);
-
-  if (isDisconnected || !address) {
-    return <ConnectWalletMsgComponent />;
-  }
-
-  // Show Loading - 06Jul2023
-  if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        <Spinner />
-      </div>
-    );
-  }
-
-  // console.log(data);
-
-  return isError ? (
-    <ErrorComponent message={error} />
-  ) : (
-    <>
-      <SearchComponent
-        query={query}
-        setQuery={setQuery}
-        placeholder="Search stickers"
-      />
-      {data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  <CustomImageComponent key={index} preview={item.image} />
-                );
-              })}
-          </div>
-          <LoadMoreComponent
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </div>
-      ) : (
-        <MessageComponent message="No results found" />
-      )}
-    </>
-  );
-};
-
-// New Tab NFT Elements/Stickers End - 24Jun2023
-
-// ----------- New Tabs - Nouns, Lens, Assorted START - 11Jul2023 -----------
-
-// New Tab Lens Start - 11Jul2023
-export const CompLens = () => {
-  const { address, isDisconnected } = useAccount();
-  const [query, setQuery] = useState("");
-  const requestTimeout = useRef();
-  const [delayedQuery, setDelayedQuery] = useState(query);
-
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["assets", delayedQuery || "lens"],
-    getNextPageParam: (prevData) => prevData.nextPage,
-    queryFn: ({ pageParam = 1 }) =>
-      getAssetByQuery(delayedQuery || "lens", pageParam),
-  });
-
-  useEffect(() => {
-    requestTimeout.current = setTimeout(() => {
-      setDelayedQuery(query);
-    }, 500);
-    return () => {
-      clearTimeout(requestTimeout.current);
-    };
-  }, [query]);
-
-  useEffect(() => {
-    if (isDisconnected || !address) return;
-    fnLoadMore(hasNextPage, fetchNextPage);
-  }, [hasNextPage, fetchNextPage]);
-
-  if (isDisconnected || !address) {
-    return <ConnectWalletMsgComponent />;
-  }
-
-  // Show Loading - 06Jul2023
-  if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        <Spinner />
-      </div>
-    );
-  }
-
-  return isError ? (
-    <ErrorComponent message={error} />
-  ) : (
-    <>
-      <SearchComponent
-        query={query}
-        setQuery={setQuery}
-        placeholder="Search stickers"
-      />
-      {data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  <CustomImageComponent key={index} preview={item.image} />
-                );
-              })}
-          </div>
-          <LoadMoreComponent
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </div>
-      ) : (
-        <MessageComponent message="No results found" />
-      )}
-    </>
-  );
-};
-
-// New Tab Lens End - 11Jul2023
-
-// New Tab Nouns Start - 11Jul2023
-export const CompNouns = () => {
-  const { address, isDisconnected } = useAccount();
-  const [query, setQuery] = useState("");
-  const requestTimeout = useRef();
-  const [delayedQuery, setDelayedQuery] = useState(query);
-
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["assets", delayedQuery || "nouns"],
-    getNextPageParam: (prevData) => prevData.nextPage,
-    queryFn: ({ pageParam = 1 }) =>
-      getAssetByQuery(delayedQuery || "nouns", pageParam),
-  });
-
-  useEffect(() => {
-    requestTimeout.current = setTimeout(() => {
-      setDelayedQuery(query);
-    }, 500);
-    return () => {
-      clearTimeout(requestTimeout.current);
-    };
-  }, [query]);
-
-  useEffect(() => {
-    if (isDisconnected || !address) return;
-    fnLoadMore(hasNextPage, fetchNextPage);
-  }, [hasNextPage, fetchNextPage]);
-
-  if (isDisconnected || !address) {
-    return <ConnectWalletMsgComponent />;
-  }
-
-  // Show Loading - 06Jul2023
-  if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        <Spinner />
-      </div>
-    );
-  }
-
-  return isError ? (
-    <ErrorComponent message={error} />
-  ) : (
-    <>
-      <SearchComponent
-        query={query}
-        setQuery={setQuery}
-        placeholder="Search stickers"
-      />
-      {data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  <CustomImageComponent key={index} preview={item.image} />
-                );
-              })}
-          </div>
-          <LoadMoreComponent
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </div>
-      ) : (
-        <MessageComponent message="No results found" />
-      )}
-    </>
-  );
-};
-
-// New Tab Nouns End - 11Jul2023
-
-// New Tab Assorted Start - 11Jul2023
-export const CompAssorted = () => {
-  const { address, isDisconnected } = useAccount();
-  const [query, setQuery] = useState("");
-  const requestTimeout = useRef();
-  const [delayedQuery, setDelayedQuery] = useState(query);
-
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["assets", delayedQuery || "assorted"],
-    getNextPageParam: (prevData) => prevData.nextPage,
-    queryFn: ({ pageParam = 1 }) =>
-      getAssetByQuery(delayedQuery || "assorted", pageParam),
-  });
-
-  useEffect(() => {
-    requestTimeout.current = setTimeout(() => {
-      setDelayedQuery(query);
-    }, 500);
-    return () => {
-      clearTimeout(requestTimeout.current);
-    };
-  }, [query]);
-
-  useEffect(() => {
-    if (isDisconnected || !address) return;
-    fnLoadMore(hasNextPage, fetchNextPage);
-  }, [hasNextPage, fetchNextPage]);
-
-  if (isDisconnected || !address) {
-    return <ConnectWalletMsgComponent />;
-  }
-
-  // Show Loading - 06Jul2023
-  if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        <Spinner />
-      </div>
-    );
-  }
-
-  return isError ? (
-    <ErrorComponent message={error} />
-  ) : (
-    <>
-      <SearchComponent
-        query={query}
-        setQuery={setQuery}
-        placeholder="Search stickers"
-      />
-      {data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  <CustomImageComponent key={index} preview={item.image} />
-                );
-              })}
-          </div>
-          <LoadMoreComponent
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </div>
-      ) : (
-        <MessageComponent message="No results found" />
-      )}
-    </>
-  );
-};
-
-// New Tab Assorted End - 11Jul2023
-
-// new tab for Fam Leady Society start
-export const CompFLS = () => {
-  const { address, isDisconnected } = useAccount();
-  const [query, setQuery] = useState("");
-  const requestTimeout = useRef();
-  const [delayedQuery, setDelayedQuery] = useState(query);
-
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["assets", delayedQuery || "fls"],
-    getNextPageParam: (prevData) => prevData.nextPage,
-    queryFn: ({ pageParam = 1 }) =>
-      getAssetByQuery(delayedQuery || "fls", pageParam),
-  });
-
-  useEffect(() => {
-    requestTimeout.current = setTimeout(() => {
-      setDelayedQuery(query);
-    }, 500);
-    return () => {
-      clearTimeout(requestTimeout.current);
-    };
-  }, [query]);
-
-  useEffect(() => {
-    if (isDisconnected || !address) return;
-    fnLoadMore(hasNextPage, fetchNextPage);
-  }, [hasNextPage, fetchNextPage]);
-
-  if (isDisconnected || !address) {
-    return <ConnectWalletMsgComponent />;
-  }
-
-  // Show Loading - 06Jul2023
-  if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        <Spinner />
-      </div>
-    );
-  }
-
-  return isError ? (
-    <ErrorComponent message={error} />
-  ) : (
-    <>
-      <SearchComponent
-        query={query}
-        setQuery={setQuery}
-        placeholder="Search stickers"
-      />
-      {data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  <CustomImageComponent key={index} preview={item.image} />
-                );
-              })}
-          </div>
-          <LoadMoreComponent
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </div>
-      ) : (
-        <MessageComponent message="No results found" />
-      )}
-    </>
-  );
-};
-// New Tab Fam Leady Society ens
-
-// ----------- New Tabs - Nouns, Lens, Assorted END - 11Jul2023 -----------
-
 export const StickerPanel = () => {
   const [currentTab, setCurrentTab] = useState("tabIcons");
+  const tabArray = ["supducks", "lens", "nouns", "fls", "assorted"];
 
   return (
     <div className="flex flex-col h-full">
@@ -576,68 +145,28 @@ export const StickerPanel = () => {
         >
           Icons
         </Button>
-        <Button
-          className="m-2 rounded-md"
-          onClick={() => {
-            setCurrentTab("tabSupducks");
-          }}
-          active={currentTab === "tabSupducks"}
-          // icon=""
-        >
-          Supducks
-        </Button>
 
-        {/* New Tabs Lens, Nouns, Assorted START - 11Jul2023 */}
-        <Button
-          className="m-2 rounded-md"
-          onClick={() => {
-            setCurrentTab("tabLens");
-          }}
-          active={currentTab === "tabLens"}
-          // icon=""
-        >
-          Lens
-        </Button>
-        <Button
-          className="m-2 rounded-md"
-          onClick={() => {
-            setCurrentTab("tabNouns");
-          }}
-          active={currentTab === "tabNouns"}
-          // icon=""
-        >
-          Nouns
-        </Button>
-        <Button
-          className="m-2 rounded-md"
-          onClick={() => {
-            setCurrentTab("tabFLS");
-          }}
-          active={currentTab === "tabFLS"}
-          // icon=""
-        >
-          FLS
-        </Button>
-        <Button
-          className="m-2 rounded-md"
-          onClick={() => {
-            setCurrentTab("tabAssorted");
-          }}
-          active={currentTab === "tabAssorted"}
-          // icon=""
-        >
-          Assorted
-        </Button>
+        {tabArray.map((tab, index) => (
+          <Button
+            key={index}
+            className="m-2 rounded-md"
+            onClick={() => {
+              setCurrentTab(tab);
+            }}
+            active={currentTab === tab}
+            // icon=""
+          >
+            {firstLetterCapital(tab)}
+          </Button>
+        ))}
       </div>
       <StickerReacTour />
-      {/* New Tabs Lens, Nouns, Assorted END - 11Jul2023 */}
 
-      {currentTab === "tabIcons" && <CompIcons />}
-      {currentTab === "tabSupducks" && <CompSupducks />}
-      {currentTab === "tabLens" && <CompLens />}
-      {currentTab === "tabNouns" && <CompNouns />}
-      {currentTab === "tabFLS" && <CompFLS />}
-      {currentTab === "tabAssorted" && <CompAssorted />}
+      {currentTab === "tabIcons" ? (
+        <CompIcons />
+      ) : (
+        <Tabs defaultQuery={currentTab} getAssetsFn={getAssetByQuery} />
+      )}
     </div>
   );
 };

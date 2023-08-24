@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 
 export const Context = createContext();
@@ -57,6 +57,15 @@ const ContextProvider = ({ children }) => {
   // for preview
   const [fastPreview, setFastPreview] = useState([]);
 
+  // user public templates states
+  const [userTemplateState, setUserTemplateState] = useState({
+    isUserTemplate: false,
+    canvasId: null,
+    referredFrom: [],
+  });
+
+  // console.log({ userTemplateState });
+
   return (
     <Context.Provider
       value={{
@@ -93,6 +102,10 @@ const ContextProvider = ({ children }) => {
         // for preview
         fastPreview,
         setFastPreview,
+
+        // user public templates states
+        userTemplateState,
+        setUserTemplateState,
       }}
     >
       {children}

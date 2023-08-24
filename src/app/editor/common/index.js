@@ -18,6 +18,7 @@ import LoadingComponent from "./modals/LoadingComponent";
 import CompModal from "./modals/ModalComponent";
 import InputBox from "./elements/InputBox";
 import NumberInputBox from "./elements/NumberInputBox";
+import Tabs from "./core/Tabs";
 
 export {
   CustomImageComponent,
@@ -36,4 +37,5 @@ export {
   CompModal,
   InputBox,
   NumberInputBox,
+  Tabs,
 };
