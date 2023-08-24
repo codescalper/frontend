@@ -193,7 +193,6 @@ const Editor = () => {
   useEffect(() => {
     // request saving operation on any changes
     const handleChange = () => {
-      return
       requestSave();
     };
 
