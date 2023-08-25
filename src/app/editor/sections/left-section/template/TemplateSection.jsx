@@ -40,7 +40,7 @@ const DesignCard = observer(
     const store = useStore();
     const { address } = useAccount();
     const isAllowed = allowList?.includes(address);
-    const { setUserTemplateState } = useContext(Context);
+    const { communityTemplateRef } = useContext(Context);
 
     const handleClickOrDrop = () => {
       // Show Modal: if it's tokengated
@@ -64,11 +64,11 @@ const DesignCard = observer(
           // If not load the clicked JSON
           fnLoadJsonOnPage(store, json);
           if (tab === "user") {
-            setUserTemplateState({
-              isUserTemplate: true,
+            communityTemplateRef.current = {
+              isCommunityTemplate: true,
               canvasId: id,
-              referredFrom: referredFrom,
-            });
+              referredFrom: [...referredFrom, id],
+            };
           }
         }
       }

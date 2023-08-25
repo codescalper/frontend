@@ -58,13 +58,11 @@ const ContextProvider = ({ children }) => {
   const [fastPreview, setFastPreview] = useState([]);
 
   // user public templates states
-  const [userTemplateState, setUserTemplateState] = useState({
-    isUserTemplate: false,
+  const communityTemplateRef = useRef({
+    isCommunityTemplate: false,
     canvasId: null,
     referredFrom: [],
   });
-
-  // console.log({ userTemplateState });
 
   return (
     <Context.Provider
@@ -104,8 +102,7 @@ const ContextProvider = ({ children }) => {
         setFastPreview,
 
         // user public templates states
-        userTemplateState,
-        setUserTemplateState,
+        communityTemplateRef,
       }}
     >
       {children}

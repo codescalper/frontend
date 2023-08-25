@@ -12,15 +12,9 @@ import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
 import { createCanvas, updateCanvas } from "../../services";
 import { Context } from "../../context/ContextProvider";
-
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getFromLocalStorage,
-  fnMessage,
-  loadFile,
-  base64Stripper,
-} from "../../utils";
+import { fnMessage, loadFile, base64Stripper } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
 import { useStore } from "../../hooks";
@@ -76,6 +70,7 @@ const Editor = () => {
     contextCanvasIdRef,
     setEnabled,
     setFastPreview,
+    communityTemplateRef,
   } = useContext(Context);
   const timeoutRef = useRef(null);
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
@@ -119,7 +114,7 @@ const Editor = () => {
     },
   });
   // 03June2023
-
+  
   // store the canvas and update it by traching the changes start
   const requestSave = () => {
     // if save is already requested - do nothing
@@ -155,6 +150,7 @@ const Editor = () => {
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
+            referredFrom: communityTemplateRef.current.referredFrom,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {

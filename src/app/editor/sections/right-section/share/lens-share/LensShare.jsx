@@ -72,6 +72,7 @@ const LensShare = () => {
   const generateSignature = async () => {
     const message = await lensChallenge(address);
     setIsLoading(true);
+    setSharing(true);
     signMessage({
       message,
     });
@@ -80,6 +81,7 @@ const LensShare = () => {
 
   // authenticating signature on lens
   const lensAuth = async () => {
+    setSharing(true);
     setText("Authenticating...");
     const res = await lensAuthenticate(signature);
     if (res?.data) {
@@ -101,6 +103,7 @@ const LensShare = () => {
       }, 4000);
     } else if (res?.error) {
       toast.error(res?.error);
+      setSharing(false);
       setIsLoading(false);
       setText("");
     }
@@ -127,6 +130,7 @@ const LensShare = () => {
   // set the dispatcher true or false
   const setDispatcherFn = async () => {
     try {
+      setSharing(true);
       setIsLoading(true);
       setText("Sign the message to enable dispatcher");
 
@@ -162,6 +166,7 @@ const LensShare = () => {
     } catch (err) {
       console.log("error setting dispatcher: ", err);
       toast.error("Error setting dispatcher");
+      setSharing(false);
       setIsLoading(false);
       setText("");
     }
@@ -449,6 +454,7 @@ const LensShare = () => {
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
+      setSharing(false);
       setIsLoading(false);
       toast.error("User rejected the signature request");
     }
