@@ -57,6 +57,9 @@ const ContextProvider = ({ children }) => {
   // for preview
   const [fastPreview, setFastPreview] = useState([]);
 
+  // Right Sidebar 
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
   return (
     <Context.Provider
       value={{
@@ -65,24 +68,38 @@ const ContextProvider = ({ children }) => {
         text,
         setText,
         contextCanvasIdRef,
+
+        // for twitter auth
         queryParams,
         setQueryParams,
+
+        // for open different menu in share
         menu,
         setMenu,
+
+        // for lens monetization
         enabled,
         setEnabled,
         postDescription,
         setPostDescription,
         open,
         setOpen,
+
+        // for calendar
         stFormattedDate,
         setStFormattedDate,
         stFormattedTime,
         setStFormattedTime,
         stCalendarClicked,
         setStCalendarClicked,
+
+        // for preview
         fastPreview,
         setFastPreview,
+
+        // Right Sidebar 
+        isShareOpen,
+        setIsShareOpen
       }}
     >
       {children}
