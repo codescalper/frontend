@@ -1,4 +1,4 @@
-import { isEthAddress, isLensterUrl } from "./validation";
+import { isEthAddress, isLensterUrl } from "../../../../../../utils";
 
 export const handleChange = (e, modal, setModal) => {
   const { value } = e.target;
@@ -21,7 +21,7 @@ export const handleChange = (e, modal, setModal) => {
         stTokengateIpValue: value,
       });
     }
-    
+
     // if it is a valid lenster link
   } else if (value.startsWith("https://lenster.xyz")) {
     const isValidLink = isLensterUrl(value);

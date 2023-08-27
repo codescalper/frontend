@@ -290,10 +290,11 @@ export const getNftById = async (id) => {
 // canvas apis satrt
 // craete canvas endpoint
 // need auth token (jwt)
-export const createCanvas = async ({ data, preview }) => {
+export const createCanvas = async ({ data, referredFrom, preview }) => {
   const result = await api.post(`${API}/user/canvas/create`, {
     canvasData: {
       data: data,
+      referredFrom: referredFrom
     },
     preview: preview,
   });

@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 
 export const Context = createContext();
@@ -59,6 +59,14 @@ const ContextProvider = ({ children }) => {
 
   // Right Sidebar 
   const [isShareOpen, setIsShareOpen] = useState(false);
+  // user public templates states
+  const [userTemplateState, setUserTemplateState] = useState({
+    isUserTemplate: false,
+    canvasId: null,
+    referredFrom: [],
+  });
+
+  // console.log({ userTemplateState });
 
   return (
     <Context.Provider
@@ -99,7 +107,10 @@ const ContextProvider = ({ children }) => {
 
         // Right Sidebar 
         isShareOpen,
-        setIsShareOpen
+        setIsShareOpen,
+        // user public templates states
+        userTemplateState,
+        setUserTemplateState,
       }}
     >
       {children}

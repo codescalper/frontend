@@ -28,14 +28,14 @@ export const fnLoadJsonOnPage = (store, json) => {
   } else {
     // other wise the logic is a bit more complicated
     // first take previous JSON
-    console.log(json);
+    // console.log(json);
     const oldJSON = JSON.parse(JSON.stringify(store.toJSON()));
 
     const deepCopyJson = JSON.parse(JSON.stringify(json));
     // not if size of new template is not the same as current store
     // we need to assign sizes of pages manually
-    console.log(oldJSON.width);
-    console.log(deepCopyJson.width);
+    // console.log(oldJSON.width);
+    // console.log(deepCopyJson.width);
     if (
       oldJSON.width !== deepCopyJson.width ||
       oldJSON.height !== deepCopyJson.height
@@ -58,8 +58,8 @@ export const fnLoadJsonOnPage = (store, json) => {
       });
     });
 
-    console.log("The Deep copy JSON is :");
-    console.log(deepCopyJson);
+    // console.log("The Deep copy JSON is :");
+    // console.log(deepCopyJson);
 
     // then find data of active page
     const index = store.pages.indexOf(store.activePage);
@@ -70,7 +70,7 @@ export const fnLoadJsonOnPage = (store, json) => {
 
     // now we can load the new JSON
     store.loadJSON(oldJSON, true);
-    console.log("The current loaded json is ");
-    console.log(oldJSON);
+    // console.log("The current loaded json is ");
+    // console.log(oldJSON);
   }
 };

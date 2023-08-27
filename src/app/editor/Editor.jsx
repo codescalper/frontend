@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from "polotno";
 import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
@@ -10,18 +10,13 @@ import {
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
-import { createCanvas, getRemovedBgS3Link, updateCanvas } from "../../services";
-import { toast } from "react-toastify";
-import { Button } from "@blueprintjs/core";
+import { createCanvas, updateCanvas } from "../../services";
 import { Context } from "../../context/ContextProvider";
 
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import _, { set } from "lodash";
 import {
   getFromLocalStorage,
-  saveToLocalStorage,
-  replaceImageURL,
   fnMessage,
   loadFile,
   base64Stripper,
@@ -44,6 +39,7 @@ import {
 import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 
+// enable animations
 unstable_setAnimationsEnabled(true);
 
 const sections = [
@@ -79,24 +75,11 @@ const Editor = () => {
   const canvasBase64Ref = useRef([]);
   const {
     contextCanvasIdRef,
-    setText,
-    setIsLoading,
-    enabled,
     setEnabled,
     setFastPreview,
-    fastPreview,
   } = useContext(Context);
   const timeoutRef = useRef(null);
-  const getTwitterAuth = getFromLocalStorage("twitterAuth");
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
-
-  // const load = () => {
-  //   let url = new URL(window.location.href);
-  //   // url example https://studio.polotno.com/design/5f9f1b0b
-  //   const reg = new RegExp("design/([a-zA-Z0-9_-]+)").exec(url.pathname);
-  //   const designId = (reg && reg[1]) || "local";
-  //   project.loadById(designId);
-  // };
 
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
@@ -224,8 +207,6 @@ const Editor = () => {
   }, []);
 
   // store the canvas and update it by traching the changes end
-
-  // React tour Setup :
 
   // default split revenue recipient
   useEffect(() => {
