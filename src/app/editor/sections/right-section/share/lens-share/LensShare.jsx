@@ -2,7 +2,13 @@ import { useContext, useState, useEffect } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import TiDelete from "@meronex/icons/ti/TiDelete";
 import BsArrowLeft from "@meronex/icons/bs/BsArrowLeft";
-import { Dialog, Switch } from "@headlessui/react";
+import { Switch } from "@headlessui/react";
+
+import animationData from "../../../../../../assets/lottie/alertAnimation2.json";
+
+// Working Yet - change from headlessui/react to blueprintjs/core
+// import { Switch } from "@blueprintjs/core";
+
 import {
   checkDispatcher,
   lensAuthenticate,
@@ -18,17 +24,24 @@ import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
+import CustomPopover from "../../../../../editor/common/elements/CustomPopover";
+import GrCircleInformation from "@meronex/icons/gr/GrCircleInformation";
 import { useMutation } from "@tanstack/react-query";
 import { Context } from "../../../../../../context/ContextProvider";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   fnMessage,
+  isEthAddress,
+  isLensHandle,
 } from "../../../../../../utils";
 import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
 import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
 import { InputBox, NumberInputBox } from "../../../../common";
 import { useStore } from "../../../../../../hooks";
+// import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
+import BsX from "@meronex/icons/bs/BsX";
+import { SplitPolicyCard } from "./components";
 
 const LensShare = () => {
   const store = useStore();
@@ -52,6 +65,9 @@ const LensShare = () => {
     stFormattedDate,
     contextCanvasIdRef,
     referredFromRef,
+
+    isShareOpen,
+    setIsShareOpen,
   } = useContext(Context);
   const {
     data: signature,
@@ -65,6 +81,7 @@ const LensShare = () => {
   const [percentageError, setPercentageError] = useState("");
   const [openInfo, setOpenInfo] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [platformFee, setPlatformFee] = useState("");
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnLens",
     mutationFn: shareOnSocials,
@@ -262,7 +279,7 @@ const LensShare = () => {
     if (enabled.chargeForCollect) {
       canvasParams.collectModule.multirecipientFeeCollectModule = {
         ...canvasParams.collectModule.multirecipientFeeCollectModule,
-        recipients: enabled.splitRevenueRecipients.slice(1),
+        recipients: enabled.splitRevenueRecipients,
       };
     }
 
@@ -327,7 +344,7 @@ const LensShare = () => {
   };
 
   // check if recipient address is same
-  const isAddressDuplicate = (walletAddress, currentIndex) => {
+  const isAddressDuplicate = () => {
     const arr = enabled.splitRevenueRecipients;
     let isError = false;
     for (let i = 0; i < arr.length; i++) {
@@ -350,10 +367,8 @@ const LensShare = () => {
       totalPercentage += arr[i].split;
     }
 
-    if (totalPercentage > 90) {
-      return 91;
-    } else if (totalPercentage < 90) {
-      return 89;
+    if (totalPercentage === 100) {
+      return true;
     }
   };
 
@@ -370,16 +385,16 @@ const LensShare = () => {
       return;
     }
 
-    if (enabled.splitRevenue) {
+    if (enabled.chargeForCollect) {
       if (isAddressDuplicate()) {
         setDuplicateAddressError(true);
         return;
       }
 
-      if (isPercentageMoreThan100() === 91) {
-        return setPercentageError("Split caannot exceed 90%");
-      } else if (isPercentageMoreThan100() === 89) {
-        return setPercentageError("Split cannot be less than 90%");
+      if (isPercentageMoreThan100()) {
+        setPercentageError("");
+      } else {
+        return setPercentageError("Split should be 100%");
       }
     }
 
@@ -442,7 +457,6 @@ const LensShare = () => {
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
   const handleLensClick = () => {
-    console.log("lens clicked");
     if (isConnected && !getLensAuth) {
       generateSignature();
     } else if (isConnected && getLensAuth && !dispatcherState.message) {
@@ -454,13 +468,17 @@ const LensShare = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    console.log("name", name);
     setEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
   };
 
   const restrictRecipientInput = (e, index, recipient) => {
-    const istext = referredFromRef.current.includes(recipient.recipient);
-    if (index === 0 || istext) {
-      return;
+    const isText = referredFromRef.current.includes(recipient.recipient);
+    const isUserAddress = recipient.recipient === address;
+    if (index === 0 || isText) {
+      if (isUserAddress) {
+        handleRecipientChange(index, "recipient", e.target.value);
+      }
     } else {
       handleRecipientChange(index, "recipient", e.target.value);
     }
@@ -476,9 +494,14 @@ const LensShare = () => {
   // add recipient to the split list
   useEffect(() => {
     if (isConnected) {
+      // add @lenspostxyz.lens to the split list at 0th index but dont duplicate
+      if (!referredFromRef.current.includes("@lenspostxyz")) {
+        referredFromRef.current.unshift("@lenspostxyz");
+      }
+
       const updatedRecipients = referredFromRef.current
         .filter((item) => typeof item === "string")
-        .slice(0, 4)
+        .slice(0, 5)
         .map((item) => ({
           recipient: item,
           split: 0.0,
@@ -486,10 +509,7 @@ const LensShare = () => {
 
       setEnabled((prevEnabled) => ({
         ...prevEnabled,
-        splitRevenueRecipients: [
-          { recipient: "@lenspostxyz.lens", split: 10.0 },
-          ...updatedRecipients,
-        ],
+        splitRevenueRecipients: [...updatedRecipients],
       }));
     }
   }, [address]);
@@ -513,172 +533,193 @@ const LensShare = () => {
   }, []);
 
   return (
-    <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl">
-      <div className="">
-        <Dialog.Title className="w-full flex items-center gap-2 text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10">
-          <BsArrowLeft
-            onClick={() => setMenu("share")}
-            className="cursor-pointer"
-          />
-          Monetization Settings
-        </Dialog.Title>
-      </div>
-      <div className="relative px-4 pt-4 pb-4 sm:px-6 mt-24">
+    <>
+      <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl rounded-lg rounded-r-none ">
         <div className="">
-          <div className="flex flex-col justify-between">
-            <Switch.Group>
-              <div className="mb-4">
-                <h2 className="text-lg mb-2">Charge for collecting</h2>
-                <div className="flex justify-between">
-                  <Switch.Label className="w-4/5">
-                    Get paid when someone collects your post
-                  </Switch.Label>
-                  <Switch
-                    checked={enabled.chargeForCollect}
-                    onChange={() =>
-                      setEnabled({
-                        ...enabled,
-                        chargeForCollect: !enabled.chargeForCollect,
-                      })
-                    }
-                    className={`${
-                      enabled.chargeForCollect ? "bg-[#E1F26C]" : "bg-gray-200"
-                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
-                  >
-                    <span
+          {/* <Dialog.Title className="w-full flex items-center gap-2 text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10"> */}
+          <div className="w-full flex justify-between items-center gap-2 text-white text-xl leading-6 p-4 bg-gray-900 rounded-lg rounded-r-none">
+            <BsArrowLeft
+              onClick={() => setMenu("share")}
+              className="cursor-pointer"
+            />
+            Monetization Settings
+            {/* </Dialog.Title> */}
+            <div
+              className="z-100 cursor-pointer"
+              onClick={() => setIsShareOpen(!isShareOpen)}
+            >
+              <BsX size="24" />
+            </div>
+          </div>
+        </div>
+        <div className="relative px-4 mt-1 pt-2 pb-4 sm:px-6 ">
+          <div className="">
+            <div className="flex flex-col justify-between">
+              <Switch.Group>
+                <div className="mb-4">
+                  <h2 className="text-lg mb-2">Charge for collecting</h2>
+                  <div className="flex justify-between">
+                    <Switch.Label className="w-4/5">
+                      Get paid when someone collects your post
+                    </Switch.Label>
+                    <Switch
+                      checked={enabled.chargeForCollect}
+                      onChange={() =>
+                        setEnabled({
+                          ...enabled,
+                          chargeForCollect: !enabled.chargeForCollect,
+                        })
+                      }
                       className={`${
                         enabled.chargeForCollect
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                    />
-                  </Switch>
+                          ? "bg-[#E1F26C]"
+                          : "bg-gray-200"
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                    >
+                      <span
+                        className={`${
+                          enabled.chargeForCollect
+                            ? "translate-x-6"
+                            : "translate-x-1"
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      />
+                    </Switch>
+                  </div>
+                  <div
+                    className={`flex gap-5 ${
+                      !enabled.chargeForCollect && "hidden"
+                    }`}
+                  >
+                    <div className="flex flex-col w-1/2 py-2">
+                      <label htmlFor="price">Price</label>
+                      <NumberInputBox
+                        min={"1"}
+                        step={"0.01"}
+                        placeholder="0.0$"
+                        onChange={(e) =>
+                          setEnabled({
+                            ...enabled,
+                            chargeForCollectPrice: e.target.value,
+                          })
+                        }
+                        value={enabled.chargeForCollectPrice}
+                      />
+                    </div>
+                    <div className="flex flex-col w-1/2 py-2">
+                      <label htmlFor="price">Currency</label>
+                      <select
+                        name="chargeForCollectCurrency"
+                        id="chargeForCollectCurrency"
+                        className="border rounded-md py-[10px] outline-none focus:ring-1 focus:ring-blue-500"
+                        onChange={handleChange}
+                        value={enabled.chargeForCollectCurrency}
+                      >
+                        {tokenList().map((token, index) => {
+                          return (
+                            <option key={index} value={token.symbol}>
+                              {token.name}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                  </div>
                 </div>
                 <div
-                  className={`flex gap-5 ${
-                    !enabled.chargeForCollect && "hidden"
-                  }`}
+                  className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}
                 >
-                  <div className="flex flex-col w-1/2 py-2">
-                    <label htmlFor="price">Price</label>
-                    <NumberInputBox
-                      min={"1"}
-                      step={"0.01"}
-                      placeholder="0.0$"
-                      onChange={(e) =>
+                  <h2 className="text-lg mb-2">Mirror referral award</h2>
+                  <div className="flex justify-between">
+                    <Switch.Label className="w-4/5">
+                      Share your fee with people who amplify your content
+                    </Switch.Label>
+                    <Switch
+                      checked={enabled.mirrorReferralReward}
+                      onChange={() =>
                         setEnabled({
                           ...enabled,
-                          chargeForCollectPrice: e.target.value,
+                          mirrorReferralReward: !enabled.mirrorReferralReward,
                         })
                       }
-                      value={enabled.chargeForCollectPrice}
-                    />
-                  </div>
-                  <div className="flex flex-col w-1/2 py-2">
-                    <label htmlFor="price">Currency</label>
-                    <select
-                      name="chargeForCollectCurrency"
-                      id="chargeForCollectCurrency"
-                      className="border rounded-md py-[10px] outline-none focus:ring-1 focus:ring-blue-500"
-                      onChange={handleChange}
-                      value={enabled.chargeForCollectCurrency}
-                    >
-                      {tokenList().map((token, index) => {
-                        return (
-                          <option key={index} value={token.symbol}>
-                            {token.name}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}>
-                <h2 className="text-lg mb-2">Mirror referral award</h2>
-                <div className="flex justify-between">
-                  <Switch.Label className="w-4/5">
-                    Share your fee with people who amplify your content
-                  </Switch.Label>
-                  <Switch
-                    checked={enabled.mirrorReferralReward}
-                    onChange={() =>
-                      setEnabled({
-                        ...enabled,
-                        mirrorReferralReward: !enabled.mirrorReferralReward,
-                      })
-                    }
-                    className={`${
-                      enabled.mirrorReferralReward
-                        ? "bg-[#E1F26C]"
-                        : "bg-gray-200"
-                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
-                  >
-                    <span
                       className={`${
                         enabled.mirrorReferralReward
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                    />
-                  </Switch>
-                </div>
-                <div
-                  className={`flex ${
-                    !enabled.mirrorReferralReward && "hidden"
-                  }`}
-                >
-                  <div className="flex flex-col w-full py-2">
-                    <label htmlFor="price">Referral fee(%)</label>
-                    <NumberInputBox
-                      min={0.0}
-                      max={100.0}
-                      step={0.01}
-                      placeholder="0.0%"
-                      onChange={(e) =>
-                        setEnabled({
-                          ...enabled,
-                          mirrorReferralRewardFee: Number(
-                            parseFloat(e.target.value).toFixed(2)
-                          ),
-                        })
-                      }
-                      value={enabled.mirrorReferralRewardFee}
-                    />
+                          ? "bg-[#E1F26C]"
+                          : "bg-gray-200"
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                    >
+                      <span
+                        className={`${
+                          enabled.mirrorReferralReward
+                            ? "translate-x-6"
+                            : "translate-x-1"
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      />
+                    </Switch>
+                  </div>
+                  <div
+                    className={`flex ${
+                      !enabled.mirrorReferralReward && "hidden"
+                    }`}
+                  >
+                    <div className="flex flex-col w-full py-2">
+                      <label htmlFor="price">Referral fee(%)</label>
+                      <NumberInputBox
+                        min={0.0}
+                        max={100.0}
+                        step={0.01}
+                        placeholder="0.0%"
+                        onChange={(e) =>
+                          setEnabled({
+                            ...enabled,
+                            mirrorReferralRewardFee: Number(
+                              parseFloat(e.target.value).toFixed(2)
+                            ),
+                          })
+                        }
+                        value={enabled.mirrorReferralRewardFee}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}>
-                <h2 className="text-lg mb-2">Split Revenue</h2>
-                <div className="flex justify-between">
-                  <Switch.Label className="w-4/5">
-                    Set multiple recipients for the collect fee
-                  </Switch.Label>
-                </div>
-                <div className="relative">
-                  {enabled.splitRevenueRecipients.map((recipient, index) => {
-                    return (
-                      <>
-                        <div
-                          key={index}
-                          className="flex justify-between gap-2 items-center w-full py-2"
-                        >
-                          <InputBox
-                            placeholder="erc20 address or @xyz.lens"
-                            value={recipient.recipient}
-                            onChange={(e) =>
-                              restrictRecipientInput(e, index, recipient)
-                            }
-                          />
-                          <div className="flex justify-between items-center w-1/3">
-                            <NumberInputBox
-                              min={0}
-                              max={90}
-                              step={0.01}
-                              placeholder="0.0%"
-                              value={recipient.split}
-                              onChange={(e) => {
-                                if (index != 0) {
+
+                {/* Split policy Card  start */}
+
+                {enabled.chargeForCollect && <SplitPolicyCard />}
+
+                {/* Split policy Card  end */}
+
+                <div
+                  className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}
+                >
+                  <h2 className="text-lg mb-2">Split Revenue</h2>
+                  <div className="flex justify-between">
+                    <Switch.Label className="w-4/5">
+                      Set multiple recipients for the collect fee
+                    </Switch.Label>
+                  </div>
+                  <div className="relative">
+                    {enabled.splitRevenueRecipients.map((recipient, index) => {
+                      return (
+                        <>
+                          <div
+                            key={index}
+                            className="flex justify-between gap-2 items-center w-full py-2"
+                          >
+                            <InputBox
+                              placeholder="erc20 address or @xyz.lens"
+                              value={recipient.recipient}
+                              onChange={(e) =>
+                                restrictRecipientInput(e, index, recipient)
+                              }
+                            />
+                            <div className="flex justify-between items-center w-1/3">
+                              <NumberInputBox
+                                min={0}
+                                max={90}
+                                step={0.01}
+                                placeholder="0.0%"
+                                value={recipient.split}
+                                onChange={(e) => {
                                   handleRecipientChange(
                                     index,
                                     "split",
@@ -686,207 +727,200 @@ const LensShare = () => {
                                       parseFloat(e.target.value).toFixed(2)
                                     )
                                   );
-                                }
-                              }}
-                            />
-                            {!restrictRemoveRecipient(index, recipient) && (
-                              <TiDelete
-                                className="h-6 w-6 cursor-pointer"
-                                color="red"
-                                onClick={() => removeRecipient(index)}
+                                }}
                               />
-                            )}
+                              {!restrictRemoveRecipient(index, recipient) && (
+                                <TiDelete
+                                  className="h-6 w-6 cursor-pointer"
+                                  color="red"
+                                  onClick={() => removeRecipient(index)}
+                                />
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        {index == 0 && (
-                          <div className="flex items-center gap-2">
-                            <span className="italic">
-                              Small fee to support our team!
-                            </span>
+                          {index == 0 && (
+                            <div className="flex flex-row align-middle  text-center justify-start mt-1">
+                              <span className="italic mt-2">
+                                Small fee to support our team!
+                              </span>
 
-                            {/* <GrCircleInformation
-                              className="h-5 w-5 cursor-pointer"
-                              onClick={() => setOpenInfo(!openInfo)}
-                            /> */}
-                          </div>
-                        )}
-                      </>
-                    );
-                  })}
-                  {/* {openInfo && (
-                    <div className="absolute flex justify-between w-full h-36 p-2 bg-white border-2 border-solid border-[#E1F26C] shadow-[#4f542d] rounded-lg z-40 shadow-2xl top-0">
-                      <p className="w-[90%]">
-                        Small fee to supposrt our team. Small fee to supposrt
-                        our team. Small fee to supposrt our team. Small fee to
-                        supposrt our team.
+                              {/* This is the custom popover that appears on the sidebar*/}
+                              {/* <CustomPopover
+                                icon=""
+                                animationData={animationData}
+                                isSplitPopover
+                              /> */}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })}
+                    {duplicateAddressError && (
+                      <p className="text-red-500 font-semibold italic">
+                        Duplicate recipient address/handle found
                       </p>
-                      <TiDelete
-                        color="red"
-                        className="h-5 w-5 cursor-pointer"
-                        onClick={() => setOpenInfo(false)}
-                      />
-                    </div>
-                  )} */}
-                  {duplicateAddressError && (
-                    <p className="text-red-500 font-semibold italic">
-                      Duplicate recipient address found
-                    </p>
-                  )}
-                  {percentageError && (
-                    <p className="text-red-500 font-semibold italic">
-                      {percentageError}
-                    </p>
-                  )}
-                  {enabled.splitRevenueRecipients.length < 5 && (
-                    <div
-                      className="bg-[#E1F26C] flex justify-between items-center cursor-pointer w-[40%] text-black p-2 rounded outline-none"
-                      onClick={addRecipient}
-                    >
-                      <AiOutlinePlus className="h-5 w-5" />
-                      <span>Add recipient</span>
-                    </div>
-                  )}
+                    )}
+                    {percentageError && (
+                      <p className="text-red-500 font-semibold italic">
+                        {percentageError}
+                      </p>
+                    )}
+                    {enabled.splitRevenueRecipients.length < 5 && (
+                      <div
+                        className="bg-[#E1F26C] flex justify-between items-center cursor-pointer w-[40%] text-black p-2 rounded outline-none"
+                        onClick={addRecipient}
+                      >
+                        <AiOutlinePlus className="h-5 w-5" />
+                        <span>Add recipient</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="mb-4">
-                <h2 className="text-lg mb-2">Limited Edition</h2>
-                <div className="flex justify-between">
-                  <Switch.Label className="w-4/5">
-                    Make the collects exclusive
-                  </Switch.Label>
-                  <Switch
-                    checked={enabled.limitedEdition}
-                    onChange={() =>
-                      setEnabled({
-                        ...enabled,
-                        limitedEdition: !enabled.limitedEdition,
-                      })
-                    }
-                    className={`${
-                      enabled.limitedEdition ? "bg-[#E1F26C]" : "bg-gray-200"
-                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
-                  >
-                    <span
-                      className={`${
-                        enabled.limitedEdition
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                    />
-                  </Switch>
-                </div>
-                <div className={`flex ${!enabled.limitedEdition && "hidden"}`}>
-                  <div className="flex flex-col w-full py-2">
-                    <label htmlFor="price">Collect limit</label>
-                    <NumberInputBox
-                      min={"1"}
-                      step={"1"}
-                      placeholder="1"
-                      onChange={(e) =>
+                <div className="mb-4">
+                  <h2 className="text-lg mb-2">Limited Edition</h2>
+                  <div className="flex justify-between">
+                    <Switch.Label className="w-4/5">
+                      Make the collects exclusive
+                    </Switch.Label>
+                    <Switch
+                      checked={enabled.limitedEdition}
+                      onChange={() =>
                         setEnabled({
                           ...enabled,
-                          limitedEditionNumber: e.target.value,
+                          limitedEdition: !enabled.limitedEdition,
                         })
                       }
-                      value={enabled.limitedEditionNumber}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="mb-4">
-                <h2 className="text-lg mb-2">Time Limit</h2>
-                <div className="flex justify-between">
-                  <Switch.Label className="w-4/5">
-                    Collect duration
-                  </Switch.Label>
-                  <Switch
-                    checked={enabled.timeLimit}
-                    onChange={() =>
-                      setEnabled({ ...enabled, timeLimit: !enabled.timeLimit })
-                    }
-                    className={`${
-                      enabled.timeLimit ? "bg-[#E1F26C]" : "bg-gray-200"
-                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
-                  >
-                    <span
                       className={`${
-                        enabled.timeLimit ? "translate-x-6" : "translate-x-1"
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                    />
-                  </Switch>
-                </div>
-                {/* Calender For Schedule - 18Jun2023 */}
-                <div className={`${!enabled.timeLimit && "hidden"} my-3`}>
-                  <div
-                    className={`
-                      flex flex-col w-full`}
-                  >
-                    {/* <div className="m-1">Choose schedule time and date</div> */}
-                    <DateTimePicker className="m-4" onChange={onCalChange} />
+                        enabled.limitedEdition ? "bg-[#E1F26C]" : "bg-gray-200"
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                    >
+                      <span
+                        className={`${
+                          enabled.limitedEdition
+                            ? "translate-x-6"
+                            : "translate-x-1"
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      />
+                    </Switch>
                   </div>
+                  <div
+                    className={`flex ${!enabled.limitedEdition && "hidden"}`}
+                  >
+                    <div className="flex flex-col w-full py-2">
+                      <label htmlFor="price">Collect limit</label>
+                      <NumberInputBox
+                        min={"1"}
+                        step={"1"}
+                        placeholder="1"
+                        onChange={(e) =>
+                          setEnabled({
+                            ...enabled,
+                            limitedEditionNumber: e.target.value,
+                          })
+                        }
+                        value={enabled.limitedEditionNumber}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <h2 className="text-lg mb-2">Time Limit</h2>
+                  <div className="flex justify-between">
+                    <Switch.Label className="w-4/5">
+                      Collect duration
+                    </Switch.Label>
+                    <Switch
+                      checked={enabled.timeLimit}
+                      onChange={() =>
+                        setEnabled({
+                          ...enabled,
+                          timeLimit: !enabled.timeLimit,
+                        })
+                      }
+                      className={`${
+                        enabled.timeLimit ? "bg-[#E1F26C]" : "bg-gray-200"
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                    >
+                      <span
+                        className={`${
+                          enabled.timeLimit ? "translate-x-6" : "translate-x-1"
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      />
+                    </Switch>
+                  </div>
+                  {/* Calender For Schedule - 18Jun2023 */}
+                  <div className={`${!enabled.timeLimit && "hidden"} my-3`}>
+                    <div
+                      className={`
+                      flex flex-col w-full`}
+                    >
+                      {/* <div className="m-1">Choose schedule time and date</div> */}
+                      <DateTimePicker className="m-4" onChange={onCalChange} />
+                    </div>
 
-                  <div className={`flex flex-col my-2`}>
-                    <div className="mt-1 mb-3">Schedule</div>
-                    <div className="flex flex-row border-l-8 border-l-[#E1F26C] p-4 rounded-md">
-                      <div className="flex flex-col">
-                        <div className="text-4xl text-[#E699D9]">
-                          {enabled.endTimestamp.date.slice(0, 2)}
+                    <div className={`flex flex-col my-2`}>
+                      <div className="mt-1 mb-3">Schedule</div>
+                      <div className="flex flex-row border-l-8 border-l-[#E1F26C] p-4 rounded-md">
+                        <div className="flex flex-col">
+                          <div className="text-4xl text-[#E699D9]">
+                            {enabled.endTimestamp.date.slice(0, 2)}
+                          </div>
+                          <div className="text-lg text-[#2D346C]">
+                            {enabled.endTimestamp.date.slice(2)}
+                          </div>
                         </div>
-                        <div className="text-lg text-[#2D346C]">
-                          {enabled.endTimestamp.date.slice(2)}
-                        </div>
-                      </div>
 
-                      <div className="flex flex-col ml-4">
-                        <div className="ml-2 mt-10">
-                          {enabled.endTimestamp.time}
+                        <div className="flex flex-col ml-4">
+                          <div className="ml-2 mt-10">
+                            {enabled.endTimestamp.time}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="mb-4">
-                <h2 className="text-lg mb-2">Who can collect</h2>
-                <div className="flex justify-between">
-                  <Switch.Label className="w-4/5">
-                    Only followers can collect
-                  </Switch.Label>
-                  <Switch
-                    checked={enabled.whoCanCollect}
-                    onChange={() =>
-                      setEnabled({
-                        ...enabled,
-                        whoCanCollect: !enabled.whoCanCollect,
-                      })
-                    }
-                    className={`${
-                      enabled.whoCanCollect ? "bg-[#E1F26C]" : "bg-gray-200"
-                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
-                  >
-                    <span
+                <div className="mb-4">
+                  <h2 className="text-lg mb-2">Who can collect</h2>
+                  <div className="flex justify-between">
+                    <Switch.Label className="w-4/5">
+                      Only followers can collect
+                    </Switch.Label>
+                    <Switch
+                      checked={enabled.whoCanCollect}
+                      onChange={() =>
+                        setEnabled({
+                          ...enabled,
+                          whoCanCollect: !enabled.whoCanCollect,
+                        })
+                      }
                       className={`${
-                        enabled.whoCanCollect
-                          ? "translate-x-6"
-                          : "translate-x-1"
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                    />
-                  </Switch>
+                        enabled.whoCanCollect ? "bg-[#E1F26C]" : "bg-gray-200"
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                    >
+                      <span
+                        className={`${
+                          enabled.whoCanCollect
+                            ? "translate-x-6"
+                            : "translate-x-1"
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      />
+                    </Switch>
+                  </div>
                 </div>
-              </div>
-            </Switch.Group>
+              </Switch.Group>
+            </div>
           </div>
+          <button
+            disabled={sharing}
+            onClick={handleLensClick}
+            className="flex items-center justify-center w-full text-md bg-[#E1F26C]  py-2 h-10 rounded-md outline-none"
+          >
+            <BsLink45Deg className="m-2" />
+            Share Now
+          </button>
         </div>
-        <button
-          disabled={sharing}
-          onClick={handleLensClick}
-          className="flex items-center justify-center w-full text-md bg-[#E1F26C]  py-2 h-10 rounded-md outline-none"
-        >
-          <BsLink45Deg className="m-2" />
-          Share Now
-        </button>
       </div>
-    </div>
+    </>
   );
 };
 

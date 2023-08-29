@@ -16,3 +16,13 @@ export const isLensterUrl = (url) => {
     return false;
   }
 };
+
+export const isLensHandle = (title) => {
+  const lensHandleRegex = /^@[\w.]+$/;
+
+  if (lensHandleRegex.test(title)) {
+    return true;
+  } else {
+    return false;
+  }
+};

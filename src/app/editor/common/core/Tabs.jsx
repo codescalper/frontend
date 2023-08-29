@@ -8,6 +8,7 @@ import {
   CustomImageComponent,
   ErrorComponent,
   LoadMoreComponent,
+  LoadingAnimatedComponent,
   MessageComponent,
   SearchComponent,
 } from "..";
@@ -56,7 +57,8 @@ const Tabs = ({ defaultQuery, getAssetsFn }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent />
       </div>
     );
   }

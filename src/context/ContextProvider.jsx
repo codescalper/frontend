@@ -1,10 +1,8 @@
 import React, { createContext, useRef, useState } from "react";
-import { useAccount } from "wagmi";
 
 export const Context = createContext();
 
 const ContextProvider = ({ children }) => {
-  const { address, isConnected } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
   const contextCanvasIdRef = useRef(null);
@@ -27,7 +25,6 @@ const ContextProvider = ({ children }) => {
     mirrorReferralReward: false,
     mirrorReferralRewardFee: 25.0,
 
-    splitRevenue: false,
     splitRevenueRecipients: [
       {
         recipient: "",
@@ -59,6 +56,11 @@ const ContextProvider = ({ children }) => {
 
   // for split revenue eligible address/recipient
   const referredFromRef = useRef([]);
+
+  // Right Sidebar
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
+  console.log("referredFromRef", referredFromRef.current);
 
   return (
     <Context.Provider
@@ -96,6 +98,10 @@ const ContextProvider = ({ children }) => {
         // for preview
         fastPreview,
         setFastPreview,
+
+        // Right Sidebar
+        isShareOpen,
+        setIsShareOpen,
 
         // user public templates states
         referredFromRef,

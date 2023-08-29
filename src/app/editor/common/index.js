@@ -20,6 +20,8 @@ import InputBox from "./elements/InputBox";
 import NumberInputBox from "./elements/NumberInputBox";
 import Tabs from "./core/Tabs";
 
+import LoadingAnimatedComponent from "./elements/LoadingAnimatedComponent";
+
 export {
   CustomImageComponent,
   OnboardingSteps,
@@ -37,5 +39,6 @@ export {
   CompModal,
   InputBox,
   NumberInputBox,
+  LoadingAnimatedComponent,
   Tabs,
 };

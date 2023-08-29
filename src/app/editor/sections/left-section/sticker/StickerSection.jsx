@@ -10,6 +10,7 @@ import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { getAssetByQuery } from "../../../../../services";
 import { SearchComponent, StickerReacTour, Tabs } from "../../../common";
 import { useStore } from "../../../../../hooks";
+import { LoadingAnimatedComponent } from "../../../common";
 import { firstLetterCapital, fnLoadMore } from "../../../../../utils";
 
 const API = "https://api.polotno.dev/api";
@@ -130,13 +131,18 @@ export const CompIcons = () => {
 
 export const StickerPanel = () => {
   const [currentTab, setCurrentTab] = useState("tabIcons");
-  const tabArray = ["supducks", "lens", "nouns", "fls", "assorted"];
+  const tabArray = ["supducks", "lens", "nouns", "fls", "assorted", ];
 
   return (
     <div className="flex flex-col h-full">
-      <div className="" id="stickerCategories">
+      <div className="mx-2 mt-1" id="stickerCategories">
+        
+        {/* Scrollable Tabs */}
+        {/* <div className="w-full flex flex-row overflow-x-scroll"> */}
+
         <Button
-          className="m-2 rounded-md"
+          small
+          className="m-2 rounded-md px-1/2"
           onClick={() => {
             setCurrentTab("tabIcons");
           }}
@@ -148,10 +154,11 @@ export const StickerPanel = () => {
 
         {tabArray.map((tab, index) => (
           <Button
-            key={index}
-            className="m-2 rounded-md"
-            onClick={() => {
-              setCurrentTab(tab);
+          small
+          key={index}
+          className="m-2 rounded-md px-1/2 py-0"
+          onClick={() => {
+            setCurrentTab(tab);
             }}
             active={currentTab === tab}
             // icon=""
@@ -159,6 +166,8 @@ export const StickerPanel = () => {
             {firstLetterCapital(tab)}
           </Button>
         ))}
+        {/* </div> */}
+
       </div>
       <StickerReacTour />
 

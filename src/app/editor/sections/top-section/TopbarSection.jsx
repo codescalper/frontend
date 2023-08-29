@@ -7,7 +7,7 @@ const TopbarSection = () => {
   const { isConnected } = useAccount();
 
   return (
-    <div className="bg-white h-[75px]  w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
+    <div className="bg-white h-[75px] w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
       <div className="flex items-center justify-between">
         <a href="https://lenspost.xyz" target="_blank">
           <div className="flex items-center justify-between cursor-pointer">
@@ -32,9 +32,9 @@ const TopbarSection = () => {
           <div className="flex items-center justify-center space-x-6">
             {/* Discord Links - 19Jul2023 */}
             <a
-              className="w-8 h-8 text-gray-600 transition-transform transform-gpu hover:scale-125 hover:rotate-180 hover:duration-2000"
+              className="md:w-8 h-8 text-gray-600 transition-transform transform-gpu hover:scale-125 hover:rotate-180 hover:duration-2000" 
               target="_blank"
-              href="https://discord.gg/yHMXQE2DNb"
+              href="https://discord.gg/yHMXQE2DNb" 
             >
               {" "}
               <img src="/topbar-icons/iconDiscord.svg" alt="" />

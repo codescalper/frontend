@@ -31,6 +31,7 @@ import {
   UploadSection,
 } from "./sections/left-section";
 import { BgRemover } from "./sections/bottom-section";
+import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -130,10 +131,6 @@ const Editor = () => {
       if (contextCanvasIdRef.current) {
         canvasIdRef.current = contextCanvasIdRef.current;
       }
-      // console.log({
-      //   canvasIdRef: canvasIdRef.current,
-      //   contextCanvasIdRef: contextCanvasIdRef.current,
-      // });
 
       if (canvasChildren?.length === 0) {
         console.log("Canvas is empty. Its stopped from saving");
@@ -145,7 +142,6 @@ const Editor = () => {
       if (!referredFromRef.current.includes(address)) {
         referredFromRef.current = [address, ...referredFromRef.current];
       }
-      console.log({ referredFromRef: referredFromRef.current });
 
       // save it to the backend
       if (canvasChildren?.length > 0) {
