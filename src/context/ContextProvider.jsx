@@ -57,6 +57,8 @@ const ContextProvider = ({ children }) => {
   // for preview
   const [fastPreview, setFastPreview] = useState([]);
 
+  // Right Sidebar 
+  const [isShareOpen, setIsShareOpen] = useState(false);
   // user public templates states
   const [userTemplateState, setUserTemplateState] = useState({
     isUserTemplate: false,
@@ -103,6 +105,9 @@ const ContextProvider = ({ children }) => {
         fastPreview,
         setFastPreview,
 
+        // Right Sidebar 
+        isShareOpen,
+        setIsShareOpen,
         // user public templates states
         userTemplateState,
         setUserTemplateState,

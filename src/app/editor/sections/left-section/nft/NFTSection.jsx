@@ -30,6 +30,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { fnLoadMore, fnMessage, replaceImageURL } from "../../../../../utils";
+import { LoadingAnimatedComponent } from "../../../common";
 
 const NFTPanel = () => {
   const [tab, setTab] = useState("wallet");
@@ -109,7 +110,8 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent/>
       </div>
     );
   }
@@ -201,7 +203,8 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent/>
       </div>
     );
   }
@@ -280,7 +283,8 @@ const RenderSearchedNFTs = ({
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent/>
       </div>
     );
   }
@@ -355,7 +359,8 @@ const RenderSearchedWalletNFT = ({ goBack, delayedQuery }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent/>
       </div>
     );
   }
@@ -470,7 +475,8 @@ const WalletNFT = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent/>
       </div>
     );
   }
@@ -496,7 +502,9 @@ const WalletNFT = () => {
               .flatMap((item) => item?.data)
               .map((item, index) => {
                 return (
+                  // only if the lensUserName param is passed, The artist name from which it is collected is displayed
                   <CustomImageComponent
+                    // lensUserName = {"lenspostxyz"}
                     key={index}
                     preview={item?.imageURL ? item?.imageURL : item?.permaLink}
                   />
@@ -505,7 +513,7 @@ const WalletNFT = () => {
           </div>
           <LoadMoreComponent
             hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
+            isFetchingNextPage={isFetchingNextPage}  
           />
         </div>
       ) : (

@@ -14,8 +14,7 @@ const CustomImageComponent = ({
   json,
   dimensions,
   isBackground,
-  hasOptionBtn,
-  onDelete,
+  hasOptionBtn
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");

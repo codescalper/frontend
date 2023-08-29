@@ -266,7 +266,7 @@ const AIImagePanel = () => {
         }}
       >
         <Tab id="tabPrompt" title="Prompt" />
-        <Tab id="tabDesignify" title="Designify" />
+        {/* <Tab id="tabDesignify" title="Designify" /> */}
       </Tabs>
 
       <div

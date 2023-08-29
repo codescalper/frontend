@@ -35,6 +35,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "../../../../../hooks";
 import { Context } from "../../../../../context/ContextProvider";
 import { fnMessage, replaceImageURL } from "../../../../../utils";
+import { LoadingAnimatedComponent } from "../../../common";
 
 // Design card component start - 23Jun2023
 
@@ -93,7 +94,8 @@ const DesignCard = ({
             transform: "translate(-50%, -50%)",
           }}
         >
-          <Spinner />
+          {/* <Spinner /> */}
+          <LoadingAnimatedComponent/>
         </div>
       )}
       <div
@@ -256,7 +258,8 @@ export const DesignPanel = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent/>
       </div>
     );
   }

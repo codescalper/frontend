@@ -25,6 +25,7 @@ import { toast } from "react-toastify";
 import { deleteUserAsset, getUserAssets } from "../../../../../services";
 import { fnLoadMore } from "../../../../../utils";
 import { UploadFileDropzone } from "./components";
+import { LoadingAnimatedComponent } from "../../../common";
 
 const UploadPanel = () => {
   const { isDisconnected, address } = useAccount();
@@ -79,7 +80,7 @@ const UploadPanel = () => {
   if (isDisconnected || !address) {
     return (
       <div className="h-full flex flex-col">
-        <h1 className="text-lg">Gallery</h1>
+        <h1 className="text-lg">Upload Gallery</h1>
         <ConnectWalletMsgComponent />
       </div>
     );
@@ -89,14 +90,15 @@ const UploadPanel = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent/>
       </div>
     );
   }
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="text-lg">Gallery</h1>
+      <h1 className="text-lg">Upload Gallery</h1>
 
       <div className="m-2 mt-4">
         {/* DropZone component Start*/}

@@ -2,7 +2,13 @@ import { useContext, useState, useEffect } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import TiDelete from "@meronex/icons/ti/TiDelete";
 import BsArrowLeft from "@meronex/icons/bs/BsArrowLeft";
-import { Dialog, Switch } from "@headlessui/react";
+import { Switch } from "@headlessui/react";
+
+import animationData from "../../../../../../assets/lottie/alertAnimation2.json";
+
+// Working Yet - change from headlessui/react to blueprintjs/core
+// import { Switch } from "@blueprintjs/core";
+
 import {
   checkDispatcher,
   lensAuthenticate,
@@ -18,6 +24,7 @@ import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
+import CustomPopover from "../../../../../editor/common/elements/CustomPopover";  
 import GrCircleInformation from "@meronex/icons/gr/GrCircleInformation";
 import { useMutation } from "@tanstack/react-query";
 import { Context } from "../../../../../../context/ContextProvider";
@@ -29,6 +36,9 @@ import {
 import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
 import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
 import { InputBox, NumberInputBox } from "../../../../common";
+// import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
+import BsX from '@meronex/icons/bs/BsX';
+import { SplitPolicyCard } from "./components";
 
 const LensShare = () => {
   const { address, isConnected } = useAccount();
@@ -50,6 +60,9 @@ const LensShare = () => {
     stFormattedTime,
     stFormattedDate,
     contextCanvasIdRef,
+
+    isShareOpen,
+    setIsShareOpen,
   } = useContext(Context);
   const {
     data: signature,
@@ -447,6 +460,13 @@ const LensShare = () => {
     setEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
   };
 
+  // Donate more Modal functions - Blueprintjs 20Aug2023
+  const [openDonateMore, setOpenDonateMore] = useState(true);
+  const handleDonateMore = () => {
+    console.log("clicked")
+    setOpenDonateMore(true);
+  }
+
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
       setIsLoading(false);
@@ -465,17 +485,26 @@ const LensShare = () => {
   }, []);
 
   return (
-    <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl">
+    <>
+    
+    <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl rounded-lg rounded-r-none ">
       <div className="">
-        <Dialog.Title className="w-full flex items-center gap-2 text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10">
+        {/* <Dialog.Title className="w-full flex items-center gap-2 text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10"> */}
+        <div className="w-full flex justify-between items-center gap-2 text-white text-xl leading-6 p-4 bg-gray-900 rounded-lg rounded-r-none">
           <BsArrowLeft
             onClick={() => setMenu("share")}
             className="cursor-pointer"
           />
           Monetization Settings
-        </Dialog.Title>
+        {/* </Dialog.Title> */}
+
+        <div className="z-100 cursor-pointer" onClick={()=> setIsShareOpen(!isShareOpen)}>
+            <BsX size="24" />
+        </div>
+
+        </div>
       </div>
-      <div className="relative px-4 pt-4 pb-4 sm:px-6 mt-24">
+      <div className="relative px-4 mt-1 pt-2 pb-4 sm:px-6 ">
         <div className="">
           <div className="flex flex-col justify-between">
             <Switch.Group>
@@ -600,6 +629,13 @@ const LensShare = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Split policy Card  start */}
+           
+              { enabled.chargeForCollect && <SplitPolicyCard/> } 
+            
+              {/* Split policy Card  end */}
+
               <div className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}>
                 <h2 className="text-lg mb-2">Split Revenue</h2>
                 <div className="flex justify-between">
@@ -657,17 +693,17 @@ const LensShare = () => {
                           </div>
                         </div>
                         {index == 0 && (
-                          <div className="flex items-center gap-2">
-                            <span className="italic">
-                              Small fee to support our team!
+                          <div className="flex flex-row align-middle  text-center justify-start mt-1">
+
+                            <span className="italic mt-2" >
+                              Small fee to support our team!  
                             </span>
 
-                            {/* <GrCircleInformation
-                              className="h-5 w-5 cursor-pointer"
-                              onClick={() => setOpenInfo(!openInfo)}
-                            /> */}
-                          </div>
+                            {/* This is the custom popover that appears on the sidebar*/}
+                            <CustomPopover icon="" animationData={animationData} isSplitPopover/>
+                          </div>  
                         )}
+                      
                       </>
                     );
                   })}
@@ -845,6 +881,7 @@ const LensShare = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { SectionTab } from "polotno/side-panel";
 import { TemplatesIcon } from "../../../../../assets";
@@ -20,9 +20,11 @@ import { useAccount } from "wagmi";
 import { Spinner, Icon } from "@blueprintjs/core";
 import { useStore } from "../../../../../hooks";
 import { fnLoadJsonOnPage, replaceImageURL } from "../../../../../utils";
+import { LoadingAnimatedComponent } from "../../../common";
+import SuChevronRightDouble from '@meronex/icons/su/SuChevronRightDouble';
 import { Context } from "../../../../../context/ContextProvider";
 
-// Design card component start
+// Design card component start 
 
 const DesignCard = observer(
   ({
@@ -41,6 +43,10 @@ const DesignCard = observer(
     const { address } = useAccount();
     const isAllowed = allowList?.includes(address);
     const { setUserTemplateState } = useContext(Context);
+
+
+    const [stPreviewIndex, setStPreviewIndex] = useState(0);
+    const [stHovered, setStHovered] = useState(false);
 
     const handleClickOrDrop = () => {
       // Show Modal: if it's tokengated
@@ -74,6 +80,31 @@ const DesignCard = observer(
       }
     };
 
+    // Function to change the preview image on hover
+    // Increment the index of the Preview image Array
+    const fnChangePreview = (preview) => {
+
+        if (stPreviewIndex < preview.length - 1) {
+          console.log("Index > 1")
+          setStPreviewIndex(stPreviewIndex + 1);
+        } else {
+          console.log("Index = 0")
+          setStPreviewIndex(0);
+        }
+
+    };
+ 
+    // After a certain interval, change the preview image 
+    // Using useEffect to capture mouse events & index change
+    useEffect(() => {   
+      if(stHovered){  
+      const interval = setInterval(() => {
+         fnChangePreview(preview);
+      }, 1000);
+      return () => clearInterval(interval);
+      }
+    }, [stHovered, stPreviewIndex]);
+ 
     return (
       <Card
         className="rounded-lg"
@@ -81,26 +112,55 @@ const DesignCard = observer(
         interactive
         onDragEnd={handleClickOrDrop}
         onClick={handleClickOrDrop}
+         
+        // To change Preview image on Hover - MouseEnter & MouseLeave
+        onMouseEnter={ ()=>{
+            console.log("Mouse Enter");
+            setStHovered(true);
+          }
+        }
+
+        onMouseLeave={ () => {
+          console.log("Mouse Leave");
+          setStPreviewIndex(0);   
+          setStHovered(false);
+        }
+      }
       >
-        <div className="rounded-lg overflow-hidden">
-          <LazyLoadImage
-            className="rounded-lg"
-            placeholderSrc={replaceImageURL(preview)}
+        {/* <div className="rounded-lg overflow-hidden transition-transform duration-1000"> */}
+        <div className="rounded-lg overflow-hidden transition-transform ease-in-out duration-300 relative">
+       
+        {/* If there are more than 1 preview images, then `stPreviewIndex` is incremented */}
+        {/* If not on user templates tab, just passing the `preview` - BE response */}
+
+          <LazyLoadImage 
+            className="rounded-lg" 
+            placeholderSrc={replaceImageURL(preview[stPreviewIndex])}
             effect="blur"
-            src={tab === "user" ? preview : replaceImageURL(preview)}
+            src={
+              tab === "user" ? preview[stPreviewIndex] : replaceImageURL(preview)
+            }
             alt="Preview Image"
-          />
+          />  
         </div>
 
         {/* if tab === "user" and  modal.isTokengate === true */}
         {tab === "user" && isGated && (
           <div
-            className="bg-white p-1 rounded-lg "
-            style={{ position: "absolute", top: "8px", left: "8px" }}
+            className="bg-white absolute top-2 left-2 p-1 rounded-md "
+            // style={{ position: "absolute", top: "8px", left: "8px" }}
           >
             <Icon icon="endorsed" intent="primary" size={16} />
           </div>
         )}
+        
+        {/* Display that it contains multiple pages */}
+        {tab === "user" && preview.length > 1 &&
+          <div className="absolute bottom-2 right-2 bg-white px-1/2 py-1/2 rounded-md">
+            <SuChevronRightDouble size="24" />
+            {/* <BsChevronDoubleRight size="24" /> */}
+          </div>
+        }
       </Card>
     );
   }
@@ -160,10 +220,13 @@ const LenspostTemplates = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+        <LoadingAnimatedComponent />
       </div>
     );
   }
+  console.log("Lenspost Templates");
+  console.log(data);
 
   return (
     <>
@@ -225,10 +288,21 @@ const UserTemplates = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col">
-        <Spinner />
+        {/* <Spinner /> */}
+      <LoadingAnimatedComponent />
       </div>
     );
   }
+
+  console.log(data);
+  const arrImages = [
+    "https://picsum.photos/200", 
+    "https://picsum.photos/300", 
+    "https://picsum.photos/400",
+    "https://picsum.photos/500",
+    "https://picsum.photos/600",
+    "https://picsum.photos/700",  
+  ];
 
   return (
     <>
@@ -284,7 +358,9 @@ const UserTemplates = () => {
                 preview={
                   item?.imageLink != null &&
                   item?.imageLink.length > 0 &&
-                  item?.imageLink[0]
+                  // item?.imageLink[0]
+                  item?.imageLink
+                  // arrImages
                 }
                 key={item?.id}
                 tab="user"

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react"; 
 import { useAccount } from "wagmi";
-import { Dialog } from "@headlessui/react";
+// import { Dialog } from "@headlessui/react";
 import EmojiPicker, {
   EmojiStyle,
   Emoji,
@@ -8,6 +8,7 @@ import EmojiPicker, {
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import { getFromLocalStorage } from "../../../../../utils";
 import { Context } from "../../../../../context/ContextProvider";
+import BsX from '@meronex/icons/bs/BsX';
 
 const ShareSection = () => {
   const { address, isConnected } = useAccount();
@@ -21,6 +22,9 @@ const ShareSection = () => {
     setStFormattedTime,
     stCalendarClicked,
     setStCalendarClicked,
+
+    isShareOpen,
+    setIsShareOpen,
   } = useContext(Context);
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
   const [stClickedEmojiIcon, setStClickedEmojiIcon] = useState(false);
@@ -68,13 +72,29 @@ const ShareSection = () => {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl">
+    <>
+    
+    <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-md rounded-lg  rounded-r-none ">
+      
       <div className="">
-        <Dialog.Title className="w-full text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10">
+        {/* <Dialog.Title className="w-full text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10">
           Share this Design
-        </Dialog.Title>
+        </Dialog.Title> */}
+
+        {/* Don't add - `fixed` solved major Bug */}
+        <div className="flex flex-row justify-between top-0 w-full text-white text-xl leading-6 p-4 bg-gray-900 rounded-lg rounded-r-none ">
+          {/* For alignment */}
+          <div className=""> {""} </div> 
+          <div className="">    
+            Share this Design
+          </div> 
+          <div className="z-100 cursor-pointer" onClick={()=> setIsShareOpen(!isShareOpen)}>
+            <BsX size="24" />
+          </div>
+        </div>
+      
       </div>
-      <div className="relative mt-16 px-4 pt-2 pb-1 sm:px-6">
+      <div className="relative mt-0 px-4 pt-1 pb-1 sm:px-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between"></div>
           <div className="space-x-2">
@@ -180,7 +200,7 @@ const ShareSection = () => {
       </div>
       <hr />
     </div>
-  );
+  </>);
 };
 
 export default ShareSection;

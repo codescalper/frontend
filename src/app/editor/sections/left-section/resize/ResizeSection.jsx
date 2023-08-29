@@ -101,10 +101,10 @@ const ResizePanel = () => {
             name="width"
             type="number"
             min="0"
-            value={store.width}
+            value={width}
             onChange={(e) => setWidth(Number(e.target.value))}
           />
-          {/* <br /> */}
+          {/* <br /> */} 
           <div className="m-2 mt-4 mb-4">X</div>
           {/* <label htmlFor="height">Height (px)</label> */}
           <input
@@ -113,7 +113,7 @@ const ResizePanel = () => {
             name="height"
             type="number"
             min="0"
-            value={store.height}
+            value={height}
             onChange={(e) => setHeight(Number(e.target.value))}
           />
         </div>

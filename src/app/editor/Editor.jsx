@@ -37,6 +37,7 @@ import {
   UploadSection,
 } from "./sections/left-section";
 import { BgRemover } from "./sections/bottom-section";
+import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -313,7 +314,7 @@ const Editor = () => {
                     } else {
                       setIsOpen(true);
                       setSteps(OnboardingSteps);
-                    }
+                    }  
                   }}
                 >
                   <FcIdea className="m-2" size="16" />{" "}

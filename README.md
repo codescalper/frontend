@@ -4,7 +4,7 @@
 This is the official github repository for [Lenspost Studio](https://lenspost.xyz)
 
 ## Deployment
-[Live](https://lenspost-vite.vercel.app) 
+[Live](https://app.lenspost.xyz) 
 
 [Alternate](https://lenspost-vite.vercel.app)
 
