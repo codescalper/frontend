@@ -21,10 +21,10 @@ import { Spinner, Icon } from "@blueprintjs/core";
 import { useStore } from "../../../../../hooks";
 import { fnLoadJsonOnPage, replaceImageURL } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
-import SuChevronRightDouble from '@meronex/icons/su/SuChevronRightDouble';
+import SuChevronRightDouble from "@meronex/icons/su/SuChevronRightDouble";
 import { Context } from "../../../../../context/ContextProvider";
 
-// Design card component start 
+// Design card component start
 
 const DesignCard = observer(
   ({
@@ -34,23 +34,21 @@ const DesignCard = observer(
     tab,
     isGated,
     gatedWith,
-    allowList,
+    ownerAddress,
     referredFrom,
     modal,
     setModal,
   }) => {
     const store = useStore();
     const { address } = useAccount();
-    const isAllowed = allowList?.includes(address);
-    const { setUserTemplateState } = useContext(Context);
-
+    const { referredFromRef } = useContext(Context);
 
     const [stPreviewIndex, setStPreviewIndex] = useState(0);
     const [stHovered, setStHovered] = useState(false);
 
     const handleClickOrDrop = () => {
       // Show Modal: if it's tokengated
-      if (isGated && !isAllowed) {
+      if (isGated && Object.keys(json).length === 0) {
         setModal({
           ...modal,
           isOpen: true,
@@ -70,11 +68,7 @@ const DesignCard = observer(
           // If not load the clicked JSON
           fnLoadJsonOnPage(store, json);
           if (tab === "user") {
-            setUserTemplateState({
-              isUserTemplate: true,
-              canvasId: id,
-              referredFrom: referredFrom,
-            });
+            referredFromRef.current.push(...referredFrom);
           }
         }
       }
@@ -83,28 +77,24 @@ const DesignCard = observer(
     // Function to change the preview image on hover
     // Increment the index of the Preview image Array
     const fnChangePreview = (preview) => {
-
-        if (stPreviewIndex < preview.length - 1) {
-          console.log("Index > 1")
-          setStPreviewIndex(stPreviewIndex + 1);
-        } else {
-          console.log("Index = 0")
-          setStPreviewIndex(0);
-        }
-
+      if (stPreviewIndex < preview.length - 1) {
+        setStPreviewIndex(stPreviewIndex + 1);
+      } else {
+        setStPreviewIndex(0);
+      }
     };
- 
-    // After a certain interval, change the preview image 
+
+    // After a certain interval, change the preview image
     // Using useEffect to capture mouse events & index change
-    useEffect(() => {   
-      if(stHovered){  
-      const interval = setInterval(() => {
-         fnChangePreview(preview);
-      }, 1000);
-      return () => clearInterval(interval);
+    useEffect(() => {
+      if (stHovered) {
+        const interval = setInterval(() => {
+          fnChangePreview(preview);
+        }, 1000);
+        return () => clearInterval(interval);
       }
     }, [stHovered, stPreviewIndex]);
- 
+
     return (
       <Card
         className="rounded-lg"
@@ -112,36 +102,31 @@ const DesignCard = observer(
         interactive
         onDragEnd={handleClickOrDrop}
         onClick={handleClickOrDrop}
-         
         // To change Preview image on Hover - MouseEnter & MouseLeave
-        onMouseEnter={ ()=>{
-            console.log("Mouse Enter");
-            setStHovered(true);
-          }
-        }
-
-        onMouseLeave={ () => {
-          console.log("Mouse Leave");
-          setStPreviewIndex(0);   
+        onMouseEnter={() => {
+          setStHovered(true);
+        }}
+        onMouseLeave={() => {
+          setStPreviewIndex(0);
           setStHovered(false);
-        }
-      }
+        }}
       >
         {/* <div className="rounded-lg overflow-hidden transition-transform duration-1000"> */}
         <div className="rounded-lg overflow-hidden transition-transform ease-in-out duration-300 relative">
-       
-        {/* If there are more than 1 preview images, then `stPreviewIndex` is incremented */}
-        {/* If not on user templates tab, just passing the `preview` - BE response */}
+          {/* If there are more than 1 preview images, then `stPreviewIndex` is incremented */}
+          {/* If not on user templates tab, just passing the `preview` - BE response */}
 
-          <LazyLoadImage 
-            className="rounded-lg" 
+          <LazyLoadImage
+            className="rounded-lg"
             placeholderSrc={replaceImageURL(preview[stPreviewIndex])}
             effect="blur"
             src={
-              tab === "user" ? preview[stPreviewIndex] : replaceImageURL(preview)
+              tab === "user"
+                ? preview[stPreviewIndex]
+                : replaceImageURL(preview)
             }
             alt="Preview Image"
-          />  
+          />
         </div>
 
         {/* if tab === "user" and  modal.isTokengate === true */}
@@ -153,14 +138,14 @@ const DesignCard = observer(
             <Icon icon="endorsed" intent="primary" size={16} />
           </div>
         )}
-        
+
         {/* Display that it contains multiple pages */}
-        {tab === "user" && preview.length > 1 &&
+        {tab === "user" && preview.length > 1 && (
           <div className="absolute bottom-2 right-2 bg-white px-1/2 py-1/2 rounded-md">
             <SuChevronRightDouble size="24" />
             {/* <BsChevronDoubleRight size="24" /> */}
           </div>
-        }
+        )}
       </Card>
     );
   }
@@ -225,8 +210,6 @@ const LenspostTemplates = () => {
       </div>
     );
   }
-  console.log("Lenspost Templates");
-  console.log(data);
 
   return (
     <>
@@ -289,20 +272,10 @@ const UserTemplates = () => {
     return (
       <div className="flex flex-col">
         {/* <Spinner /> */}
-      <LoadingAnimatedComponent />
+        <LoadingAnimatedComponent />
       </div>
     );
   }
-
-  console.log(data);
-  const arrImages = [
-    "https://picsum.photos/200", 
-    "https://picsum.photos/300", 
-    "https://picsum.photos/400",
-    "https://picsum.photos/500",
-    "https://picsum.photos/600",
-    "https://picsum.photos/700",  
-  ];
 
   return (
     <>
@@ -353,14 +326,12 @@ const UserTemplates = () => {
                 referredFrom={item?.referredFrom}
                 isGated={item?.isGated}
                 gatedWith={item?.gatedWith}
-                allowList={item?.allowList}
                 json={item?.data}
+                ownerAddress={item?.ownerAddress}
                 preview={
                   item?.imageLink != null &&
                   item?.imageLink.length > 0 &&
-                  // item?.imageLink[0]
                   item?.imageLink
-                  // arrImages
                 }
                 key={item?.id}
                 tab="user"

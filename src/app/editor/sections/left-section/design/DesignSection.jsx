@@ -49,12 +49,14 @@ const DesignCard = ({
   openTokengateModal,
 }) => {
   const [loading, setLoading] = useState(false);
-  const { fastPreview, contextCanvasIdRef } = useContext(Context);
+  const { fastPreview, contextCanvasIdRef, referredFromRef } =
+    useContext(Context);
   const store = useStore();
 
   const handleClickOrDrop = () => {
     store.loadJSON(json);
     contextCanvasIdRef.current = design.id;
+    referredFromRef.current = design.referredFrom;
   };
 
   return (
@@ -142,7 +144,8 @@ const DesignCard = ({
 
 export const DesignPanel = () => {
   const store = useStore();
-  const { fastPreview, contextCanvasIdRef } = useContext(Context);
+  const { fastPreview, contextCanvasIdRef, referredFromRef } =
+    useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [modal, setModal] = useState({
     isOpen: false,
@@ -233,6 +236,7 @@ export const DesignPanel = () => {
   const fnDeleteCanvas = () => {
     store.clear({ keepHistory: true });
     store.addPage();
+    referredFromRef.current = [];
     setModal({ ...modal, isOpen: false, isNewDesign: false });
   };
 
@@ -320,7 +324,7 @@ export const DesignPanel = () => {
         setQuery={setQuery}
         placeholder="Search designs by id"
       />
-      
+
       <MyDesignReacTour />
       {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
@@ -341,6 +345,7 @@ export const DesignPanel = () => {
               <DesignCard
                 design={design}
                 json={design.data}
+                referredFrom={design.referredFrom}
                 preview={
                   design?.imageLink != null &&
                   design?.imageLink.length > 0 &&

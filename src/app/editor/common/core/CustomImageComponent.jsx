@@ -1,23 +1,33 @@
 // Seperate component for Lazy loading (CustomImage) - 29Jun2023
 
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
+import {
+  Button,
+  Card,
+  Menu,
+  MenuItem,
+  Position,
+  Icon,
+} from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { replaceImageURL } from "../../../../utils/replaceUrl";
 import { useEffect, useState } from "react";
 import { useStore } from "../../../../hooks";
+import { useContext } from "react";
+import { Context } from "../../../../context/ContextProvider";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
-  design,
   preview,
-  json,
   dimensions,
   isBackground,
-  hasOptionBtn
+  hasOptionBtn,
+  onDelete,
+  isLensCollect,
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");
+  const { referredFromRef } = useContext(Context);
 
   // function for random 3 digit number
   const randomThreeDigitNumber = () => {
@@ -45,11 +55,18 @@ const CustomImageComponent = ({
 
   // function for drop/add image on canvas
   const handleClickOrDrop = () => {
+    // set the canvas size if it's a background image
     isBackground && store.setSize(dimensions[0], dimensions[1]);
+
+    // if nft is a lens collect, add it to the referredFromRef but check if a handle is already
+    if (isLensCollect?.isLensCollect) {
+      if (!referredFromRef.current.includes(isLensCollect?.lensHandle)) {
+        referredFromRef.current.push(isLensCollect?.lensHandle);
+      }
+    }
 
     store.activePage?.addElement({
       type: "image",
-      // src: replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`, //Image URL
       src: base64Data, //Image URL
       width: isBackground ? store.width : 300,
       height: isBackground ? store.height : 300,
@@ -77,7 +94,7 @@ const CustomImageComponent = ({
 
   return (
     <Card
-      className="relative p-0 m-1 rounded-lg cursor-pointer"
+      className="relative p-0 m-1 rounded-lg"
       interactive
       onDragEnd={handleClickOrDrop}
       onClick={handleClickOrDrop}
@@ -90,6 +107,24 @@ const CustomImageComponent = ({
           alt="Preview Image"
         />
       </div>
+
+      {/* if nft is a lens collect */}
+      {isLensCollect?.isLensCollect && (
+        <>
+          <div
+            title="Collected from Lens"
+            className="bg-[#E1F26C] p-1 rounded-lg absolute top-2 left-2 opacity-60 hover:opacity-100"
+            onClick={(e) => {
+              e.stopPropagation();
+
+              const onlyHandle = isLensCollect?.lensHandle.split("@")[1];
+              window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
+            }}
+          >
+            {isLensCollect?.lensHandle}
+          </div>
+        </>
+      )}
 
       {hasOptionBtn && (
         <div

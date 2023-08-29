@@ -23,7 +23,7 @@ export const handleChange = (e, modal, setModal) => {
     }
 
     // if it is a valid lenster link
-  } else if (value.startsWith("https://lenster.xyz")) {
+  } else if (value.startsWith("https://")) {
     const isValidLink = isLensterUrl(value);
 
     if (isValidLink) {

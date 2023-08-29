@@ -13,10 +13,6 @@ const ShareButton = () => {
   const [transitionRtoL, setTransitionRtoL] = useState(false);
 
   const { menu, isShareOpen, setIsShareOpen } = useContext(Context);
-  useEffect(() => {
-    // setIsShareOpen(false)
-    console.log("isShareOpen", isShareOpen)
-  },[isShareOpen])
   
   const transitionCSS = {
     'transition-all': true,

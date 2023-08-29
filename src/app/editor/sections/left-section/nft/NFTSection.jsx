@@ -30,6 +30,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { fnLoadMore, fnMessage, replaceImageURL } from "../../../../../utils";
+import { lensCollect } from "./utils";
 import { LoadingAnimatedComponent } from "../../../common";
 
 const NFTPanel = () => {
@@ -63,6 +64,7 @@ const NFTPanel = () => {
           CC<span className="text-base">0</span> Collections
         </button>
       </div>
+
       {tab === "wallet" && <WalletNFT />}
       {tab === "lenspost" && <LenspostNFT />}
     </div>
@@ -482,10 +484,7 @@ const WalletNFT = () => {
   }
 
   return (
-    // delayedQuery ? (
-    //   <RenderSearchedWalletNFT delayedQuery={delayedQuery} goBack={goBack} />
-    // ) : (
-    <>
+    <div className="h-full flex flex-col overflow-hidden">
       <SearchComponent
         onClick={refreshNFTs}
         query={query}
@@ -496,8 +495,8 @@ const WalletNFT = () => {
       {isError ? (
         <ErrorComponent message={error} />
       ) : data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
+        <>
+          <div className=" grid grid-cols-2 overflow-y-auto">
             {data?.pages
               .flatMap((item) => item?.data)
               .map((item, index) => {
@@ -507,6 +506,7 @@ const WalletNFT = () => {
                     // lensUserName = {"lenspostxyz"}
                     key={index}
                     preview={item?.imageURL ? item?.imageURL : item?.permaLink}
+                    isLensCollect={lensCollect(item?.title)}
                   />
                 );
               })}
@@ -515,10 +515,10 @@ const WalletNFT = () => {
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}  
           />
-        </div>
+        </>
       ) : (
         <MessageComponent message="No Results" />
       )}
-    </>
+    </div>
   );
 };
