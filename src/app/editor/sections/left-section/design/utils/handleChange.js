@@ -26,7 +26,7 @@ export const handleChange = (e, modal, setModal) => {
   } else if (value.startsWith("https://")) {
     const isValidLink = isLensterUrl(value);
 
-    if (isValidLink) {
+    if (true) {
       setModal({
         ...modal,
         isError: false,

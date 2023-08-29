@@ -32,19 +32,18 @@ const DesignCard = observer(
     tab,
     isGated,
     gatedWith,
-    allowList,
+    ownerAddress,
     referredFrom,
     modal,
     setModal,
   }) => {
     const store = useStore();
     const { address } = useAccount();
-    const isAllowed = allowList?.includes(address);
-    const { communityTemplateRef } = useContext(Context);
+    const { referredFromRef } = useContext(Context);
 
     const handleClickOrDrop = () => {
       // Show Modal: if it's tokengated
-      if (isGated && !isAllowed) {
+      if (isGated && Object.keys(json).length === 0) {
         setModal({
           ...modal,
           isOpen: true,
@@ -64,11 +63,7 @@ const DesignCard = observer(
           // If not load the clicked JSON
           fnLoadJsonOnPage(store, json);
           if (tab === "user") {
-            communityTemplateRef.current = {
-              isCommunityTemplate: true,
-              canvasId: id,
-              referredFrom: [...referredFrom, id],
-            };
+            referredFromRef.current.push(...referredFrom);
           }
         }
       }
@@ -279,8 +274,8 @@ const UserTemplates = () => {
                 referredFrom={item?.referredFrom}
                 isGated={item?.isGated}
                 gatedWith={item?.gatedWith}
-                allowList={item?.allowList}
                 json={item?.data}
+                ownerAddress={item?.ownerAddress}
                 preview={
                   item?.imageLink != null &&
                   item?.imageLink.length > 0 &&

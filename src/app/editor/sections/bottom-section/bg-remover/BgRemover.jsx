@@ -17,8 +17,6 @@ const BgRemover = () => {
     fnFindPageNo();
 
     var removedBgURL = await fnRemoveBg(varImageUrl);
-    console.log(varActivePageNo);
-    console.log("removedBgURL", removedBgURL);
     // // To Fix CORS error, we append the string with b-cdn url
     fnAddImageToCanvas(`${replaceImageURL(removedBgURL)}`, varActivePageNo);
 
@@ -36,7 +34,6 @@ const BgRemover = () => {
   // Function to Add Removed BG image on the Canvas
   const fnAddImageToCanvas = async (removedBgUrl, varActivePageNo) => {
     // Add the new removed Bg Image to the Page
-    console.log(removedBgUrl);
 
     await store.pages[stActivePageNo || varActivePageNo].addElement({
       type: "image",
@@ -56,7 +53,6 @@ const BgRemover = () => {
   const fnRemoveBg = async (varImageUrl) => {
     const res = await getRemovedBgS3Link(varImageUrl);
     if (res?.data) {
-      console.log(res.data);
       return res.data.s3link;
     }
   };
@@ -79,7 +75,6 @@ const BgRemover = () => {
         autoClose: 4000,
         closeButton: true,
       });
-      console.log("res", res?.data);
     } else if (!res) {
       toast.update(id, {
         render: "Error in removing background",

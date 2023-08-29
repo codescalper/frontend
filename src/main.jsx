@@ -12,9 +12,8 @@ import { OnboardingSteps } from "./app/editor/common";
 const radius = 8;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <>
     {/* Reactour wrap around Start */}
-
     <TourProvider
       steps={OnboardingSteps}
       padding={{
@@ -43,5 +42,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </TourProvider>
 
     {/* Reactour wrap around End */}
-  </React.StrictMode>
+  </>
 );

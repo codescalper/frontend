@@ -66,12 +66,8 @@ const Editor = () => {
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
-  const {
-    contextCanvasIdRef,
-    setEnabled,
-    setFastPreview,
-    communityTemplateRef,
-  } = useContext(Context);
+  const { contextCanvasIdRef, setEnabled, setFastPreview, referredFromRef } =
+    useContext(Context);
   const timeoutRef = useRef(null);
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
@@ -114,7 +110,7 @@ const Editor = () => {
     },
   });
   // 03June2023
-  
+
   // store the canvas and update it by traching the changes start
   const requestSave = () => {
     // if save is already requested - do nothing
@@ -145,12 +141,18 @@ const Editor = () => {
         contextCanvasIdRef.current = null;
       }
 
+      // add the currrent user address to the referredFromRef but do not duplicate it
+      if (!referredFromRef.current.includes(address)) {
+        referredFromRef.current = [address, ...referredFromRef.current];
+      }
+      console.log({ referredFromRef: referredFromRef.current });
+
       // save it to the backend
       if (canvasChildren?.length > 0) {
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
-            referredFrom: communityTemplateRef.current.referredFrom,
+            referredFrom: referredFromRef.current,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -170,6 +172,7 @@ const Editor = () => {
             id: canvasIdRef.current,
             data: json,
             isPublic: false,
+            referredFrom: referredFromRef.current,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -202,21 +205,6 @@ const Editor = () => {
   }, []);
 
   // store the canvas and update it by traching the changes end
-
-  // default split revenue recipient
-  useEffect(() => {
-    // if wallet is connected set the recipient address only in the first index for the first time
-    if (isConnected) {
-      setEnabled((prevEnabled) => ({
-        ...prevEnabled,
-        splitRevenueRecipients: [
-          { recipient: "@lenspostxyz.lens", split: 10.0 },
-          { recipient: address, split: 90.0 },
-          ...prevEnabled.splitRevenueRecipients.slice(2),
-        ],
-      }));
-    }
-  }, [address]);
 
   // funtion for fast preview
   useEffect(() => {

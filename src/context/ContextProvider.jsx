@@ -30,8 +30,8 @@ const ContextProvider = ({ children }) => {
     splitRevenue: false,
     splitRevenueRecipients: [
       {
-        recipient: isConnected ? address : "",
-        split: 90.0,
+        recipient: "",
+        split: 0.0,
       },
     ],
 
@@ -57,12 +57,8 @@ const ContextProvider = ({ children }) => {
   // for preview
   const [fastPreview, setFastPreview] = useState([]);
 
-  // user public templates states
-  const communityTemplateRef = useRef({
-    isCommunityTemplate: false,
-    canvasId: null,
-    referredFrom: [],
-  });
+  // for split revenue eligible address/recipient
+  const referredFromRef = useRef([]);
 
   return (
     <Context.Provider
@@ -102,7 +98,7 @@ const ContextProvider = ({ children }) => {
         setFastPreview,
 
         // user public templates states
-        communityTemplateRef,
+        referredFromRef,
       }}
     >
       {children}

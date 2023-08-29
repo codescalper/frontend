@@ -18,7 +18,6 @@ import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
-import GrCircleInformation from "@meronex/icons/gr/GrCircleInformation";
 import { useMutation } from "@tanstack/react-query";
 import { Context } from "../../../../../../context/ContextProvider";
 import {
@@ -29,8 +28,10 @@ import {
 import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
 import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
 import { InputBox, NumberInputBox } from "../../../../common";
+import { useStore } from "../../../../../../hooks";
 
 const LensShare = () => {
+  const store = useStore();
   const { address, isConnected } = useAccount();
   const [dispatcherState, setDispatcherState] = useState({
     message: false,
@@ -50,6 +51,7 @@ const LensShare = () => {
     stFormattedTime,
     stFormattedDate,
     contextCanvasIdRef,
+    referredFromRef,
   } = useContext(Context);
   const {
     data: signature,
@@ -412,6 +414,9 @@ const LensShare = () => {
           });
           setSharing(false);
           setPostDescription("");
+          referredFromRef.current = [];
+          store.clear({ keepHistory: true });
+          store.addPage();
         } else if (res?.error) {
           toast.update(id, {
             render: res?.error,
@@ -451,6 +456,43 @@ const LensShare = () => {
     const { name, value } = event.target;
     setEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
   };
+
+  const restrictRecipientInput = (e, index, recipient) => {
+    const istext = referredFromRef.current.includes(recipient.recipient);
+    if (index === 0 || istext) {
+      return;
+    } else {
+      handleRecipientChange(index, "recipient", e.target.value);
+    }
+  };
+
+  const restrictRemoveRecipient = (index, recipient) => {
+    const istext = referredFromRef.current.includes(recipient.recipient);
+    if (index === 0 || istext) {
+      return true;
+    }
+  };
+
+  // add recipient to the split list
+  useEffect(() => {
+    if (isConnected) {
+      const updatedRecipients = referredFromRef.current
+        .filter((item) => typeof item === "string")
+        .slice(0, 4)
+        .map((item) => ({
+          recipient: item,
+          split: 0.0,
+        }));
+
+      setEnabled((prevEnabled) => ({
+        ...prevEnabled,
+        splitRevenueRecipients: [
+          { recipient: "@lenspostxyz.lens", split: 10.0 },
+          ...updatedRecipients,
+        ],
+      }));
+    }
+  }, [address]);
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
@@ -622,17 +664,11 @@ const LensShare = () => {
                           className="flex justify-between gap-2 items-center w-full py-2"
                         >
                           <InputBox
-                            placeholder="erc20 address"
+                            placeholder="erc20 address or @xyz.lens"
                             value={recipient.recipient}
-                            onChange={(e) => {
-                              if (index != 0) {
-                                handleRecipientChange(
-                                  index,
-                                  "recipient",
-                                  e.target.value
-                                );
-                              }
-                            }}
+                            onChange={(e) =>
+                              restrictRecipientInput(e, index, recipient)
+                            }
                           />
                           <div className="flex justify-between items-center w-1/3">
                             <NumberInputBox
@@ -653,7 +689,7 @@ const LensShare = () => {
                                 }
                               }}
                             />
-                            {index != 0 && index != 1 && (
+                            {!restrictRemoveRecipient(index, recipient) && (
                               <TiDelete
                                 className="h-6 w-6 cursor-pointer"
                                 color="red"
