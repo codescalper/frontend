@@ -24,8 +24,6 @@ import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
-import CustomPopover from "../../../../../editor/common/elements/CustomPopover";
-import GrCircleInformation from "@meronex/icons/gr/GrCircleInformation";
 import { useMutation } from "@tanstack/react-query";
 import { Context } from "../../../../../../context/ContextProvider";
 import {
@@ -37,7 +35,7 @@ import {
 } from "../../../../../../utils";
 import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
 import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
-import { InputBox, NumberInputBox } from "../../../../common";
+import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../common";
 import { useStore } from "../../../../../../hooks";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
@@ -51,11 +49,8 @@ const LensShare = () => {
     profileId: "",
   });
   const {
-    isLoading,
     setIsLoading,
-    text,
     setText,
-    queryParams,
     setMenu,
     postDescription,
     setPostDescription,
@@ -65,9 +60,16 @@ const LensShare = () => {
     stFormattedDate,
     contextCanvasIdRef,
     referredFromRef,
-
     isShareOpen,
     setIsShareOpen,
+    priceError,
+    setPriceError,
+    splitError,
+    setSplitError,
+    editionError,
+    setEditionError,
+    referralError,
+    setReferralError,
   } = useContext(Context);
   const {
     data: signature,
@@ -79,9 +81,7 @@ const LensShare = () => {
   const getLensAuth = getFromLocalStorage("lensAuth");
   const [duplicateAddressError, setDuplicateAddressError] = useState(false);
   const [percentageError, setPercentageError] = useState("");
-  const [openInfo, setOpenInfo] = useState(false);
   const [sharing, setSharing] = useState(false);
-  const [platformFee, setPlatformFee] = useState("");
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnLens",
     mutationFn: shareOnSocials,
@@ -317,7 +317,7 @@ const LensShare = () => {
         ...enabled,
         splitRevenueRecipients: [
           ...enabled.splitRevenueRecipients,
-          { recipient: "", split: 0.0 },
+          { recipient: "", split: 1.0 },
         ],
       });
     }
@@ -331,15 +331,9 @@ const LensShare = () => {
       ...enabled,
       splitRevenueRecipients: updatedRecipients,
     });
-  };
-
-  // function to handel recipient field change
-  const handleRecipientChange = (index, field, value) => {
-    const updatedRecipients = [...enabled.splitRevenueRecipients];
-    updatedRecipients[index][field] = value;
-    setEnabled({
-      ...enabled,
-      splitRevenueRecipients: updatedRecipients,
+    setSplitError({
+      isError: false,
+      message: "",
     });
   };
 
@@ -360,16 +354,86 @@ const LensShare = () => {
   };
 
   // check if recipient percentage is more than 100
-  const isPercentageMoreThan100 = () => {
+  const isPercentage100 = () => {
     const arr = enabled.splitRevenueRecipients;
     let totalPercentage = 0;
     for (let i = 0; i < arr.length; i++) {
       totalPercentage += arr[i].split;
     }
 
-    if (totalPercentage === 100) {
+    if (totalPercentage == 100) {
       return true;
+    } else {
+      return false;
     }
+  };
+
+  // function to handel recipient field change
+  const handleRecipientChange = (index, field, value) => {
+    // check index 0 price should min 10
+    if (field === "split" && index === 0) {
+      if (value < 10 || value > 100 || isNaN(value)) {
+        setSplitError({
+          isError: true,
+          message: "Platform fee should be between 10% to 100%",
+        });
+      } else {
+        setSplitError({
+          isError: false,
+          message: "",
+        });
+      }
+    }
+
+    // any index price should be greater min 1 and max 100
+    if (field === "split" && index !== 0) {
+      if (value < 1 || value > 100 || isNaN(value)) {
+        setSplitError({
+          isError: true,
+          message: "Split should be between 1% to 100%",
+        });
+      } else {
+        setSplitError({
+          isError: false,
+          message: "",
+        });
+      }
+    }
+
+    // check if the address is not same
+    if (field === "recipient") {
+      // check if the address is valid
+      if (value.startsWith("0x") && !isEthAddress(value)) {
+        setSplitError({
+          isError: true,
+          message: "Invalid recipient address",
+        });
+        // check if the handle is valid
+      } else if (value.startsWith("@") && !isLensHandle(value)) {
+        setSplitError({
+          isError: true,
+          message: "Invalid recipient handle",
+        });
+        // check if  its a random text
+      } else if (!value.startsWith("0x") && !value.startsWith("@")) {
+        setSplitError({
+          isError: true,
+          message: "Invalid recipient value",
+        });
+      } else {
+        setSplitError({
+          isError: false,
+          message: "",
+        });
+      }
+    }
+
+    const updatedRecipients = [...enabled.splitRevenueRecipients];
+    updatedRecipients[index][field] = value;
+    setEnabled({
+      ...enabled,
+      splitRevenueRecipients: updatedRecipients,
+    });
   };
 
   // share post on lens
@@ -386,16 +450,34 @@ const LensShare = () => {
     }
 
     if (enabled.chargeForCollect) {
-      if (isAddressDuplicate()) {
-        setDuplicateAddressError(true);
-        return;
-      }
+      if (priceError.isError) return;
 
-      if (isPercentageMoreThan100()) {
-        setPercentageError("");
+      if (referralError.isError) return;
+
+      if (splitError.isError) return;
+
+      if (isAddressDuplicate()) {
+        setSplitError({
+          isError: true,
+          message: "Duplicate address or handle found",
+        });
+        return;
+      } else if (!isPercentage100()) {
+        setSplitError({
+          isError: true,
+          message: "Total split should be 100%",
+        });
+        return;
       } else {
-        return setPercentageError("Split should be 100%");
+        setSplitError({
+          isError: false,
+          message: "",
+        });
       }
+    }
+
+    if (enabled.limitedEdition) {
+      if (editionError.isError) return;
     }
 
     setSharing(true);
@@ -432,6 +514,35 @@ const LensShare = () => {
           referredFromRef.current = [];
           store.clear({ keepHistory: true });
           store.addPage();
+          setEnabled({
+            chargeForCollect: false,
+            chargeForCollectPrice: "1",
+            chargeForCollectCurrency: "WMATIC",
+
+            mirrorReferralReward: false,
+            mirrorReferralRewardFee: 25.0,
+
+            splitRevenueRecipients: [
+              {
+                recipient: "",
+                split: 0.0,
+              },
+            ],
+
+            limitedEdition: false,
+            limitedEditionNumber: "1",
+
+            timeLimit: false,
+            endTimestamp: {
+              date: "",
+              time: "",
+            },
+
+            whoCanCollect: false,
+          });
+
+          setIsShareOpen(false);
+          setMenu("share");
         } else if (res?.error) {
           toast.update(id, {
             render: res?.error,
@@ -466,10 +577,55 @@ const LensShare = () => {
     }
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    console.log("name", name);
-    setEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "chargeForCollectPrice") {
+      if (value < 1) {
+        setPriceError({
+          isError: true,
+          message: "Price should be greater than 0",
+        });
+      } else {
+        setPriceError({
+          isError: false,
+          message: "",
+        });
+      }
+    } else if (name === "limitedEditionNumber") {
+      if (value < 1) {
+        setEditionError({
+          isError: true,
+          message: "Collect limit should be greater than 0",
+        });
+      } else {
+        setEditionError({
+          isError: false,
+          message: "",
+        });
+      }
+    } else if (name === "mirrorReferralRewardFee") {
+      if (value < 1) {
+        setReferralError({
+          isError: true,
+          message: "Referral fee should be between 1% to 100%",
+        });
+      } else {
+        setReferralError({
+          isError: true,
+          message: "",
+        });
+      }
+    }
+
+    if (name === "mirrorReferralRewardFee") {
+      setEnabled((prevEnabled) => ({
+        ...prevEnabled,
+        [name]: Number(parseFloat(value).toFixed(2)),
+      }));
+    } else {
+      setEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
+    }
   };
 
   const restrictRecipientInput = (e, index, recipient) => {
@@ -494,22 +650,23 @@ const LensShare = () => {
   // add recipient to the split list
   useEffect(() => {
     if (isConnected) {
-      // add @lenspostxyz.lens to the split list at 0th index but dont duplicate
-      if (!referredFromRef.current.includes("@lenspostxyz")) {
-        referredFromRef.current.unshift("@lenspostxyz");
-      }
-
       const updatedRecipients = referredFromRef.current
         .filter((item) => typeof item === "string")
-        .slice(0, 5)
+        .slice(0, 4)
         .map((item) => ({
           recipient: item,
-          split: 0.0,
+          split: 1.0,
         }));
 
       setEnabled((prevEnabled) => ({
         ...prevEnabled,
-        splitRevenueRecipients: [...updatedRecipients],
+        splitRevenueRecipients: [
+          {
+            recipient: "@lenspostxyz.test",
+            split: enabled.splitRevenueRecipients[0]?.split || 10.0,
+          },
+          ...updatedRecipients,
+        ],
       }));
     }
   }, [address]);
@@ -564,12 +721,12 @@ const LensShare = () => {
                     </Switch.Label>
                     <Switch
                       checked={enabled.chargeForCollect}
-                      onChange={() =>
+                      onChange={() => {
                         setEnabled({
                           ...enabled,
                           chargeForCollect: !enabled.chargeForCollect,
-                        })
-                      }
+                        });
+                      }}
                       className={`${
                         enabled.chargeForCollect
                           ? "bg-[#E1F26C]"
@@ -585,44 +742,41 @@ const LensShare = () => {
                       />
                     </Switch>
                   </div>
-                  <div
-                    className={`flex gap-5 ${
-                      !enabled.chargeForCollect && "hidden"
-                    }`}
-                  >
-                    <div className="flex flex-col w-1/2 py-2">
-                      <label htmlFor="price">Price</label>
-                      <NumberInputBox
-                        min={"1"}
-                        step={"0.01"}
-                        placeholder="0.0$"
-                        onChange={(e) =>
-                          setEnabled({
-                            ...enabled,
-                            chargeForCollectPrice: e.target.value,
-                          })
-                        }
-                        value={enabled.chargeForCollectPrice}
-                      />
+                  <div className={` ${!enabled.chargeForCollect && "hidden"}`}>
+                    <div className="flex gap-5">
+                      <div className="flex flex-col w-1/2 py-2">
+                        <label htmlFor="price">Price</label>
+                        <NumberInputBox
+                          min={"1"}
+                          step={"0.01"}
+                          placeholder="0.0$"
+                          name="chargeForCollectPrice"
+                          onChange={(e) => handleChange(e)}
+                          value={enabled.chargeForCollectPrice}
+                        />
+                      </div>
+                      <div className="flex flex-col w-1/2 py-2">
+                        <label htmlFor="price">Currency</label>
+                        <select
+                          name="chargeForCollectCurrency"
+                          id="chargeForCollectCurrency"
+                          className="border rounded-md py-[10px] outline-none focus:ring-1 focus:ring-blue-500"
+                          onChange={handleChange}
+                          value={enabled.chargeForCollectCurrency}
+                        >
+                          {tokenList().map((token, index) => {
+                            return (
+                              <option key={index} value={token.symbol}>
+                                {token.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
                     </div>
-                    <div className="flex flex-col w-1/2 py-2">
-                      <label htmlFor="price">Currency</label>
-                      <select
-                        name="chargeForCollectCurrency"
-                        id="chargeForCollectCurrency"
-                        className="border rounded-md py-[10px] outline-none focus:ring-1 focus:ring-blue-500"
-                        onChange={handleChange}
-                        value={enabled.chargeForCollectCurrency}
-                      >
-                        {tokenList().map((token, index) => {
-                          return (
-                            <option key={index} value={token.symbol}>
-                              {token.name}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
+                    {priceError.isError && (
+                      <InputErrorMsg message={priceError.message} />
+                    )}
                   </div>
                 </div>
                 <div
@@ -667,17 +821,14 @@ const LensShare = () => {
                         min={0.0}
                         max={100.0}
                         step={0.01}
+                        name="mirrorReferralRewardFee"
                         placeholder="0.0%"
-                        onChange={(e) =>
-                          setEnabled({
-                            ...enabled,
-                            mirrorReferralRewardFee: Number(
-                              parseFloat(e.target.value).toFixed(2)
-                            ),
-                          })
-                        }
+                        onChange={(e) => handleChange(e)}
                         value={enabled.mirrorReferralRewardFee}
                       />
+                      {referralError.isError && (
+                        <InputErrorMsg message={referralError.message} />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -715,7 +866,7 @@ const LensShare = () => {
                             <div className="flex justify-between items-center w-1/3">
                               <NumberInputBox
                                 min={0}
-                                max={90}
+                                max={100}
                                 step={0.01}
                                 placeholder="0.0%"
                                 value={recipient.split}
@@ -743,27 +894,13 @@ const LensShare = () => {
                               <span className="italic mt-2">
                                 Small fee to support our team!
                               </span>
-
-                              {/* This is the custom popover that appears on the sidebar*/}
-                              {/* <CustomPopover
-                                icon=""
-                                animationData={animationData}
-                                isSplitPopover
-                              /> */}
                             </div>
                           )}
                         </>
                       );
                     })}
-                    {duplicateAddressError && (
-                      <p className="text-red-500 font-semibold italic">
-                        Duplicate recipient address/handle found
-                      </p>
-                    )}
-                    {percentageError && (
-                      <p className="text-red-500 font-semibold italic">
-                        {percentageError}
-                      </p>
+                    {splitError.isError && (
+                      <InputErrorMsg message={splitError.message} />
                     )}
                     {enabled.splitRevenueRecipients.length < 5 && (
                       <div
@@ -812,14 +949,13 @@ const LensShare = () => {
                         min={"1"}
                         step={"1"}
                         placeholder="1"
-                        onChange={(e) =>
-                          setEnabled({
-                            ...enabled,
-                            limitedEditionNumber: e.target.value,
-                          })
-                        }
+                        name="limitedEditionNumber"
+                        onChange={(e) => handleChange(e)}
                         value={enabled.limitedEditionNumber}
                       />
+                      {editionError.isError && (
+                        <InputErrorMsg message={editionError.message} />
+                      )}
                     </div>
                   </div>
                 </div>

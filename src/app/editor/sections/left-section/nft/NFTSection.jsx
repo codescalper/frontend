@@ -110,12 +110,7 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
   }, [hasNextPage, fetchNextPage]);
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent/>
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (
@@ -203,12 +198,7 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
   }, [hasNextPage, fetchNextPage]);
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent/>
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return delayedQuery ? (
@@ -283,12 +273,7 @@ const RenderSearchedNFTs = ({
   });
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent/>
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (
@@ -359,12 +344,7 @@ const RenderSearchedWalletNFT = ({ goBack, delayedQuery }) => {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent/>
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (
@@ -475,12 +455,7 @@ const WalletNFT = () => {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent/>
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (
@@ -513,7 +488,7 @@ const WalletNFT = () => {
           </div>
           <LoadMoreComponent
             hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}  
+            isFetchingNextPage={isFetchingNextPage}
           />
         </>
       ) : (

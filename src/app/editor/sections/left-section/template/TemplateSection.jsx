@@ -203,12 +203,7 @@ const LenspostTemplates = () => {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent />
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (
@@ -269,12 +264,7 @@ const UserTemplates = () => {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent />
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (
