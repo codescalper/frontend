@@ -60,7 +60,29 @@ const ContextProvider = ({ children }) => {
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
 
-  console.log("referredFromRef", referredFromRef.current);
+  // for lens monetization price error
+  const [priceError, setPriceError] = useState({
+    isError: false,
+    message: "",
+  });
+
+  // for lens monetization split error
+  const [splitError, setSplitError] = useState({
+    isError: false,
+    message: "",
+  });
+
+  // for lens monetization edition error
+  const [editionError, setEditionError] = useState({
+    isError: false,
+    message: "",
+  });
+
+  // for lens monetization referral error
+  const [referralError, setReferralError] = useState({
+    isError: false,
+    message: "",
+  });
 
   return (
     <Context.Provider
@@ -105,6 +127,22 @@ const ContextProvider = ({ children }) => {
 
         // user public templates states
         referredFromRef,
+
+        // for lens monetization price error
+        priceError,
+        setPriceError,
+
+        // for lens monetization split error
+        splitError,
+        setSplitError,
+
+        // for lens monetization edition error
+        editionError,
+        setEditionError,
+
+        // for lens monetization referral error
+        referralError,
+        setReferralError,
       }}
     >
       {children}

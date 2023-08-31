@@ -19,8 +19,8 @@ import CompModal from "./modals/ModalComponent";
 import InputBox from "./elements/InputBox";
 import NumberInputBox from "./elements/NumberInputBox";
 import Tabs from "./core/Tabs";
-
 import LoadingAnimatedComponent from "./elements/LoadingAnimatedComponent";
+import InputErrorMsg from "./elements/InputErrorMsg";
 
 export {
   CustomImageComponent,
@@ -41,4 +41,5 @@ export {
   NumberInputBox,
   LoadingAnimatedComponent,
   Tabs,
+  InputErrorMsg,
 };

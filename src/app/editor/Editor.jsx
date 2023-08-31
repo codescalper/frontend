@@ -182,7 +182,7 @@ const Editor = () => {
             });
         }
       }
-    }, 5000);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -275,10 +275,10 @@ const Editor = () => {
               <div className="mb-2 mr-2">
                 <Toolbar store={store} />
               </div>
-              <Workspace store={store} />
+              <Workspace store={store} backgroundColor="#e8e8ec" />
 
               {/* Bottom section */}
-              <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg">
+              <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">
                 <BgRemover />
                 <ZoomButtons store={store} />
 

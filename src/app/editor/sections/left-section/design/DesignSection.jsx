@@ -48,7 +48,6 @@ const DesignCard = ({
   isPublic,
   openTokengateModal,
 }) => {
-  const [loading, setLoading] = useState(false);
   const { fastPreview, contextCanvasIdRef, referredFromRef } =
     useContext(Context);
   const store = useStore();
@@ -57,6 +56,11 @@ const DesignCard = ({
     store.loadJSON(json);
     contextCanvasIdRef.current = design.id;
     referredFromRef.current = design.referredFrom;
+
+    console.log({
+      id: design.id,
+      referredFromRef: design.referredFrom,
+    });
   };
 
   return (
@@ -87,19 +91,6 @@ const DesignCard = ({
       >
         {/* {design.name} */}
       </div>
-      {loading && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          {/* <Spinner /> */}
-          <LoadingAnimatedComponent/>
-        </div>
-      )}
       <div
         style={{ position: "absolute", top: "5px", right: "5px" }}
         onClick={(e) => {
@@ -260,12 +251,7 @@ export const DesignPanel = () => {
 
   // Show Loading - 06Jul2023
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent/>
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (
