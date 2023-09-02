@@ -7,7 +7,6 @@ import {
   Menu,
   MenuItem,
   Position,
-  Icon,
 } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { replaceImageURL } from "../../../../utils/replaceUrl";

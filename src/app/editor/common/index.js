@@ -21,6 +21,7 @@ import NumberInputBox from "./elements/NumberInputBox";
 import Tabs from "./core/Tabs";
 import LoadingAnimatedComponent from "./elements/LoadingAnimatedComponent";
 import InputErrorMsg from "./elements/InputErrorMsg";
+import CustomPopover from "./elements/CustomPopover";
 
 export {
   CustomImageComponent,
@@ -42,4 +43,5 @@ export {
   LoadingAnimatedComponent,
   Tabs,
   InputErrorMsg,
+  CustomPopover,
 };
