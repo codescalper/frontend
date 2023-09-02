@@ -174,7 +174,7 @@ export const StickerPanel = () => {
       {currentTab === "tabIcons" ? (
         <CompIcons />
       ) : (
-        <Tabs defaultQuery={currentTab} getAssetsFn={getAssetByQuery} />
+        <Tabs defaultQuery={currentTab} getAssetsFn={getAssetByQuery} queryKey="stickers" />
       )}
     </div>
   );

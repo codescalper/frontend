@@ -14,7 +14,7 @@ import {
 } from "..";
 import { fnLoadMore } from "../../../../utils";
 
-const Tabs = ({ defaultQuery, getAssetsFn }) => {
+const Tabs = ({ defaultQuery, getAssetsFn, queryKey }) => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -29,7 +29,7 @@ const Tabs = ({ defaultQuery, getAssetsFn }) => {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: ["bg-assets", delayedQuery || defaultQuery],
+    queryKey: [queryKey, delayedQuery || defaultQuery],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
       getAssetsFn(delayedQuery || defaultQuery, pageParam),
