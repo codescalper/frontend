@@ -1,21 +1,44 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import Lottie from "lottie-react";
 // Donate more Modal imports - Blueprintjs 20Aug2023
 import { Button } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { Slider } from "@blueprintjs/core";
 import { useState } from "react";
+import { Context } from "../../../../context/ContextProvider";
 
-const CustomPopover = ({ icon, isSplitPopover, animationData }) => {
-  const [stSliderValue, setStSliderValue] = useState(30);
+const CustomPopover = ({ icon, animationData }) => {
+  const { enabled, setEnabled } = useContext(Context);
+  const [stSliderValue, setStSliderValue] = useState();
+
+  const newArray = [...enabled.splitRevenueRecipients];
 
   const fnHandleSliderChange = (value) => {
     setStSliderValue(value);
+    // update the split value at index 0
+    newArray[0].split = value;
+
+    // update the splitRevenueRecipients array
+    setEnabled({
+      ...enabled,
+      splitRevenueRecipients: newArray,
+    });
   };
 
-  const fnHandleSplitConfirm = () => {
-    console.log(stSliderValue);
-  };
+  // const fnHandleSplitConfirm = () => {
+  //   // update the split value at index 0
+  //   newArray[0].split = stSliderValue;
+
+  //   // update the splitRevenueRecipients array
+  //   setEnabled({
+  //     ...enabled,
+  //     splitRevenueRecipients: newArray,
+  //   });
+  // };
+
+  useEffect(() => {
+    setStSliderValue(enabled.splitRevenueRecipients[0].split || 10);
+  }, []);
   return (
     <>
       {/* Donate more Modal components - Blueprintjs 20Aug2023 */}
@@ -29,7 +52,7 @@ const CustomPopover = ({ icon, isSplitPopover, animationData }) => {
         {/* Popover starts here */}
         <Popover2
           content={
-            isSplitPopover && (
+
               <>
                 <div className="w-64 p-1 rounded-md bg-gradient-to-t from-white to-[#ECF7A0]">
                   {/* background gradient using tailwind  */}
@@ -57,7 +80,7 @@ const CustomPopover = ({ icon, isSplitPopover, animationData }) => {
                       {/* This is the slider from Blueprintjs/core  */}
                       <div className="m-1 mt-0 p-1">
                         <Slider
-                          min={20}
+                          min={10}
                           max={50}
                           stepSize={5}
                           labelStepSize={10}
@@ -66,7 +89,7 @@ const CustomPopover = ({ icon, isSplitPopover, animationData }) => {
                           labelRenderer={stSliderValue}
                         />
                       </div>
-                      <div className="w-full mt-1">
+                      {/* <div className="w-full mt-1">
                         <Button
                           intent="primary"
                           small
@@ -75,12 +98,12 @@ const CustomPopover = ({ icon, isSplitPopover, animationData }) => {
                         >
                           Confirm
                         </Button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
               </>
-            )
+
           }
           position={"auto"}
         >

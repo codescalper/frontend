@@ -35,7 +35,12 @@ import {
 } from "../../../../../../utils";
 import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
 import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
-import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../common";
+import {
+  CustomPopover,
+  InputBox,
+  InputErrorMsg,
+  NumberInputBox,
+} from "../../../../common";
 import { useStore } from "../../../../../../hooks";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
@@ -749,7 +754,7 @@ const LensShare = () => {
                         <NumberInputBox
                           min={"1"}
                           step={"0.01"}
-                          placeholder="0.0$"
+                          placeholder="1$"
                           name="chargeForCollectPrice"
                           onChange={(e) => handleChange(e)}
                           value={enabled.chargeForCollectPrice}
@@ -822,7 +827,7 @@ const LensShare = () => {
                         max={100.0}
                         step={0.01}
                         name="mirrorReferralRewardFee"
-                        placeholder="0.0%"
+                        placeholder="1%"
                         onChange={(e) => handleChange(e)}
                         value={enabled.mirrorReferralRewardFee}
                       />
@@ -894,6 +899,12 @@ const LensShare = () => {
                               <span className="italic mt-2">
                                 Small fee to support our team!
                               </span>
+
+                              {/* This is the custom popover that appears on the sidebar*/}
+                              <CustomPopover
+                                icon=""
+                                animationData={animationData}
+                              />
                             </div>
                           )}
                         </>

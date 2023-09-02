@@ -34,7 +34,6 @@ const DesignCard = observer(
     tab,
     isGated,
     gatedWith,
-    ownerAddress,
     referredFrom,
     modal,
     setModal,
@@ -189,6 +188,13 @@ const LenspostTemplates = () => {
   const store = useStore();
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
+  const [modal, setModal] = useState({
+    isOpen: false,
+    isTokengated: false,
+    gatedWith: "",
+    isNewDesign: false,
+    json: null,
+  });
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lenspost-templates"],
     queryFn: getAllTemplates,
@@ -208,6 +214,23 @@ const LenspostTemplates = () => {
 
   return (
     <>
+      {modal?.isOpen && modal?.isNewDesign && (
+        <CompModal
+          modal={modal}
+          setModal={setModal}
+          ModalTitle={"Are you sure to replace the canvas with this template?"}
+          ModalMessage={"This will remove all the content from your canvas"}
+          onClickFunction={() => {
+            fnLoadJsonOnPage(store, modal?.json);
+            setModal({
+              isOpen: false,
+              isTokengated: false,
+              isNewDesign: false,
+              json: null,
+            });
+          }}
+        />
+      )}
       <SearchComponent
         query={query}
         setQuery={setQuery}
@@ -221,10 +244,27 @@ const LenspostTemplates = () => {
           {data.map((item) => {
             return (
               <DesignCard
-                json={item.data}
-                preview={item?.image}
-                key={item.id}
-                tab="lenspost"
+                // json={item.data}
+                // preview={item?.image}
+                // key={item.id}
+                // tab="lenspost"
+                // modal={modal}
+                // setModal={setModal}
+                id={item?.id}
+                referredFrom={item?.referredFrom}
+                isGated={item?.isGated}
+                gatedWith={item?.gatedWith}
+                json={item?.data}
+                ownerAddress={item?.ownerAddress}
+                preview={
+                  item?.imageLink != null &&
+                  item?.imageLink.length > 0 &&
+                  item?.imageLink
+                }
+                key={item?.id}
+                tab="user"
+                modal={modal}
+                setModal={setModal}
               />
             );
           })}
