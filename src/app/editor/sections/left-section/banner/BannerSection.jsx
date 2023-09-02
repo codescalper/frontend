@@ -29,7 +29,11 @@ export const BannerPanel = () => {
         ))}
       </div>
 
-      <Tabs defaultQuery={currentTab} getAssetsFn={getBGAssetByQuery} />
+      <Tabs
+        defaultQuery={currentTab}
+        getAssetsFn={getBGAssetByQuery}
+        queryKey="backgrounds"
+      />
     </div>
   );
 };
@@ -38,7 +42,7 @@ export const BannerPanel = () => {
 const BannerSection = {
   name: "Backgrounds2",
   Tab: (props) => (
-    <SectionTab name={`NFT ${'\n'} Banners`} {...props}>
+    <SectionTab name={`NFT ${"\n"} Banners`} {...props}>
       <BackgroundIcon />
     </SectionTab>
   ),
