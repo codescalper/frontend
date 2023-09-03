@@ -36,6 +36,7 @@ import { useStore } from "../../../../../hooks";
 import { Context } from "../../../../../context/ContextProvider";
 import { fnMessage, replaceImageURL } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
+import { fnPageHasElements } from "../../../../../utils/fnPageHasElements";
 
 // Design card component start - 23Jun2023
 
@@ -53,8 +54,15 @@ const DesignCard = ({
   const store = useStore();
 
   const handleClickOrDrop = () => {
-    store.loadJSON(json);
-    contextCanvasIdRef.current = design.id;
+    if (fnPageHasElements) {
+      setModal({ ...modal, isOpen: true, isNewDesign: true });
+    }
+    else{
+      
+      store.loadJSON(json);
+      contextCanvasIdRef.current = design.id;
+    
+    }
   };
 
   return (
@@ -270,13 +278,8 @@ export const DesignPanel = () => {
 
       <Button
         className="m-2 p-1"
-        onClick={() => {
-          const ids = store.pages
-            .map((page) => page.children.map((child) => child.id))
-            .flat();
-          const hasObjects = ids?.length;
-
-          if (hasObjects) {
+        onClick={() => {          
+          if (fnPageHasElements) {
             setModal({ ...modal, isOpen: true, isNewDesign: true });
           }
         }}

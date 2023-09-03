@@ -29,7 +29,7 @@ export const BannerPanel = () => {
         ))}
       </div>
 
-      <Tabs defaultQuery={currentTab} getAssetsFn={getBGAssetByQuery} />
+      <Tabs changeCanvasDimension defaultQuery={currentTab} getAssetsFn={getBGAssetByQuery} />
     </div>
   );
 };

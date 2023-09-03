@@ -133,6 +133,9 @@ export const StickerPanel = () => {
   const [currentTab, setCurrentTab] = useState("tabIcons");
   const tabArray = ["supducks", "lens", "nouns", "fls", "assorted", ];
 
+  const store = useStore();
+  console.log(store.openedSidePanel);
+
   return (
     <div className="flex flex-col h-full">
       <div className="mx-2 mt-1" id="stickerCategories">

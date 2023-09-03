@@ -24,6 +24,8 @@ import { LoadingAnimatedComponent } from "../../../common";
 import SuChevronRightDouble from '@meronex/icons/su/SuChevronRightDouble';
 import { Context } from "../../../../../context/ContextProvider";
 
+import {CompCarousel} from "./components/Carousel"
+ 
 // Design card component start 
 
 const DesignCard = observer(
@@ -36,8 +38,9 @@ const DesignCard = observer(
     gatedWith,
     allowList,
     referredFrom,
-    modal,
-    setModal,
+    // modal,
+    // setModal,
+    isFeatured
   }) => {
     const store = useStore();
     const { address } = useAccount();
@@ -48,6 +51,14 @@ const DesignCard = observer(
     const [stPreviewIndex, setStPreviewIndex] = useState(0);
     const [stHovered, setStHovered] = useState(false);
 
+    const [modal, setModal] = useState({
+      isOpen: false,
+      isTokengated: false,
+      gatedWith: "",
+      isNewDesign: false,
+      json: null,
+    });
+
     const handleClickOrDrop = () => {
       // Show Modal: if it's tokengated
       if (isGated && !isAllowed) {
@@ -55,7 +66,7 @@ const DesignCard = observer(
           ...modal,
           isOpen: true,
           isTokengated: isGated,
-          gatedWith: gatedWith,
+          gatedWith: gatedWith, 
         });
       } else {
         // Check if there are any elements on the page - to open the Modal or not
@@ -161,6 +172,17 @@ const DesignCard = observer(
             {/* <BsChevronDoubleRight size="24" /> */}
           </div>
         }
+
+        {/* Display that it is a Featured Template */}
+        {/* {isFeatured && 
+        
+        <div className="absolute text-sm top-4 bg-blue-100 left-0
+        border-t-1 border-l-1 text-center border-yellow-200 rounded-md transform -rotate-45
+        "> 
+          <div className="text-xs bg-[#6baaf1cb] w-16 rounded-sm">Featured</div>
+
+        </div> 
+        }   */}
       </Card>
     );
   }
@@ -200,10 +222,12 @@ const TemplatePanel = () => {
   );
 };
 
+
 const LenspostTemplates = () => {
   const store = useStore();
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
+  
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lenspost-templates"],
     queryFn: getAllTemplates,
@@ -235,9 +259,17 @@ const LenspostTemplates = () => {
         setQuery={setQuery}
         placeholder={"Search templates"}
       />
+      {/* <button onClick={()=> store.openSidePanel("Elements")} >open Stickers</button> */}
+      
+      <div className="ml-2 mb-2 "> Featured Templates </div>
+      <CompCarousel arrData={data} /> 
+
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
+
+      <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
+      
       {data.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
           {data.map((item) => {
@@ -247,6 +279,7 @@ const LenspostTemplates = () => {
                 preview={item?.image}
                 key={item.id}
                 tab="lenspost"
+                isFeatured
               />
             );
           })}

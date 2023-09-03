@@ -14,7 +14,7 @@ import {
 } from "..";
 import { fnLoadMore } from "../../../../utils";
 
-const Tabs = ({ defaultQuery, getAssetsFn }) => {
+const Tabs = ({ defaultQuery, getAssetsFn, changeCanvasDimension }) => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -82,7 +82,7 @@ const Tabs = ({ defaultQuery, getAssetsFn }) => {
                     key={index}
                     preview={item.image}
                     dimensions={item?.dimensions != null && item.dimensions}
-                    isBackground={true}
+                    changeCanvasDimension={changeCanvasDimension}
                   />
                 );
               })}

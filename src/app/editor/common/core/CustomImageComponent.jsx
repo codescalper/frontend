@@ -6,6 +6,8 @@ import { Popover2 } from "@blueprintjs/popover2";
 import { replaceImageURL } from "../../../../utils/replaceUrl";
 import { useEffect, useState } from "react";
 import { useStore } from "../../../../hooks";
+import { fnPageHasElements } from "../../../../utils/fnPageHasElements"
+import CompModal from "../modals/ModalComponent";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
@@ -13,11 +15,12 @@ const CustomImageComponent = ({
   preview,
   json,
   dimensions,
-  isBackground,
+  changeCanvasDimension,
   hasOptionBtn
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");
+  const [openModal, setOpenModal] = useState(false);
 
   // function for random 3 digit number
   const randomThreeDigitNumber = () => {
@@ -43,20 +46,41 @@ const CustomImageComponent = ({
     return image?.includes(".svg");
   };
 
-  // function for drop/add image on canvas
-  const handleClickOrDrop = () => {
-    isBackground && store.setSize(dimensions[0], dimensions[1]);
+  // Function to add image on the Canvas/Page
+  const fnAddImageOnCanvas = () => {
 
+    changeCanvasDimension && store.setSize(dimensions[0], dimensions[1]);
+
+    // Add Image on the Canvas
     store.activePage?.addElement({
       type: "image",
       // src: replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`, //Image URL
       src: base64Data, //Image URL
-      width: isBackground ? store.width : 300,
-      height: isBackground ? store.height : 300,
-      x: isBackground ? 0 : store.width / 4,
-      y: isBackground ? 0 : store.height / 4,
+      width: changeCanvasDimension ? store.width : 300,
+      height: changeCanvasDimension ? store.height : 300,
+      x: changeCanvasDimension ? 0 : store.width / 4,
+      y: changeCanvasDimension ? 0 : store.height / 4,
     });
-  };
+
+    // if any json data is present, load it on the canvas
+    {json && 
+      // if()
+      store?.loadJSON(json);
+    }
+  }
+
+  // Function for drop/add image on canvas
+  const handleClickOrDrop = () => {
+    if(fnPageHasElements){
+      console.log("Page has elements");
+      fnAddImageOnCanvas();
+      // setOpenModal(true);
+    }
+    else{
+      console.log("Page has no elements");
+      fnAddImageOnCanvas();
+   }
+};
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -75,7 +99,8 @@ const CustomImageComponent = ({
     }
   }, [preview]);
 
-  return (
+  return (<>
+  
     <Card
       className="relative p-0 m-1 rounded-lg cursor-pointer"
       interactive
@@ -113,7 +138,18 @@ const CustomImageComponent = ({
         </div>
       )}
     </Card>
-  );
+
+  {/* {
+    openModal &&  
+    <CompModal 
+      icon={"info"}
+      onClickFunction={fnAddImageOnCanvas} 
+      ModalTitle={"There are elements on this canvas"} 
+      ModalMessage={"All the Elements on this page will be lost"}     
+    />
+  
+  } */}
+    </> );
 };
 
 export default CustomImageComponent;

@@ -5,8 +5,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { getIsUserWhitelisted } from "../../../services";
-import { getFromLocalStorage, saveToLocalStorage } from "../../../utils";
-
+import { fnMessage, getFromLocalStorage, saveToLocalStorage } from "../../../utils";
+ 
 const AuthComponent = () => {
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
   const getifUserEligible = getFromLocalStorage("ifUserEligible");
