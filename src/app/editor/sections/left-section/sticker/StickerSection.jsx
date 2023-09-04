@@ -136,8 +136,6 @@ export const StickerPanel = () => {
   return (
     <div className="flex flex-col h-full">
       <div className="mx-2 mt-1" id="stickerCategories">
-        {/* Scrollable Tabs */}
-        {/* <div className="w-full flex flex-row overflow-x-scroll"> */}
 
         <Button
           small

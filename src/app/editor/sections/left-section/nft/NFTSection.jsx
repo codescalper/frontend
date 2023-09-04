@@ -461,38 +461,37 @@ const WalletNFT = () => {
   return (
     <>
       <SearchComponent
-        onClick={refreshNFTs}
         query={query}
         setQuery={setQuery}
         placeholder="Search NFTs by id"
       />
-      <NFTReacTour />
-      {isError ? (
-        <ErrorComponent message={error} />
-      ) : data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
-          <div className=" grid grid-cols-2 overflow-y-auto">
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  // only if the lensUserName param is passed, The artist name from which it is collected is displayed
-                  <CustomImageComponent
-                    key={index}
-                    preview={item?.imageURL ? item?.imageURL : item?.permaLink}
-                    isLensCollect={lensCollect(item?.title)}
-                  />
-                );
-              })}
+      {/* <div className="h-88 overflow-y-auto"> */}
+        {isError ? (
+          <ErrorComponent error={error} />
+        ) : data?.pages[0]?.data.length > 0 ? (
+          //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
+          <div className="h-full overflow-y-auto">
+            <div className="grid grid-cols-2 overflow-y-auto">
+              {data?.pages
+                .flatMap((item) => item?.data)
+                .map((item, index) => {
+                  return (
+                    <CustomImageComponent
+                      key={index}
+                      preview={item?.imageURL}
+                    />
+                  );
+                })}
+            </div>
+            <LoadMoreComponent
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
           </div>
-          <LoadMoreComponent
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </div>
-      ) : (
-        <MessageComponent message="No Results" />
-      )}
+        ) : (
+          <MessageComponent message="No Results" />
+        )}
+      {/* </div> */}
     </>
   );
 };
