@@ -121,7 +121,7 @@ const DesignCard = observer(
             effect="blur"
             src={
               tab === "user"
-                ? preview[stPreviewIndex]
+                ? replaceImageURL(preview[stPreviewIndex])
                 : replaceImageURL(preview)
             }
             alt="Preview Image"

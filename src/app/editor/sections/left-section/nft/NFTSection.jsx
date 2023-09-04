@@ -459,7 +459,7 @@ const WalletNFT = () => {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <>
       <SearchComponent
         onClick={refreshNFTs}
         query={query}
@@ -470,7 +470,7 @@ const WalletNFT = () => {
       {isError ? (
         <ErrorComponent message={error} />
       ) : data?.pages[0]?.data.length > 0 ? (
-        <>
+        <div className="h-full overflow-y-auto">
           <div className=" grid grid-cols-2 overflow-y-auto">
             {data?.pages
               .flatMap((item) => item?.data)
@@ -478,7 +478,6 @@ const WalletNFT = () => {
                 return (
                   // only if the lensUserName param is passed, The artist name from which it is collected is displayed
                   <CustomImageComponent
-                    // lensUserName = {"lenspostxyz"}
                     key={index}
                     preview={item?.imageURL ? item?.imageURL : item?.permaLink}
                     isLensCollect={lensCollect(item?.title)}
@@ -490,10 +489,10 @@ const WalletNFT = () => {
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
           />
-        </>
+        </div>
       ) : (
         <MessageComponent message="No Results" />
       )}
-    </div>
+    </>
   );
 };

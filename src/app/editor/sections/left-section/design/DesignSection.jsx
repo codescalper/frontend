@@ -75,7 +75,7 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            contextCanvasIdRef.current === design.id ? fastPreview[0] : preview
+            contextCanvasIdRef.current === design.id ? fastPreview[0] : replaceImageURL(preview)
           }
           alt="Preview Image"
         />
