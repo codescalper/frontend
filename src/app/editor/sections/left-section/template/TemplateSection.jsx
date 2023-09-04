@@ -244,25 +244,14 @@ const LenspostTemplates = () => {
           {data.map((item) => {
             return (
               <DesignCard
-                // json={item.data}
-                // preview={item?.image}
-                // key={item.id}
-                // tab="lenspost"
-                // modal={modal}
-                // setModal={setModal}
                 id={item?.id}
                 referredFrom={item?.referredFrom}
                 isGated={item?.isGated}
                 gatedWith={item?.gatedWith}
                 json={item?.data}
                 ownerAddress={item?.ownerAddress}
-                preview={
-                  item?.imageLink != null &&
-                  item?.imageLink.length > 0 &&
-                  item?.imageLink
-                }
+                preview={item?.image}
                 key={item?.id}
-                tab="user"
                 modal={modal}
                 setModal={setModal}
               />
