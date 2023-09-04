@@ -14,7 +14,7 @@ import {
 } from "..";
 import { fnLoadMore } from "../../../../utils";
 
-const Tabs = ({ defaultQuery, getAssetsFn, queryKey }) => {
+const Tabs = ({ defaultQuery, getAssetsFn, queryKey, isBackground }) => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -55,9 +55,7 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey }) => {
 
   // Show Loading - 06Jul2023
   if (isLoading) {
-    return (
-        <LoadingAnimatedComponent />
-    );
+    return <LoadingAnimatedComponent />;
   }
   return isError ? (
     <ErrorComponent message={error} />
@@ -79,7 +77,7 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey }) => {
                     key={index}
                     preview={item.image}
                     dimensions={item?.dimensions != null && item.dimensions}
-                    isBackground={true}
+                    isBackground={isBackground}
                   />
                 );
               })}
