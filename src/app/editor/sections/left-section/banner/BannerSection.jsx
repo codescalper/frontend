@@ -43,7 +43,7 @@ export const BannerPanel = () => {
 const BannerSection = {
   name: "Backgrounds2",
   Tab: (props) => (
-    <SectionTab name={`NFT ${"\n"} Banners`} {...props}>
+    <SectionTab name={`NFT Banners`} {...props}>
       <BackgroundIcon />
     </SectionTab>
   ),

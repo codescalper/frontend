@@ -117,7 +117,7 @@ const DesignCard = observer(
 
           <LazyLoadImage
             className="rounded-lg"
-            placeholderSrc={replaceImageURL(preview[stPreviewIndex])}
+            placeholderSrc={replaceImageURL(preview)}
             effect="blur"
             src={
               tab === "user"
