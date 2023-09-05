@@ -3,13 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { SectionTab } from "polotno/side-panel";
 import { MyDesignIcon } from "../../../../../assets";
 
-import {
-  Button,
-  Card,
-  Menu,
-  MenuItem,
-  Position,
-} from "@blueprintjs/core";
+import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
 
 import { Popover2 } from "@blueprintjs/popover2";
 import { useAccount } from "wagmi";
@@ -29,10 +23,15 @@ import {
   MyDesignReacTour,
   SearchComponent,
 } from "../../../common";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useStore } from "../../../../../hooks";
 import { Context } from "../../../../../context/ContextProvider";
-import { fnMessage, replaceImageURL } from "../../../../../utils";
+import { fnLoadMore, fnMessage, replaceImageURL } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 
 // Design card component start - 23Jun2023
@@ -73,9 +72,7 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            contextCanvasIdRef.current === design.id
-              ? fastPreview[0]
-              : replaceImageURL(preview)
+            contextCanvasIdRef.current === design.id ? fastPreview[0] : preview
           }
           alt="Preview Image"
         />
@@ -151,9 +148,18 @@ export const DesignPanel = () => {
 
   // get all canvas
   const queryClient = useQueryClient();
-  const { data, isLoading, isError, error } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ["my-designs"],
-    queryFn: getAllCanvas,
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) => getAllCanvas(pageParam),
   });
 
   // mutationFn delete a canvas
@@ -219,6 +225,11 @@ export const DesignPanel = () => {
   };
 
   useEffect(() => {
+    if (isDisconnected || !address) return;
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
+
+  useEffect(() => {
     if (isDeleteError) {
       toast.error(fnMessage(deleteError));
     } else if (isVisibilityError) {
@@ -227,6 +238,8 @@ export const DesignPanel = () => {
       toast.error(fnMessage(tokengateError));
     }
   }, [isDeleteError, isVisibilityError, isTokengateError]);
+
+  console.log(data);
 
   if (isDisconnected || !address) {
     return (
@@ -306,43 +319,45 @@ export const DesignPanel = () => {
       {/*   Pass these onto Line 25 */}
       {isError ? (
         <ErrorComponent error={error} />
-      ) : data.length > 0 ? (
+      ) : data?.pages[0]?.data?.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2" id="RecentDesigns">
           {contextCanvasIdRef.current === null && fastPreview[0] && (
             <Card className="relative p-0 m-1" interactive>
               <img src={fastPreview[0]} alt="" />
             </Card>
           )}
-          {[...data].reverse().map((design) => {
-            return (
-              <DesignCard
-                design={design}
-                json={design.data}
-                referredFrom={design.referredFrom}
-                preview={
-                  design?.imageLink != null &&
-                  design?.imageLink.length > 0 &&
-                  design?.imageLink[0]
-                }
-                key={design.id}
-                onDelete={() => deleteCanvas(design.id)}
-                onPublic={() => {
-                  design?.isPublic
-                    ? changeVisibility({ id: design.id, isPublic: false })
-                    : changeVisibility({ id: design.id, isPublic: true });
-                }}
-                isPublic={design?.isPublic}
-                openTokengateModal={() =>
-                  setModal({
-                    ...modal,
-                    isOpen: true,
-                    isTokengate: true,
-                    canvasId: design.id,
-                  })
-                }
-              />
-            );
-          })}
+          {data?.pages
+            .flatMap((item) => item?.data)
+            .map((design) => {
+              return (
+                <DesignCard
+                  design={design}
+                  json={design.data}
+                  referredFrom={design.referredFrom}
+                  preview={
+                    design?.imageLink != null &&
+                    design?.imageLink.length > 0 &&
+                    design?.imageLink[0]
+                  }
+                  key={design.id}
+                  onDelete={() => deleteCanvas(design.id)}
+                  onPublic={() => {
+                    design?.isPublic
+                      ? changeVisibility({ id: design.id, isPublic: false })
+                      : changeVisibility({ id: design.id, isPublic: true });
+                  }}
+                  isPublic={design?.isPublic}
+                  openTokengateModal={() =>
+                    setModal({
+                      ...modal,
+                      isOpen: true,
+                      isTokengate: true,
+                      canvasId: design.id,
+                    })
+                  }
+                />
+              );
+            })}
         </div>
       ) : (
         <div id="RecentDesigns">
