@@ -123,9 +123,7 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            tab === "user"
-              ? replaceImageURL(preview[stPreviewIndex])
-              : replaceImageURL(preview)
+            tab === "user" ? preview[stPreviewIndex] : replaceImageURL(preview)
           }
           alt="Preview Image"
         />
@@ -255,7 +253,7 @@ const LenspostTemplates = () => {
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {data?.pages[0]?.data.length > 0 ? (
+      {data?.pages[0]?.data?.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
           {data?.pages
             .flatMap((item) => item?.data)
@@ -371,7 +369,7 @@ const UserTemplates = () => {
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {data?.pages[0]?.data.length > 0 ? (
+      {data?.pages[0]?.data?.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
           {data?.pages
             .flatMap((item) => item?.data)

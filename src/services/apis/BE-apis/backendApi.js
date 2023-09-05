@@ -338,9 +338,19 @@ export const changeCanvasVisibility = async ({ id, isPublic }) => {
 
 // get all canvas endpoint
 // need auth token (jwt)
-export const getAllCanvas = async () => {
-  const result = await api.get(`${API}/user/canvas?limit=50&offset=0`);
-  return result?.data;
+export const getAllCanvas = async (page) => {
+  const result = await api.get(`${API}/user/canvas`, {
+    params: {
+      page: page,
+      limit: 20,
+    },
+  });
+  
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 
 // get canvas by id endpoint
@@ -502,8 +512,8 @@ export const setDispatcher = async () => {
 export const getAllTemplates = async (page) => {
   const result = await api.get(`${API}/template`, {
     params: {
-      limit: 20,
       page: page,
+      limit: 20,
     },
   });
 
@@ -519,8 +529,8 @@ export const getAllTemplates = async (page) => {
 export const getUserPublicTemplates = async (page) => {
   const result = await api.get(`${API}/template/user`, {
     params: {
-      limit: 20,
       page: page,
+      limit: 20,
     },
   });
 

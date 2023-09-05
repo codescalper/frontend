@@ -228,7 +228,7 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
         </div>
         {isError ? (
           <ErrorComponent error={error} />
-        ) : data?.pages[0]?.data.length > 0 ? (
+        ) : data?.pages[0]?.data?.length > 0 ? (
           //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
           <div className="h-full overflow-y-auto">
             <div className="grid grid-cols-2 overflow-y-auto">
@@ -465,10 +465,10 @@ const WalletNFT = () => {
         setQuery={setQuery}
         placeholder="Search NFTs by id"
       />
-      {/* <div className="h-88 overflow-y-auto"> */}
+      <div className="h-88 overflow-y-auto">
       {isError ? (
         <ErrorComponent error={error} />
-      ) : data?.pages[0]?.data.length > 0 ? (
+      ) : data?.pages[0]?.data?.length > 0 ? (
         //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
@@ -492,7 +492,7 @@ const WalletNFT = () => {
       ) : (
         <MessageComponent message="No Results" />
       )}
-      {/* </div> */}
+      </div>
     </>
   );
 };
