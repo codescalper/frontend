@@ -239,8 +239,6 @@ export const DesignPanel = () => {
     }
   }, [isDeleteError, isVisibilityError, isTokengateError]);
 
-  console.log(data);
-
   if (isDisconnected || !address) {
     return (
       <div className="h-full flex flex-col">

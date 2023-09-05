@@ -84,8 +84,6 @@ const ContextProvider = ({ children }) => {
     message: "",
   });
 
-  console.log({ referredFromRef: referredFromRef.current });
-
   return (
     <Context.Provider
       value={{
