@@ -499,16 +499,36 @@ export const setDispatcher = async () => {
 
 // template apis start
 // no need auth token (jwt)
-export const getAllTemplates = async () => {
-  const result = await api.get(`${API}/template?limit=50&offset=0`);
-  return result?.data;
+export const getAllTemplates = async (page) => {
+  const result = await api.get(`${API}/template`, {
+    params: {
+      limit: 20,
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 // template apis end
 
 // user public templates apis start
-export const getUserPublicTemplates = async () => {
-  const result = await api.get(`${API}/template/user?limit=50&offset=0`);
-  return result?.data;
+export const getUserPublicTemplates = async (page) => {
+  const result = await api.get(`${API}/template/user`, {
+    params: {
+      limit: 20,
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
 };
 // user public templates apis end
 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { SectionTab } from "polotno/side-panel";
-import { MyDesignIcon, TemplatesIcon } from "../../../../../assets";
+import { MyDesignIcon } from "../../../../../assets";
 
 import {
   Button,
@@ -9,7 +9,6 @@ import {
   Menu,
   MenuItem,
   Position,
-  Spinner,
 } from "@blueprintjs/core";
 
 import { Popover2 } from "@blueprintjs/popover2";
@@ -18,7 +17,6 @@ import {
   changeCanvasVisibility,
   deleteCanvasById,
   getAllCanvas,
-  getUserPublicTemplates,
   tokengateCanvasById,
 } from "../../../../../services";
 import { toast } from "react-toastify";
@@ -75,7 +73,9 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            contextCanvasIdRef.current === design.id ? fastPreview[0] : replaceImageURL(preview)
+            contextCanvasIdRef.current === design.id
+              ? fastPreview[0]
+              : replaceImageURL(preview)
           }
           alt="Preview Image"
         />
@@ -109,7 +109,7 @@ const DesignCard = ({
                 /> */}
               <MenuItem
                 icon="globe"
-                text={isPublic(design.id) ? "Make Private" : "Make Public"}
+                text={isPublic ? "Make Private" : "Make Public"}
                 onClick={onPublic}
               />
               <MenuItem
@@ -156,11 +156,6 @@ export const DesignPanel = () => {
     queryFn: getAllCanvas,
   });
 
-  const { data: publicTemplates } = useQuery({
-    queryKey: ["user-templates"],
-    queryFn: getUserPublicTemplates,
-  });
-
   // mutationFn delete a canvas
   const {
     mutate: deleteCanvas,
@@ -198,7 +193,7 @@ export const DesignPanel = () => {
       } else {
         toast.success(data?.message);
       }
-      queryClient.invalidateQueries(["user-templates"], { exact: true });
+      queryClient.invalidateQueries(["community-pool"], { exact: true });
     },
   });
 
@@ -214,14 +209,6 @@ export const DesignPanel = () => {
       changeVisibility({ id: modal.canvasId, isPublic: true });
     },
   });
-
-  // mutationFn funtion to check if canvas is public or not
-  const isCanvasPublic = (canvasId) => {
-    if (publicTemplates) {
-      return publicTemplates.some((obj) => obj.id === canvasId);
-    }
-    return false;
-  };
 
   // Function to delete all the canvas on confirmation - 25Jun2023
   const fnDeleteCanvas = () => {
@@ -339,12 +326,12 @@ export const DesignPanel = () => {
                 }
                 key={design.id}
                 onDelete={() => deleteCanvas(design.id)}
-                onPublic={() =>
-                  isCanvasPublic(design.id)
+                onPublic={() => {
+                  design?.isPublic
                     ? changeVisibility({ id: design.id, isPublic: false })
-                    : changeVisibility({ id: design.id, isPublic: true })
-                }
-                isPublic={isCanvasPublic}
+                    : changeVisibility({ id: design.id, isPublic: true });
+                }}
+                isPublic={design?.isPublic}
                 openTokengateModal={() =>
                   setModal({
                     ...modal,
