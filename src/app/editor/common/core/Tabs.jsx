@@ -64,7 +64,7 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, isBackground }) => {
       <SearchComponent
         query={query}
         setQuery={setQuery}
-        placeholder={`Search ${isBackground ? "Backgrounds" : "Stickers"}}`}
+        placeholder={`Search ${isBackground ? "Backgrounds" : "Stickers"}`}
       />
       {data?.pages[0]?.data?.length > 0 ? (
         <div className="h-full overflow-y-auto">
