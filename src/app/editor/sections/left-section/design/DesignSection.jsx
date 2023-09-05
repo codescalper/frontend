@@ -19,6 +19,7 @@ import {
   CompModal,
   ConnectWalletMsgComponent,
   ErrorComponent,
+  LoadMoreComponent,
   MessageComponent,
   MyDesignReacTour,
   SearchComponent,
@@ -239,8 +240,6 @@ export const DesignPanel = () => {
     }
   }, [isDeleteError, isVisibilityError, isTokengateError]);
 
-  console.log(data);
-
   if (isDisconnected || !address) {
     return (
       <div className="h-full flex flex-col">
@@ -332,8 +331,8 @@ export const DesignPanel = () => {
               return (
                 <DesignCard
                   design={design}
-                  json={design.data}
-                  referredFrom={design.referredFrom}
+                  json={design?.data}
+                  referredFrom={design?.referredFrom}
                   preview={
                     design?.imageLink != null &&
                     design?.imageLink.length > 0 &&
@@ -343,8 +342,8 @@ export const DesignPanel = () => {
                   onDelete={() => deleteCanvas(design.id)}
                   onPublic={() => {
                     design?.isPublic
-                      ? changeVisibility({ id: design.id, isPublic: false })
-                      : changeVisibility({ id: design.id, isPublic: true });
+                      ? changeVisibility({ id: design?.id, isPublic: false })
+                      : changeVisibility({ id: design?.id, isPublic: true });
                   }}
                   isPublic={design?.isPublic}
                   openTokengateModal={() =>
@@ -352,12 +351,16 @@ export const DesignPanel = () => {
                       ...modal,
                       isOpen: true,
                       isTokengate: true,
-                      canvasId: design.id,
+                      canvasId: design?.id,
                     })
                   }
                 />
               );
             })}
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
       ) : (
         <div id="RecentDesigns">
