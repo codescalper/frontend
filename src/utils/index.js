@@ -11,3 +11,4 @@ export * from "./replaceUrl";
 export * from "./waitFn";
 export * from "./validation";
 export * from "./firstLetterCapital";
+export * from "./random3Digits";

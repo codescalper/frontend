@@ -64,7 +64,8 @@ export const login = async (walletAddress, signature, message) => {
     if (result?.status === 200) {
       if (result?.data?.status === "success") {
         return {
-          data: result?.data?.jwt,
+          jwt: result?.data?.jwt,
+          lensHandle: result?.data?.message,
         };
       } else if (result?.data?.status === "failed") {
         return {
@@ -106,49 +107,11 @@ export const login = async (walletAddress, signature, message) => {
 // lensauth apis start
 // need auth token (jwt)
 export const lensAuthenticate = async (signature) => {
-  try {
-    const result = await api.post(`${API}/auth/lens/authenticate`, {
-      signature: signature,
-    });
+  const result = await api.post(`${API}/auth/lens/authenticate`, {
+    signature: signature,
+  });
 
-    if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else if (error?.response?.status === 400) {
-      console.log({ 400: error?.response?.data?.message });
-      return {
-        error: error?.response?.statusText,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  return result?.data;
 };
 // lensauth apis end
 
@@ -345,7 +308,7 @@ export const getAllCanvas = async (page) => {
       limit: 20,
     },
   });
-  
+
   return {
     data: result?.data?.assets,
     nextPage: result?.data?.nextPage,
@@ -513,7 +476,6 @@ export const getAllTemplates = async (page) => {
   const result = await api.get(`${API}/template`, {
     params: {
       page: page,
-      limit: 20,
     },
   });
 
@@ -530,7 +492,6 @@ export const getUserPublicTemplates = async (page) => {
   const result = await api.get(`${API}/template/user`, {
     params: {
       page: page,
-      limit: 20,
     },
   });
 

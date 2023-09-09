@@ -54,11 +54,6 @@ const DesignCard = ({
     store.loadJSON(json);
     contextCanvasIdRef.current = design.id;
     referredFromRef.current = design.referredFrom;
-
-    console.log({
-      id: design.id,
-      referredFromRef: design.referredFrom,
-    });
   };
 
   return (
@@ -73,7 +68,7 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            contextCanvasIdRef.current === design.id ? fastPreview[0] : preview
+            contextCanvasIdRef.current === design.id ? fastPreview[0] : replaceImageURL(preview) + `?token=1`
           }
           alt="Preview Image"
         />

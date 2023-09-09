@@ -49,6 +49,8 @@ const DesignCard = ({
   const [stHovered, setStHovered] = useState(false);
 
   const handleClickOrDrop = () => {
+
+    console.log({referredFrom});
     // Show Modal: if it's tokengated
     if (isGated && Object.keys(json).length === 0) {
       setModal({
@@ -123,7 +125,9 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            tab === "user" ? preview[stPreviewIndex] : replaceImageURL(preview)
+            tab === "user"
+              ? replaceImageURL(preview[stPreviewIndex]) + `?token=1`
+              : replaceImageURL(preview)
           }
           alt="Preview Image"
         />

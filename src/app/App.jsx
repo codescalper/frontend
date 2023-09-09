@@ -108,14 +108,15 @@ const App = () => {
       setText("Logging in...");
       const res = await login(address, signature, message);
 
-      if (res?.data) {
+      if (res?.jwt) {
         setText("");
         setIsLoading(false);
         toast.success("Login successful");
-        saveToLocalStorage("userAuthToken", res.data);
+        saveToLocalStorage("userAuthToken", res.jwt);
         saveToLocalStorage("usertAuthTmestamp", new Date().getTime());
         saveToLocalStorage("userAddress", address);
-        setSession(res.data);
+        saveToLocalStorage("lensAuth", res?.lensHandle);
+        setSession(res.jwt);
       } else if (res?.error) {
         disconnect();
         setText("");
