@@ -87,9 +87,15 @@ const LensShare = () => {
   const [duplicateAddressError, setDuplicateAddressError] = useState(false);
   const [percentageError, setPercentageError] = useState("");
   const [sharing, setSharing] = useState(false);
+
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnLens",
     mutationFn: shareOnSocials,
+  });
+
+  const { mutateAsync: mutateLensAuth } = useMutation({
+    mutationKey: "lensAuth",
+    mutationFn: lensAuthenticate,
   });
 
   // generating signature
@@ -107,30 +113,34 @@ const LensShare = () => {
   const lensAuth = async () => {
     setSharing(true);
     setText("Authenticating...");
-    const res = await lensAuthenticate(signature);
-    if (res?.data) {
-      saveToLocalStorage("lensAuth", true);
-      toast.success("Successfully authenticated");
-      setIsLoading(false);
-      setText("");
-      checkDispatcherFn();
-      setTimeout(() => {
-        // check the dispatcher
-        // if true => sharePost
-        if (dispatcherState.message === true) {
-          sharePost("lens");
-          // console.log("share on lens");
-        } else if (dispatcherState.message === false) {
-          // else => set the dispatcher
-          setDispatcherFn();
+    mutateLensAuth(signature)
+      .then((res) => {
+        if (res?.status === "success") {
+          saveToLocalStorage("lensAuth", res?.message);
+          toast.success("Successfully authenticated");
+          setIsLoading(false);
+          setText("");
+          checkDispatcherFn();
+          setTimeout(() => {
+            // check the dispatcher
+            // if true => sharePost
+            if (dispatcherState.message === true) {
+              // sharePost("lens");
+              // console.log("share on lens");
+            } else if (dispatcherState.message === false) {
+              // else => set the dispatcher
+              setDispatcherFn();
+            }
+          }, 4000);
         }
-      }, 4000);
-    } else if (res?.error) {
-      toast.error(res?.error);
-      setSharing(false);
-      setIsLoading(false);
-      setText("");
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(fnMessage(err));
+        setSharing(false);
+        setIsLoading(false);
+        setText("");
+      });
   };
 
   // check for dispatcher
@@ -264,17 +274,13 @@ const LensShare = () => {
     }
 
     let canvasParams = {
-      collectModule: {
-        multirecipientFeeCollectModule: {
-          followerOnly: enabled.whoCanCollect,
-        },
-      },
+      followerOnly: enabled.whoCanCollect,
     };
 
     if (enabled.chargeForCollect) {
-      canvasParams.collectModule.multirecipientFeeCollectModule = {
-        ...canvasParams.collectModule.multirecipientFeeCollectModule,
-        amount: {
+      canvasParams = {
+        ...canvasParams,
+        charge: {
           currency: tokenAddress(enabled.chargeForCollectCurrency),
           value: enabled.chargeForCollectPrice,
         },
@@ -282,29 +288,29 @@ const LensShare = () => {
     }
 
     if (enabled.chargeForCollect) {
-      canvasParams.collectModule.multirecipientFeeCollectModule = {
-        ...canvasParams.collectModule.multirecipientFeeCollectModule,
+      canvasParams = {
+        ...canvasParams,
         recipients: enabled.splitRevenueRecipients,
       };
     }
 
     if (enabled.mirrorReferralReward) {
-      canvasParams.collectModule.multirecipientFeeCollectModule = {
-        ...canvasParams.collectModule.multirecipientFeeCollectModule,
+      canvasParams = {
+        ...canvasParams,
         referralFee: enabled.mirrorReferralRewardFee,
       };
     }
 
     if (enabled.limitedEdition) {
-      canvasParams.collectModule.multirecipientFeeCollectModule = {
-        ...canvasParams.collectModule.multirecipientFeeCollectModule,
+      canvasParams = {
+        ...canvasParams,
         collectLimit: enabled.limitedEditionNumber,
       };
     }
 
     if (enabled.timeLimit) {
-      canvasParams.collectModule.multirecipientFeeCollectModule = {
-        ...canvasParams.collectModule.multirecipientFeeCollectModule,
+      canvasParams = {
+        ...canvasParams,
         endTimestamp: formatDateTimeISO8601(
           enabled.endTimestamp.date,
           enabled.endTimestamp.time
@@ -514,11 +520,14 @@ const LensShare = () => {
             autoClose: 3000,
             closeButton: true,
           });
+
+          // clear all the variables
           setSharing(false);
           setPostDescription("");
-          referredFromRef.current = [];
           store.clear({ keepHistory: true });
           store.addPage();
+          referredFromRef.current = [];
+          contextCanvasIdRef.current = null;
           setEnabled({
             chargeForCollect: false,
             chargeForCollectPrice: "1",
@@ -586,10 +595,10 @@ const LensShare = () => {
     const { name, value } = e.target;
 
     if (name === "chargeForCollectPrice") {
-      if (value < 1) {
+      if (value < 0.1) {
         setPriceError({
           isError: true,
-          message: "Price should be greater than 0",
+          message: "Price should be minimum 0.1",
         });
       } else {
         setPriceError({
@@ -601,7 +610,7 @@ const LensShare = () => {
       if (value < 1) {
         setEditionError({
           isError: true,
-          message: "Collect limit should be greater than 0",
+          message: "Collect limit should be minimum 1",
         });
       } else {
         setEditionError({
@@ -656,7 +665,6 @@ const LensShare = () => {
   useEffect(() => {
     if (isConnected) {
       const updatedRecipients = referredFromRef.current
-        .filter((item) => typeof item === "string")
         .slice(0, 4)
         .map((item) => ({
           recipient: item,

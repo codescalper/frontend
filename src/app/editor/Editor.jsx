@@ -138,13 +138,14 @@ const Editor = () => {
         contextCanvasIdRef.current = null;
       }
 
-      // add the currrent user address to the referredFromRef but do not duplicate it
-      if (!referredFromRef.current.includes(address)) {
-        referredFromRef.current = [address, ...referredFromRef.current];
-      }
-
       // save it to the backend
       if (canvasChildren?.length > 0) {
+        // add the currrent user address to the referredFromRef but do not duplicate it
+        if (!referredFromRef.current.includes(address)) {
+          referredFromRef.current = [address, ...referredFromRef.current];
+        }
+
+        // create new canvas
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
@@ -155,7 +156,6 @@ const Editor = () => {
               if (res?.status === "success") {
                 canvasIdRef.current = res?.id;
                 contextCanvasIdRef.current = res?.id;
-                console.log(res?.message);
               }
             })
             .catch((err) => {
@@ -163,6 +163,7 @@ const Editor = () => {
             });
         }
 
+        // update existing canvas
         if (canvasIdRef.current) {
           updateCanvasAsync({
             id: canvasIdRef.current,
@@ -174,7 +175,6 @@ const Editor = () => {
             .then((res) => {
               if (res?.status === "success") {
                 lastSavedJsonRef.current = json;
-                console.log(res?.message);
               }
             })
             .catch((err) => {

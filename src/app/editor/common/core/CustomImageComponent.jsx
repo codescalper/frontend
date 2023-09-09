@@ -28,11 +28,6 @@ const CustomImageComponent = ({
   const [base64Data, setBase64Data] = useState("");
   const { referredFromRef } = useContext(Context);
 
-  // function for random 3 digit number
-  const randomThreeDigitNumber = () => {
-    return Math.floor(100 + Math.random() * 900);
-  };
-
   // convert to base64
   const getBase64 = async (image) => {
     const response = await fetch(image);

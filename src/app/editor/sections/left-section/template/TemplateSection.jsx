@@ -23,6 +23,7 @@ import { useStore } from "../../../../../hooks";
 import {
   fnLoadJsonOnPage,
   fnLoadMore,
+  randomThreeDigitNumber,
   replaceImageURL,
 } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
@@ -65,12 +66,13 @@ const DesignCard = ({
           isOpen: true,
           isNewDesign: true,
           json: json,
+          referredFrom: referredFrom,
         });
       } else {
         // If not load the clicked JSON
         fnLoadJsonOnPage(store, json);
         if (tab === "user") {
-          referredFromRef.current.push(...referredFrom);
+          referredFromRef.current = referredFrom;
         }
       }
     }
@@ -123,7 +125,10 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            tab === "user" ? preview[stPreviewIndex] : replaceImageURL(preview)
+            tab === "user"
+              ? replaceImageURL(preview[stPreviewIndex]) +
+                `?token=${randomThreeDigitNumber()}`
+              : replaceImageURL(preview)
           }
           alt="Preview Image"
         />
@@ -194,6 +199,7 @@ const LenspostTemplates = () => {
     gatedWith: "",
     isNewDesign: false,
     json: null,
+    referredFrom: [],
   });
   const {
     data,
@@ -254,30 +260,32 @@ const LenspostTemplates = () => {
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
       {data?.pages[0]?.data?.length > 0 ? (
-        <div className="overflow-y-auto grid grid-cols-2">
-          {data?.pages
-            .flatMap((item) => item?.data)
-            .map((item, index) => {
-              return (
-                <DesignCard
-                  id={item?.id}
-                  referredFrom={item?.referredFrom}
-                  isGated={item?.isGated}
-                  gatedWith={item?.gatedWith}
-                  json={item?.data}
-                  ownerAddress={item?.ownerAddress}
-                  preview={item?.image}
-                  key={index}
-                  modal={modal}
-                  setModal={setModal}
-                />
-              );
-            })}
+        <>
+          <div className="overflow-y-auto grid grid-cols-2">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <DesignCard
+                    id={item?.id}
+                    referredFrom={item?.referredFrom}
+                    isGated={item?.isGated}
+                    gatedWith={item?.gatedWith}
+                    json={item?.data}
+                    ownerAddress={item?.ownerAddress}
+                    preview={item?.image}
+                    key={index}
+                    modal={modal}
+                    setModal={setModal}
+                  />
+                );
+              })}
+          </div>
           <LoadMoreComponent
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
           />
-        </div>
+        </>
       ) : (
         <MessageComponent message="No Results" />
       )}
@@ -289,6 +297,7 @@ const LenspostTemplates = () => {
 
 const UserTemplates = () => {
   const store = useStore();
+  const { referredFromRef } = useContext(Context);
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const [modal, setModal] = useState({
@@ -352,7 +361,9 @@ const UserTemplates = () => {
           ModalMessage={"This will remove all the content from your canvas"}
           onClickFunction={() => {
             fnLoadJsonOnPage(store, modal?.json);
+            referredFromRef.current = modal?.referredFrom;
             setModal({
+              ...modal,
               isOpen: false,
               isTokengated: false,
               isNewDesign: false,

@@ -51,7 +51,6 @@ export const fnLoadJsonOnPage = (store, json) => {
 
     deepCopyJson.pages.forEach((page) => {
       page.id = randomId(10);
-      console.log(page.id);
 
       page.children.forEach((child) => {
         child.id = randomId(10);
