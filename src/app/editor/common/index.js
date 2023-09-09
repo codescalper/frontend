@@ -19,8 +19,11 @@ import CompModal from "./modals/ModalComponent";
 import InputBox from "./elements/InputBox";
 import NumberInputBox from "./elements/NumberInputBox";
 import Tabs from "./core/Tabs";
-
 import LoadingAnimatedComponent from "./elements/LoadingAnimatedComponent";
+import InputErrorMsg from "./elements/InputErrorMsg";
+import CustomPopover from "./elements/CustomPopover";
+
+import CustomHorizontalScroller from "./core/CustomHorizontalScroller/CustomHorizontalScroller";
 
 export {
   CustomImageComponent,
@@ -41,4 +44,7 @@ export {
   NumberInputBox,
   LoadingAnimatedComponent,
   Tabs,
+  InputErrorMsg,
+  CustomPopover,
+  CustomHorizontalScroller
 };

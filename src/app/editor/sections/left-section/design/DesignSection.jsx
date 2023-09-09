@@ -49,20 +49,26 @@ const DesignCard = ({
   isPublic,
   openTokengateModal,
 }) => {
-  const [loading, setLoading] = useState(false);
-  const { fastPreview, contextCanvasIdRef } = useContext(Context);
+  const { fastPreview, contextCanvasIdRef, referredFromRef } =
+    useContext(Context);
   const store = useStore();
 
   const handleClickOrDrop = () => {
-    if (fnPageHasElements) {
-      setModal({ ...modal, isOpen: true, isNewDesign: true });
-    }
-    else{
+    // if (fnPageHasElements) {
+      // setModal({ ...modal, isOpen: true, isNewDesign: true });
+    // }
+    // else{
       
       store.loadJSON(json);
       contextCanvasIdRef.current = design.id;
-    
-    }
+      referredFromRef.current = design.referredFrom;
+  
+      console.log({
+        id: design.id,
+        referredFromRef: design.referredFrom,
+      });
+    // }
+   
   };
 
   return (
@@ -93,19 +99,6 @@ const DesignCard = ({
       >
         {/* {design.name} */}
       </div>
-      {loading && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          {/* <Spinner /> */}
-          <LoadingAnimatedComponent/>
-        </div>
-      )}
       <div
         style={{ position: "absolute", top: "5px", right: "5px" }}
         onClick={(e) => {
@@ -150,7 +143,8 @@ const DesignCard = ({
 
 export const DesignPanel = () => {
   const store = useStore();
-  const { fastPreview, contextCanvasIdRef } = useContext(Context);
+  const { fastPreview, contextCanvasIdRef, referredFromRef } =
+    useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [modal, setModal] = useState({
     isOpen: false,
@@ -241,6 +235,7 @@ export const DesignPanel = () => {
   const fnDeleteCanvas = () => {
     store.clear({ keepHistory: true });
     store.addPage();
+    referredFromRef.current = [];
     setModal({ ...modal, isOpen: false, isNewDesign: false });
   };
 
@@ -264,12 +259,7 @@ export const DesignPanel = () => {
 
   // Show Loading - 06Jul2023
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent/>
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (
@@ -323,7 +313,7 @@ export const DesignPanel = () => {
         setQuery={setQuery}
         placeholder="Search designs by id"
       />
-      
+
       <MyDesignReacTour />
       {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
@@ -344,6 +334,7 @@ export const DesignPanel = () => {
               <DesignCard
                 design={design}
                 json={design.data}
+                referredFrom={design.referredFrom}
                 preview={
                   design?.imageLink != null &&
                   design?.imageLink.length > 0 &&

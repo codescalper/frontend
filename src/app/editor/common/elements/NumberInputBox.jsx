@@ -8,6 +8,7 @@ const NumberInputBox = ({
   min,
   max,
   step,
+  name,
 }) => {
   return (
     <input
@@ -15,6 +16,7 @@ const NumberInputBox = ({
       min={min}
       max={max}
       step={step}
+      name={name}
       className={`border px-2 py-2 rounded-md w-full outline-none focus:ring-1 focus:ring-blue-500 ${className}`}
       placeholder={placeholder}
       onChange={onChange}

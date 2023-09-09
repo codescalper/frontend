@@ -1,26 +1,47 @@
 // Seperate component for Lazy loading (CustomImage) - 29Jun2023
 
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
+import {
+  Button,
+  Card,
+  Menu,
+  MenuItem,
+  Position,
+} from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { replaceImageURL } from "../../../../utils/replaceUrl";
 import { useEffect, useState } from "react";
 import { useStore } from "../../../../hooks";
 import { fnPageHasElements } from "../../../../utils/fnPageHasElements"
 import CompModal from "../modals/ModalComponent";
+import { useContext } from "react";
+import { Context } from "../../../../context/ContextProvider";
+import { fnLoadJsonOnPage } from "../../../../utils";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
-  design,
   preview,
-  json,
   dimensions,
+  isBackground,
+  hasOptionBtn,
+  onDelete,
+  isLensCollect,
   changeCanvasDimension,
-  hasOptionBtn
+  json
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");
-  const [openModal, setOpenModal] = useState(false);
+  const { referredFromRef } = useContext(Context);
+  
+  const [modal, setModal] = useState({
+    isOpen: false,
+    isTokengate: false,
+    isNewDesign: false,
+    stTokengateIpValue: "",
+    isError: false,
+    errorMsg: "",
+    canvasId: null,
+  });
 
   // function for random 3 digit number
   const randomThreeDigitNumber = () => {
@@ -48,38 +69,57 @@ const CustomImageComponent = ({
 
   // Function to add image on the Canvas/Page
   const fnAddImageOnCanvas = () => {
+    {!json &&
 
+    // Instead of `isBackground`, use `changeCanvasDimension`
+  
     changeCanvasDimension && store.setSize(dimensions[0], dimensions[1]);
 
-    // Add Image on the Canvas
+    // if nft is a lens collect, add it to the referredFromRef but check if a handle is already
+    if (isLensCollect?.isLensCollect) {
+      if (!referredFromRef.current.includes(isLensCollect?.lensHandle)) {
+        referredFromRef.current.push(isLensCollect?.lensHandle);
+      }
+    }
+
     store.activePage?.addElement({
       type: "image",
-      // src: replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`, //Image URL
       src: base64Data, //Image URL
       width: changeCanvasDimension ? store.width : 300,
       height: changeCanvasDimension ? store.height : 300,
       x: changeCanvasDimension ? 0 : store.width / 4,
       y: changeCanvasDimension ? 0 : store.height / 4,
     });
+  
+  }
 
     // if any json data is present, load it on the canvas
     {json && 
       // if()
-      store?.loadJSON(json);
+      fnLoadJsonOnPage(store, json);
     }
   }
 
-  // Function for drop/add image on canvas
+  // Function for drop/add image or template on canvas
   const handleClickOrDrop = () => {
-    if(fnPageHasElements){
-      console.log("Page has elements");
-      fnAddImageOnCanvas();
-      // setOpenModal(true);
+    console.log(fnPageHasElements());
+
+    // if page has elements and if we should replace it with another template, show modal
+    if(fnPageHasElements() && json){
+      // console.log("Page has elements");
+      setModal({ ...modal, isOpen: true });
+      // fnAddImageOnCanvas();
+      // e.stopPropagation();
     }
-    else{
-      console.log("Page has no elements");
+    // if page has elements and if we should place an image, but not template
+    else if(fnPageHasElements() && !json){
+      // console.log("Page has no elements");
       fnAddImageOnCanvas();
-   }
+    }
+    else {
+      fnAddImageOnCanvas();
+    }
+    
 };
 
   useEffect(() => {
@@ -102,7 +142,7 @@ const CustomImageComponent = ({
   return (<>
   
     <Card
-      className="relative p-0 m-1 rounded-lg cursor-pointer"
+      className="relative p-0 m-1 rounded-lg h-fit"
       interactive
       onDragEnd={handleClickOrDrop}
       onClick={handleClickOrDrop}
@@ -114,7 +154,26 @@ const CustomImageComponent = ({
           src={base64Data}
           alt="Preview Image"
         />
-      </div>
+      </div>   
+
+      {/* if nft is a lens collect */}
+      {isLensCollect?.isLensCollect && (
+        <>
+          <div
+            title="Collected from Lens"
+            // className="bg-[#E1F26C] p-1 rounded-lg absolute top-2 left-2 opacity-60 hover:opacity-100"
+            className="text-white text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 left-2 opacity-96 hover:opacity-80"
+            onClick={(e) => { 
+              e.stopPropagation();
+
+              const onlyHandle = isLensCollect?.lensHandle.split("@")[1];
+              window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
+            }}
+          >
+            {isLensCollect?.lensHandle}
+          </div>
+        </>
+      )}
 
       {hasOptionBtn && (
         <div
@@ -139,17 +198,23 @@ const CustomImageComponent = ({
       )}
     </Card>
 
-  {/* {
-    openModal &&  
-    <CompModal 
-      icon={"info"}
-      onClickFunction={fnAddImageOnCanvas} 
-      ModalTitle={"There are elements on this canvas"} 
-      ModalMessage={"All the Elements on this page will be lost"}     
-    />
-  
-  } */}
-    </> );
+  {/* This is the Modal that appears to ask if we should replace the Template / Image or not */}
+  {modal.isOpen && (
+    <CompModal
+      modal={modal}
+      setModal={setModal}
+      ModalTitle={"Are you sure to replace the current page?"}
+      ModalMessage={"This will remove all the content from your canvas"}
+      onClickFunction={()=>{
+        fnAddImageOnCanvas();
+        setModal({
+          ...modal,
+          isOpen: false,
+      })
+      }} />
+  )}
+
+  </> );
 };
 
 export default CustomImageComponent;

@@ -4,15 +4,22 @@
 
 import { useStore } from "../hooks";
 
-const store = useStore
+const store = useStore()
 
-export const fnPageHasElements = (store) => {
-    const ids = store.pages
-        .map((page) => page.children.map((child) => child.id))
-        .flat();
+export const fnPageHasElements = () => {
+     
+    // If Canvas has pages then,
+
+    // const ids = store.pages
+    //     .map((page) => page.children.map((child) => child.id))
+    //     .flat();
     
-    const hasObjects = ids?.length;
+    // const hasObjects = ids?.length;
+    // console.log(store.activePage.children.length)
 
-        if (hasObjects) return true;
-        else return false;
+    if(store.activePage.children.length > 0){
+        console.log("true")
+        return true;
+    } 
+    else return false;
 }

@@ -14,6 +14,7 @@ import {
   ErrorComponent,
   MessageComponent,
   SearchComponent,
+  CustomHorizontalScroller,
 } from "../../../common";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
@@ -21,12 +22,13 @@ import { Spinner, Icon } from "@blueprintjs/core";
 import { useStore } from "../../../../../hooks";
 import { fnLoadJsonOnPage, replaceImageURL } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
-import SuChevronRightDouble from '@meronex/icons/su/SuChevronRightDouble';
+import SuChevronRightDouble from "@meronex/icons/su/SuChevronRightDouble";
 import { Context } from "../../../../../context/ContextProvider";
 
 import {CompCarousel} from "./components/Carousel"
+// import CustomHorizontalScroller from "../../../common/";
  
-// Design card component start 
+// Design card component start
 
 const DesignCard = observer(
   ({
@@ -36,7 +38,6 @@ const DesignCard = observer(
     tab,
     isGated,
     gatedWith,
-    allowList,
     referredFrom,
     // modal,
     // setModal,
@@ -44,9 +45,7 @@ const DesignCard = observer(
   }) => {
     const store = useStore();
     const { address } = useAccount();
-    const isAllowed = allowList?.includes(address);
-    const { setUserTemplateState } = useContext(Context);
-
+    const { referredFromRef } = useContext(Context);
 
     const [stPreviewIndex, setStPreviewIndex] = useState(0);
     const [stHovered, setStHovered] = useState(false);
@@ -61,7 +60,7 @@ const DesignCard = observer(
 
     const handleClickOrDrop = () => {
       // Show Modal: if it's tokengated
-      if (isGated && !isAllowed) {
+      if (isGated && Object.keys(json).length === 0) {
         setModal({
           ...modal,
           isOpen: true,
@@ -73,7 +72,7 @@ const DesignCard = observer(
         if (store.activePage.children.length > 1) {
           setModal({
             ...modal,
-            isOpen: true,
+            isOpen: true, 
             isNewDesign: true,
             json: json,
           });
@@ -81,11 +80,7 @@ const DesignCard = observer(
           // If not load the clicked JSON
           fnLoadJsonOnPage(store, json);
           if (tab === "user") {
-            setUserTemplateState({
-              isUserTemplate: true,
-              canvasId: id,
-              referredFrom: referredFrom,
-            });
+            referredFromRef.current.push(...referredFrom);
           }
         }
       }
@@ -94,28 +89,24 @@ const DesignCard = observer(
     // Function to change the preview image on hover
     // Increment the index of the Preview image Array
     const fnChangePreview = (preview) => {
-
-        if (stPreviewIndex < preview.length - 1) {
-          console.log("Index > 1")
-          setStPreviewIndex(stPreviewIndex + 1);
-        } else {
-          console.log("Index = 0")
-          setStPreviewIndex(0);
-        }
-
+      if (stPreviewIndex < preview.length - 1) {
+        setStPreviewIndex(stPreviewIndex + 1);
+      } else {
+        setStPreviewIndex(0);
+      }
     };
- 
-    // After a certain interval, change the preview image 
+
+    // After a certain interval, change the preview image
     // Using useEffect to capture mouse events & index change
-    useEffect(() => {   
-      if(stHovered){  
-      const interval = setInterval(() => {
-         fnChangePreview(preview);
-      }, 1000);
-      return () => clearInterval(interval);
+    useEffect(() => {
+      if (stHovered) {
+        const interval = setInterval(() => {
+          fnChangePreview(preview);
+        }, 1000);
+        return () => clearInterval(interval);
       }
     }, [stHovered, stPreviewIndex]);
- 
+
     return (
       <Card
         className="rounded-lg"
@@ -123,36 +114,32 @@ const DesignCard = observer(
         interactive
         onDragEnd={handleClickOrDrop}
         onClick={handleClickOrDrop}
-         
         // To change Preview image on Hover - MouseEnter & MouseLeave
-        onMouseEnter={ ()=>{
-            console.log("Mouse Enter");
-            setStHovered(true);
-          }
-        }
-
-        onMouseLeave={ () => {
-          console.log("Mouse Leave");
-          setStPreviewIndex(0);   
+        onMouseEnter={() => {
+          setStHovered(true);
+        }}
+        onMouseLeave={() => {
+          setStPreviewIndex(0);
           setStHovered(false);
-        }
-      }
+        }}
       >
         {/* <div className="rounded-lg overflow-hidden transition-transform duration-1000"> */}
         <div className="rounded-lg overflow-hidden transition-transform ease-in-out duration-300 relative">
-       
-        {/* If there are more than 1 preview images, then `stPreviewIndex` is incremented */}
-        {/* If not on user templates tab, just passing the `preview` - BE response */}
+          {/* If there are more than 1 preview images, then `stPreviewIndex` is incremented */}
+          {/* If not on user templates tab, just passing the `preview` - BE response */}
 
-          <LazyLoadImage 
-            className="rounded-lg" 
+          <LazyLoadImage
+            className="rounded-lg"
             placeholderSrc={replaceImageURL(preview[stPreviewIndex])}
+            // placeholderSrc={preview}
             effect="blur"
             src={
-              tab === "user" ? preview[stPreviewIndex] : replaceImageURL(preview)
+              tab === "user"
+                ? preview[stPreviewIndex]
+                : replaceImageURL(preview) 
             }
             alt="Preview Image"
-          />  
+          />
         </div>
 
         {/* if tab === "user" and  modal.isTokengate === true */}
@@ -164,25 +151,27 @@ const DesignCard = observer(
             <Icon icon="endorsed" intent="primary" size={16} />
           </div>
         )}
-        
+
         {/* Display that it contains multiple pages */}
-        {tab === "user" && preview.length > 1 &&
+        {tab === "user" && preview.length > 1 && (
           <div className="absolute bottom-2 right-2 bg-white px-1/2 py-1/2 rounded-md">
             <SuChevronRightDouble size="24" />
             {/* <BsChevronDoubleRight size="24" /> */}
           </div>
-        }
-
-        {/* Display that it is a Featured Template */}
-        {/* {isFeatured && 
         
-        <div className="absolute text-sm top-4 bg-blue-100 left-0
-        border-t-1 border-l-1 text-center border-yellow-200 rounded-md transform -rotate-45
-        "> 
-          <div className="text-xs bg-[#6baaf1cb] w-16 rounded-sm">Featured</div>
+        // }
+        // {/* Display that it is a Featured Template */}
+        // {/* {isFeatured && 
+        
+        // <div className="absolute text-sm top-4 bg-blue-100 left-0
+        // border-t-1 border-l-1 text-center border-yellow-200 rounded-md transform -rotate-45
+        // "> 
+        //   <div className="text-xs bg-[#6baaf1cb] w-16 rounded-sm">Featured</div>
 
-        </div> 
-        }   */}
+        // </div> 
+        // }   
+        // */}
+        )}
       </Card>
     );
   }
@@ -196,7 +185,7 @@ const TemplatePanel = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="text-lg">Templates</h1>
+      {/* <h1 className="text-lg">Templates</h1> */}
       <div className="flex items-center justify-center space-x-2 my-4">
         <button
           className={`w-1/2 border px-2 py-1 border-black rounded-md ${
@@ -228,6 +217,13 @@ const LenspostTemplates = () => {
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   
+  const [modal, setModal] = useState({
+    isOpen: false,
+    isTokengated: false,
+    gatedWith: "",
+    isNewDesign: false,
+    json: null,
+  });
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lenspost-templates"],
     queryFn: getAllTemplates,
@@ -242,44 +238,74 @@ const LenspostTemplates = () => {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-        <LoadingAnimatedComponent />
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
-  console.log("Lenspost Templates");
-  console.log(data);
-
+  console.log(data) 
   return (
     <>
+      {modal?.isOpen && modal?.isNewDesign && (
+        <CompModal
+          modal={modal}
+          setModal={setModal}
+          ModalTitle={"Are you sure to replace the canvas with this template?"}
+          ModalMessage={"This will remove all the content from your canvas"}
+          onClickFunction={() => {
+            fnLoadJsonOnPage(store, modal?.json);
+            setModal({
+              isOpen: false,
+              isTokengated: false,
+              isNewDesign: false,
+              json: null,
+            });
+          }}
+        />
+      )}
       <SearchComponent
         query={query}
         setQuery={setQuery}
         placeholder={"Search templates"}
       />
-      {/* <button onClick={()=> store.openSidePanel("Elements")} >open Stickers</button> */}
+      {/* <button onClick={()=> store.openSidePanel("Elements")} > open Stickers</button> */}
       
       <div className="ml-2 mb-2 "> Featured Templates </div>
-      <CompCarousel arrData={data} /> 
+      <CompCarousel arrData={data.assets} /> 
 
+      <div className="mt-4 ml-2 mb-2 "> Featured Stickers </div>
+      <CustomHorizontalScroller propWidth={120}/>
+ 
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
 
       <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
       
-      {data.length > 0 ? (
+      {data.assets.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
-          {data.map((item) => {
+          {data.assets.map((item) => {
             return (
               <DesignCard
-                json={item.data}
-                preview={item?.image}
-                key={item.id}
-                tab="lenspost"
-                isFeatured
+                // json={item.data}
+                // preview={item?.image}
+                // key={item.id}
+                // tab="lenspost"
+                // modal={modal}
+                // setModal={setModal}
+                id={item?.id}
+                referredFrom={item?.referredFrom}
+                isGated={item?.isGated}
+                gatedWith={item?.gatedWith}
+                json={item?.data}
+                ownerAddress={item?.ownerAddress}
+                preview={
+                  item?.imageLink != null &&
+                  item?.imageLink.length > 0 &&
+                  item?.imageLink
+                  // item?.image
+                }
+                key={item?.id}
+                tab="user"
+                modal={modal}
+                setModal={setModal}
               />
             );
           })}
@@ -319,23 +345,10 @@ const UserTemplates = () => {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
-      <LoadingAnimatedComponent />
-      </div>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   console.log(data);
-  const arrImages = [
-    "https://picsum.photos/200", 
-    "https://picsum.photos/300", 
-    "https://picsum.photos/400",
-    "https://picsum.photos/500",
-    "https://picsum.photos/600",
-    "https://picsum.photos/700",  
-  ];
 
   return (
     <>
@@ -386,14 +399,12 @@ const UserTemplates = () => {
                 referredFrom={item?.referredFrom}
                 isGated={item?.isGated}
                 gatedWith={item?.gatedWith}
-                allowList={item?.allowList}
                 json={item?.data}
+                ownerAddress={item?.ownerAddress}
                 preview={
                   item?.imageLink != null &&
                   item?.imageLink.length > 0 &&
-                  // item?.imageLink[0]
                   item?.imageLink
-                  // arrImages
                 }
                 key={item?.id}
                 tab="user"

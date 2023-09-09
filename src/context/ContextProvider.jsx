@@ -1,10 +1,8 @@
 import React, { createContext, useRef, useState } from "react";
-import { useAccount } from "wagmi";
 
 export const Context = createContext();
 
 const ContextProvider = ({ children }) => {
-  const { address, isConnected } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
   const contextCanvasIdRef = useRef(null);
@@ -27,11 +25,10 @@ const ContextProvider = ({ children }) => {
     mirrorReferralReward: false,
     mirrorReferralRewardFee: 25.0,
 
-    splitRevenue: false,
     splitRevenueRecipients: [
       {
-        recipient: isConnected ? address : "",
-        split: 90.0,
+        recipient: "",
+        split: 0.0,
       },
     ],
 
@@ -57,16 +54,35 @@ const ContextProvider = ({ children }) => {
   // for preview
   const [fastPreview, setFastPreview] = useState([]);
 
-  // Right Sidebar 
+  // for split revenue eligible address/recipient
+  const referredFromRef = useRef([]);
+
+  // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
-  // user public templates states
-  const [userTemplateState, setUserTemplateState] = useState({
-    isUserTemplate: false,
-    canvasId: null,
-    referredFrom: [],
+
+  // for lens monetization price error
+  const [priceError, setPriceError] = useState({
+    isError: false,
+    message: "",
   });
 
-  // console.log({ userTemplateState });
+  // for lens monetization split error
+  const [splitError, setSplitError] = useState({
+    isError: false,
+    message: "",
+  });
+
+  // for lens monetization edition error
+  const [editionError, setEditionError] = useState({
+    isError: false,
+    message: "",
+  });
+
+  // for lens monetization referral error
+  const [referralError, setReferralError] = useState({
+    isError: false,
+    message: "",
+  });
 
   return (
     <Context.Provider
@@ -105,12 +121,28 @@ const ContextProvider = ({ children }) => {
         fastPreview,
         setFastPreview,
 
-        // Right Sidebar 
+        // Right Sidebar
         isShareOpen,
         setIsShareOpen,
+
         // user public templates states
-        userTemplateState,
-        setUserTemplateState,
+        referredFromRef,
+
+        // for lens monetization price error
+        priceError,
+        setPriceError,
+
+        // for lens monetization split error
+        splitError,
+        setSplitError,
+
+        // for lens monetization edition error
+        editionError,
+        setEditionError,
+
+        // for lens monetization referral error
+        referralError,
+        setReferralError,
       }}
     >
       {children}

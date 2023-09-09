@@ -331,6 +331,6 @@ export const signSetDispatcherTypedData = async (typedData) => {
     typedData?.types,
     typedData?.value
   );
-  console.log("signature", signature);
+
   return { typedData, signature };
 };

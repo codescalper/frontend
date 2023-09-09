@@ -11,7 +11,7 @@ export function CompCarousel({arrData}) {
   return (
     // autoplay loop autoplayDelay={5000} - For AutoPlay
 
-    <Carousel className="rounded-xl h-40 overflow-hidden"
+    <Carousel className="rounded-xl h-24 overflow-hidden"
     navigation={({ setActiveIndex, activeIndex, length }) => (
       <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
         {new Array(length).fill("").map((_, i) => (
@@ -27,11 +27,12 @@ export function CompCarousel({arrData}) {
         )}
         >
       
+      {/* `arrData` - Data Object array and it's destructuring `arrData.data`, `arrData.preview` */}
       {arrData && arrData.map(( mapData )=>{
 
         return(
           <CustomImageComponent  
-            // json = {mapData.data} //Pass Json if it's a template 
+            json = {mapData.data} //Pass Json if it's a template 
             preview={mapData.preview || mapData.image}
             className="h-full w-full object-cover"
           /> 

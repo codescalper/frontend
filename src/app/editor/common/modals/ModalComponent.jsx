@@ -24,7 +24,7 @@ const CompModal = ({
     <Dialog
       title={ModalTitle}
       icon={`${icon ? icon : "issue"}`}
-      canOutsideClickClose={false}
+      canOutsideClickClose={true}
       isOpen={modal?.isOpen}
       onClose={() => {
         if (modal?.isTokengated) {
@@ -84,6 +84,26 @@ const CompModal = ({
       <DialogFooter
         actions={
           <div>
+             {!modal?.isTokengate && !modal?.isNewDesign && (
+              <>
+                <Button intent="danger" text="Yes" onClick={onClickFunction} />
+                <Button
+                  text="No"
+                  onClick={() => {
+                    setModal({
+                      isOpen: false,
+                      isTokengate: false,
+                      isNewDesign: false,
+                      stTokengateIpValue: "",
+                      isError: false,
+                      errorMsg: "",
+                      canvasId: null,
+                    });
+                  }}
+                />
+              </>
+            )}
+
             {/* for new designs */}
             {modal?.isNewDesign && (
               <>

@@ -7,7 +7,7 @@ const TopbarSection = () => {
   const { isConnected } = useAccount();
 
   return (
-    <div className="bg-white h-[75px] w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky">
+    <div className="bg-white mb-2 w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky border">
       <div className="flex items-center justify-between">
         <a href="https://lenspost.xyz" target="_blank">
           <div className="flex items-center justify-between cursor-pointer">

@@ -89,10 +89,7 @@ const UploadPanel = () => {
   // Show Loading - 06Jul2023
   if (isLoading) {
     return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
         <LoadingAnimatedComponent/>
-      </div>
     );
   }
 

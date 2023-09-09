@@ -12,15 +12,9 @@ import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
 import { createCanvas, updateCanvas } from "../../services";
 import { Context } from "../../context/ContextProvider";
-
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getFromLocalStorage,
-  fnMessage,
-  loadFile,
-  base64Stripper,
-} from "../../utils";
+import { fnMessage, loadFile, base64Stripper } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
 import { useStore } from "../../hooks";
@@ -38,7 +32,8 @@ import {
 } from "./sections/left-section";
 import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
-
+import { SpeedDialX } from "./SpeedDial";
+ 
 // enable animations
 unstable_setAnimationsEnabled(true);
 
@@ -73,11 +68,8 @@ const Editor = () => {
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
-  const {
-    contextCanvasIdRef,
-    setEnabled,
-    setFastPreview,
-  } = useContext(Context);
+  const { contextCanvasIdRef, setEnabled, setFastPreview, referredFromRef } =
+    useContext(Context);
   const timeoutRef = useRef(null);
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
@@ -140,10 +132,6 @@ const Editor = () => {
       if (contextCanvasIdRef.current) {
         canvasIdRef.current = contextCanvasIdRef.current;
       }
-      // console.log({
-      //   canvasIdRef: canvasIdRef.current,
-      //   contextCanvasIdRef: contextCanvasIdRef.current,
-      // });
 
       if (canvasChildren?.length === 0) {
         console.log("Canvas is empty. Its stopped from saving");
@@ -151,11 +139,17 @@ const Editor = () => {
         contextCanvasIdRef.current = null;
       }
 
+      // add the currrent user address to the referredFromRef but do not duplicate it
+      if (!referredFromRef.current.includes(address)) {
+        referredFromRef.current = [address, ...referredFromRef.current];
+      }
+
       // save it to the backend
       if (canvasChildren?.length > 0) {
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
+            referredFrom: referredFromRef.current,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -175,6 +169,7 @@ const Editor = () => {
             id: canvasIdRef.current,
             data: json,
             isPublic: false,
+            referredFrom: referredFromRef.current,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -188,7 +183,7 @@ const Editor = () => {
             });
         }
       }
-    }, 5000);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -207,21 +202,6 @@ const Editor = () => {
   }, []);
 
   // store the canvas and update it by traching the changes end
-
-  // default split revenue recipient
-  useEffect(() => {
-    // if wallet is connected set the recipient address only in the first index for the first time
-    if (isConnected) {
-      setEnabled((prevEnabled) => ({
-        ...prevEnabled,
-        splitRevenueRecipients: [
-          { recipient: "@lenspostxyz.lens", split: 10.0 },
-          { recipient: address, split: 90.0 },
-          ...prevEnabled.splitRevenueRecipients.slice(2),
-        ],
-      }));
-    }
-  }, [address]);
 
   // funtion for fast preview
   useEffect(() => {
@@ -296,14 +276,17 @@ const Editor = () => {
               <div className="mb-2 mr-2">
                 <Toolbar store={store} />
               </div>
-              <Workspace store={store} />
+              <Workspace store={store} backgroundColor="#e8e8ec" />
 
               {/* Bottom section */}
-              <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg">
+              <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">
                 <BgRemover />
                 <ZoomButtons store={store} />
 
                 {/* Quick Tour on the main page */}
+                <div className="flex flex-row ">
+                  <SpeedDialX/>
+             
                 <div
                   className="m-1 ml-2 flex flex-row justify-end align-middle cursor-pointer"
                   onClick={async () => {
@@ -314,12 +297,14 @@ const Editor = () => {
                     } else {
                       setIsOpen(true);
                       setSteps(OnboardingSteps);
-                    }  
+                    }
                   }}
                 >
                   <FcIdea className="m-2" size="16" />{" "}
-                  <div className="m-2 ml-0 text-sm text-yellow-600">
+                  <div className="w-full m-2 ml-0 text-sm text-yellow-600">
                     Need an intro?
+                  </div>
+
                   </div>
                 </div>
               </div>

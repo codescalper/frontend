@@ -14,7 +14,8 @@ import {
 } from "..";
 import { fnLoadMore } from "../../../../utils";
 
-const Tabs = ({ defaultQuery, getAssetsFn, changeCanvasDimension }) => {
+// `changeCanvasDimension` is True/False from the Passing Component
+const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -29,7 +30,7 @@ const Tabs = ({ defaultQuery, getAssetsFn, changeCanvasDimension }) => {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: ["bg-assets", delayedQuery || defaultQuery],
+    queryKey: [queryKey, delayedQuery || defaultQuery],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
       getAssetsFn(delayedQuery || defaultQuery, pageParam),
@@ -56,10 +57,7 @@ const Tabs = ({ defaultQuery, getAssetsFn, changeCanvasDimension }) => {
   // Show Loading - 06Jul2023
   if (isLoading) {
     return (
-      <div className="flex flex-col">
-        {/* <Spinner /> */}
         <LoadingAnimatedComponent />
-      </div>
     );
   }
   return isError ? (

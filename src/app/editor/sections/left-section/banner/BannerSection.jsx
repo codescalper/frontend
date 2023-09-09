@@ -29,7 +29,12 @@ export const BannerPanel = () => {
         ))}
       </div>
 
-      <Tabs changeCanvasDimension defaultQuery={currentTab} getAssetsFn={getBGAssetByQuery} />
+      <Tabs
+        changeCanvasDimension={true}
+        defaultQuery={currentTab}
+        getAssetsFn={getBGAssetByQuery}
+        queryKey="backgrounds"
+      />
     </div>
   );
 };
@@ -38,7 +43,7 @@ export const BannerPanel = () => {
 const BannerSection = {
   name: "Backgrounds2",
   Tab: (props) => (
-    <SectionTab name="NFT Banners" {...props}>
+    <SectionTab name={`NFT ${"\n"} Banners`} {...props}>
       <BackgroundIcon />
     </SectionTab>
   ),

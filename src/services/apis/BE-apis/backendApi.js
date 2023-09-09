@@ -294,7 +294,7 @@ export const createCanvas = async ({ data, referredFrom, preview }) => {
   const result = await api.post(`${API}/user/canvas/create`, {
     canvasData: {
       data: data,
-      referredFrom: referredFrom
+      referredFrom: referredFrom,
     },
     preview: preview,
   });
@@ -304,12 +304,19 @@ export const createCanvas = async ({ data, referredFrom, preview }) => {
 
 // update current canvas endpoint
 // need auth token (jwt)
-export const updateCanvas = async ({ id, data, isPublic, preview }) => {
+export const updateCanvas = async ({
+  id,
+  data,
+  referredFrom,
+  isPublic,
+  preview,
+}) => {
   const result = await api.put(`${API}/user/canvas/update`, {
     canvasData: {
       id: id,
       data: data,
       isPublic: isPublic,
+      referredFrom: referredFrom,
     },
     preview: preview,
   });
