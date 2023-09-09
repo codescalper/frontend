@@ -76,7 +76,6 @@ const CompSearch = () => {
         const data = await axios.get(
           `https://lexica.art/api/v1/search?q=${delayedQuery}`
         );
-        console.log(data.status);
         setStStatusCode(data.status);
         if (data.status === 200) {
           setStStatusCode(200);
@@ -201,7 +200,6 @@ const CompSearch = () => {
 
 const CompDesignify = () => {
   const callApi = async () => {
-    console.log("Designify API Start");
     const form = new FormData();
     // Assuming you have access to the image file through a file input element.
     const fileInput = document.getElementById("fileInput");
@@ -225,7 +223,6 @@ const CompDesignify = () => {
       } else {
         // Assuming you want to display the image or do something else with it.
         // For example, displaying it in an <img> tag:
-        console.log(response);
         const blob = new Blob([response.data], { type: "image/png" });
         const imageUrl = URL.createObjectURL(blob);
         const imageElement = document.getElementById("imageElement");

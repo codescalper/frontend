@@ -156,7 +156,6 @@ const Editor = () => {
               if (res?.status === "success") {
                 canvasIdRef.current = res?.id;
                 contextCanvasIdRef.current = res?.id;
-                console.log(res?.message);
               }
             })
             .catch((err) => {
@@ -176,7 +175,6 @@ const Editor = () => {
             .then((res) => {
               if (res?.status === "success") {
                 lastSavedJsonRef.current = json;
-                console.log(res?.message);
               }
             })
             .catch((err) => {

@@ -32,7 +32,12 @@ import {
 } from "@tanstack/react-query";
 import { useStore } from "../../../../../hooks";
 import { Context } from "../../../../../context/ContextProvider";
-import { fnLoadMore, fnMessage, replaceImageURL } from "../../../../../utils";
+import {
+  fnLoadMore,
+  fnMessage,
+  randomThreeDigitNumber,
+  replaceImageURL,
+} from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 
 // Design card component start - 23Jun2023
@@ -68,7 +73,9 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            contextCanvasIdRef.current === design.id ? fastPreview[0] : replaceImageURL(preview) + `?token=2`
+            contextCanvasIdRef.current === design.id
+              ? fastPreview[0]
+              : replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`
           }
           alt="Preview Image"
         />
@@ -128,8 +135,17 @@ const DesignCard = ({
 
 export const DesignPanel = () => {
   const store = useStore();
-  const { fastPreview, contextCanvasIdRef, referredFromRef } =
-    useContext(Context);
+  const {
+    fastPreview,
+    contextCanvasIdRef,
+    referredFromRef,
+    setPostDescription,
+    setEnabled,
+    setIsShareOpen,
+    setMenu,
+    isShareOpen,
+    menu,
+  } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [modal, setModal] = useState({
     isOpen: false,
@@ -214,9 +230,41 @@ export const DesignPanel = () => {
 
   // Function to delete all the canvas on confirmation - 25Jun2023
   const fnDeleteCanvas = () => {
+    // clear all the variables
+    setPostDescription("");
     store.clear({ keepHistory: true });
     store.addPage();
     referredFromRef.current = [];
+    contextCanvasIdRef.current = null;
+    setEnabled({
+      chargeForCollect: false,
+      chargeForCollectPrice: "1",
+      chargeForCollectCurrency: "WMATIC",
+
+      mirrorReferralReward: false,
+      mirrorReferralRewardFee: 25.0,
+
+      splitRevenueRecipients: [
+        {
+          recipient: "",
+          split: 0.0,
+        },
+      ],
+
+      limitedEdition: false,
+      limitedEditionNumber: "1",
+
+      timeLimit: false,
+      endTimestamp: {
+        date: "",
+        time: "",
+      },
+
+      whoCanCollect: false,
+    });
+
+    setIsShareOpen(false);
+    setMenu("share");
     setModal({ ...modal, isOpen: false, isNewDesign: false });
   };
 

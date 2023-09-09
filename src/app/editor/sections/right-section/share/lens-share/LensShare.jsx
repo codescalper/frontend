@@ -115,7 +115,6 @@ const LensShare = () => {
     setText("Authenticating...");
     mutateLensAuth(signature)
       .then((res) => {
-        console.log(res);
         if (res?.status === "success") {
           saveToLocalStorage("lensAuth", res?.message);
           toast.success("Successfully authenticated");
@@ -521,11 +520,14 @@ const LensShare = () => {
             autoClose: 3000,
             closeButton: true,
           });
+
+          // clear all the variables
           setSharing(false);
           setPostDescription("");
-          referredFromRef.current = [];
           store.clear({ keepHistory: true });
           store.addPage();
+          referredFromRef.current = [];
+          contextCanvasIdRef.current = null;
           setEnabled({
             chargeForCollect: false,
             chargeForCollectPrice: "1",
@@ -673,7 +675,7 @@ const LensShare = () => {
         ...prevEnabled,
         splitRevenueRecipients: [
           {
-            recipient: "@lenspostxyz.test",
+            recipient: "@lenspostxyz.lens",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
           ...updatedRecipients,
