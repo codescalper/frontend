@@ -75,7 +75,7 @@ const DesignCard = ({
           src={
             contextCanvasIdRef.current === design.id
               ? fastPreview[0]
-              : replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`
+              : replaceImageURL(preview)
           }
           alt="Preview Image"
         />

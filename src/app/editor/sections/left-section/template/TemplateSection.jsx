@@ -126,8 +126,7 @@ const DesignCard = ({
           effect="blur"
           src={
             tab === "user"
-              ? replaceImageURL(preview[stPreviewIndex]) +
-                `?token=${randomThreeDigitNumber()}`
+              ? replaceImageURL(preview[stPreviewIndex])
               : replaceImageURL(preview)
           }
           alt="Preview Image"

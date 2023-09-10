@@ -20,6 +20,7 @@ import {
 } from "./editor/common";
 
 const App = () => {
+  const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const [initialRender, setInitialRender] = useState(true);
   const { isLoading, setIsLoading, text, setText } = useContext(Context);
   const [message, setMessage] = useState(
@@ -182,7 +183,12 @@ const App = () => {
     }
   }, [isConnected, address, initialRender]);
 
-  const { setSteps, setIsOpen, setCurrentStep } = useTour();
+  useEffect(() => {
+    // check if browser is Brave
+    if (window.navigator?.brave) {
+      toast.warning("Keep Brave shields off for better experience")
+    }
+  }, []);
 
   useEffect(() => {
     if (isUserEligible) {
