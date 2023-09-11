@@ -78,6 +78,7 @@ export const BannerPanel = () => {
         defaultQuery={currentTab}
         getAssetsFn={getBGAssetByQuery}
         queryKey="backgrounds"
+        // isBackground={true}
       />
       )}
     </div>

@@ -1,16 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { SectionTab } from "polotno/side-panel";
-import { MyDesignIcon, TemplatesIcon } from "../../../../../assets";
+import { MyDesignIcon } from "../../../../../assets";
 
-import {
-  Button,
-  Card,
-  Menu,
-  MenuItem,
-  Position,
-  Spinner,
-} from "@blueprintjs/core";
+import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
 
 import { Popover2 } from "@blueprintjs/popover2";
 import { useAccount } from "wagmi";
@@ -18,7 +11,6 @@ import {
   changeCanvasVisibility,
   deleteCanvasById,
   getAllCanvas,
-  getUserPublicTemplates,
   tokengateCanvasById,
 } from "../../../../../services";
 import { toast } from "react-toastify";
@@ -27,14 +19,25 @@ import {
   CompModal,
   ConnectWalletMsgComponent,
   ErrorComponent,
+  LoadMoreComponent,
   MessageComponent,
   MyDesignReacTour,
   SearchComponent,
 } from "../../../common";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useStore } from "../../../../../hooks";
 import { Context } from "../../../../../context/ContextProvider";
-import { fnMessage, replaceImageURL } from "../../../../../utils";
+import {
+  fnLoadMore,
+  fnMessage,
+  randomThreeDigitNumber,
+  replaceImageURL,
+} from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import { fnPageHasElements } from "../../../../../utils/fnPageHasElements";
 
@@ -54,21 +57,9 @@ const DesignCard = ({
   const store = useStore();
 
   const handleClickOrDrop = () => {
-    // if (fnPageHasElements) {
-      // setModal({ ...modal, isOpen: true, isNewDesign: true });
-    // }
-    // else{
-      
-      store.loadJSON(json);
-      contextCanvasIdRef.current = design.id;
-      referredFromRef.current = design.referredFrom;
-  
-      console.log({
-        id: design.id,
-        referredFromRef: design.referredFrom,
-      });
-    // }
-   
+    store.loadJSON(json);
+    contextCanvasIdRef.current = design.id;
+    referredFromRef.current = design.referredFrom;
   };
 
   return (
@@ -83,7 +74,9 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            contextCanvasIdRef.current === design.id ? fastPreview[0] : preview
+            contextCanvasIdRef.current === design.id
+              ? fastPreview[0]
+              : replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`
           }
           alt="Preview Image"
         />
@@ -117,7 +110,7 @@ const DesignCard = ({
                 /> */}
               <MenuItem
                 icon="globe"
-                text={isPublic(design.id) ? "Make Private" : "Make Public"}
+                text={isPublic ? "Make Private" : "Make Public"}
                 onClick={onPublic}
               />
               <MenuItem
@@ -143,8 +136,17 @@ const DesignCard = ({
 
 export const DesignPanel = () => {
   const store = useStore();
-  const { fastPreview, contextCanvasIdRef, referredFromRef } =
-    useContext(Context);
+  const {
+    fastPreview,
+    contextCanvasIdRef,
+    referredFromRef,
+    setPostDescription,
+    setEnabled,
+    setIsShareOpen,
+    setMenu,
+    isShareOpen,
+    menu,
+  } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [modal, setModal] = useState({
     isOpen: false,
@@ -159,14 +161,18 @@ export const DesignPanel = () => {
 
   // get all canvas
   const queryClient = useQueryClient();
-  const { data, isLoading, isError, error } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ["my-designs"],
-    queryFn: getAllCanvas,
-  });
-
-  const { data: publicTemplates } = useQuery({
-    queryKey: ["user-templates"],
-    queryFn: getUserPublicTemplates,
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) => getAllCanvas(pageParam),
   });
 
   // mutationFn delete a canvas
@@ -206,7 +212,7 @@ export const DesignPanel = () => {
       } else {
         toast.success(data?.message);
       }
-      queryClient.invalidateQueries(["user-templates"], { exact: true });
+      queryClient.invalidateQueries(["community-pool"], { exact: true });
     },
   });
 
@@ -223,21 +229,50 @@ export const DesignPanel = () => {
     },
   });
 
-  // mutationFn funtion to check if canvas is public or not
-  const isCanvasPublic = (canvasId) => {
-    if (publicTemplates) {
-      return publicTemplates.some((obj) => obj.id === canvasId);
-    }
-    return false;
-  };
-
   // Function to delete all the canvas on confirmation - 25Jun2023
   const fnDeleteCanvas = () => {
+    // clear all the variables
+    setPostDescription("");
     store.clear({ keepHistory: true });
     store.addPage();
     referredFromRef.current = [];
+    contextCanvasIdRef.current = null;
+    setEnabled({
+      chargeForCollect: false,
+      chargeForCollectPrice: "1",
+      chargeForCollectCurrency: "WMATIC",
+
+      mirrorReferralReward: false,
+      mirrorReferralRewardFee: 25.0,
+
+      splitRevenueRecipients: [
+        {
+          recipient: "",
+          split: 0.0,
+        },
+      ],
+
+      limitedEdition: false,
+      limitedEditionNumber: "1",
+
+      timeLimit: false,
+      endTimestamp: {
+        date: "",
+        time: "",
+      },
+
+      whoCanCollect: false,
+    });
+
+    setIsShareOpen(false);
+    setMenu("share");
     setModal({ ...modal, isOpen: false, isNewDesign: false });
   };
+
+  useEffect(() => {
+    if (isDisconnected || !address) return;
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   useEffect(() => {
     if (isDeleteError) {
@@ -322,43 +357,49 @@ export const DesignPanel = () => {
       {/*   Pass these onto Line 25 */}
       {isError ? (
         <ErrorComponent error={error} />
-      ) : data.length > 0 ? (
+      ) : data?.pages[0]?.data?.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2" id="RecentDesigns">
           {contextCanvasIdRef.current === null && fastPreview[0] && (
             <Card className="relative p-0 m-1" interactive>
               <img src={fastPreview[0]} alt="" />
             </Card>
           )}
-          {[...data].reverse().map((design) => {
-            return (
-              <DesignCard
-                design={design}
-                json={design.data}
-                referredFrom={design.referredFrom}
-                preview={
-                  design?.imageLink != null &&
-                  design?.imageLink.length > 0 &&
-                  design?.imageLink[0]
-                }
-                key={design.id}
-                onDelete={() => deleteCanvas(design.id)}
-                onPublic={() =>
-                  isCanvasPublic(design.id)
-                    ? changeVisibility({ id: design.id, isPublic: false })
-                    : changeVisibility({ id: design.id, isPublic: true })
-                }
-                isPublic={isCanvasPublic}
-                openTokengateModal={() =>
-                  setModal({
-                    ...modal,
-                    isOpen: true,
-                    isTokengate: true,
-                    canvasId: design.id,
-                  })
-                }
-              />
-            );
-          })}
+          {data?.pages
+            .flatMap((item) => item?.data)
+            .map((design) => {
+              return (
+                <DesignCard
+                  design={design}
+                  json={design?.data}
+                  referredFrom={design?.referredFrom}
+                  preview={
+                    design?.imageLink != null &&
+                    design?.imageLink.length > 0 &&
+                    design?.imageLink[0]
+                  }
+                  key={design.id}
+                  onDelete={() => deleteCanvas(design.id)}
+                  onPublic={() => {
+                    design?.isPublic
+                      ? changeVisibility({ id: design?.id, isPublic: false })
+                      : changeVisibility({ id: design?.id, isPublic: true });
+                  }}
+                  isPublic={design?.isPublic}
+                  openTokengateModal={() =>
+                    setModal({
+                      ...modal,
+                      isOpen: true,
+                      isTokengate: true,
+                      canvasId: design?.id,
+                    })
+                  }
+                />
+              );
+            })}
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
       ) : (
         <div id="RecentDesigns">

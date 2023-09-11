@@ -7,7 +7,7 @@ export const fnLoadMore = (hasNextPage, fetchNextPage) => {
           fetchNextPage();
         }
       },
-      { threshold: 0.5 } // Set threshold to 0.5 (50%)
+      { threshold: 0.1 } // Set threshold to 0.5 (50%)
     );
     observer.observe(document.querySelector("#bottom"));
     return () => observer.disconnect();

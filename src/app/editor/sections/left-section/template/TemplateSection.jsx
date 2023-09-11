@@ -17,12 +17,18 @@ import {
   MessageComponent,
   SearchComponent,
   CustomHorizontalScroller,
+  LoadMoreComponent,
 } from "../../../common";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner, Icon } from "@blueprintjs/core";
 import { useStore } from "../../../../../hooks";
-import { fnLoadJsonOnPage, replaceImageURL } from "../../../../../utils";
+import {
+  fnLoadJsonOnPage,
+  fnLoadMore,
+  randomThreeDigitNumber,
+  replaceImageURL,
+} from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import SuChevronRightDouble from "@meronex/icons/su/SuChevronRightDouble";
 import { Context } from "../../../../../context/ContextProvider";
@@ -33,118 +39,107 @@ import MdcImageMultipleOutline from '@meronex/icons/mdc/MdcImageMultipleOutline'
  
 // Design card component start
 
-const DesignCard = observer(
-  ({
-    id,
-    preview,
-    json,
-    tab,
-    isGated,
-    gatedWith,
-    referredFrom,
-    // modal,
-    // setModal,
-    isFeatured
-  }) => {
-    const store = useStore();
-    const { address } = useAccount();
-    const { referredFromRef } = useContext(Context);
+const DesignCard = ({
+  id,
+  preview,
+  json,
+  tab,
+  isGated,
+  gatedWith,
+  referredFrom,
+  modal,
+  setModal,
+}) => {
+  const store = useStore();
+  const { referredFromRef } = useContext(Context);
 
-    const [stPreviewIndex, setStPreviewIndex] = useState(0);
-    const [stHovered, setStHovered] = useState(false);
+  const [stPreviewIndex, setStPreviewIndex] = useState(0);
+  const [stHovered, setStHovered] = useState(false);
 
-    const [modal, setModal] = useState({
-      isOpen: false,
-      isTokengated: false,
-      gatedWith: "",
-      isNewDesign: false,
-      json: null,
-    });
-
-    const handleClickOrDrop = () => {
-      // Show Modal: if it's tokengated
-      if (isGated && Object.keys(json).length === 0) {
+  const handleClickOrDrop = () => {
+    // Show Modal: if it's tokengated
+    if (isGated && Object.keys(json).length === 0) {
+      setModal({
+        ...modal,
+        isOpen: true,
+        isTokengated: isGated,
+        gatedWith: gatedWith,
+      });
+    } else {
+      // Check if there are any elements on the page - to open the Modal or not
+      if (store.activePage.children.length > 1) {
         setModal({
           ...modal,
           isOpen: true,
-          isTokengated: isGated,
-          gatedWith: gatedWith, 
+          isNewDesign: true,
+          json: json,
+          referredFrom: referredFrom,
         });
       } else {
-        // Check if there are any elements on the page - to open the Modal or not
-        if (store.activePage.children.length > 1) {
-          setModal({
-            ...modal,
-            isOpen: true, 
-            isNewDesign: true,
-            json: json,
-          });
-        } else {
-          // If not load the clicked JSON
-          fnLoadJsonOnPage(store, json);
-          if (tab === "user") {
-            referredFromRef.current.push(...referredFrom);
-          }
+        // If not load the clicked JSON
+        fnLoadJsonOnPage(store, json);
+        if (tab === "user") {
+          referredFromRef.current = referredFrom;
         }
       }
-    };
+    }
+  };
 
-    // Function to change the preview image on hover
-    // Increment the index of the Preview image Array
-    const fnChangePreview = (preview) => {
-      if (stPreviewIndex < preview.length - 1) {
-        setStPreviewIndex(stPreviewIndex + 1);
-      } else {
+  // Function to change the preview image on hover
+  // Increment the index of the Preview image Array
+  const fnChangePreview = (preview) => {
+    if (stPreviewIndex < preview.length - 1) {
+      setStPreviewIndex(stPreviewIndex + 1);
+    } else {
+      setStPreviewIndex(0);
+    }
+  };
+
+  // After a certain interval, change the preview image
+  // Using useEffect to capture mouse events & index change
+  useEffect(() => {
+    if (stHovered) {
+      const interval = setInterval(() => {
+        fnChangePreview(preview);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [stHovered, stPreviewIndex]);
+
+  return (
+    <Card
+      className="rounded-lg"
+      style={{ margin: "4px", padding: "0px", position: "relative" }}
+      interactive
+      onDragEnd={handleClickOrDrop}
+      onClick={handleClickOrDrop}
+      // To change Preview image on Hover - MouseEnter & MouseLeave
+      onMouseEnter={() => {
+        setStHovered(true);
+      }}
+      onMouseLeave={() => {
         setStPreviewIndex(0);
-      }
-    };
+        setStHovered(false);
+      }}
+    >
+      {/* <div className="rounded-lg overflow-hidden transition-transform duration-1000"> */}
+      <div className="rounded-lg overflow-hidden transition-transform ease-in-out duration-300 relative">
+        {/* If there are more than 1 preview images, then `stPreviewIndex` is incremented */}
+        {/* If not on user templates tab, just passing the `preview` - BE response */}
 
-    // After a certain interval, change the preview image
-    // Using useEffect to capture mouse events & index change
-    useEffect(() => {
-      if (stHovered) {
-        const interval = setInterval(() => {
-          fnChangePreview(preview);
-        }, 1000);
-        return () => clearInterval(interval);
-      }
-    }, [stHovered, stPreviewIndex]);
-
-    return (
-      <Card
-        className="rounded-lg"
-        style={{ margin: "4px", padding: "0px", position: "relative" }}
-        interactive
-        onDragEnd={handleClickOrDrop}
-        onClick={handleClickOrDrop}
-        // To change Preview image on Hover - MouseEnter & MouseLeave
-        onMouseEnter={() => {
-          setStHovered(true);
-        }}
-        onMouseLeave={() => {
-          setStPreviewIndex(0);
-          setStHovered(false);
-        }}
-      >
-        {/* <div className="rounded-lg overflow-hidden transition-transform duration-1000"> */}
-        <div className="rounded-lg overflow-hidden transition-transform ease-in-out duration-300 relative">
-          {/* If there are more than 1 preview images, then `stPreviewIndex` is incremented */}
-          {/* If not on user templates tab, just passing the `preview` - BE response */}
-
-          <LazyLoadImage
-            className="rounded-lg"
-            placeholderSrc={replaceImageURL(preview[stPreviewIndex])}
-            // placeholderSrc={preview}
-            effect="blur"
-            src={
-              tab === "user"
-                ? preview[stPreviewIndex]
-                : replaceImageURL(preview) 
-            }
-            alt="Preview Image"
-          />
-        </div>
-
+        <LazyLoadImage
+          className="rounded-lg"
+          placeholderSrc={replaceImageURL(preview)}
+          effect="blur"
+          src={
+            tab === "user"
+              ? replaceImageURL(preview[stPreviewIndex]) +
+                `?token=${randomThreeDigitNumber()}`
+              : replaceImageURL(preview)
+          }
+          alt="Preview Image"
+        />
+      </div>
         {/* if tab === "user" and  modal.isTokengate === true */}
         {tab === "user" && isGated && (
           <div
@@ -178,7 +173,7 @@ const DesignCard = observer(
       </Card>
     );
   }
-);
+
 
 // Design card component end
 
@@ -226,11 +221,26 @@ const LenspostTemplates = () => {
     gatedWith: "",
     isNewDesign: false,
     json: null,
+    referredFrom: [],
   });
-  const { data, isLoading, isError, error } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ["lenspost-templates"],
-    queryFn: getAllTemplates,
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) => getAllTemplates(pageParam),
   });
+
+  useEffect(() => {
+    if (isDisconnected || !address) return;
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -289,38 +299,34 @@ const LenspostTemplates = () => {
       {/*   Pass these onto Line 25 */}
 
       <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
-      
-      {data.assets.length > 0 ? (
-        <div className="overflow-y-auto grid grid-cols-2">
-          {data.assets.map((item) => {
-            return (
-              <DesignCard
-                // json={item.data}
-                // preview={item?.image}
-                // key={item.id}
-                // tab="lenspost"
-                // modal={modal}
-                // setModal={setModal}
-                id={item?.id}
-                referredFrom={item?.referredFrom}
-                isGated={item?.isGated}
-                gatedWith={item?.gatedWith}
-                json={item?.data}
-                ownerAddress={item?.ownerAddress}
-                preview={
-                  // item?.imageLink != null &&
-                  // item?.imageLink.length > 0 &&
-                  // item?.imageLink
-                  item?.image
-                }
-                key={item?.id}
-                tab="lenspost"
-                modal={modal}
-                setModal={setModal}
-              />
-            );
-          })}
-        </div>
+
+      {data?.pages[0]?.data?.length > 0 ? (
+        <>
+          <div className="overflow-y-auto grid grid-cols-2">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item, index) => {
+                return (
+                  <DesignCard
+                    id={item?.id}
+                    referredFrom={item?.referredFrom}
+                    isGated={item?.isGated}
+                    gatedWith={item?.gatedWith}
+                    json={item?.data}
+                    ownerAddress={item?.ownerAddress}
+                    preview={item?.image}
+                    key={index}
+                    modal={modal}
+                    setModal={setModal}
+                  />
+                );
+              })}
+          </div>
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+        </>
       ) : (
         <MessageComponent message="No Results" />
       )}
@@ -332,6 +338,7 @@ const LenspostTemplates = () => {
 
 const UserTemplates = () => {
   const store = useStore();
+  const { referredFromRef } = useContext(Context);
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const [modal, setModal] = useState({
@@ -341,11 +348,24 @@ const UserTemplates = () => {
     isNewDesign: false,
     json: null,
   });
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["user-templates"],
-    queryFn: getUserPublicTemplates,
-    enabled: address ? true : false,
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["community-pool"],
+    getNextPageParam: (prevData) => prevData.nextPage,
+    queryFn: ({ pageParam = 1 }) => getUserPublicTemplates(pageParam),
   });
+
+  useEffect(() => {
+    if (isDisconnected || !address) return;
+    fnLoadMore(hasNextPage, fetchNextPage);
+  }, [hasNextPage, fetchNextPage]);
 
   if (isDisconnected || !address) {
     return <ConnectWalletMsgComponent />;
@@ -384,7 +404,9 @@ const UserTemplates = () => {
           ModalMessage={"This will remove all the content from your canvas"}
           onClickFunction={() => {
             fnLoadJsonOnPage(store, modal?.json);
+            referredFromRef.current = modal?.referredFrom;
             setModal({
+              ...modal,
               isOpen: false,
               isTokengated: false,
               isNewDesign: false,
@@ -401,29 +423,35 @@ const UserTemplates = () => {
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
-      {data?.length > 0 ? (
+      {data?.pages[0]?.data?.length > 0 ? (
         <div className="overflow-y-auto grid grid-cols-2">
-          {data.map((item) => {
-            return (
-              <DesignCard
-                id={item?.id}
-                referredFrom={item?.referredFrom}
-                isGated={item?.isGated}
-                gatedWith={item?.gatedWith}
-                json={item?.data}
-                ownerAddress={item?.ownerAddress}
-                preview={
-                  item?.imageLink != null &&
-                  item?.imageLink.length > 0 &&
-                  item?.imageLink
-                }
-                key={item?.id}
-                tab="user"
-                modal={modal}
-                setModal={setModal}
-              />
-            );
-          })}
+          {data?.pages
+            .flatMap((item) => item?.data)
+            .map((item) => {
+              return (
+                <DesignCard
+                  id={item?.id}
+                  referredFrom={item?.referredFrom}
+                  isGated={item?.isGated}
+                  gatedWith={item?.gatedWith}
+                  json={item?.data}
+                  ownerAddress={item?.ownerAddress}
+                  preview={
+                    item?.imageLink != null &&
+                    item?.imageLink.length > 0 &&
+                    item?.imageLink
+                  }
+                  key={item?.id}
+                  tab="user"
+                  modal={modal}
+                  setModal={setModal}
+                />
+              );
+            })}
+          <LoadMoreComponent
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </div>
       ) : (
         <MessageComponent message="No Results" />

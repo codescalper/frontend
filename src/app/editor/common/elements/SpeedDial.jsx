@@ -1,3 +1,8 @@
+// --------
+// Speed Dial - Clear Canvas, Resize, etc.. Utility Functions
+// Bottom Bar
+// --------
+
 import {
     IconButton,
     SpeedDial,
@@ -9,9 +14,11 @@ import {
 
   import SuCreate from '@meronex/icons/su/SuCreate';
   import SuChevronUp from '@meronex/icons/su/SuChevronUp';
-  import { fnPageHasElements } from "../../utils"
+  import SuCapture from '@meronex/icons/su/SuCapture';
+
+  import { fnPageHasElements } from "../../../../utils"
   
-  import { useStore } from "../../hooks";
+  import { useStore } from "../../../../hooks";
   const store = useStore();
 
   export function SpeedDialX() {  
@@ -41,7 +48,7 @@ import {
 
     return (
       <div className="relative h-10">
-        <div className="absolute bottom-0 right-0">
+        <div className="md: absolute bottom-0 right-0">
           <SpeedDial>
             <SpeedDialHandler>
 
@@ -53,13 +60,22 @@ import {
 
             {/* Content */} 
             <SpeedDialContent>
+
+            <div className="" onClick={()=> store.setSize(1080, 1080)}>
+              <SpeedDialAction className="relative">
+                <SuCapture className="h-5 w-5" />
+                <Typography {...labelProps}>{`Resize`}</Typography>
+              </SpeedDialAction>
+            </div>
             
             <div className="" onClick={()=> fnCreateNewDesign()}>
               <SpeedDialAction className="relative">
                 <SuCreate className="h-5 w-5" />
-                <Typography {...labelProps}>{`Clear Canvas`}</Typography>
+                <Typography {...labelProps}>{`Clear`}</Typography>
               </SpeedDialAction>
             </div>
+
+         
               
             </SpeedDialContent>
           </SpeedDial>

@@ -21,7 +21,7 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
   const requestTimeout = useRef();
   const { isDisconnected, address } = useAccount();
 
-  const [isLensjump, setIsLensjump ] = useState(false); 
+  // const [isLensjump, setIsLensjump ] = useState(false); 
 
   const {
     data,
@@ -38,16 +38,16 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
       getAssetsFn(delayedQuery || defaultQuery, pageParam),
   });
 
-  console.log("Data in Tabs.jsx")
-  console.log(data);
-  console.log(defaultQuery);
+  // console.log("Data in Tabs.jsx")
+  // console.log(data);
+  // console.log(defaultQuery);
 
-  useEffect(() => {
-    if( defaultQuery === "lensjump" ){
-      setIsLensjump(true);
-    }
-    else setIsLensjump(false);
-  }, [defaultQuery]);
+  // useEffect(() => {
+  //   if( defaultQuery === "lensjump" ){
+  //     setIsLensjump(true);
+  //   }
+  //   else setIsLensjump(false);
+  // }, [defaultQuery]);
 
   // console.log("isLensjump in Tabs.jsx")
   // console.log(isLensjump);
@@ -72,9 +72,7 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
 
   // Show Loading - 06Jul2023
   if (isLoading) {
-    return (
-        <LoadingAnimatedComponent />
-    );
+    return <LoadingAnimatedComponent />;
   }
   return isError ? (
     <ErrorComponent message={error} />
@@ -83,10 +81,10 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
       <SearchComponent
         query={query}
         setQuery={setQuery}
-        placeholder="Search backgrounds"
+        placeholder={`Search ${changeCanvasDimension ? "Backgrounds" : "Stickers"}`}
       />
  
-      {isLensjump && (
+      {/* {isLensjump && (
         // data?.data?.assets?.length > 0 && 
         // data?.pages[0]?.data.assets.length > 0 && 
         <div className="h-full overflow-y-auto">
@@ -110,9 +108,9 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
       }
       </div>
       </div>
-      )}
+      )} */}
 
-    {!isLensjump && data?.pages[0]?.data.length > 0 ? ( 
+    {data?.pages[0]?.data.length > 0 ? ( 
         <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
             {data?.pages

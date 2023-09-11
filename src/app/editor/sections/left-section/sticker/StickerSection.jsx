@@ -153,9 +153,6 @@ export const StickerPanel = () => {
   return (
     <div className="flex flex-col h-full">
       <div className="mx-2 mt-1" id="stickerCategories">
-        
-        {/* Scrollable Tabs */}
-        {/* <div className="w-full flex flex-row overflow-x-scroll"> */}
 
         <Button
           small
@@ -183,11 +180,11 @@ export const StickerPanel = () => {
 
         {tabArray.map((tab, index) => (
           <Button
-          small
-          key={index}
-          className="m-2 rounded-md px-1/2 py-0"
-          onClick={() => {
-            setCurrentTab(tab);
+            small
+            key={index}
+            className="m-2 rounded-md px-1/2 py-0"
+            onClick={() => {
+              setCurrentTab(tab);
             }}
             active={currentTab === tab}
             // icon=""
@@ -196,7 +193,6 @@ export const StickerPanel = () => {
           </Button>
         ))}
         {/* </div> */}
-
       </div>
       <StickerReacTour />
 
