@@ -1,6 +1,6 @@
 // --------
 // This component is used to render the Featured assets: stickers/banners
-// It is same as Tabs.jsx [ just to avoid random errors ] //11Sep2023
+// It is same as Tabs.jsx [ just to avoid random errors (Difference in BE Response) ] //11Sep2023
 // --------
 
 import React, { useEffect, useRef, useState } from "react";

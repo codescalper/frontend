@@ -624,9 +624,10 @@ export const deleteUserAsset = async (id) => {
 };
 // upload section end
 
-// Featured Assets 
+// --------
+// Featured Assets :
 
-// type == background / props
+// Featured Backgrounds
 export const getFeaturedBGAssets = async () => {
   try {
     const result = await api.get(
@@ -672,7 +673,7 @@ export const getFeaturedBGAssets = async () => {
   }
 };
 
-
+// Featured Props / Stickers
 export const getFeaturedPropsAssets = async () => {
   try {
     const result = await api.get(
