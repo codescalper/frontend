@@ -4,6 +4,8 @@ import { SectionTab } from "polotno/side-panel";
 import { TemplatesIcon } from "../../../../../assets";
 import {
   getAllTemplates,
+  getFeaturedBGAssets,
+  getFeaturedPropsAssets,
   getUserPublicTemplates,
 } from "../../../../../services";
 import { Card } from "@blueprintjs/core";
@@ -27,6 +29,7 @@ import { Context } from "../../../../../context/ContextProvider";
 
 import {CompCarousel} from "./components/Carousel"
 // import CustomHorizontalScroller from "../../../common/";
+import MdcImageMultipleOutline from '@meronex/icons/mdc/MdcImageMultipleOutline';
  
 // Design card component start
 
@@ -193,7 +196,7 @@ const TemplatePanel = () => {
           } ${tab === "lenspost" && "text-white"}`}
           onClick={() => setTab("lenspost")}
         >
-          Lenspost Templates
+          Lenspost Drops
         </button>
         <button
           className={`w-1/2 border border-black px-2 py-1 rounded-md ${
@@ -202,7 +205,7 @@ const TemplatePanel = () => {
           onClick={() => setTab("user")}
         >
           {/* User Templates */}
-          Community Pool
+          Community Drops
         </button>
       </div>
       {tab === "lenspost" && <LenspostTemplates />}
@@ -240,11 +243,11 @@ const LenspostTemplates = () => {
   if (isLoading) {
     return <LoadingAnimatedComponent />;
   }
-  console.log(data) 
+
   return (
     <>
       {modal?.isOpen && modal?.isNewDesign && (
-        <CompModal
+        <CompModal 
           modal={modal}
           setModal={setModal}
           ModalTitle={"Are you sure to replace the canvas with this template?"}
@@ -265,13 +268,21 @@ const LenspostTemplates = () => {
         setQuery={setQuery}
         placeholder={"Search templates"}
       />
-      {/* <button onClick={()=> store.openSidePanel("Elements")} > open Stickers</button> */}
-      
-      <div className="ml-2 mb-2 "> Featured Templates </div>
-      <CompCarousel arrData={data.assets} /> 
+    {/*  Featured Panels :  */}
+    {/*  Featured Panels : Templates */}
+      <div className="flex flex-row justify-between m-2 ">
+          <div className=""> Featured Backgrounds </div>
+          <div onClick={()=> store.openSidePanel("Backgrounds2")} className="cursor-pointer opacity-80 hover:opacity-60"> See more</div>
+      </div>
 
-      <div className="mt-4 ml-2 mb-2 "> Featured Stickers </div>
-      <CustomHorizontalScroller propWidth={120}/>
+      <CompCarousel />  
+
+    {/*  Featured Panels : Stickers */}
+      <div className="flex flex-row justify-between m-2 mt-2">
+          <div className=""> Featured Stickers </div>
+          <div onClick={()=> store.openSidePanel("Elements")} className="cursor-pointer opacity-80 hover:opacity-60"> See more</div>
+      </div>
+      <CustomHorizontalScroller />
  
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
@@ -297,13 +308,13 @@ const LenspostTemplates = () => {
                 json={item?.data}
                 ownerAddress={item?.ownerAddress}
                 preview={
-                  item?.imageLink != null &&
-                  item?.imageLink.length > 0 &&
-                  item?.imageLink
-                  // item?.image
+                  // item?.imageLink != null &&
+                  // item?.imageLink.length > 0 &&
+                  // item?.imageLink
+                  item?.image
                 }
                 key={item?.id}
-                tab="user"
+                tab="lenspost"
                 modal={modal}
                 setModal={setModal}
               />
@@ -423,12 +434,13 @@ const UserTemplates = () => {
   );
 };
 
+
 // define the new custom section
 const TemplateSection = {
   name: "Templates",
   Tab: (props) => (
     <SectionTab name="Templates" {...props}>
-      <TemplatesIcon />
+      <MdcImageMultipleOutline size="16" />
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes

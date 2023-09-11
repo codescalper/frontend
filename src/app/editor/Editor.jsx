@@ -285,6 +285,8 @@ const Editor = () => {
 
                 {/* Quick Tour on the main page */}
                 <div className="flex flex-row ">
+                
+                {/* Speed Dial - Clear Canvas, etc.. Utility Fns */}
                   <SpeedDialX/>
              
                 <div

@@ -5,13 +5,30 @@
 
 import { Carousel } from "@material-tailwind/react";
 import { CustomImageComponent } from "../../../../common";
+import { getFeaturedBGAssets } from "../../../../../../services";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
  
-export function CompCarousel({arrData}) {
+export function CompCarousel() {
+
+  // Functions to fetch featured data from BE API
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["featured-backgrounds"],
+    queryFn: getFeaturedBGAssets, 
+  });
+   
+  console.log("feat BG Data");  
+  const [arrData, setArrData] = useState([]);
+
+  useEffect(() => {
+  // console.log(data); 
+    setArrData(data?.data?.assets);
+    console.log(arrData);
+  },[isLoading, data]);
 
   return (
     // autoplay loop autoplayDelay={5000} - For AutoPlay
-
-    <Carousel className="rounded-xl h-24 overflow-hidden"
+    <Carousel className="rounded-xl h-40 overflow-hidden"
     navigation={({ setActiveIndex, activeIndex, length }) => (
       <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
         {new Array(length).fill("").map((_, i) => (
@@ -23,7 +40,7 @@ export function CompCarousel({arrData}) {
             onClick={() => setActiveIndex(i)}
           />
         ))}
-        </div>
+        </div> 
         )}
         >
       
@@ -32,10 +49,13 @@ export function CompCarousel({arrData}) {
 
         return(
           <CustomImageComponent  
-            json = {mapData.data} //Pass Json if it's a template 
-            preview={mapData.preview || mapData.image}
+            isLensCollect={mapData?.wallet}
+            // json = {mapData?.data} //Pass Json if it's a template 
+            preview={ mapData?.image}
+            dimensions={mapData?.dimensions}
+            changeCanvasDimension
             className="h-full w-full object-cover"
-          /> 
+          />   
           )
       } 
       )

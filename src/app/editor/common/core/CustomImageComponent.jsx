@@ -26,6 +26,7 @@ const CustomImageComponent = ({
   hasOptionBtn,
   onDelete,
   isLensCollect,
+  featuredWallet,
   changeCanvasDimension,
   json
 }) => {
@@ -162,7 +163,7 @@ const CustomImageComponent = ({
           <div
             title="Collected from Lens"
             // className="bg-[#E1F26C] p-1 rounded-lg absolute top-2 left-2 opacity-60 hover:opacity-100"
-            className="text-white text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 left-2 opacity-96 hover:opacity-80"
+            className="text-white text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96 hover:opacity-80"
             onClick={(e) => { 
               e.stopPropagation();
 
@@ -171,6 +172,25 @@ const CustomImageComponent = ({
             }}
           >
             {isLensCollect?.lensHandle}
+          </div>
+        </>
+      )}
+
+      {/* Wallet Address on Featured BGs */}
+
+      {featuredWallet && (
+        <>
+          <div
+            title="Collected from Lens"
+            // className="bg-[#E1F26C] p-1 rounded-lg absolute top-2 left-2 opacity-60 hover:opacity-100"
+            className="text-white text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96 hover:opacity-80"
+            onClick={(e) => { 
+              e.stopPropagation();
+              const onlyHandle = isLensCollect?.lensHandle.split("@")[1];
+              window.open(`https://lenster.xyz/u/${featuredWallet}`, "_blank");
+            }}
+          >
+            {featuredWallet}
           </div>
         </>
       )}

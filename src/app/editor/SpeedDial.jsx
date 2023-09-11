@@ -22,14 +22,13 @@ import {
       className:
         "text-sm absolute top-2/4 -left-2/4 -translate-y-2/4 -translate-x-3/4",
     };
-// No line break between elements using tailwind css
-// https://stackoverflow.co m/questions/63804163/no-line-break-between-elements-using-tailwindcss
-
 
     const fnCreateNewDesign = () => {  
         // console.log("fnCreateNewDesign");
         if(fnPageHasElements){
-
+          
+          // setModal({ ...modal, isOpen: true, isNewDesign: true });
+          
           console.log("fnCreateNewDesign");
           store.clear({ keepHistory: true });
           store.addPage();
@@ -41,7 +40,7 @@ import {
     }   
 
     return (
-      <div className="relative h-9">
+      <div className="relative h-10">
         <div className="absolute bottom-0 right-0">
           <SpeedDial>
             <SpeedDialHandler>
@@ -58,7 +57,7 @@ import {
             <div className="" onClick={()=> fnCreateNewDesign()}>
               <SpeedDialAction className="relative">
                 <SuCreate className="h-5 w-5" />
-                <Typography {...labelProps}>{`New Design`}</Typography>
+                <Typography {...labelProps}>{`Clear Canvas`}</Typography>
               </SpeedDialAction>
             </div>
               

@@ -1,3 +1,8 @@
+// --------
+// This component is used to render the Featured assets: stickers/banners
+// It is same as Tabs.jsx [ just to avoid random errors ] //11Sep2023
+// --------
+
 import React, { useEffect, useRef, useState } from "react";
 import { Spinner } from "@blueprintjs/core";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -12,16 +17,16 @@ import {
   MessageComponent,
   SearchComponent,
 } from "..";
-import { fnLoadMore } from "../../../../utils";
+import { fnLoadMore, isLensHandle } from "../../../../utils";
 
 // `changeCanvasDimension` is True/False from the Passing Component
-const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => {
+const FeaturedTabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension, isLensCollect}) => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
   const { isDisconnected, address } = useAccount();
 
-  const [isLensjump, setIsLensjump ] = useState(false); 
+  const [ noOfCols, setNoOfCols ] = useState(2);
 
   const {
     data,
@@ -33,24 +38,23 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
     fetchNextPage,
   } = useInfiniteQuery({
     queryKey: [queryKey, delayedQuery || defaultQuery],
-    getNextPageParam: (prevData) => prevData.nextPage,
+    getNextPageParam: (prevData) => prevData?.nextPage,
     queryFn: ({ pageParam = 1 }) =>
       getAssetsFn(delayedQuery || defaultQuery, pageParam),
   });
 
-  console.log("Data in Tabs.jsx")
-  console.log(data);
-  console.log(defaultQuery);
+  // console.log("Data in FeaturedTabs.jsx")
+  // console.log(data);
 
+  // To change the no of columns in the grid based on the queryKey
+  // 1 - Featured BGs, 2 - Featured Stickers/Props
   useEffect(() => {
-    if( defaultQuery === "lensjump" ){
-      setIsLensjump(true);
+    if(queryKey === "stickers") {
+      setNoOfCols(2);
+    } else {  
+      setNoOfCols(1);
     }
-    else setIsLensjump(false);
-  }, [defaultQuery]);
-
-  // console.log("isLensjump in Tabs.jsx")
-  // console.log(isLensjump);
+  }, [queryKey]);
 
   useEffect(() => {
     requestTimeout.current = setTimeout(() => {
@@ -70,7 +74,6 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
     return <ConnectWalletMsgComponent />;
   }
 
-  // Show Loading - 06Jul2023
   if (isLoading) {
     return (
         <LoadingAnimatedComponent />
@@ -86,7 +89,7 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
         placeholder="Search backgrounds"
       />
  
-      {isLensjump && (
+      {/* {isLensjump && (
         // data?.data?.assets?.length > 0 && 
         // data?.pages[0]?.data.assets.length > 0 && 
         <div className="h-full overflow-y-auto">
@@ -110,18 +113,19 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
       }
       </div>
       </div>
-      )}
+      )} */}
 
-    {!isLensjump && data?.pages[0]?.data.length > 0 ? ( 
+    {data?.pages[0]?.data?.assets.length > 0 ? ( 
         <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
+          <div className={`grid grid-cols-${noOfCols} overflow-y-auto`}>
             {data?.pages
-              .flatMap((item) => item?.data)
+              .flatMap((item) => item?.data.assets)
               .map((item, index) => {
                 return (
                   <CustomImageComponent
                     key={index}
                     preview={item?.image}
+                    featuredWallet={item?.wallet}
                     dimensions={item?.dimensions != null && item.dimensions}
                     changeCanvasDimension={changeCanvasDimension}
                   />
@@ -142,4 +146,4 @@ const Tabs = ({ defaultQuery, getAssetsFn, queryKey, changeCanvasDimension}) => 
   );
 };
 
-export default Tabs;
+export default FeaturedTabs;
