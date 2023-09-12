@@ -480,7 +480,6 @@ const WalletNFT = () => {
                     key={index}
                     preview={item?.imageURL}
                     isLensCollect={lensCollect(item?.title)}
-                    // isLensCollect={"lenspost.xyz"}
                   />
                 );
               })}

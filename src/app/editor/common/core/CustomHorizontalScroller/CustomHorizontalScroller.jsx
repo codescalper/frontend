@@ -33,7 +33,6 @@ const CustomHorizontalScroller = ({ type }) => {
 
   const scrollWrapperRef = useRef(null);
 
-
   const distance = 300;
 
   const fnScrollLeft = () => {
@@ -48,7 +47,6 @@ const CustomHorizontalScroller = ({ type }) => {
       behavior: "smooth",
     });
   };
-
 
   return (
     <>
@@ -76,8 +74,10 @@ const CustomHorizontalScroller = ({ type }) => {
                     <div id={index} className="eachDiv">
                       {" "}
                       <CustomImageComponent
-                        dimensions={item.dimensions}
-                        preview={item.image}
+                        key={index}
+                        preview={item?.image}
+                        dimensions={item?.dimensions != null && item.dimensions}
+                        recipientWallet={item?.wallet}
                       />{" "}
                     </div>
                   );

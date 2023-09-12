@@ -55,14 +55,6 @@ export const BannerPanel = () => {
         ))}
       </div>
       
-      {/* { currentTab === `lensjump` ? (
-          <FeaturedTabs
-           changeCanvasDimension={true}
-          //  defaultQuery={currentTab}
-           getAssetsFn={getFeaturedBGAssets}
-           queryKey="backgrounds"
-         />
-      ) : ( */}
       <Tabs
         changeCanvasDimension={true}
         defaultQuery={currentTab}

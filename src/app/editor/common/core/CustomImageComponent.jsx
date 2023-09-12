@@ -16,7 +16,6 @@ const CustomImageComponent = ({
   hasOptionBtn,
   onDelete,
   isLensCollect,
-  featuredWallet,
   changeCanvasDimension,
   recipientWallet,
 }) => {
@@ -134,7 +133,7 @@ const CustomImageComponent = ({
         </div>
 
         {/* if nft is a lens collect */}
-        {isLensCollect?.isLensCollect && (
+        {isLensCollect?.isLensCollect || recipientWallet ? (
           <>
             <div
               title="Collected from Lens"
@@ -143,34 +142,17 @@ const CustomImageComponent = ({
               onClick={(e) => {
                 e.stopPropagation();
 
-                const onlyHandle = isLensCollect?.lensHandle.split("@")[1];
+                const onlyHandle =
+                  isLensCollect?.lensHandle.split("@")[1] ||
+                  recipientWallet.split("@")[1];
                 window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
               }}
             >
-              {isLensCollect?.lensHandle}
+              {isLensCollect?.lensHandle || recipientWallet}
             </div>
           </>
-        )}
-
-        {/* Wallet Address on Featured BGs */}
-
-        {featuredWallet && (
-          <>
-            <div
-              title="Collected from Lens"
-              className="text-white text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96 hover:opacity-80"
-              onClick={(e) => {
-                e.stopPropagation();
-                const onlyHandle = isLensCollect?.lensHandle.split("@")[1];
-                window.open(
-                  `https://lenster.xyz/u/${featuredWallet}`,
-                  "_blank"
-                );
-              }}
-            >
-              {featuredWallet}
-            </div>
-          </>
+        ) : (
+          <></>
         )}
 
         {hasOptionBtn && (

@@ -47,19 +47,6 @@ const Tabs = ({
         : getAssetsFn(delayedQuery || defaultQuery, pageParam),
   });
 
-  // console.log("Data in Tabs.jsx")
-  // console.log(data);
-  // console.log(defaultQuery);
-
-  // useEffect(() => {
-  //   if( defaultQuery === "lensjump" ){
-  //     setIsLensjump(true);
-  //   }
-  //   else setIsLensjump(false);
-  // }, [defaultQuery]);
-
-  // console.log("isLensjump in Tabs.jsx")
-  // console.log(isLensjump);
 
   useEffect(() => {
     requestTimeout.current = setTimeout(() => {
