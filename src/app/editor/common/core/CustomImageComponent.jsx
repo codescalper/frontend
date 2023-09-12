@@ -1,13 +1,7 @@
 // Seperate component for Lazy loading (CustomImage) - 29Jun2023
 
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import {
-  Button,
-  Card,
-  Menu,
-  MenuItem,
-  Position,
-} from "@blueprintjs/core";
+import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { replaceImageURL } from "../../../../utils/replaceUrl";
 import { useEffect, useState } from "react";
@@ -26,7 +20,7 @@ const CustomImageComponent = ({
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");
-  const { referredFromRef } = useContext(Context);
+  const { lensCollectRecipientRef } = useContext(Context);
 
   // convert to base64
   const getBase64 = async (image) => {
@@ -52,13 +46,6 @@ const CustomImageComponent = ({
     // set the canvas size if it's a background image
     isBackground && store.setSize(dimensions[0], dimensions[1]);
 
-    // if nft is a lens collect, add it to the referredFromRef but check if a handle is already
-    if (isLensCollect?.isLensCollect) {
-      if (!referredFromRef.current.includes(isLensCollect?.lensHandle)) {
-        referredFromRef.current.push(isLensCollect?.lensHandle);
-      }
-    }
-
     store.activePage?.addElement({
       type: "image",
       src: base64Data, //Image URL
@@ -67,6 +54,21 @@ const CustomImageComponent = ({
       x: isBackground ? 0 : store.width / 4,
       y: isBackground ? 0 : store.height / 4,
     });
+
+    // if nft is a lens collect, add it to the referredFromRef but check if a handle is already
+    if (isLensCollect?.isLensCollect) {
+      const isHandlePresent = lensCollectRecipientRef.current.some(
+        (element) => element.lensHandle === isLensCollect?.lensHandle
+      );
+
+      if (!isHandlePresent) {
+        // add to the lensCollectRecipientRef
+        lensCollectRecipientRef.current.push({
+          elementId: store.selectedElements[0].id,
+          lensHandle: isLensCollect?.lensHandle,
+        });
+      }
+    }
   };
 
   useEffect(() => {

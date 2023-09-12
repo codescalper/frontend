@@ -57,6 +57,9 @@ const ContextProvider = ({ children }) => {
   // for split revenue eligible address/recipient
   const referredFromRef = useRef([]);
 
+  // for split revenue eligible lens collect address/handles
+  const lensCollectRecipientRef = useRef([{ elementId: "", lensHandle: "" }]);
+
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
 
@@ -83,6 +86,7 @@ const ContextProvider = ({ children }) => {
     isError: false,
     message: "",
   });
+
 
   return (
     <Context.Provider
@@ -127,6 +131,9 @@ const ContextProvider = ({ children }) => {
 
         // user public templates states
         referredFromRef,
+
+        // for split revenue eligible lens collect address/handles
+        lensCollectRecipientRef,
 
         // for lens monetization price error
         priceError,
