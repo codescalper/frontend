@@ -23,6 +23,8 @@ import LoadingAnimatedComponent from "./elements/LoadingAnimatedComponent";
 import InputErrorMsg from "./elements/InputErrorMsg";
 import CustomPopover from "./elements/CustomPopover";
 
+import CustomHorizontalScroller from "./core/CustomHorizontalScroller/CustomHorizontalScroller";
+
 export {
   CustomImageComponent,
   OnboardingSteps,
@@ -44,4 +46,5 @@ export {
   Tabs,
   InputErrorMsg,
   CustomPopover,
+  CustomHorizontalScroller
 };

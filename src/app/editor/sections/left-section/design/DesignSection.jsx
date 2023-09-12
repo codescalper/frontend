@@ -39,6 +39,7 @@ import {
   replaceImageURL,
 } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
+import { fnPageHasElements } from "../../../../../utils/fnPageHasElements";
 
 // Design card component start - 23Jun2023
 
@@ -302,13 +303,8 @@ export const DesignPanel = () => {
 
       <Button
         className="m-2 p-1"
-        onClick={() => {
-          const ids = store.pages
-            .map((page) => page.children.map((child) => child.id))
-            .flat();
-          const hasObjects = ids?.length;
-
-          if (hasObjects) {
+        onClick={() => {          
+          if (fnPageHasElements) {
             setModal({ ...modal, isOpen: true, isNewDesign: true });
           }
         }}

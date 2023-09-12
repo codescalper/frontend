@@ -9,6 +9,7 @@ import { DateTimePicker } from "@atlaskit/datetime-picker";
 import { getFromLocalStorage } from "../../../../../utils";
 import { Context } from "../../../../../context/ContextProvider";
 import BsX from '@meronex/icons/bs/BsX';
+import { Textarea } from "@material-tailwind/react";
 
 const ShareSection = () => {
   const { address, isConnected } = useAccount();
@@ -98,11 +99,12 @@ const ShareSection = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between"></div>
           <div className="space-x-2">
-            <textarea
+            <Textarea
+              label="Description" 
               onChange={(e) => setPostDescription(e.target.value)}
               value={postDescription}
-              placeholder="Write a description..."
-              className="border border-b-4 w-full h-40 mb-2 text-lg outline-none p-2 ring-0 focus:ring-2 rounded-lg"
+              // placeholder="Write a description..."
+              // className="border border-b-4 w-full h-40 mb-2 text-lg outline-none p-2 ring-0 focus:ring-2 rounded-lg"
             />
 
             <div className="flex flex-row">

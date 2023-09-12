@@ -126,9 +126,9 @@ const CompSearch = () => {
             return (
               <div
                 onClick={() => setQuery(val)}
-                className="m-1 mb-2 px-2 py-1 text-xs rounded-md cursor-pointer bg-slate-200 hover:bg-slate-100"
+                className="m-1 mb-2 px-2 py-1 text-xs rounded-md cursor-pointer bg-blue-50 hover:bg-blue-100"
               >
-                {val}
+                {val} 
               </div>
             );
           })}
@@ -138,7 +138,7 @@ const CompSearch = () => {
           return (
             <div
               onClick={() => setQuery(val)}
-              className="m-1 mb-2 px-2 py-1 text-xs rounded-md cursor-pointer bg-slate-200 hover:bg-slate-100 overflow-x-scroll"
+              className="m-1 mb-2 px-2 py-1 text-xs rounded-md cursor-pointer bg-blue-50 hover:bg-blue-100 overflow-x-scroll"
             >
               {val}
             </div>

@@ -32,6 +32,7 @@ import {
 } from "./sections/left-section";
 import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
+import { SpeedDialX } from "./common/elements/SpeedDial";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -283,6 +284,11 @@ const Editor = () => {
                 <ZoomButtons store={store} />
 
                 {/* Quick Tour on the main page */}
+                <div className="flex flex-row ">
+                
+                {/* Speed Dial - Clear Canvas, etc.. Utility Fns */}
+                  <SpeedDialX/>
+             
                 <div
                   className="m-1 ml-2 flex flex-row justify-end align-middle cursor-pointer"
                   onClick={async () => {
@@ -297,8 +303,10 @@ const Editor = () => {
                   }}
                 >
                   <FcIdea className="m-2" size="16" />{" "}
-                  <div className="m-2 ml-0 text-sm text-yellow-600">
+                  <div className="w-full m-2 ml-0 text-sm text-yellow-600">
                     Need an intro?
+                  </div>
+
                   </div>
                 </div>
               </div>

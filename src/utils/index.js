@@ -11,5 +11,6 @@ export * from "./replaceUrl";
 export * from "./waitFn";
 export * from "./validation";
 export * from "./firstLetterCapital";
+export * from "./fnPageHasElements";
 export * from "./random3Digits";
 export * from "./resetAllVariables";

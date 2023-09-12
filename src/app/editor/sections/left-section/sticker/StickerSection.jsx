@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Icon } from "@blueprintjs/core";
 import { isAlive } from "mobx-state-tree";
 import { svgToURL } from "polotno/utils/svg";
@@ -7,11 +7,12 @@ import { getKey } from "polotno/utils/validate-key";
 import styled from "polotno/utils/styled";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
-import { getAssetByQuery } from "../../../../../services";
+import { getAssetByQuery, getBGAssetByQuery, getFeaturedPropsAssets } from "../../../../../services";
 import { SearchComponent, StickerReacTour, Tabs } from "../../../common";
 import { useStore } from "../../../../../hooks";
 import { LoadingAnimatedComponent } from "../../../common";
 import { firstLetterCapital, fnLoadMore } from "../../../../../utils";
+import FeaturedTabs from "../../../common/core/FeaturedTabs";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -99,8 +100,9 @@ export const CompIcons = () => {
             return;
           }
           // const { width, height } = await getImageSize(item.images['256']);
-          const width = item.vector_sizes[0].size_width;
-          const height = item.vector_sizes[0].size_height;
+          const width = item.vector_sizes[0].size_width /5;
+          const height = item.vector_sizes[0].size_height /5;
+          
           store.history.transaction(async () => {
             const x = (pos?.x || store.width / 2) - width / 2;
             const y = (pos?.y || store.height / 2) - height / 2;
@@ -130,8 +132,23 @@ export const CompIcons = () => {
 };
 
 export const StickerPanel = () => {
-  const [currentTab, setCurrentTab] = useState("tabIcons");
-  const tabArray = ["supducks", "lens", "nouns", "fls", "assorted"];
+  const [currentTab, setCurrentTab] = useState("tabLensjump");
+  const tabArray = ["supducks", "lens", "nouns", "fls", "assorted", ];
+  const store = useStore();
+  console.log(store.openedSidePanel);  
+
+  // const fnGetPropsAssets = () => {
+  //   if(isFeatured){  
+  //     return getFeaturedPropsAssets();
+  //   } 
+  //   else{
+  //     return getAssetByQuery(currentTab);
+  //   }  
+  // } 
+
+  // useEffect(() => {
+  //   fnGetPropsAssets; 
+  // }, [currentTab, isFeatured]);
 
   return (
     <div className="flex flex-col h-full">
@@ -147,6 +164,18 @@ export const StickerPanel = () => {
           // icon="social-media"
         >
           Icons
+        </Button>
+
+        <Button
+          small
+          className="m-2 rounded-md px-1/2"
+          onClick={() => {
+            setCurrentTab("tabLensjump");
+          }}
+          active={currentTab === "tabLensjump"}
+          // icon="social-media"
+        >
+          Lensjump
         </Button>
 
         {tabArray.map((tab, index) => (
@@ -169,13 +198,12 @@ export const StickerPanel = () => {
 
       {currentTab === "tabIcons" ? (
         <CompIcons />
-      ) : (
-        <Tabs
-          defaultQuery={currentTab}
-          getAssetsFn={getAssetByQuery}
-          queryKey="stickers"
-          isBackground={false}
-        />
+      ) : 
+      currentTab === "tabLensjump" ? (
+        <FeaturedTabs defaultQuery={"lensjump"} getAssetsFn={getFeaturedPropsAssets} queryKey="stickers" />
+      ) 
+      : (
+        <Tabs defaultQuery={currentTab} getAssetsFn={getAssetByQuery} queryKey="stickers" />
       )}
     </div>
   );

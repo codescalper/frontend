@@ -38,7 +38,7 @@ const NFTPanel = () => {
   const { isConnected } = useAccount();
   return (
     <div className="h-full flex flex-col">
-      <h1 className="text-lg">NFT</h1>
+      {/* <h1 className="text-lg">NFT</h1> */}
       <div className="flex items-center justify-center space-x-2 my-4">
         <button
           className={`w-1/2 border border-black px-2 py-1 rounded-md ${
@@ -480,6 +480,7 @@ const WalletNFT = () => {
                     key={index}
                     preview={item?.imageURL}
                     isLensCollect={lensCollect(item?.title)}
+                    // isLensCollect={"lenspost.xyz"}
                   />
                 );
               })}

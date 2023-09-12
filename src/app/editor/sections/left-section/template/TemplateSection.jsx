@@ -4,6 +4,8 @@ import { SectionTab } from "polotno/side-panel";
 import { TemplatesIcon } from "../../../../../assets";
 import {
   getAllTemplates,
+  getFeaturedBGAssets,
+  getFeaturedPropsAssets,
   getUserPublicTemplates,
 } from "../../../../../services";
 import { Card } from "@blueprintjs/core";
@@ -14,6 +16,7 @@ import {
   ErrorComponent,
   MessageComponent,
   SearchComponent,
+  CustomHorizontalScroller,
   LoadMoreComponent,
 } from "../../../common";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -30,6 +33,12 @@ import { LoadingAnimatedComponent } from "../../../common";
 import SuChevronRightDouble from "@meronex/icons/su/SuChevronRightDouble";
 import { Context } from "../../../../../context/ContextProvider";
 
+import {CompCarousel} from "./components/Carousel"
+// import CustomHorizontalScroller from "../../../common/";
+import MdcImageMultipleOutline from '@meronex/icons/mdc/MdcImageMultipleOutline';
+import Lottie from "lottie-react";
+import animationData from "../../../../../assets/lottie/featured/featured.json"
+import { SecNameHeading } from "../../../common/elements/SecNameHeading";
 // Design card component start
 
 const DesignCard = ({
@@ -101,7 +110,7 @@ const DesignCard = ({
 
   return (
     <Card
-      className="rounded-lg"
+      className="rounded-lg h-fit"
       style={{ margin: "4px", padding: "0px", position: "relative" }}
       interactive
       onDragEnd={handleClickOrDrop}
@@ -133,27 +142,40 @@ const DesignCard = ({
           alt="Preview Image"
         />
       </div>
+        {/* if tab === "user" and  modal.isTokengate === true */}
+        {tab === "user" && isGated && (
+          <div
+            className="bg-white absolute top-2 left-2 p-1 rounded-md "
+            // style={{ position: "absolute", top: "8px", left: "8px" }}
+          >
+            <Icon icon="endorsed" intent="primary" size={16} />
+          </div>
+        )}
 
-      {/* if tab === "user" and  modal.isTokengate === true */}
-      {tab === "user" && isGated && (
-        <div
-          className="bg-white absolute top-2 left-2 p-1 rounded-md "
-          // style={{ position: "absolute", top: "8px", left: "8px" }}
-        >
-          <Icon icon="endorsed" intent="primary" size={16} />
-        </div>
-      )}
+        {/* Display that it contains multiple pages */}
+        {tab === "user" && preview.length > 1 && (
+          <div className="absolute bottom-2 right-2 bg-white px-1/2 py-1/2 rounded-md">
+            <SuChevronRightDouble size="24" />
+            {/* <BsChevronDoubleRight size="24" /> */}
+          </div>
+        
+        // }
+        // {/* Display that it is a Featured Template */}
+        // {/* {isFeatured && 
+        
+        // <div className="absolute text-sm top-4 bg-blue-100 left-0
+        // border-t-1 border-l-1 text-center border-yellow-200 rounded-md transform -rotate-45
+        // "> 
+        //   <div className="text-xs bg-[#6baaf1cb] w-16 rounded-sm">Featured</div>
 
-      {/* Display that it contains multiple pages */}
-      {tab === "user" && preview.length > 1 && (
-        <div className="absolute bottom-2 right-2 bg-white px-1/2 py-1/2 rounded-md">
-          <SuChevronRightDouble size="24" />
-          {/* <BsChevronDoubleRight size="24" /> */}
-        </div>
-      )}
-    </Card>
-  );
-};
+        // </div> 
+        // }   
+        // */}
+        )}
+      </Card>
+    );
+  }
+
 
 // Design card component end
 
@@ -163,7 +185,7 @@ const TemplatePanel = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="text-lg">Templates</h1>
+      {/* <h1 className="text-lg">Templates</h1> */}
       <div className="flex items-center justify-center space-x-2 my-4">
         <button
           className={`w-1/2 border px-2 py-1 border-black rounded-md ${
@@ -171,7 +193,7 @@ const TemplatePanel = () => {
           } ${tab === "lenspost" && "text-white"}`}
           onClick={() => setTab("lenspost")}
         >
-          Lenspost Templates
+          Lenspost Drops
         </button>
         <button
           className={`w-1/2 border border-black px-2 py-1 rounded-md ${
@@ -180,7 +202,7 @@ const TemplatePanel = () => {
           onClick={() => setTab("user")}
         >
           {/* User Templates */}
-          Community Pool
+          Community Drops
         </button>
       </div>
       {tab === "lenspost" && <LenspostTemplates />}
@@ -189,10 +211,12 @@ const TemplatePanel = () => {
   );
 };
 
+
 const LenspostTemplates = () => {
   const store = useStore();
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
+  
   const [modal, setModal] = useState({
     isOpen: false,
     isTokengated: false,
@@ -235,7 +259,7 @@ const LenspostTemplates = () => {
   return (
     <>
       {modal?.isOpen && modal?.isNewDesign && (
-        <CompModal
+        <CompModal 
           modal={modal}
           setModal={setModal}
           ModalTitle={"Are you sure to replace the canvas with this template?"}
@@ -256,9 +280,21 @@ const LenspostTemplates = () => {
         setQuery={setQuery}
         placeholder={"Search templates"}
       />
+    {/*  Featured Panels :  */}
+    {/*  Featured Panels : Templates */}
+      <SecNameHeading animationData={animationData} name={"Featured Backgrounds"} hasSeeMore seeMoreFn={()=> store.openSidePanel("Backgrounds2")} />
+      <CompCarousel />  
+
+    {/*  Featured Panels : Stickers */}
+      <SecNameHeading animationData={animationData} name={"Featured Stickers"} hasSeeMore seeMoreFn={()=> store.openSidePanel("Elements")} />
+      <CustomHorizontalScroller />
+ 
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
+
+      <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
+
       {data?.pages[0]?.data?.length > 0 ? (
         <>
           <div className="overflow-y-auto grid grid-cols-2">
@@ -337,6 +373,8 @@ const UserTemplates = () => {
   if (isLoading) {
     return <LoadingAnimatedComponent />;
   }
+
+  console.log(data);
 
   return (
     <>
@@ -419,12 +457,13 @@ const UserTemplates = () => {
   );
 };
 
+
 // define the new custom section
 const TemplateSection = {
   name: "Templates",
   Tab: (props) => (
     <SectionTab name="Templates" {...props}>
-      <TemplatesIcon />
+      <MdcImageMultipleOutline size="16" />
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes
