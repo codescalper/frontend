@@ -58,7 +58,13 @@ const ContextProvider = ({ children }) => {
   const referredFromRef = useRef([]);
 
   // for split revenue eligible lens collect address/handles
-  const lensCollectRecipientRef = useRef([{ elementId: "", lensHandle: "" }]);
+  const lensCollectRecipientRef = useRef([{ elementId: "", handle: "" }]);
+
+  // for split revenue eligible assets holder address/handles
+  const assetsRecipientRef = useRef([{ elementId: "", handle: "" }]);
+
+  // The parent Array for split revenue eligible assets holder address/handles
+  const parentRecipientRef = useRef([]);
 
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -86,7 +92,6 @@ const ContextProvider = ({ children }) => {
     isError: false,
     message: "",
   });
-
 
   return (
     <Context.Provider
@@ -134,6 +139,12 @@ const ContextProvider = ({ children }) => {
 
         // for split revenue eligible lens collect address/handles
         lensCollectRecipientRef,
+
+        // for split revenue eligible assets holder address/handles
+        assetsRecipientRef,
+
+        // The parent Array for split revenue eligible assets holder address/handles
+        parentRecipientRef,
 
         // for lens monetization price error
         priceError,

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Icon } from "@blueprintjs/core";
 import { isAlive } from "mobx-state-tree";
 import { svgToURL } from "polotno/utils/svg";
@@ -7,11 +7,12 @@ import { getKey } from "polotno/utils/validate-key";
 import styled from "polotno/utils/styled";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
-import { getAssetByQuery } from "../../../../../services";
+import { getAssetByQuery, getFeaturedAssets } from "../../../../../services";
 import { SearchComponent, StickerReacTour, Tabs } from "../../../common";
 import { useStore } from "../../../../../hooks";
 import { LoadingAnimatedComponent } from "../../../common";
 import { firstLetterCapital, fnLoadMore } from "../../../../../utils";
+import FeaturedTabs from "../../../common/core/FeaturedTabs";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -99,8 +100,9 @@ export const CompIcons = () => {
             return;
           }
           // const { width, height } = await getImageSize(item.images['256']);
-          const width = item.vector_sizes[0].size_width;
-          const height = item.vector_sizes[0].size_height;
+          const width = item.vector_sizes[0].size_width / 5;
+          const height = item.vector_sizes[0].size_height / 5;
+
           store.history.transaction(async () => {
             const x = (pos?.x || store.width / 2) - width / 2;
             const y = (pos?.y || store.height / 2) - height / 2;
@@ -130,25 +132,13 @@ export const CompIcons = () => {
 };
 
 export const StickerPanel = () => {
-  const [currentTab, setCurrentTab] = useState("tabIcons");
-  const tabArray = ["supducks", "lens", "nouns", "fls", "assorted"];
+  const [currentTab, setCurrentTab] = useState("lensjump");
+  const tabArray = ["lensjump", "supducks", "lens", "nouns", "fls", "assorted"];
+  const store = useStore();
 
   return (
     <div className="flex flex-col h-full">
       <div className="mx-2 mt-1" id="stickerCategories">
-
-        <Button
-          small
-          className="m-2 rounded-md px-1/2"
-          onClick={() => {
-            setCurrentTab("tabIcons");
-          }}
-          active={currentTab === "tabIcons"}
-          // icon="social-media"
-        >
-          Icons
-        </Button>
-
         {tabArray.map((tab, index) => (
           <Button
             small
@@ -163,7 +153,17 @@ export const StickerPanel = () => {
             {firstLetterCapital(tab)}
           </Button>
         ))}
-        {/* </div> */}
+
+        <Button
+          small
+          className="m-2 rounded-md px-1/2"
+          onClick={() => {
+            setCurrentTab("tabIcons");
+          }}
+          active={currentTab === "tabIcons"}
+        >
+          Icons
+        </Button>
       </div>
       <StickerReacTour />
 
@@ -172,9 +172,10 @@ export const StickerPanel = () => {
       ) : (
         <Tabs
           defaultQuery={currentTab}
-          getAssetsFn={getAssetByQuery}
+          getAssetsFn={
+            currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
+          }
           queryKey="stickers"
-          isBackground={false}
         />
       )}
     </div>

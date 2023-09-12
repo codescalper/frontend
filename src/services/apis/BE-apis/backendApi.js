@@ -506,11 +506,15 @@ export const getUserPublicTemplates = async (page) => {
 // asset apis start
 // need auth token (jwt)
 export const getAssetByQuery = async (query, page) => {
-  const result = await api.get(`${API}/asset/?query=${query}`, {
-    params: {
-      page: page,
-    },
-  });
+  // const result = await api.get(`${API}/asset/?query=${query}`, {
+  const result = await api.get(
+    `${API}/asset/?type=props&author=${query}&page=1`,
+    {
+      params: {
+        page: page,
+      },
+    }
+  );
 
   return {
     data: result?.data?.assets,
@@ -523,11 +527,15 @@ export const getAssetByQuery = async (query, page) => {
 // BG asset apis start
 // need auth token (jwt)
 export const getBGAssetByQuery = async (query, page) => {
-  const result = await api.get(`${API}/asset/background?author=${query}`, {
-    params: {
-      page: page,
-    },
-  });
+  // const result = await api.get(`${API}/asset/background?author=${query}`, {
+  const result = await api.get(
+    `${API}/asset/?type=background&author=${query}&page=1`,
+    {
+      params: {
+        page: page,
+      },
+    }
+  );
   return {
     data: result?.data?.assets,
     nextPage: result?.data?.nextPage,
@@ -621,3 +629,23 @@ export const deleteUserAsset = async (id) => {
   return result?.data;
 };
 // upload section end
+
+// --------
+// Featured Assets :
+
+// Featured Backgrounds and stockers
+export const getFeaturedAssets = async (page, type) => {
+  const result = await api.get(`${API}/asset/featured`, {
+    params: {
+      page: page,
+      type: type,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
+};
+

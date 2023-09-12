@@ -23,18 +23,19 @@ img {
 
 /* css for designed scrollbar start here */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 2px;
+  height: 1px;
 }
-
+ 
 /* Track */
 /* ::-webkit-scrollbar-track {
   background: #f1f1f1;
-} */
+} */ 
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: #999;
-  border-radius: 10px;
+  border-radius: 2px;
 }
 
 /* Handle on hover */
@@ -65,6 +66,11 @@ img {
   background-color: rgb(255, 255, 255);
 }
 
+/* Styling the sidebar background */
+.go1621360228{
+  border: none;  
+  /* background-color: #e8e8ec !important; */
+}
 /* Styling Sidepanel Icons on Click */
 
 .go2941063172:hover,
@@ -78,6 +84,16 @@ img {
   width:32px !important;
 }  */
 
+/* Styling the Sidebar Icons */
+/* .go1430256704{
+  background-color: white;
+  margin: 8px;
+  scrollbar-width: 0 !important;
+} */
+
+.go1311524876{
+  /* margin: 8px; */
+}
 /* Styling the Sidepanel */
 .bp4-navbar {
   border-radius: 8px;

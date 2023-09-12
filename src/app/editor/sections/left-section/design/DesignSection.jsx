@@ -39,6 +39,7 @@ import {
   replaceImageURL,
 } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
+import { fnPageHasElements } from "../../../../../utils/fnPageHasElements";
 
 // Design card component start - 23Jun2023
 
@@ -138,13 +139,16 @@ export const DesignPanel = () => {
   const {
     fastPreview,
     contextCanvasIdRef,
-    referredFromRef,
     setPostDescription,
     setEnabled,
     setIsShareOpen,
     setMenu,
     isShareOpen,
     menu,
+    referredFromRef,
+    lensCollectRecipientRef,
+    assetsRecipientRef,
+    parentRecipientRef,
   } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [modal, setModal] = useState({
@@ -235,6 +239,9 @@ export const DesignPanel = () => {
     store.clear({ keepHistory: true });
     store.addPage();
     referredFromRef.current = [];
+    lensCollectRecipientRef.current = [];
+    assetsRecipientRef.current = [];
+    parentRecipientRef.current = [];
     contextCanvasIdRef.current = null;
     setEnabled({
       chargeForCollect: false,
@@ -303,12 +310,7 @@ export const DesignPanel = () => {
       <Button
         className="m-2 p-1"
         onClick={() => {
-          const ids = store.pages
-            .map((page) => page.children.map((child) => child.id))
-            .flat();
-          const hasObjects = ids?.length;
-
-          if (hasObjects) {
+          if (fnPageHasElements) {
             setModal({ ...modal, isOpen: true, isNewDesign: true });
           }
         }}

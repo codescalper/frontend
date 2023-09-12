@@ -14,7 +14,9 @@ import {
   ErrorComponent,
   MessageComponent,
   SearchComponent,
+  CustomHorizontalScroller,
   LoadMoreComponent,
+  CompCarousel,
 } from "../../../common";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
@@ -30,6 +32,11 @@ import { LoadingAnimatedComponent } from "../../../common";
 import SuChevronRightDouble from "@meronex/icons/su/SuChevronRightDouble";
 import { Context } from "../../../../../context/ContextProvider";
 
+// import CustomHorizontalScroller from "../../../common/";
+import MdcImageMultipleOutline from "@meronex/icons/mdc/MdcImageMultipleOutline";
+import Lottie from "lottie-react";
+import animationData from "../../../../../assets/lottie/featured/featured.json";
+import { SecNameHeading } from "../../../common/elements/SecNameHeading";
 // Design card component start
 
 const DesignCard = ({
@@ -101,7 +108,7 @@ const DesignCard = ({
 
   return (
     <Card
-      className="rounded-lg"
+      className="rounded-lg h-fit"
       style={{ margin: "4px", padding: "0px", position: "relative" }}
       interactive
       onDragEnd={handleClickOrDrop}
@@ -132,7 +139,6 @@ const DesignCard = ({
           alt="Preview Image"
         />
       </div>
-
       {/* if tab === "user" and  modal.isTokengate === true */}
       {tab === "user" && isGated && (
         <div
@@ -149,6 +155,7 @@ const DesignCard = ({
           <SuChevronRightDouble size="24" />
           {/* <BsChevronDoubleRight size="24" /> */}
         </div>
+
       )}
     </Card>
   );
@@ -162,7 +169,7 @@ const TemplatePanel = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="text-lg">Templates</h1>
+      {/* <h1 className="text-lg">Templates</h1> */}
       <div className="flex items-center justify-center space-x-2 my-4">
         <button
           className={`w-1/2 border px-2 py-1 border-black rounded-md ${
@@ -170,7 +177,7 @@ const TemplatePanel = () => {
           } ${tab === "lenspost" && "text-white"}`}
           onClick={() => setTab("lenspost")}
         >
-          Lenspost Templates
+          Lenspost Drops
         </button>
         <button
           className={`w-1/2 border border-black px-2 py-1 rounded-md ${
@@ -179,7 +186,7 @@ const TemplatePanel = () => {
           onClick={() => setTab("user")}
         >
           {/* User Templates */}
-          Community Pool
+          Community Drops
         </button>
       </div>
       {tab === "lenspost" && <LenspostTemplates />}
@@ -192,6 +199,7 @@ const LenspostTemplates = () => {
   const store = useStore();
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
+
   const [modal, setModal] = useState({
     isOpen: false,
     isTokengated: false,
@@ -255,9 +263,31 @@ const LenspostTemplates = () => {
         setQuery={setQuery}
         placeholder={"Search templates"}
       />
+      {/*  Featured Panels :  */}
+      {/*  Featured Panels : Templates */}
+      <SecNameHeading
+        animationData={animationData}
+        name={"Featured Backgrounds"}
+        hasSeeMore
+        seeMoreFn={() => store.openSidePanel("Backgrounds2")}
+      />
+      <CompCarousel type="background" />
+
+      {/*  Featured Panels : Stickers */}
+      <SecNameHeading
+        animationData={animationData}
+        name={"Featured Stickers"}
+        hasSeeMore
+        seeMoreFn={() => store.openSidePanel("Elements")}
+      />
+      <CustomHorizontalScroller type="stickers" />
+
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
+
+      <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
+
       {data?.pages[0]?.data?.length > 0 ? (
         <>
           <div className="overflow-y-auto grid grid-cols-2">
@@ -423,7 +453,7 @@ const TemplateSection = {
   name: "Templates",
   Tab: (props) => (
     <SectionTab name="Templates" {...props}>
-      <TemplatesIcon />
+      <MdcImageMultipleOutline size="16" />
     </SectionTab>
   ),
   // we need observer to update component automatically on any store changes

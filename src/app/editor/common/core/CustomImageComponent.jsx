@@ -13,14 +13,16 @@ import { Context } from "../../../../context/ContextProvider";
 const CustomImageComponent = ({
   preview,
   dimensions,
-  isBackground,
   hasOptionBtn,
   onDelete,
   isLensCollect,
+  featuredWallet,
+  changeCanvasDimension,
+  recipientWallet,
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");
-  const { lensCollectRecipientRef } = useContext(Context);
+  const { lensCollectRecipientRef, assetsRecipientRef } = useContext(Context);
 
   // convert to base64
   const getBase64 = async (image) => {
@@ -41,31 +43,57 @@ const CustomImageComponent = ({
     return image?.includes(".svg");
   };
 
-  // function for drop/add image on canvas
+  // Function to add image on the Canvas/Page
   const handleClickOrDrop = () => {
-    // set the canvas size if it's a background image
-    isBackground && store.setSize(dimensions[0], dimensions[1]);
+    // {
+    //   !json &&
+    // Instead of `isBackground`, use `changeCanvasDimension`
+
+    changeCanvasDimension && store.setSize(dimensions[0], dimensions[1]);
+
+    var widthOnCanvas = 400;
+    var heightOnCanvas = 400;
+
+    if (dimensions && dimensions[0] && dimensions[1]) {
+      widthOnCanvas = dimensions[0] / 4;
+      heightOnCanvas = dimensions[1] / 4;
+    }
 
     store.activePage?.addElement({
       type: "image",
       src: base64Data, //Image URL
-      width: isBackground ? store.width : 300,
-      height: isBackground ? store.height : 300,
-      x: isBackground ? 0 : store.width / 4,
-      y: isBackground ? 0 : store.height / 4,
+      width: changeCanvasDimension ? store.width : widthOnCanvas,
+      height: changeCanvasDimension ? store.height : heightOnCanvas,
+      x: changeCanvasDimension ? 0 : store.width / 4,
+      y: changeCanvasDimension ? 0 : store.height / 4,
     });
 
     // if nft is a lens collect, add it to the referredFromRef but check if a handle is already
     if (isLensCollect?.isLensCollect) {
       const isHandlePresent = lensCollectRecipientRef.current.some(
-        (element) => element.lensHandle === isLensCollect?.lensHandle
+        (element) => element.handle === isLensCollect?.lensHandle
       );
 
       if (!isHandlePresent) {
         // add to the lensCollectRecipientRef
         lensCollectRecipientRef.current.push({
           elementId: store.selectedElements[0].id,
-          lensHandle: isLensCollect?.lensHandle,
+          handle: isLensCollect?.lensHandle,
+        });
+      }
+    }
+
+    // if nft is a featured bg, and has recipientWallet / wallet address/handle is present, add it to the assetsRecipientRef but check if a handle is already
+    if (recipientWallet) {
+      const isHandlePresent = assetsRecipientRef.current.some(
+        (element) => element.handle === recipientWallet
+      );
+
+      if (!isHandlePresent) {
+        // add to the assetsRecipientRef
+        assetsRecipientRef.current.push({
+          elementId: store.selectedElements[0].id,
+          handle: recipientWallet + ".lens",
         });
       }
     }
@@ -89,63 +117,86 @@ const CustomImageComponent = ({
   }, [preview]);
 
   return (
-    <Card
-      className="relative p-0 m-1 rounded-lg"
-      interactive
-      onDragEnd={handleClickOrDrop}
-      onClick={handleClickOrDrop}
-    >
-      <div className="rounded-lg overflow-hidden">
-        <LazyLoadImage
-          placeholderSrc={base64Data}
-          effect="blur"
-          src={base64Data}
-          alt="Preview Image"
-        />
-      </div>
+    <>
+      <Card
+        className="relative p-0 m-1 rounded-lg h-fit"
+        interactive
+        onDragEnd={handleClickOrDrop}
+        onClick={handleClickOrDrop}
+      >
+        <div className="rounded-lg overflow-hidden">
+          <LazyLoadImage
+            placeholderSrc={base64Data}
+            effect="blur"
+            src={base64Data}
+            alt="Preview Image"
+          />
+        </div>
 
-      {/* if nft is a lens collect */}
-      {isLensCollect?.isLensCollect && (
-        <>
+        {/* if nft is a lens collect */}
+        {isLensCollect?.isLensCollect && (
+          <>
+            <div
+              title="Collected from Lens"
+              // className="bg-[#E1F26C] p-1 rounded-lg absolute top-2 left-2 opacity-60 hover:opacity-100"
+              className="text-white text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96 hover:opacity-80"
+              onClick={(e) => {
+                e.stopPropagation();
+
+                const onlyHandle = isLensCollect?.lensHandle.split("@")[1];
+                window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
+              }}
+            >
+              {isLensCollect?.lensHandle}
+            </div>
+          </>
+        )}
+
+        {/* Wallet Address on Featured BGs */}
+
+        {featuredWallet && (
+          <>
+            <div
+              title="Collected from Lens"
+              className="text-white text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96 hover:opacity-80"
+              onClick={(e) => {
+                e.stopPropagation();
+                const onlyHandle = isLensCollect?.lensHandle.split("@")[1];
+                window.open(
+                  `https://lenster.xyz/u/${featuredWallet}`,
+                  "_blank"
+                );
+              }}
+            >
+              {featuredWallet}
+            </div>
+          </>
+        )}
+
+        {hasOptionBtn && (
           <div
-            title="Collected from Lens"
-            className="bg-[#E1F26C] p-1 rounded-lg absolute top-2 left-2 opacity-60 hover:opacity-100"
+            style={{ position: "absolute", top: "5px", right: "5px" }}
             onClick={(e) => {
               e.stopPropagation();
-
-              const onlyHandle = isLensCollect?.lensHandle.split("@")[1];
-              window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
             }}
           >
-            {isLensCollect?.lensHandle}
+            <Popover2
+              content={
+                <Menu>
+                  <MenuItem icon="trash" text="Delete" onClick={onDelete} />
+                </Menu>
+              }
+              position={Position.BOTTOM}
+            >
+              <div id="makePublic">
+                <Button icon="more" />
+              </div>
+            </Popover2>
           </div>
-        </>
-      )}
-
-      {hasOptionBtn && (
-        <div
-          style={{ position: "absolute", top: "5px", right: "5px" }}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <Popover2
-            content={
-              <Menu>
-                <MenuItem icon="trash" text="Delete" onClick={onDelete} />
-              </Menu>
-            }
-            position={Position.BOTTOM}
-          >
-            <div id="makePublic">
-              <Button icon="more" />
-            </div>
-          </Popover2>
-        </div>
-      )}
-    </Card>
+        )}
+      </Card>
+    </>
   );
 };
-
 export default CustomImageComponent;
 // Custom Image card component end - 23Jun2023
