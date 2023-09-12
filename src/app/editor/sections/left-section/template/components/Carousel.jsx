@@ -53,8 +53,9 @@ const CompCarousel = ({ type }) => {
                 isLensCollect={item?.wallet}
                 // json = {mapData?.data} //Pass Json if it's a template
                 preview={item?.image}
-                dimensions={item?.dimensions}
-                changeCanvasDimension
+                dimensions={item?.dimensions != null && item.dimensions}
+                recipientWallet={item?.wallet}
+                changeCanvasDimension={true}
                 className="h-full w-full object-cover overflow-hidden"
               />
             );
