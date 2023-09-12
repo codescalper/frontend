@@ -24,6 +24,7 @@ import InputErrorMsg from "./elements/InputErrorMsg";
 import CustomPopover from "./elements/CustomPopover";
 
 import CustomHorizontalScroller from "./core/CustomHorizontalScroller/CustomHorizontalScroller";
+import CompCarousel from "../sections/left-section/template/components/Carousel";
 
 export {
   CustomImageComponent,
@@ -46,5 +47,6 @@ export {
   Tabs,
   InputErrorMsg,
   CustomPopover,
-  CustomHorizontalScroller
+  CustomHorizontalScroller,
+  CompCarousel,
 };

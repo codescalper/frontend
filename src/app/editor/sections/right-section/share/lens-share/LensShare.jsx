@@ -64,7 +64,6 @@ const LensShare = () => {
     stFormattedTime,
     stFormattedDate,
     contextCanvasIdRef,
-    referredFromRef,
     isShareOpen,
     setIsShareOpen,
     priceError,
@@ -75,6 +74,10 @@ const LensShare = () => {
     setEditionError,
     referralError,
     setReferralError,
+    referredFromRef,
+    lensCollectRecipientRef,
+    assetsRecipientRef,
+    parentRecipientRef,
   } = useContext(Context);
   const {
     data: signature,
@@ -125,7 +128,7 @@ const LensShare = () => {
             // check the dispatcher
             // if true => sharePost
             if (dispatcherState.message === true) {
-              // sharePost("lens");
+              sharePost("lens");
               // console.log("share on lens");
             } else if (dispatcherState.message === false) {
               // else => set the dispatcher
@@ -527,6 +530,9 @@ const LensShare = () => {
           store.clear({ keepHistory: true });
           store.addPage();
           referredFromRef.current = [];
+          lensCollectRecipientRef.current = [];
+          assetsRecipientRef.current = [];
+          parentRecipientRef.current = [];
           contextCanvasIdRef.current = null;
           setEnabled({
             chargeForCollect: false,
@@ -643,7 +649,7 @@ const LensShare = () => {
   };
 
   const restrictRecipientInput = (e, index, recipient) => {
-    const isText = referredFromRef.current.includes(recipient.recipient);
+    const isText = parentRecipientRef.current.includes(recipient.recipient);
     const isUserAddress = recipient.recipient === address;
     if (index === 0 || isText) {
       if (isUserAddress) {
@@ -655,7 +661,7 @@ const LensShare = () => {
   };
 
   const restrictRemoveRecipient = (index, recipient) => {
-    const istext = referredFromRef.current.includes(recipient.recipient);
+    const istext = parentRecipientRef.current.includes(recipient.recipient);
     if (index === 0 || istext) {
       return true;
     }
@@ -664,7 +670,7 @@ const LensShare = () => {
   // add recipient to the split list
   useEffect(() => {
     if (isConnected) {
-      const updatedRecipients = referredFromRef.current
+      const updatedRecipients = parentRecipientRef.current
         .slice(0, 4)
         .map((item) => ({
           recipient: item,
@@ -675,7 +681,7 @@ const LensShare = () => {
         ...prevEnabled,
         splitRevenueRecipients: [
           {
-            recipient: "@lenspostxyz.lens",
+            recipient: "@lenspostxyz.test",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
           ...updatedRecipients,

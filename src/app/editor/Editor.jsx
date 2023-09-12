@@ -14,7 +14,7 @@ import { createCanvas, updateCanvas } from "../../services";
 import { Context } from "../../context/ContextProvider";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fnMessage, loadFile, base64Stripper } from "../../utils";
+import { fnMessage, loadFile, base64Stripper, wait } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
 import { useStore } from "../../hooks";
@@ -68,8 +68,15 @@ const Editor = () => {
   const { address, isConnected } = useAccount();
   const canvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
-  const { contextCanvasIdRef, setEnabled, setFastPreview, referredFromRef } =
-    useContext(Context);
+  const {
+    contextCanvasIdRef,
+    setEnabled,
+    setFastPreview,
+    referredFromRef,
+    lensCollectRecipientRef,
+    assetsRecipientRef,
+    parentRecipientRef,
+  } = useContext(Context);
   const timeoutRef = useRef(null);
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
@@ -113,7 +120,67 @@ const Editor = () => {
   });
   // 03June2023
 
-  // store the canvas and update it by traching the changes start
+  // funtion for checking + updating the lens collect recipient
+  const checkLensCollectRecipient = () => {
+    const lensCollectRecipientRefArr = lensCollectRecipientRef.current;
+
+    // array of indexes for the elements that are not found
+    const notFoundIndexes = [];
+
+    // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
+    for (let i = 0; i < lensCollectRecipientRefArr.length; i++) {
+      const item = lensCollectRecipientRefArr[i];
+      const foundElement = store.getElementById(item.elementId);
+
+      if (!foundElement) {
+        notFoundIndexes.push(i);
+      }
+    }
+
+    // Generate a new array by removing elements at notFoundIndexes
+    const newArray = lensCollectRecipientRefArr.filter(
+      (_, index) => !notFoundIndexes.includes(index)
+    );
+
+    // update the lensCollectRecipientRef
+    lensCollectRecipientRef.current = newArray;
+
+    // get the lensHandle from the newArray
+    const newArrayLensHandles = newArray.map((item) => item.handle);
+    return newArrayLensHandles;
+  };
+
+  // funtion for checking + updating the assets recipient
+  const checkAssetsRecipient = () => {
+    const assetsRecipientRefArr = assetsRecipientRef.current;
+
+    // array of indexes for the elements that are not found
+    const notFoundIndexes = [];
+
+    // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
+    for (let i = 0; i < assetsRecipientRefArr.length; i++) {
+      const item = assetsRecipientRefArr[i];
+      const foundElement = store.getElementById(item.elementId);
+
+      if (!foundElement) {
+        notFoundIndexes.push(i);
+      }
+    }
+
+    // Generate a new array by removing elements at notFoundIndexes
+    const newArray = assetsRecipientRefArr.filter(
+      (_, index) => !notFoundIndexes.includes(index)
+    );
+
+    // update the lensCollectRecipientRef
+    assetsRecipientRef.current = newArray;
+
+    // get the lensHandle from the newArray
+    const newArrayHandles = newArray.map((item) => item.handle);
+    return newArrayHandles;
+  };
+
+  // store the canvas and update it by traching the changes
   const requestSave = () => {
     // if save is already requested - do nothing
     if (timeoutRef.current) {
@@ -141,16 +208,22 @@ const Editor = () => {
 
       // save it to the backend
       if (canvasChildren?.length > 0) {
-        // add the currrent user address to the referredFromRef but do not duplicate it
-        if (!referredFromRef.current.includes(address)) {
-          referredFromRef.current = [address, ...referredFromRef.current];
-        }
+        // create an array of all the recipients then make it uniq
+        const parentArray = [
+          address,
+          ...referredFromRef.current.slice(1), // remove the first element its the current user address
+          ...checkLensCollectRecipient(),
+          ...checkAssetsRecipient(),
+        ];
+
+        // update the parentRecipientRef to the uniq values
+        parentRecipientRef.current = [...new Set(parentArray)];
 
         // create new canvas
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
-            referredFrom: referredFromRef.current,
+            referredFrom: parentRecipientRef.current,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -170,7 +243,7 @@ const Editor = () => {
             id: canvasIdRef.current,
             data: json,
             isPublic: false,
-            referredFrom: referredFromRef.current,
+            referredFrom: parentRecipientRef.current,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -200,8 +273,6 @@ const Editor = () => {
       off();
     };
   }, []);
-
-  // store the canvas and update it by traching the changes end
 
   // funtion for fast preview
   useEffect(() => {
@@ -285,28 +356,26 @@ const Editor = () => {
 
                 {/* Quick Tour on the main page */}
                 <div className="flex flex-row ">
-                
-                {/* Speed Dial - Clear Canvas, etc.. Utility Fns */}
-                  <SpeedDialX/>
-             
-                <div
-                  className="m-1 ml-2 flex flex-row justify-end align-middle cursor-pointer"
-                  onClick={async () => {
-                    setCurrentStep(0);
-                    if (isConnected) {
-                      setIsOpen(true);
-                      setSteps(OnboardingStepsWithShare);
-                    } else {
-                      setIsOpen(true);
-                      setSteps(OnboardingSteps);
-                    }
-                  }}
-                >
-                  <FcIdea className="m-2" size="16" />{" "}
-                  <div className="w-full m-2 ml-0 text-sm text-yellow-600">
-                    Need an intro?
-                  </div>
+                  {/* Speed Dial - Clear Canvas, etc.. Utility Fns */}
+                  <SpeedDialX />
 
+                  <div
+                    className="m-1 ml-2 flex flex-row justify-end align-middle cursor-pointer"
+                    onClick={async () => {
+                      setCurrentStep(0);
+                      if (isConnected) {
+                        setIsOpen(true);
+                        setSteps(OnboardingStepsWithShare);
+                      } else {
+                        setIsOpen(true);
+                        setSteps(OnboardingSteps);
+                      }
+                    }}
+                  >
+                    <FcIdea className="m-2" size="16" />{" "}
+                    <div className="w-full m-2 ml-0 text-sm text-yellow-600">
+                      Need an intro?
+                    </div>
                   </div>
                 </div>
               </div>

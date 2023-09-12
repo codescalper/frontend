@@ -4,8 +4,6 @@ import { SectionTab } from "polotno/side-panel";
 import { TemplatesIcon } from "../../../../../assets";
 import {
   getAllTemplates,
-  getFeaturedBGAssets,
-  getFeaturedPropsAssets,
   getUserPublicTemplates,
 } from "../../../../../services";
 import { Card } from "@blueprintjs/core";
@@ -18,6 +16,7 @@ import {
   SearchComponent,
   CustomHorizontalScroller,
   LoadMoreComponent,
+  CompCarousel,
 } from "../../../common";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
@@ -33,11 +32,10 @@ import { LoadingAnimatedComponent } from "../../../common";
 import SuChevronRightDouble from "@meronex/icons/su/SuChevronRightDouble";
 import { Context } from "../../../../../context/ContextProvider";
 
-import {CompCarousel} from "./components/Carousel"
 // import CustomHorizontalScroller from "../../../common/";
-import MdcImageMultipleOutline from '@meronex/icons/mdc/MdcImageMultipleOutline';
+import MdcImageMultipleOutline from "@meronex/icons/mdc/MdcImageMultipleOutline";
 import Lottie from "lottie-react";
-import animationData from "../../../../../assets/lottie/featured/featured.json"
+import animationData from "../../../../../assets/lottie/featured/featured.json";
 import { SecNameHeading } from "../../../common/elements/SecNameHeading";
 // Design card component start
 
@@ -135,47 +133,33 @@ const DesignCard = ({
           effect="blur"
           src={
             tab === "user"
-              ? replaceImageURL(preview[stPreviewIndex]) +
-                `?token=${randomThreeDigitNumber()}`
+              ? replaceImageURL(preview[stPreviewIndex])
               : replaceImageURL(preview)
           }
           alt="Preview Image"
         />
       </div>
-        {/* if tab === "user" and  modal.isTokengate === true */}
-        {tab === "user" && isGated && (
-          <div
-            className="bg-white absolute top-2 left-2 p-1 rounded-md "
-            // style={{ position: "absolute", top: "8px", left: "8px" }}
-          >
-            <Icon icon="endorsed" intent="primary" size={16} />
-          </div>
-        )}
+      {/* if tab === "user" and  modal.isTokengate === true */}
+      {tab === "user" && isGated && (
+        <div
+          className="bg-white absolute top-2 left-2 p-1 rounded-md "
+          // style={{ position: "absolute", top: "8px", left: "8px" }}
+        >
+          <Icon icon="endorsed" intent="primary" size={16} />
+        </div>
+      )}
 
-        {/* Display that it contains multiple pages */}
-        {tab === "user" && preview.length > 1 && (
-          <div className="absolute bottom-2 right-2 bg-white px-1/2 py-1/2 rounded-md">
-            <SuChevronRightDouble size="24" />
-            {/* <BsChevronDoubleRight size="24" /> */}
-          </div>
-        
-        // }
-        // {/* Display that it is a Featured Template */}
-        // {/* {isFeatured && 
-        
-        // <div className="absolute text-sm top-4 bg-blue-100 left-0
-        // border-t-1 border-l-1 text-center border-yellow-200 rounded-md transform -rotate-45
-        // "> 
-        //   <div className="text-xs bg-[#6baaf1cb] w-16 rounded-sm">Featured</div>
+      {/* Display that it contains multiple pages */}
+      {tab === "user" && preview.length > 1 && (
+        <div className="absolute bottom-2 right-2 bg-white px-1/2 py-1/2 rounded-md">
+          <SuChevronRightDouble size="24" />
+          {/* <BsChevronDoubleRight size="24" /> */}
+        </div>
 
-        // </div> 
-        // }   
-        // */}
-        )}
-      </Card>
-    );
-  }
-
+      )}
+    </Card>
+  );
+};
 
 // Design card component end
 
@@ -211,12 +195,11 @@ const TemplatePanel = () => {
   );
 };
 
-
 const LenspostTemplates = () => {
   const store = useStore();
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
-  
+
   const [modal, setModal] = useState({
     isOpen: false,
     isTokengated: false,
@@ -259,7 +242,7 @@ const LenspostTemplates = () => {
   return (
     <>
       {modal?.isOpen && modal?.isNewDesign && (
-        <CompModal 
+        <CompModal
           modal={modal}
           setModal={setModal}
           ModalTitle={"Are you sure to replace the canvas with this template?"}
@@ -280,15 +263,25 @@ const LenspostTemplates = () => {
         setQuery={setQuery}
         placeholder={"Search templates"}
       />
-    {/*  Featured Panels :  */}
-    {/*  Featured Panels : Templates */}
-      <SecNameHeading animationData={animationData} name={"Featured Backgrounds"} hasSeeMore seeMoreFn={()=> store.openSidePanel("Backgrounds2")} />
-      <CompCarousel />  
+      {/*  Featured Panels :  */}
+      {/*  Featured Panels : Templates */}
+      <SecNameHeading
+        animationData={animationData}
+        name={"Featured Backgrounds"}
+        hasSeeMore
+        seeMoreFn={() => store.openSidePanel("Backgrounds2")}
+      />
+      <CompCarousel type="background" />
 
-    {/*  Featured Panels : Stickers */}
-      <SecNameHeading animationData={animationData} name={"Featured Stickers"} hasSeeMore seeMoreFn={()=> store.openSidePanel("Elements")} />
-      <CustomHorizontalScroller />
- 
+      {/*  Featured Panels : Stickers */}
+      <SecNameHeading
+        animationData={animationData}
+        name={"Featured Stickers"}
+        hasSeeMore
+        seeMoreFn={() => store.openSidePanel("Elements")}
+      />
+      <CustomHorizontalScroller type="stickers" />
+
       {/* New Design card start - 23Jun2023 */}
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
@@ -374,8 +367,6 @@ const UserTemplates = () => {
     return <LoadingAnimatedComponent />;
   }
 
-  console.log(data);
-
   return (
     <>
       {/* Show Modal only if it's tokengated, i.e: `isTokengated` & `stOpenTokengatedModal` === true */}
@@ -456,7 +447,6 @@ const UserTemplates = () => {
     </>
   );
 };
-
 
 // define the new custom section
 const TemplateSection = {
