@@ -78,11 +78,25 @@ const CustomImageComponent = ({
       }
     }
 
+    var widthOnCanvas = 400;
+    var heightOnCanvas = 400;
+
+    if(dimensions && dimensions[0] && dimensions[1]){
+      console.log("dimensions", dimensions);
+      
+      widthOnCanvas = dimensions[0] /4 ;
+      heightOnCanvas = dimensions[1] /4 ;
+    }
+    // else {
+    //   widthOnCanvas = 400;
+    //   heightOnCanvas = 400;
+    // }
+    
     store.activePage?.addElement({
       type: "image",
       src: base64Data, //Image URL
-      width: changeCanvasDimension ? store.width : 300,
-      height: changeCanvasDimension ? store.height : 300,
+      width: changeCanvasDimension ? store.width : widthOnCanvas,
+      height: changeCanvasDimension ? store.height : heightOnCanvas,
       x: changeCanvasDimension ? 0 : store.width / 4,
       y: changeCanvasDimension ? 0 : store.height / 4,
     });

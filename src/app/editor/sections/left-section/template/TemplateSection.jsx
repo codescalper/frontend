@@ -36,7 +36,9 @@ import { Context } from "../../../../../context/ContextProvider";
 import {CompCarousel} from "./components/Carousel"
 // import CustomHorizontalScroller from "../../../common/";
 import MdcImageMultipleOutline from '@meronex/icons/mdc/MdcImageMultipleOutline';
- 
+import Lottie from "lottie-react";
+import animationData from "../../../../../assets/lottie/featured/featured.json"
+import { SecNameHeading } from "../../../common/elements/SecNameHeading";
 // Design card component start
 
 const DesignCard = ({
@@ -108,7 +110,7 @@ const DesignCard = ({
 
   return (
     <Card
-      className="rounded-lg"
+      className="rounded-lg h-fit"
       style={{ margin: "4px", padding: "0px", position: "relative" }}
       interactive
       onDragEnd={handleClickOrDrop}
@@ -280,18 +282,11 @@ const LenspostTemplates = () => {
       />
     {/*  Featured Panels :  */}
     {/*  Featured Panels : Templates */}
-      <div className="flex flex-row justify-between m-2 ">
-          <div className=""> Featured Backgrounds </div>
-          <div onClick={()=> store.openSidePanel("Backgrounds2")} className="cursor-pointer opacity-80 hover:opacity-60"> See more</div>
-      </div>
-
+      <SecNameHeading animationData={animationData} name={"Featured Backgrounds"} hasSeeMore seeMoreFn={()=> store.openSidePanel("Backgrounds2")} />
       <CompCarousel />  
 
     {/*  Featured Panels : Stickers */}
-      <div className="flex flex-row justify-between m-2 mt-2">
-          <div className=""> Featured Stickers </div>
-          <div onClick={()=> store.openSidePanel("Elements")} className="cursor-pointer opacity-80 hover:opacity-60"> See more</div>
-      </div>
+      <SecNameHeading animationData={animationData} name={"Featured Stickers"} hasSeeMore seeMoreFn={()=> store.openSidePanel("Elements")} />
       <CustomHorizontalScroller />
  
       {/* New Design card start - 23Jun2023 */}
