@@ -681,7 +681,7 @@ const LensShare = () => {
         ...prevEnabled,
         splitRevenueRecipients: [
           {
-            recipient: "@lenspostxyz.test",
+            recipient: "@lenspostxyz.lens",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
           ...updatedRecipients,
