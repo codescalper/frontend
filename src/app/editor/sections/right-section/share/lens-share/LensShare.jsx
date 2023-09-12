@@ -632,7 +632,7 @@ const LensShare = () => {
         });
       } else {
         setReferralError({
-          isError: true,
+          isError: false,
           message: "",
         });
       }
