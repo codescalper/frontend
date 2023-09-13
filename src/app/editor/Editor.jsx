@@ -211,13 +211,14 @@ const Editor = () => {
         // create an array of all the recipients then make it uniq
         const parentArray = [
           address,
-          ...referredFromRef.current.slice(1), // remove the first element its the current user address
+          ...referredFromRef.current,
           ...checkLensCollectRecipient(),
           ...checkAssetsRecipient(),
         ];
 
         // update the parentRecipientRef to the uniq values
         parentRecipientRef.current = [...new Set(parentArray)];
+    
 
         // create new canvas
         if (!canvasIdRef.current) {
