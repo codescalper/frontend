@@ -67,34 +67,20 @@ const CustomImageComponent = ({
       y: changeCanvasDimension ? 0 : store.height / 4,
     });
 
-    // if nft is a lens collect, add it to the referredFromRef but check if a handle is already
+    // if nft is a lens collect, add it to the referredFromRef
     if (isLensCollect?.isLensCollect) {
-      const isHandlePresent = lensCollectRecipientRef.current.some(
-        (element) => element.handle === isLensCollect?.lensHandle
-      );
-
-      if (!isHandlePresent) {
-        // add to the lensCollectRecipientRef
-        lensCollectRecipientRef.current.push({
-          elementId: store.selectedElements[0].id,
-          handle: isLensCollect?.lensHandle,
-        });
-      }
+      lensCollectRecipientRef.current.push({
+        elementId: store.selectedElements[0]?.id,
+        handle: isLensCollect?.lensHandle,
+      });
     }
 
-    // if nft is a featured bg, and has recipientWallet / wallet address/handle is present, add it to the assetsRecipientRef but check if a handle is already
+    // if nft is a featured bg, and has recipientWallet / wallet address/handle is present, add it to the assetsRecipientRef
     if (recipientWallet) {
-      const isHandlePresent = assetsRecipientRef.current.some(
-        (element) => element.handle === recipientWallet
-      );
-
-      if (!isHandlePresent) {
-        // add to the assetsRecipientRef
-        assetsRecipientRef.current.push({
-          elementId: store.selectedElements[0].id,
-          handle: recipientWallet + ".lens",
-        });
-      }
+      assetsRecipientRef.current.push({
+        elementId: store.selectedElements[0]?.id,
+        handle: recipientWallet + ".lens",
+      });
     }
   };
 
@@ -143,8 +129,8 @@ const CustomImageComponent = ({
                 e.stopPropagation();
 
                 const onlyHandle =
-                  isLensCollect?.lensHandle.split("@")[1] ||
-                  recipientWallet.split("@")[1];
+                  isLensCollect?.lensHandle?.split("@")[1] ||
+                  recipientWallet?.split("@")[1];
                 window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
               }}
             >

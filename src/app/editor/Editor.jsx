@@ -201,7 +201,7 @@ const Editor = () => {
       }
 
       if (canvasChildren?.length === 0) {
-        console.log("Canvas is empty. Its stopped from saving");
+        console.log("Canvas is empty. Its stopped saving");
         canvasIdRef.current = null;
         contextCanvasIdRef.current = null;
       }
@@ -218,7 +218,10 @@ const Editor = () => {
 
         // update the parentRecipientRef to the uniq values
         parentRecipientRef.current = [...new Set(parentArray)];
-    
+        // console.log("lensWithElements", lensCollectRecipientRef.current);
+        // console.log("lensRecipients", checkLensCollectRecipient());
+        // console.log("parentRecipientRef", parentRecipientRef.current);
+        // return;
 
         // create new canvas
         if (!canvasIdRef.current) {
@@ -231,6 +234,7 @@ const Editor = () => {
               if (res?.status === "success") {
                 canvasIdRef.current = res?.id;
                 contextCanvasIdRef.current = res?.id;
+                console.log(res?.message);
               }
             })
             .catch((err) => {
@@ -249,7 +253,7 @@ const Editor = () => {
           })
             .then((res) => {
               if (res?.status === "success") {
-                lastSavedJsonRef.current = json;
+                console.log(res?.message);
               }
             })
             .catch((err) => {
