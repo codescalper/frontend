@@ -666,7 +666,6 @@ const LensShare = () => {
       return true;
     }
   };
-
   // add recipient to the split list
   useEffect(() => {
     if (isConnected) {
@@ -681,7 +680,10 @@ const LensShare = () => {
         ...prevEnabled,
         splitRevenueRecipients: [
           {
-            recipient: "@lenspostxyz.lens",
+            recipient:
+              ENVIRONMENT === "production"
+                ? "@lenspostxyz.lens"
+                : "@lenspostxyz.test",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
           ...updatedRecipients,
@@ -1074,7 +1076,9 @@ const LensShare = () => {
           <button
             disabled={sharing}
             onClick={handleLensClick}
-            className={`flex items-center justify-center w-full text-md ${sharing ? "bg-[#eef4c6]" : "bg-[#E1F26C]"}  py-2 h-10 rounded-md outline-none`}
+            className={`flex items-center justify-center w-full text-md ${
+              sharing ? "bg-[#eef4c6]" : "bg-[#E1F26C]"
+            }  py-2 h-10 rounded-md outline-none`}
           >
             <BsLink45Deg className="m-2" />
             Share Now
