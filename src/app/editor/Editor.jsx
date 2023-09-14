@@ -218,10 +218,10 @@ const Editor = () => {
 
         // update the parentRecipientRef to the uniq values
         parentRecipientRef.current = [...new Set(parentArray)];
-        // console.log("lensWithElements", lensCollectRecipientRef.current);
-        // console.log("lensRecipients", checkLensCollectRecipient());
-        // console.log("parentRecipientRef", parentRecipientRef.current);
-        // return;
+        console.log("lensWithElements", lensCollectRecipientRef.current);
+        console.log("lensRecipients", checkLensCollectRecipient());
+        console.log("parentRecipientRef", parentRecipientRef.current);
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {
