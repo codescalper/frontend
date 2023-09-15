@@ -28,7 +28,7 @@ const CustomHorizontalScroller = ({ type }) => {
     queryKey: [type === "stickers" && "stickers", "lensjump"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
-      getFeaturedAssets(pageParam, type === "stickers" && "props"),
+      getFeaturedAssets(type === "stickers" && "props", pageParam),
   });
 
   const scrollWrapperRef = useRef(null);

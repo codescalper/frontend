@@ -69,6 +69,9 @@ const CustomImageComponent = ({
 
     // if nft is a lens collect, add it to the referredFromRef
     if (isLensCollect?.isLensCollect) {
+      // if it is a the handle is @lenspostxyz.len, then don't add
+      if (isLensCollect?.lensHandle?.startsWith("@lenspostxyz")) return;
+
       lensCollectRecipientRef.current.push({
         elementId: store.selectedElements[0]?.id,
         handle: isLensCollect?.lensHandle,

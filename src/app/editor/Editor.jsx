@@ -218,6 +218,7 @@ const Editor = () => {
 
         // update the parentRecipientRef to the uniq values
         parentRecipientRef.current = [...new Set(parentArray)];
+
         // console.log("lensWithElements", lensCollectRecipientRef.current);
         // console.log("lensRecipients", checkLensCollectRecipient());
         // console.log("parentRecipientRef", parentRecipientRef.current);
@@ -325,6 +326,8 @@ const Editor = () => {
       off();
     };
   }, []);
+
+  
 
   return (
     <>

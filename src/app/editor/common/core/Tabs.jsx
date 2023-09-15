@@ -25,7 +25,7 @@ const Tabs = ({
   const requestTimeout = useRef();
   const { isDisconnected, address } = useAccount();
 
-  // const [isLensjump, setIsLensjump ] = useState(false);
+  const getType = queryKey === "stickers" ? "props" : "background";
 
   const {
     data,
@@ -40,13 +40,9 @@ const Tabs = ({
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
       defaultQuery === "lensjump"
-        ? getAssetsFn(
-            pageParam,
-            queryKey === "stickers" ? "props" : "background"
-          )
-        : getAssetsFn(delayedQuery || defaultQuery, pageParam),
+        ? getAssetsFn(getType, pageParam)
+        : getAssetsFn(getType, delayedQuery || defaultQuery, pageParam),
   });
-
 
   useEffect(() => {
     requestTimeout.current = setTimeout(() => {
