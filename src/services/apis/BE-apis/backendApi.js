@@ -51,6 +51,8 @@ api.interceptors.request.use(
   }
 );
 
+const limit = 10;
+
 // authentication apis start
 // no need auth token (jwt)
 export const login = async (walletAddress, signature, message) => {
@@ -505,16 +507,16 @@ export const getUserPublicTemplates = async (page) => {
 
 // asset apis start
 // need auth token (jwt)
-export const getAssetByQuery = async (query, page) => {
+export const getAssetByQuery = async (type, author, page) => {
   // const result = await api.get(`${API}/asset/?query=${query}`, {
-  const result = await api.get(
-    `${API}/asset/?type=props&author=${query}&page=1`,
-    {
-      params: {
-        page: page,
-      },
-    }
-  );
+  const result = await api.get(`${API}/asset`, {
+    params: {
+      type: type,
+      author: author,
+      limit: limit,
+      page: page,
+    },
+  });
 
   return {
     data: result?.data?.assets,
@@ -522,26 +524,25 @@ export const getAssetByQuery = async (query, page) => {
     totalPage: result?.data?.totalPage,
   };
 };
+
+// Featured Backgrounds and stockers
+export const getFeaturedAssets = async (type, page) => {
+  const result = await api.get(`${API}/asset/featured`, {
+    params: {
+      type: type,
+      limit: limit,
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
+};
+
 // asset apis end
-
-// BG asset apis start
-// need auth token (jwt)
-export const getBGAssetByQuery = async (query, page) => {
-  // const result = await api.get(`${API}/asset/background?author=${query}`, {
-  const result = await api.get(
-    `${API}/asset/?type=background&author=${query}&page=1`,
-    {
-      params: {
-        page: page,
-      },
-    }
-  );
-  return {
-    data: result?.data?.assets,
-    nextPage: result?.data?.nextPage,
-    totalPage: result?.data?.totalPage,
-  };
-};
 
 // Remove Background API
 export const getRemovedBgS3Link = async (query) => {
@@ -629,23 +630,3 @@ export const deleteUserAsset = async (id) => {
   return result?.data;
 };
 // upload section end
-
-// --------
-// Featured Assets :
-
-// Featured Backgrounds and stockers
-export const getFeaturedAssets = async (page, type) => {
-  const result = await api.get(`${API}/asset/featured`, {
-    params: {
-      page: page,
-      type: type,
-    },
-  });
-
-  return {
-    data: result?.data?.assets,
-    nextPage: result?.data?.nextPage,
-    totalPage: result?.data?.totalPage,
-  };
-};
-

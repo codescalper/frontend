@@ -22,7 +22,7 @@ const CompCarousel = ({ type }) => {
     queryKey: [type === "background" && "background", "lensjump"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
-      getFeaturedAssets(pageParam, type === "background" && "background"),
+      getFeaturedAssets(type === "background" && "background", pageParam),
   });
 
   return (

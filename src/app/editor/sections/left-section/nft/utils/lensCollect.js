@@ -1,4 +1,4 @@
-export const lensCollect = (title) => {
+export const lensCollect = (title, id, item) => {
   if (title.split(".")[1] === "lens") {
     const match = title?.match(/@[\w.]+/);
 
