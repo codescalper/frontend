@@ -64,7 +64,7 @@ const DesignCard = ({
 
   return (
     <Card
-      className="relative p-0 m-1 rounded-lg"
+      className="relative p-0 m-1 rounded-lg h-fit"
       interactive
       onDragEnd={handleClickOrDrop}
       onClick={handleClickOrDrop}
@@ -299,7 +299,7 @@ export const DesignPanel = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <h1 className="text-lg">My Files</h1>
+      {/* <h1 className="text-lg">My Files</h1> */}
 
       <Button
         className="m-2 p-1"

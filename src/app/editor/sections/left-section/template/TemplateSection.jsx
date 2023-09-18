@@ -37,7 +37,7 @@ import {CompCarousel} from "./components/Carousel"
 // import CustomHorizontalScroller from "../../../common/";
 import MdcImageMultipleOutline from '@meronex/icons/mdc/MdcImageMultipleOutline';
 import Lottie from "lottie-react";
-import animationData from "../../../../../assets/lottie/featured/featured.json"
+import animationData from "../../../../../assets/lottie/featured/featured1.json"
 import { SecNameHeading } from "../../../common/elements/SecNameHeading";
 // Design card component start
 

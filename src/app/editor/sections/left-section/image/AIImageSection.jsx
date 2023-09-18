@@ -21,6 +21,7 @@ import { AIIcon } from "../../../../../assets";
 import axios from "axios";
 import FormData from "form-data";
 import { useStore } from "../../../../../hooks";
+import { MessageComponent } from "../../../common";
 
 // Tab1 - Search Tab
 
@@ -189,9 +190,10 @@ const CompSearch = () => {
         />
       )}
       {stStatusCode === 429 && (
-        <div className="mt-4 p-2 text-orange-600 bg-orange-100 rounded-md">
-          You are Rate limited for now, Please check back after 60s
-        </div>
+        // <div className="mt-4 p-2 text-orange-600 bg-orange-100 rounded-md">
+        //   You are Rate limited for now, Please check back after 60s
+        // </div>
+        <MessageComponent message="You are Rate limited for now, Please check back after 60s" />
       )}
       {/* {!data && "Start exploring"} */}
     </>
