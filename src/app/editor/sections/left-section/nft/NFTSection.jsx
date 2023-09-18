@@ -479,8 +479,7 @@ const WalletNFT = () => {
                   <CustomImageComponent
                     key={index}
                     preview={item?.imageURL}
-                    isLensCollect={lensCollect(item?.title)}
-                    // isLensCollect={"lenspost.xyz"}
+                    isLensCollect={lensCollect(item?.title, item?.id, item)}
                   />
                 );
               })}

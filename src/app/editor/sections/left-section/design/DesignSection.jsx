@@ -76,7 +76,7 @@ const DesignCard = ({
           src={
             contextCanvasIdRef.current === design.id
               ? fastPreview[0]
-              : replaceImageURL(preview) + `?token=${randomThreeDigitNumber()}`
+              : replaceImageURL(preview)
           }
           alt="Preview Image"
         />
@@ -139,13 +139,16 @@ export const DesignPanel = () => {
   const {
     fastPreview,
     contextCanvasIdRef,
-    referredFromRef,
     setPostDescription,
     setEnabled,
     setIsShareOpen,
     setMenu,
     isShareOpen,
     menu,
+    referredFromRef,
+    lensCollectRecipientRef,
+    assetsRecipientRef,
+    parentRecipientRef,
   } = useContext(Context);
   const { isDisconnected, address, isConnected } = useAccount();
   const [modal, setModal] = useState({
@@ -236,6 +239,9 @@ export const DesignPanel = () => {
     store.clear({ keepHistory: true });
     store.addPage();
     referredFromRef.current = [];
+    lensCollectRecipientRef.current = [];
+    assetsRecipientRef.current = [];
+    parentRecipientRef.current = [];
     contextCanvasIdRef.current = null;
     setEnabled({
       chargeForCollect: false,
@@ -303,7 +309,7 @@ export const DesignPanel = () => {
 
       <Button
         className="m-2 p-1"
-        onClick={() => {          
+        onClick={() => {
           if (fnPageHasElements) {
             setModal({ ...modal, isOpen: true, isNewDesign: true });
           }

@@ -51,6 +51,8 @@ api.interceptors.request.use(
   }
 );
 
+const limit = 10;
+
 // authentication apis start
 // no need auth token (jwt)
 export const login = async (walletAddress, signature, message) => {
@@ -505,10 +507,13 @@ export const getUserPublicTemplates = async (page) => {
 
 // asset apis start
 // need auth token (jwt)
-export const getAssetByQuery = async (query, page) => {
+export const getAssetByQuery = async (type, author, page) => {
   // const result = await api.get(`${API}/asset/?query=${query}`, {
-    const result = await api.get(`${API}/asset/?type=props&author=${query}&page=1`, {
+  const result = await api.get(`${API}/asset`, {
     params: {
+      type: type,
+      author: author,
+      limit: limit,
       page: page,
     },
   });
@@ -519,23 +524,25 @@ export const getAssetByQuery = async (query, page) => {
     totalPage: result?.data?.totalPage,
   };
 };
+
+// Featured Backgrounds and stockers
+export const getFeaturedAssets = async (type, page) => {
+  const result = await api.get(`${API}/asset/featured`, {
+    params: {
+      type: type,
+      limit: limit,
+      page: page,
+    },
+  });
+
+  return {
+    data: result?.data?.assets,
+    nextPage: result?.data?.nextPage,
+    totalPage: result?.data?.totalPage,
+  };
+};
+
 // asset apis end
-
-// BG asset apis start
-// need auth token (jwt)
-export const getBGAssetByQuery = async (query, page) => {
-  // const result = await api.get(`${API}/asset/background?author=${query}`, {
-    const result = await api.get(`${API}/asset/?type=background&author=${query}&page=1`, {
-    params: {
-      page: page,
-    },
-  });
-  return {
-    data: result?.data?.assets,
-    nextPage: result?.data?.nextPage,
-    totalPage: result?.data?.totalPage,
-  };
-};
 
 // Remove Background API
 export const getRemovedBgS3Link = async (query) => {
@@ -623,91 +630,3 @@ export const deleteUserAsset = async (id) => {
   return result?.data;
 };
 // upload section end
-
-// --------
-// Featured Assets :
-
-// Featured Backgrounds
-export const getFeaturedBGAssets = async () => {
-  try {
-    const result = await api.get(
-      `${API}/asset/featured?&type=background`
-      // {
-        // params: {
-        //   page: page,
-        // },
-      // }
-    );
-    // console.log("result", result);
-    if (result?.status === 200) {
-      return {
-        data : result?.data,
-        nextPage: result?.data?.nextPage,
-        totalPage: result?.data?.totalPage,
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      console.log({ 401: error?.response?.statusText });
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }  
-  }
-};
-
-// Featured Props / Stickers
-export const getFeaturedPropsAssets = async () => {
-  try {
-    const result = await api.get(
-      `${API}/asset/featured?&type=props&page=1`
-    );
-
-    if (result?.status === 200) {
-      return {
-        data : result?.data,
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      console.log({ 401: error?.response?.statusText });
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }  
-  }
-};

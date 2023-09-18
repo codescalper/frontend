@@ -5,8 +5,7 @@ import animationData from "../../../../assets/lottie/emptystates/emptyState1.jso
 
 const ErrorComponent = ({ error }) => {
   return (
-    <div className="flex justify-center items-center">
-      
+    <div className="flex flex-col justify-center items-center">
       <Lottie animationData={animationData}/>
       <div className="text-center">
         <p className="text-gray-500 text-sm mt-4">{fnMessage(error)}</p>
