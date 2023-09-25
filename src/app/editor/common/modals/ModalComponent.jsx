@@ -84,7 +84,7 @@ const CompModal = ({
       <DialogFooter
         actions={
           <div>
-             {!modal?.isTokengate && !modal?.isNewDesign && (
+             {/* {!modal?.isTokengate && !modal?.isNewDesign && (
               <>
                 <Button intent="danger" text="Yes" onClick={onClickFunction} />
                 <Button
@@ -102,7 +102,7 @@ const CompModal = ({
                   }}
                 />
               </>
-            )}
+            )} */}
 
             {/* for new designs */}
             {modal?.isNewDesign && (

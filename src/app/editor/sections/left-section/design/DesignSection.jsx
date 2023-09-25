@@ -143,8 +143,6 @@ export const DesignPanel = () => {
     setEnabled,
     setIsShareOpen,
     setMenu,
-    isShareOpen,
-    menu,
     referredFromRef,
     lensCollectRecipientRef,
     assetsRecipientRef,
