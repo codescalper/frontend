@@ -307,7 +307,6 @@ export const getAllCanvas = async (page) => {
   const result = await api.get(`${API}/user/canvas`, {
     params: {
       page: page,
-      limit: 20,
     },
   });
 
@@ -513,7 +512,6 @@ export const getAssetByQuery = async (type, author, page) => {
     params: {
       type: type,
       author: author,
-      limit: limit,
       page: page,
     },
   });
@@ -530,7 +528,6 @@ export const getFeaturedAssets = async (type, page) => {
   const result = await api.get(`${API}/asset/featured`, {
     params: {
       type: type,
-      limit: limit,
       page: page,
     },
   });

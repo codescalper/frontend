@@ -18,11 +18,13 @@ import {
   OnboardingSteps,
   OnboardingStepsWithShare,
 } from "./editor/common";
+import { clearAllLocalStorageData } from "../utils";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const [initialRender, setInitialRender] = useState(true);
-  const { isLoading, setIsLoading, text, setText } = useContext(Context);
+  const { isLoading, setIsLoading, text, setText, posthog } =
+    useContext(Context);
   const [message, setMessage] = useState(
     "This message is to login you into lenspost dapp."
   );
@@ -40,20 +42,9 @@ const App = () => {
   const getUserAuthToken = getFromLocalStorage("userAuthToken");
   const getUserAddress = getFromLocalStorage("userAddress");
   const getUsertAuthTmestamp = getFromLocalStorage("usertAuthTmestamp");
-  const getLensAuth = getFromLocalStorage("lensAuth");
   const getifUserEligible = getFromLocalStorage("ifUserEligible");
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
   const navigate = useNavigate();
-
-  // remove all data from localstorage
-  const clearAllLocalStorageData = () => {
-    removeFromLocalStorage("userAuthToken");
-    removeFromLocalStorage("usertAuthTmestamp");
-    removeFromLocalStorage("userAddress");
-    removeFromLocalStorage("lensAuth");
-    removeFromLocalStorage("ifUserEligible");
-    removeFromLocalStorage("hasUserSeenTheApp");
-  };
 
   // remove jwt from localstorage if it is expired (24hrs)
   useEffect(() => {
@@ -67,6 +58,7 @@ const App = () => {
       const currentTimestamp = new Date().getTime();
 
       if (jwtTimestamp && currentTimestamp - jwtTimestamp > jwtExpiration) {
+        posthog.reset();
         clearAllLocalStorageData();
         setSession("");
         disconnect();
@@ -116,8 +108,9 @@ const App = () => {
         saveToLocalStorage("userAuthToken", res.jwt);
         saveToLocalStorage("usertAuthTmestamp", new Date().getTime());
         saveToLocalStorage("userAddress", address);
-        saveToLocalStorage("lensAuth", res?.lensHandle);
+        saveToLocalStorage("lensAuth", res?.message);
         setSession(res.jwt);
+        posthog.identify(address);
       } else if (res?.error) {
         disconnect();
         setText("");
@@ -186,7 +179,7 @@ const App = () => {
   useEffect(() => {
     // check if browser is Brave
     if (window.navigator?.brave) {
-      toast.warning("Keep Brave shields off for better experience")
+      toast.warning("Keep Brave shields off for better experience");
     }
   }, []);
 
