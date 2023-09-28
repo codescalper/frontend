@@ -14,3 +14,6 @@ export * from "./firstLetterCapital";
 export * from "./fnPageHasElements";
 export * from "./random3Digits";
 export * from "./resetAllVariables";
+export * from "./getAvatar";
+export * from "./addressCrop";
+export * from "./clearLocalStorage";

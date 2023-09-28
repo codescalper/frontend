@@ -44,9 +44,7 @@ const CustomImageComponent = ({
 
   // Function to add image on the Canvas/Page
   const handleClickOrDrop = () => {
-    // {
-    //   !json &&
-    // Instead of `isBackground`, use `changeCanvasDimension`
+      console.log(replaceImageURL(preview));
 
     changeCanvasDimension && store.setSize(dimensions[0], dimensions[1]);
 

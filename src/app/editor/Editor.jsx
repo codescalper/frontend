@@ -327,8 +327,6 @@ const Editor = () => {
     };
   }, []);
 
-  
-
   return (
     <>
       <div

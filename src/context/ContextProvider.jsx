@@ -1,4 +1,9 @@
 import React, { createContext, useRef, useState } from "react";
+import posthog from "posthog-js";
+
+posthog.init("phc_CvXLACFkyLdhJjiGLxlix6ihbGjumRvGjUFSinPWJYD", {
+  api_host: "https://eu.posthog.com",
+});
 
 export const Context = createContext();
 
@@ -161,6 +166,9 @@ const ContextProvider = ({ children }) => {
         // for lens monetization referral error
         referralError,
         setReferralError,
+
+        // posthog analytics
+        posthog,
       }}
     >
       {children}

@@ -87,8 +87,6 @@ const LensShare = () => {
     signMessage,
   } = useSignMessage();
   const getLensAuth = getFromLocalStorage("lensAuth");
-  const [duplicateAddressError, setDuplicateAddressError] = useState(false);
-  const [percentageError, setPercentageError] = useState("");
   const [sharing, setSharing] = useState(false);
 
   const { mutateAsync: shareOnLens } = useMutation({
