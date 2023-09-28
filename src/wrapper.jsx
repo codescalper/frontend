@@ -48,9 +48,9 @@ export const Wrapper = () => {
       <RainbowKitProvider chains={chains}>
         <ContextProvider>
           <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={
+            {/* <BrowserRouter> */}
+              {/* <Routes>
+                <Route path="/" element={ */}
                   <>     
                  {/* Reactour wrap around Start */}
 
@@ -83,12 +83,12 @@ export const Wrapper = () => {
 
                   {/* Reactour wrap around End */}
                   </>
-                }
-                />
-                <Route path="/ifUserEligible" element={<AuthComponent />} />
-              </Routes>
+                {/* }
+                /> */}
+                {/* <Route path="/ifUserEligible" element={<AuthComponent />} />
+              </Routes> */}
               {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
-            </BrowserRouter>
+            {/* </BrowserRouter> */}
           </QueryClientProvider>
         </ContextProvider>
       </RainbowKitProvider>

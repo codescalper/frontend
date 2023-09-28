@@ -26,11 +26,11 @@ img {
   width: 2px;
   height: 1px;
 }
- 
+
 /* Track */
 /* ::-webkit-scrollbar-track {
   background: #f1f1f1;
-} */ 
+} */
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
@@ -67,8 +67,8 @@ img {
 }
 
 /* Styling the sidebar background */
-.go1621360228{
-  border: none;  
+.go1621360228 {
+  border: none;
   /* background-color: #e8e8ec !important; */
 }
 /* Styling Sidepanel Icons on Click */
@@ -91,9 +91,21 @@ img {
   scrollbar-width: 0 !important;
 } */
 
-.go1311524876{
+.go1311524876 {
   /* margin: 8px; */
+  height: 1600px !important;
 }
+@media (max-width: 500px) {
+  .go1311524876.bp4-navbar {
+    position: absolute !important;
+    right: 56px !important;
+    bottom: 64px !important;
+    z-index: 100 !important;
+    /* height: 88vh !important;  */
+    width: 80% !important;
+  }
+}
+
 /* Styling the Sidepanel */
 .bp4-navbar {
   border-radius: 8px;
@@ -116,6 +128,15 @@ img {
   background-color: #e1f16ba1;
 }
 
+@media (max-width: 720px) {
+  .go1311524876.bp4-navbar {
+    height: 80vh !important;
+  }
+}
+
+/* .polotno-panel-container{
+  height: 1600px !important;
+} */
 .polotno-side-tabs-inner,
 .polotno-side-panel-tab {
   display: flex;
