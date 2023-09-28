@@ -1,6 +1,5 @@
 import React from 'react'
-import SplitPolicyHeader from "../../../../../../../assets/pngs/SplitPolicyHeader.png"
-import SplitPolicyBG from "../../../../../../../assets/pngs/SplitPolicyBG.png"
+import SplitPolicyHeader from "../../../../../../../assets/pngs/SplitpolicyHeader.png"
 
 export default function SplitPolicyCard() {
   return (
