@@ -1,12 +1,14 @@
 export const lensCollect = (title, id, item) => {
-  if (title.split(".")[1] === "lens") {
-    const match = title?.match(/@[\w.]+/);
+  // Check if the title ends with ".lens"
+  if (title.endsWith(".lens")) {
+    // Use a regex pattern to match the lens handle with or without the "@"
+    const match = title.match(/@?([\w.]+)\.lens$/);
 
     if (!match) return false;
 
     return {
       isLensCollect: true,
-      lensHandle: match[0],
+      lensHandle: "@" + match[1] + ".lens", // Use match[1] to capture the lens handle without "@" if it exists
     };
   } else {
     return false;

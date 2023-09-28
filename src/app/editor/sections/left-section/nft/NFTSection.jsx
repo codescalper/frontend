@@ -464,6 +464,7 @@ const WalletNFT = () => {
         query={query}
         setQuery={setQuery}
         placeholder="Search NFTs by id"
+        onClick={refreshNFTs}
       />
       <div className="h-88 overflow-y-auto">
         {isError ? (
@@ -477,8 +478,9 @@ const WalletNFT = () => {
                 .map((item, index) => {
                   return (
                     <CustomImageComponent
+                      id={item?.id}
                       key={index}
-                      preview={item?.imageURL}
+                      preview={item?.imageURL || item?.permaLink}
                       isLensCollect={lensCollect(item?.title, item?.id, item)}
                     />
                   );
