@@ -108,7 +108,7 @@ const App = () => {
         saveToLocalStorage("userAuthToken", res.jwt);
         saveToLocalStorage("usertAuthTmestamp", new Date().getTime());
         saveToLocalStorage("userAddress", address);
-        saveToLocalStorage("lensAuth", res?.message);
+        saveToLocalStorage("lensAuth", res?.lensHandle);
         setSession(res.jwt);
         posthog.identify(address);
       } else if (res?.error) {

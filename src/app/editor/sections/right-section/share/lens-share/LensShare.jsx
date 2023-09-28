@@ -49,10 +49,8 @@ import { SplitPolicyCard } from "./components";
 const LensShare = () => {
   const store = useStore();
   const { address, isConnected } = useAccount();
-  const [dispatcherState, setDispatcherState] = useState({
-    message: false,
-    profileId: "",
-  });
+  const getDispatcherStatus = getFromLocalStorage("dispatcher");
+
   const {
     setIsLoading,
     setText,
@@ -99,13 +97,15 @@ const LensShare = () => {
     mutationFn: lensAuthenticate,
   });
 
-  const { data: dispatcherData, refetch: reFetchDispatcherData } = useQuery({
-    queryKey: ["checkDispatcher"],
+  const { isLoading: checkingDispatcher } = useQuery({
     queryFn: checkDispatcher,
+    onSuccess: (data) => {
+      saveToLocalStorage("dispatcher", data?.message);
+    },
     onError: (err) => {
       console.log("checkDispatcher error: ", err);
     },
-    enabled: false,
+    enabled: getDispatcherStatus === true ? false : true,
   });
 
   // generating signature
@@ -133,10 +133,10 @@ const LensShare = () => {
           setTimeout(() => {
             // check the dispatcher
             // if true => sharePost
-            if (dispatcherData?.message === true) {
+            if (getDispatcherStatus === true) {
               sharePost("lens");
               // console.log("share on lens");
-            } else if (dispatcherData?.message === false) {
+            } else {
               // else => set the dispatcher
               setDispatcherFn();
             }
@@ -180,6 +180,7 @@ const LensShare = () => {
       // console.log("successfully set dispatcher: tx hash", tx.hash);
       // if tx.hash? => sharePost()
       if (tx.hash) {
+        saveToLocalStorage("dispatcher", true);
         setIsLoading(false);
         setText("");
         toast.success("Dispatcher enabled");
@@ -574,14 +575,21 @@ const LensShare = () => {
   };
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
-  const handleLensClick = () => {
 
+  const handleLensClick = async () => {
     if (isConnected && !getLensAuth) {
       generateSignature();
-    } else if (isConnected && getLensAuth && !dispatcherData?.message) {
-      setDispatcherFn();
-    } else if (isConnected && getLensAuth && dispatcherData?.message) {
-      sharePost("lens");
+    } else if (isConnected && getLensAuth) {
+      if (checkingDispatcher) {
+        // Wait for checkingDispatcher to finish loading
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Adjust the delay as needed
+      }
+
+      if (!getDispatcherStatus) {
+        setDispatcherFn();
+      } else {
+        sharePost("lens");
+      }
     }
   };
 

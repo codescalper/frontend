@@ -8,9 +8,10 @@ export const isEthAddress = (address) => {
 };
 
 export const isLensterUrl = (url) => {
-  const lensterPostRegex = /^https:\/\/lenster\.xyz\/posts\/0x[\s\S]*$/;
+  const lensterPostRegex = /^https:\/\/lenster\.xyz\/posts\/0x[\s\S]*$/
+  const heyPostregex =  /^https:\/\/hey\.xyz\/posts\/0x[\s\S]*$/;
 
-  if (lensterPostRegex.test(url)) {
+  if (lensterPostRegex.test(url) || heyPostregex.test(url)) {
     return true;
   } else {
     return false;
