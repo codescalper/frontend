@@ -8,7 +8,7 @@ import {
 } from "../utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
 import { Context } from "../context/ContextProvider";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
 
 import Editor from "./editor/Editor";
@@ -44,7 +44,7 @@ const App = () => {
   const getUsertAuthTmestamp = getFromLocalStorage("usertAuthTmestamp");
   const getifUserEligible = getFromLocalStorage("ifUserEligible");
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // remove jwt from localstorage if it is expired (24hrs)
   useEffect(() => {
@@ -143,12 +143,12 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    // if false redirect to ifUserEligible page
-    if (!isUserEligible()) {
-      navigate("/ifUserEligible");
-    }
-  }, []);
+  // useEffect(() => {
+  //   // if false redirect to ifUserEligible page
+  //   if (!isUserEligible()) {
+  //     navigate("/ifUserEligible");
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
