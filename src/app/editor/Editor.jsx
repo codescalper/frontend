@@ -222,7 +222,7 @@ const Editor = () => {
         // console.log("lensWithElements", lensCollectRecipientRef.current);
         // console.log("lensRecipients", checkLensCollectRecipient());
         // console.log("parentRecipientRef", parentRecipientRef.current);
-        return;
+        // return;
 
         // create new canvas
         if (!canvasIdRef.current) {

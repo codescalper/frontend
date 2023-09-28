@@ -1,4 +1,4 @@
-export const lensCollect = (title, id, item) => {
+export const lensCollect = (title) => {
   // Check if the title ends with ".lens"
   if (title.endsWith(".lens")) {
     // Use a regex pattern to match the lens handle with or without the "@"
