@@ -155,7 +155,6 @@ const DesignCard = ({
           <SuChevronRightDouble size="24" />
           {/* <BsChevronDoubleRight size="24" /> */}
         </div>
-
       )}
     </Card>
   );
@@ -410,30 +409,32 @@ const UserTemplates = () => {
       {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
       {/*   Pass these onto Line 25 */}
       {data?.pages[0]?.data?.length > 0 ? (
-        <div className="overflow-y-auto grid grid-cols-2">
-          {data?.pages
-            .flatMap((item) => item?.data)
-            .map((item) => {
-              return (
-                <DesignCard
-                  id={item?.id}
-                  referredFrom={item?.referredFrom}
-                  isGated={item?.isGated}
-                  gatedWith={item?.gatedWith}
-                  json={item?.data}
-                  ownerAddress={item?.ownerAddress}
-                  preview={
-                    item?.imageLink != null &&
-                    item?.imageLink.length > 0 &&
-                    item?.imageLink
-                  }
-                  key={item?.id}
-                  tab="user"
-                  modal={modal}
-                  setModal={setModal}
-                />
-              );
-            })}
+        <div className="h-full overflow-y-auto">
+          <div className="grid grid-cols-2 overflow-y-auto">
+            {data?.pages
+              .flatMap((item) => item?.data)
+              .map((item) => {
+                return (
+                  <DesignCard
+                    id={item?.id}
+                    referredFrom={item?.referredFrom}
+                    isGated={item?.isGated}
+                    gatedWith={item?.gatedWith}
+                    json={item?.data}
+                    ownerAddress={item?.ownerAddress}
+                    preview={
+                      item?.imageLink != null &&
+                      item?.imageLink.length > 0 &&
+                      item?.imageLink
+                    }
+                    key={item?.id}
+                    tab="user"
+                    modal={modal}
+                    setModal={setModal}
+                  />
+                );
+              })}
+          </div>
           <LoadMoreComponent
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
