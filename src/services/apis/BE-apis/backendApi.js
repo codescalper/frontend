@@ -401,42 +401,9 @@ export const getCollectionNftById = async (id, contractAddress) => {
 
 // utils apis
 export const checkDispatcher = async () => {
-  try {
-    const result = await api.get(`${API}/util/check-dispatcher`);
+  const result = await api.get(`${API}/util/check-dispatcher`);
 
-    if (result?.status === 200) {
-      if (result?.data?.status === "success") {
-        return {
-          message: result?.data?.message,
-          profileId: result?.data?.profileId,
-        };
-      }
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      console.log({ 401: error?.response?.statusText });
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  return result?.data;
 };
 
 export const setDispatcher = async () => {

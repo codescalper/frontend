@@ -11,6 +11,7 @@ import { Context } from "../../../../context/ContextProvider";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
+  id,
   preview,
   dimensions,
   hasOptionBtn,
@@ -44,8 +45,6 @@ const CustomImageComponent = ({
 
   // Function to add image on the Canvas/Page
   const handleClickOrDrop = () => {
-      console.log(replaceImageURL(preview));
-
     changeCanvasDimension && store.setSize(dimensions[0], dimensions[1]);
 
     var widthOnCanvas = 400;
@@ -135,7 +134,7 @@ const CustomImageComponent = ({
                 window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
               }}
             >
-              {isLensCollect?.lensHandle || recipientWallet}
+              {isLensCollect?.lensHandle || recipientWallet + ".lens"}
             </div>
           </>
         ) : (

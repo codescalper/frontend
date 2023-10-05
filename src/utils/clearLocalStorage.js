@@ -8,4 +8,5 @@ export const clearAllLocalStorageData = () => {
   removeFromLocalStorage("userAddress");
   removeFromLocalStorage("lensAuth");
   removeFromLocalStorage("ifUserEligible");
+  removeFromLocalStorage("dispatcher");
 };

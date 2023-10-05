@@ -24,7 +24,7 @@ import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Context } from "../../../../../../context/ContextProvider";
 import {
   getFromLocalStorage,
@@ -49,10 +49,8 @@ import { SplitPolicyCard } from "./components";
 const LensShare = () => {
   const store = useStore();
   const { address, isConnected } = useAccount();
-  const [dispatcherState, setDispatcherState] = useState({
-    message: false,
-    profileId: "",
-  });
+  const getDispatcherStatus = getFromLocalStorage("dispatcher");
+
   const {
     setIsLoading,
     setText,
@@ -99,6 +97,17 @@ const LensShare = () => {
     mutationFn: lensAuthenticate,
   });
 
+  const { isLoading: checkingDispatcher } = useQuery({
+    queryFn: checkDispatcher,
+    onSuccess: (data) => {
+      saveToLocalStorage("dispatcher", data?.message);
+    },
+    onError: (err) => {
+      console.log("checkDispatcher error: ", err);
+    },
+    enabled: getDispatcherStatus === true ? false : true,
+  });
+
   // generating signature
   const generateSignature = async () => {
     const message = await lensChallenge(address);
@@ -121,14 +130,13 @@ const LensShare = () => {
           toast.success("Successfully authenticated");
           setIsLoading(false);
           setText("");
-          checkDispatcherFn();
           setTimeout(() => {
             // check the dispatcher
             // if true => sharePost
-            if (dispatcherState.message === true) {
+            if (getDispatcherStatus === true) {
               sharePost("lens");
               // console.log("share on lens");
-            } else if (dispatcherState.message === false) {
+            } else {
               // else => set the dispatcher
               setDispatcherFn();
             }
@@ -142,24 +150,6 @@ const LensShare = () => {
         setIsLoading(false);
         setText("");
       });
-  };
-
-  // check for dispatcher
-  const checkDispatcherFn = async () => {
-    const res = await checkDispatcher();
-    if (res?.message === true) {
-      setDispatcherState({
-        message: true,
-        profileId: res?.profileId,
-      });
-    } else if (res?.message === false) {
-      setDispatcherState({
-        message: false,
-        profileId: res?.profileId,
-      });
-    } else if (res?.error) {
-      return toast.error(res?.error);
-    }
   };
 
   // set the dispatcher true or false
@@ -187,10 +177,10 @@ const LensShare = () => {
           deadline: typedData.value.deadline,
         },
       });
-      // checkDispatcherFn();
       // console.log("successfully set dispatcher: tx hash", tx.hash);
       // if tx.hash? => sharePost()
       if (tx.hash) {
+        saveToLocalStorage("dispatcher", true);
         setIsLoading(false);
         setText("");
         toast.success("Dispatcher enabled");
@@ -585,13 +575,21 @@ const LensShare = () => {
   };
 
   // if lensAuth = success => sharePost or else generateSignature then sharePost
-  const handleLensClick = () => {
+
+  const handleLensClick = async () => {
     if (isConnected && !getLensAuth) {
       generateSignature();
-    } else if (isConnected && getLensAuth && !dispatcherState.message) {
-      setDispatcherFn();
-    } else if (isConnected && getLensAuth && dispatcherState.message) {
-      sharePost("lens");
+    } else if (isConnected && getLensAuth) {
+      if (checkingDispatcher) {
+        // Wait for checkingDispatcher to finish loading
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Adjust the delay as needed
+      }
+
+      if (!getDispatcherStatus) {
+        setDispatcherFn();
+      } else {
+        sharePost("lens");
+      }
     }
   };
 
@@ -703,10 +701,6 @@ const LensShare = () => {
       lensAuth();
     }
   }, [isSuccess]);
-
-  useEffect(() => {
-    checkDispatcherFn();
-  }, []);
 
   return (
     <>
