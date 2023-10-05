@@ -28,7 +28,7 @@ const CompCarousel = ({ type }) => {
   return (
     // autoplay loop autoplayDelay={5000} - For AutoPlay
     <Carousel
-      className="rounded-xl h-40 overflow-x-hidden"
+      className="rounded-xl md: h-24 overflow-hidden"
       navigation={({ setActiveIndex, activeIndex, length }) => (
         <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
           {new Array(length).fill("").map((_, i) => (

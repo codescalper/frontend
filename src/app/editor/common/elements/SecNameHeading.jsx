@@ -13,7 +13,7 @@ export const SecNameHeading = ({name, hasSeeMore, seeMoreFn, animationData}) => 
 
             {hasSeeMore && 
             <div onClick={seeMoreFn} 
-                className="cursor-pointer opacity-80 hover:opacity-60"> 
+                className="appFont text-sm font-medium cursor-pointer opacity-80 hover:opacity-60"> 
                 See more
             </div> }
         </div>

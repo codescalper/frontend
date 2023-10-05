@@ -20,7 +20,9 @@ body {
 img {
   display: inline;
 }
-
+.appFont{
+  font-family: "Josefin Sans" !important;
+}
 /* css for designed scrollbar start here */
 ::-webkit-scrollbar {
   width: 2px;
@@ -98,11 +100,11 @@ img {
 @media (max-width: 500px) {
   .go1311524876.bp4-navbar {
     position: absolute !important;
-    right: 56px !important;
+    left: 4vw !important;
     bottom: 64px !important;
     z-index: 100 !important;
     /* height: 88vh !important;  */
-    width: 80% !important;
+    width: 88vw !important;
   }
 }
 
@@ -118,9 +120,9 @@ img {
 .go2941063172:hover {
   border-radius: 8px;
 }
-.go1236784588 {
+/* .go1236784588 {
   height: 99% !important;
-}
+} */
 /* Styling the Buttons */
 .bp4-button {
   /* all:unset; */
@@ -128,7 +130,7 @@ img {
   background-color: #e1f16ba1;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 500px) {
   .go1311524876.bp4-navbar {
     height: 80vh !important;
   }
