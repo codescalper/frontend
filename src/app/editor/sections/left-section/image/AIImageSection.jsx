@@ -23,15 +23,9 @@ import FormData from "form-data";
 import { useStore } from "../../../../../hooks";
 import {
   CustomImageComponent,
-  LoadingAnimatedComponent,
   MessageComponent,
 } from "../../../common";
 import { Textarea, Button as MatButton, Input } from "@material-tailwind/react";
-import { UploadFileDropzone } from "../upload/components";
-import UploadAIAssets from "./components/UploadAIAssets";
-
-import { img1, img2 } from "./components/images";
-import UploadImg from "./components/UploadImg";
 import { base64Stripper } from "../../../../../utils";
 import Lottie from "lottie-react";
 import animationData from "../../../../../assets/lottie/loaders/aiGeneration.json";
@@ -429,7 +423,7 @@ const AIImagePanel = () => {
       >
         <Tab id="tabPrompt" title="Prompt" />
         {/* <Tab id="tabDesignify" title="Designify" /> */}
-        <Tab id="tabInstructImage" title="Instruct" />
+        {/* <Tab id="tabInstructImage" title="Instruct" /> */}
       </Tabs>
 
       <div
@@ -442,7 +436,7 @@ const AIImagePanel = () => {
       >
         {currentTab === "tabPrompt" && <CompSearch />}
         {currentTab === "tabDesignify" && <CompDesignify />}
-        {currentTab === "tabInstructImage" && <CompInstructImage />}
+        {/* {currentTab === "tabInstructImage" && <CompInstructImage />} */}
       </div>
     </div>
   );
