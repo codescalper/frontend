@@ -29,7 +29,7 @@ const UserSetting = () => {
     posthog.reset();
     clearAllLocalStorageData();
     disconnect();
-    toast.success("Logout successfully");
+    toast.success("Logout successful");
   };
 
   const Elements = ({ text, onClickFuntion, Icon }) => {

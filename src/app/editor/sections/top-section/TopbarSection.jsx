@@ -33,8 +33,8 @@ const TopbarSection = () => {
           </div>
         </a>
         {!isConnected && (
-          <div id="first-step">
-            <div className="flex items-center justify-center space-x-6">
+          <div>
+            <div className="flex items-center justify-center space-x-6" id="first-step">
               <button
                 className="bg-blue-700 text-white px-4 py-2 rounded-md outline-none"
                 onClick={openConnectModal}
@@ -60,12 +60,12 @@ const TopbarSection = () => {
               <ShareButton />
             </div>
             <DownloadBtn />
-            <div className="">
+            <div className="" id="first-step">
               {/* user profile circular */}
               {isSupportedChain() ? (
-                <UserSetting />
+                <UserSetting  />
               ) : (
-                <div className="flex items-center justify-center space-x-6">
+                <div  className="flex items-center justify-center space-x-6">
                   <button
                     className="bg-red-500 text-white px-4 py-2 rounded-md outline-none"
                     onClick={() =>

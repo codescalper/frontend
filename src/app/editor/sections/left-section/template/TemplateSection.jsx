@@ -37,8 +37,17 @@ import MdcImageMultipleOutline from "@meronex/icons/mdc/MdcImageMultipleOutline"
 import Lottie from "lottie-react";
 import animationData from "../../../../../assets/lottie/featured/featured1.json";
 import { SecNameHeading } from "../../../common/elements/SecNameHeading";
-// Design card component start
+import TabsCustomAnimation from "../../../common/core/CustomTabsMaterial";
 
+import {
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Tab,
+  TabPanel,
+} from "@material-tailwind/react";
+
+// Design card component start
 const DesignCard = ({
   id,
   preview,
@@ -155,7 +164,6 @@ const DesignCard = ({
           <SuChevronRightDouble size="24" />
           {/* <BsChevronDoubleRight size="24" /> */}
         </div>
-
       )}
     </Card>
   );
@@ -170,7 +178,7 @@ const TemplatePanel = () => {
   return (
     <div className="h-full flex flex-col">
       {/* <h1 className="text-lg">Templates</h1> */}
-      <div className="flex items-center justify-center space-x-2 my-4">
+      <div className="flex items-center justify-center space-x-2 my-4 mb-0">
         <button
           className={`w-1/2 border px-2 py-1 border-black rounded-md ${
             tab === "lenspost" && "bg-[#1B1A1D]"
@@ -192,6 +200,7 @@ const TemplatePanel = () => {
       {tab === "lenspost" && <LenspostTemplates />}
       {tab === "user" && <UserTemplates />}
     </div>
+    // <TabsCustomAnimation/>
   );
 };
 
@@ -263,63 +272,160 @@ const LenspostTemplates = () => {
         setQuery={setQuery}
         placeholder={"Search templates"}
       />
-      {/*  Featured Panels :  */}
-      {/*  Featured Panels : Templates */}
-      <SecNameHeading
-        animationData={animationData}
-        name={"Featured Backgrounds"}
-        hasSeeMore
-        seeMoreFn={() => store.openSidePanel("Backgrounds2")}
-      />
-      <CompCarousel type="background" />
 
-      {/*  Featured Panels : Stickers */}
-      <SecNameHeading
-        animationData={animationData}
-        name={"Featured Stickers"}
-        hasSeeMore
-        seeMoreFn={() => store.openSidePanel("Elements")}
-      />
-      <CustomHorizontalScroller type="stickers" />
+      <div className="h-full overflow-y-scroll">
+        {/*  Featured Panels :  */}
 
-      {/* New Design card start - 23Jun2023 */}
-      {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
-      {/*   Pass these onto Line 25 */}
-
-      <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
-
-      {data?.pages[0]?.data?.length > 0 ? (
-        <>
-          <div className="overflow-y-auto grid grid-cols-2">
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  <DesignCard
-                    id={item?.id}
-                    referredFrom={item?.referredFrom}
-                    isGated={item?.isGated}
-                    gatedWith={item?.gatedWith}
-                    json={item?.data}
-                    ownerAddress={item?.ownerAddress}
-                    preview={item?.image}
-                    key={index}
-                    modal={modal}
-                    setModal={setModal}
-                  />
-                );
-              })}
-          </div>
-          <LoadMoreComponent
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
+        {/* Tabs for Desktop [ Original one ] : Start */}
+        <div className="hidden sm:block">
+          {/*  Featured Panels : Templates */}
+          <SecNameHeading
+            animationData={animationData}
+            name={"Featured Backgrounds"}
+            hasSeeMore
+            seeMoreFn={() => store.openSidePanel("Backgrounds2")}
           />
-        </>
-      ) : (
-        <MessageComponent message="No Results" />
-      )}
+          <CompCarousel type="background" />
 
-      {/* New Design card end - 23Jun2023 */}
+          {/*  Featured Panels : Stickers */}
+          <SecNameHeading
+            animationData={animationData}
+            name={"Featured Stickers"}
+            hasSeeMore
+            seeMoreFn={() => store.openSidePanel("Elements")}
+          />
+          <CustomHorizontalScroller type="stickers" />
+
+          <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
+
+          {/* <div className=" overflow-y-scroll">  */}
+          {data?.pages[0]?.data?.length > 0 ? (
+            <>
+              <div className="overflow-y-scroll grid grid-cols-2">
+                {data?.pages
+                  .flatMap((item) => item?.data)
+                  .map((item, index) => {
+                    return (
+                      <DesignCard
+                        id={item?.id}
+                        referredFrom={item?.referredFrom}
+                        isGated={item?.isGated}
+                        gatedWith={item?.gatedWith}
+                        json={item?.data}
+                        ownerAddress={item?.ownerAddress}
+                        preview={item?.image}
+                        key={index}
+                        modal={modal}
+                        setModal={setModal}
+                      />
+                    );
+                  })}
+              </div>
+              <LoadMoreComponent
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+              />
+            </>
+          ) : (
+            <MessageComponent message="No Results" />
+          )}
+          {/* </div> */}
+        </div>
+        {/* Tabs for Desktop [ Original one ] : End */}
+
+        {/* -------------- */}
+
+        {/* Tabs for Mobile : Start */}
+        {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
+        
+        <div className="sm:hidden">
+          <Tabs id="custom-animation" value="featStickers">
+            <div className="m-3 mt-0 mb-0">
+              <TabsHeader>
+                <Tab value={"featStickers"}>
+                  {" "}
+                  <div className="appFont text-xs">
+                    {" "}
+                    Featured <br /> Stickers{" "}
+                  </div>{" "}
+                </Tab>
+                <Tab value={"featBackgrounds"}>
+                  {" "}
+                  <div className="appFont text-xs">
+                    {" "}
+                    Featured <br /> Backgrounds{" "}
+                  </div>
+                </Tab>
+                <Tab value={"lpTemplates"}>
+                  {" "}
+                  <div className="appFont text-xs">
+                    {" "}
+                    Lenspost <br /> Templates{" "}
+                  </div>{" "}
+                </Tab>
+                {/* ))} */}
+              </TabsHeader>
+            </div>
+            <TabsBody
+              animate={{
+                initial: { y: 250 },
+                mount: { y: 0 },
+                unmount: { y: 250 },
+              }}
+            >
+              <TabPanel value={"featStickers"}>
+                <SecNameHeading
+                  hasSeeMore
+                  seeMoreFn={() => store.openSidePanel("Elements")}
+                />
+                <CustomHorizontalScroller type="stickers" />
+              </TabPanel>
+              <TabPanel value={"featBackgrounds"}>
+                <SecNameHeading
+                  hasSeeMore
+                  seeMoreFn={() => store.openSidePanel("Backgrounds2")}
+                />
+                <CompCarousel type="background" />
+              </TabPanel>
+              <TabPanel value={"lpTemplates"}>
+                <div className="h-64 overflow-y-scroll">
+                  {data?.pages[0]?.data?.length > 0 ? (
+                    <>
+                      <div className="overflow-y-auto grid grid-cols-2">
+                        {data?.pages
+                          .flatMap((item) => item?.data)
+                          .map((item, index) => {
+                            return (
+                              <DesignCard
+                                id={item?.id}
+                                referredFrom={item?.referredFrom}
+                                isGated={item?.isGated}
+                                gatedWith={item?.gatedWith}
+                                json={item?.data}
+                                ownerAddress={item?.ownerAddress}
+                                preview={item?.image}
+                                key={index}
+                                modal={modal}
+                                setModal={setModal}
+                              />
+                            );
+                          })}
+                      </div>
+                      <LoadMoreComponent
+                        hasNextPage={hasNextPage}
+                        isFetchingNextPage={isFetchingNextPage}
+                      />
+                    </>
+                  ) : (
+                    <MessageComponent message="No Results" />
+                  )}
+                </div>
+              </TabPanel>
+            </TabsBody>
+          </Tabs>
+        </div>
+        {/* Tabs for Mobile : End */}
+      </div>
     </>
   );
 };

@@ -21,7 +21,20 @@ import { AIIcon } from "../../../../../assets";
 import axios from "axios";
 import FormData from "form-data";
 import { useStore } from "../../../../../hooks";
-import { MessageComponent } from "../../../common";
+import {
+  CustomImageComponent,
+  LoadingAnimatedComponent,
+  MessageComponent,
+} from "../../../common";
+import { Textarea, Button as MatButton, Input } from "@material-tailwind/react";
+import { UploadFileDropzone } from "../upload/components";
+import UploadAIAssets from "./components/UploadAIAssets";
+
+import { img1, img2 } from "./components/images";
+import UploadImg from "./components/UploadImg";
+import { base64Stripper } from "../../../../../utils";
+import Lottie from "lottie-react";
+import animationData from "../../../../../assets/lottie/loaders/aiGeneration.json";
 
 // Tab1 - Search Tab
 
@@ -129,7 +142,7 @@ const CompSearch = () => {
                 onClick={() => setQuery(val)}
                 className="m-1 mb-2 px-2 py-1 text-xs rounded-md cursor-pointer bg-blue-50 hover:bg-blue-100"
               >
-                {val} 
+                {val}
               </div>
             );
           })}
@@ -246,6 +259,156 @@ const CompDesignify = () => {
   );
 };
 
+const CompInstructImage = () => {
+  const [base64ImgLink, setBase64ImgLink] = useState(""); // For Newly generated Image Preview
+  const [imageBase64, setImageBase64] = useState(""); //For Uploaded Preview
+  const [clicked, setClicked] = useState(false);
+  const [stImgPrompt, setStImgPrompt] = useState(
+    "A serene lakeside scene at sunset with vibrant orange and purple hues reflecting off the calm waters."
+  );
+  const [stDisplayMessage, setStDisplayMessage] = useState(
+    "Choose an Image & Click on GENERATE to customize image based on your prompt"
+  );
+
+  console.log("In CompInstructImage");
+
+  // Testing all the APIs from getimg.ai
+
+  const fnCallInstructImgAPI = async () => {
+    setClicked(true);
+    setBase64ImgLink("");
+
+    const options = {
+      // method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        authorization:
+          "Bearer key-oVrGU2b6BBsUvRyzacjQFF4BcyqQM6bnO18F6rfeXdmCahX6EaWSDu47TXH5CPzsMcpTQny2Ls6Q6V6ONKxujesILyY4fEo",
+      },
+      body: JSON.stringify({
+        prompt: stImgPrompt,
+        image: base64Stripper(imageBase64),
+        // mask_image: img2,
+      }),
+    };
+
+    console.log("Calling API Start");
+
+    // await fetch("https://api.getimg.ai/v1/stable-diffusion/inpaint", options)
+    await axios
+      .post("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(" Response from Axios ");
+        console.log(response);
+        if (response.status === 200) {
+          setBase64ImgLink(response.image);
+        }
+      })
+      .catch((err) => {
+        console.log(" Response from Axios ");
+        console.error(err);
+        if (err.response.status == 401) {
+          setBase64ImgLink("");
+          setStDisplayMessage(err.response.data.error.type);
+        }
+      });
+    setClicked(false);
+    console.log("Calling API End");
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        // When the file has been read successfully, the result will be a Base64 encoded string
+        const base64String = reader.result;
+        setImageBase64(base64String);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  useEffect(() => {
+    // Set Image to State Variable
+    console.log(stImgPrompt);
+    console.log(imageBase64);
+
+    // convertImageToBase64(stOriginalImage, (base64Img) => {
+    //   console.log(base64Img);
+    //   setStOriginalImage(base64Img);
+    // } );
+    console.log(Date.now() - 1 * 60 * 1000);
+  }, [imageBase64]);
+
+  return (
+    <>
+    <div className="h-full overflow-y-auto">
+      <div className="">
+        <div className="m-1 mb-2"> Original Image </div>
+
+        {/* <Input onChange={(e) => setStOriginalImage(e.target.value)} type="file" name="" id="" accept="image/*" /> */}
+        <div className="mb-4 rounded-md">
+          <input
+            className="mb-2"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+          {imageBase64 && (
+            <div className="flex justify-center">
+              <img
+                className="m-2 rounded-md h-32 w-full object-contain"
+                src={imageBase64}
+                alt="Uploaded Image"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <Textarea
+        required
+        color="purple"
+        label="Prompt"
+        onChange={(e) => setStImgPrompt(e.target.value)}
+      />
+
+      <MatButton disabled={!imageBase64} className="mt-4 w-full" onClick={fnCallInstructImgAPI}>
+        Generate
+      </MatButton>
+
+      {!base64ImgLink && !clicked && (
+        <div className="mt-4 text-center text-md text-green-600">
+          {stDisplayMessage}
+        </div>
+      )}
+
+      {!base64ImgLink && clicked && (
+        <div className="mt-0 text-center text-blue-600">
+          <Lottie animationData={animationData} className="h-64" />
+          {/* Generating Image... */}
+        </div>
+      )}
+
+      {/* { base64ImgLink && <img className="mt-4" src={`data:image/jpeg;base64, ${base64ImgLink}`} alt="" /> } */}
+      {base64ImgLink && (
+        <div className="mt-4 h-32">
+          <CustomImageComponent
+            preview={`data:image/jpeg;base64, ${base64ImgLink}`}
+          />
+        </div>
+      )}
+      </div>
+    </>
+  );
+};
+
 const AIImagePanel = () => {
   const [currentTab, setCurrentTab] = useState("tabPrompt");
 
@@ -266,6 +429,7 @@ const AIImagePanel = () => {
       >
         <Tab id="tabPrompt" title="Prompt" />
         {/* <Tab id="tabDesignify" title="Designify" /> */}
+        <Tab id="tabInstructImage" title="Instruct" />
       </Tabs>
 
       <div
@@ -278,6 +442,7 @@ const AIImagePanel = () => {
       >
         {currentTab === "tabPrompt" && <CompSearch />}
         {currentTab === "tabDesignify" && <CompDesignify />}
+        {currentTab === "tabInstructImage" && <CompInstructImage />}
       </div>
     </div>
   );

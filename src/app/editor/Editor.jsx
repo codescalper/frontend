@@ -33,6 +33,8 @@ import {
 import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 import { SpeedDialX } from "./common/elements/SpeedDial";
+import CustomTabsMaterial from "./common/core/CustomTabsMaterial";
+import { Tooltip } from 'polotno/canvas/tooltip';
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -353,7 +355,7 @@ const Editor = () => {
               <div className="mb-2 mr-2">
                 <Toolbar store={store} />
               </div>
-              <Workspace store={store} backgroundColor="#e8e8ec" />
+              <Workspace store={store} components={{ Tooltip }} backgroundColor="#e8e8ec" />
 
               {/* Bottom section */}
               <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">
@@ -379,7 +381,7 @@ const Editor = () => {
                     }}
                   >
                     <FcIdea className="m-2" size="16" />{" "}
-                    <div className="w-full m-2 ml-0 text-sm text-yellow-600">
+                    <div className="hidden md:block w-full m-2 ml-0 text-sm text-yellow-600">
                       Need an intro?
                     </div>
                   </div>

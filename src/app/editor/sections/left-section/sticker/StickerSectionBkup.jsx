@@ -8,23 +8,11 @@ import styled from "polotno/utils/styled";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { getAssetByQuery, getFeaturedAssets } from "../../../../../services";
-import {
-  SearchComponent,
-  StickerReacTour,
-  Tabs as TabsCustom,
-} from "../../../common"; // Since Material already has builtin component `Tab`
+import { SearchComponent, StickerReacTour, Tabs } from "../../../common";
 import { useStore } from "../../../../../hooks";
 import { LoadingAnimatedComponent } from "../../../common";
 import { firstLetterCapital, fnLoadMore } from "../../../../../utils";
 import FeaturedTabs from "../../../common/core/FeaturedTabs";
-
-import {
-  Tabs,
-  TabsHeader,
-  TabsBody,
-  Tab,
-  TabPanel,
-} from "@material-tailwind/react";
 
 const API = "https://api.polotno.dev/api";
 // const API = 'http://localhost:3001/api';
@@ -150,7 +138,7 @@ export const StickerPanel = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* <div className="mx-2 mt-1" id="stickerCategories">
+      <div className="mx-2 mt-1" id="stickerCategories">
         {tabArray.map((tab, index) => (
           <Button
             small
@@ -176,55 +164,10 @@ export const StickerPanel = () => {
         >
           Icons
         </Button>
-      </div> */}
+      </div>
+      <StickerReacTour />
 
-{/* New Material Tailwind Buttons / Tabs : */}
-{/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
-      <Tabs id="custom-animation" value="lensjump">
-        <div className="w-full overflow-scroll m-2" id="stickerCategories">
-          <TabsHeader
-          // className="bg-transparent"
-          // indicatorProps={{
-          //   className: "bg-gray-900/10 shadow-none !text-gray-900",
-          // }}
-          >
-            {tabArray.map((tab, index) => (
-              <Tab
-                value={tab}
-                onClick={() => {
-                  setCurrentTab(tab);
-                }}
-              >
-                <div style={{"fontFamily": "Josefin Sans"}}> {firstLetterCapital(tab)} </div>
-              </Tab>
-            ))}
-          </TabsHeader>
-        </div>
-        <div className="h-full overflow-y-scroll">
-          <TabsBody
-            animate={{
-              initial: { y: 250 },
-              mount: { y: 0 },
-              unmount: { y: 250 },
-            }}
-          >
-            {/* <TabPanel key={currentTab} value={currentTab}> */}
-
-            <TabsCustom
-              defaultQuery={currentTab}
-              getAssetsFn={
-                currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
-              }
-              queryKey="stickers"
-            />
-            {/* </TabPanel> */}
-          </TabsBody>
-        </div>
-      </Tabs>
-
-      {/* <StickerReacTour /> */}
-
-      {/* {currentTab === "tabIcons" ? (
+      {currentTab === "tabIcons" ? (
         <CompIcons />
       ) : (
         <Tabs
@@ -234,7 +177,7 @@ export const StickerPanel = () => {
           }
           queryKey="stickers"
         />
-      )} */}
+      )}
     </div>
   );
 };
