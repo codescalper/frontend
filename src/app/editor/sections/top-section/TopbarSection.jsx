@@ -2,8 +2,8 @@ import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import ShareButton from "./share/ShareButton";
 import DownloadBtn from "./download/DownloadBtn";
-import UserSetting from "./user/UserSetting";
 import { ENVIRONMENT } from "../../../../services";
+import ProfileMenu from "./user/ProfileMenu";
 
 const TopbarSection = () => {
   const { isConnected, address } = useAccount();
@@ -63,7 +63,7 @@ const TopbarSection = () => {
             <div className="" id="first-step">
               {/* user profile circular */}
               {isSupportedChain() ? (
-                <UserSetting  />
+                <ProfileMenu  />
               ) : (
                 <div  className="flex items-center justify-center space-x-6">
                   <button

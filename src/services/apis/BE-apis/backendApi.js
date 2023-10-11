@@ -255,11 +255,17 @@ export const getNftById = async (id) => {
 // canvas apis satrt
 // craete canvas endpoint
 // need auth token (jwt)
-export const createCanvas = async ({ data, referredFrom, preview }) => {
+export const createCanvas = async ({
+  data,
+  referredFrom,
+  assetsRecipientElementData,
+  preview,
+}) => {
   const result = await api.post(`${API}/user/canvas/create`, {
     canvasData: {
       data: data,
       referredFrom: referredFrom,
+      assetsRecipientElementData: assetsRecipientElementData,
     },
     preview: preview,
   });
@@ -274,6 +280,7 @@ export const updateCanvas = async ({
   data,
   referredFrom,
   isPublic,
+  assetsRecipientElementData,
   preview,
 }) => {
   const result = await api.put(`${API}/user/canvas/update`, {
@@ -282,6 +289,7 @@ export const updateCanvas = async ({
       data: data,
       isPublic: isPublic,
       referredFrom: referredFrom,
+      assetsRecipientElementData: assetsRecipientElementData
     },
     preview: preview,
   });
@@ -561,8 +569,6 @@ export const getIsUserWhitelisted = async (walletAddress) => {
 };
 // user is holder of collection apis end
 
-// upload section apis start
-
 // upload user assets endpoint
 export const uploadUserAssets = async (image) => {
   const result = await api.post(`${API}/user/upload`, {
@@ -593,4 +599,3 @@ export const deleteUserAsset = async (id) => {
 
   return result?.data;
 };
-// upload section end

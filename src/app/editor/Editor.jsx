@@ -34,7 +34,7 @@ import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 import { SpeedDialX } from "./common/elements/SpeedDial";
 import CustomTabsMaterial from "./common/core/CustomTabsMaterial";
-import { Tooltip } from 'polotno/canvas/tooltip';
+import { Tooltip } from "polotno/canvas/tooltip";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -78,6 +78,8 @@ const Editor = () => {
     lensCollectRecipientRef,
     assetsRecipientRef,
     parentRecipientRef,
+    preStoredRecipientObjRef,
+    parentRecipientObjRef,
   } = useContext(Context);
   const timeoutRef = useRef(null);
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
@@ -123,45 +125,87 @@ const Editor = () => {
   // 03June2023
 
   // funtion for checking + updating the lens collect recipient
-  const checkLensCollectRecipient = () => {
-    const lensCollectRecipientRefArr = lensCollectRecipientRef.current;
+  // const checkLensCollectRecipient = () => {
+  //   const lensCollectRecipientRefArr = lensCollectRecipientRef.current;
 
-    // array of indexes for the elements that are not found
-    const notFoundIndexes = [];
+  //   // array of indexes for the elements that are not found
+  //   const notFoundIndexes = [];
 
-    // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
-    for (let i = 0; i < lensCollectRecipientRefArr.length; i++) {
-      const item = lensCollectRecipientRefArr[i];
-      const foundElement = store.getElementById(item.elementId);
+  //   // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
+  //   for (let i = 0; i < lensCollectRecipientRefArr.length; i++) {
+  //     const item = lensCollectRecipientRefArr[i];
+  //     const foundElement = store.getElementById(item.elementId);
 
-      if (!foundElement) {
-        notFoundIndexes.push(i);
-      }
-    }
+  //     if (!foundElement) {
+  //       notFoundIndexes.push(i);
+  //     }
+  //   }
 
-    // Generate a new array by removing elements at notFoundIndexes
-    const newArray = lensCollectRecipientRefArr.filter(
-      (_, index) => !notFoundIndexes.includes(index)
-    );
+  //   // Generate a new array by removing elements at notFoundIndexes
+  //   const newArray = lensCollectRecipientRefArr.filter(
+  //     (_, index) => !notFoundIndexes.includes(index)
+  //   );
 
-    // update the lensCollectRecipientRef
-    lensCollectRecipientRef.current = newArray;
+  //   // update the lensCollectRecipientRef
+  //   lensCollectRecipientRef.current = newArray;
 
-    // get the lensHandle from the newArray
-    const newArrayLensHandles = newArray.map((item) => item.handle);
-    return newArrayLensHandles;
-  };
+  //   // get the lensHandle from the newArray
+  //   const newArrayLensHandles = newArray.map((item) => item.handle);
+  //   return {
+  //     lensCollectRecipientWithElementIds: lensCollectRecipientRef.current,
+  //     lensCollectRecipientHandles: newArrayLensHandles,
+  //   };
+  // };
 
   // funtion for checking + updating the assets recipient
-  const checkAssetsRecipient = () => {
-    const assetsRecipientRefArr = assetsRecipientRef.current;
+  // const checkAssetsRecipient = () => {
+  //   const assetsRecipientRefArr = assetsRecipientRef.current;
+
+  //   // array of indexes for the elements that are not found
+  //   const notFoundIndexes = [];
+
+  //   // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
+  //   for (let i = 0; i < assetsRecipientRefArr.length; i++) {
+  //     const item = assetsRecipientRefArr[i];
+  //     const foundElement = store.getElementById(item.elementId);
+
+  //     if (!foundElement) {
+  //       notFoundIndexes.push(i);
+  //     }
+  //   }
+
+  //   // Generate a new array by removing elements at notFoundIndexes
+  //   const newArray = assetsRecipientRefArr.filter(
+  //     (_, index) => !notFoundIndexes.includes(index)
+  //   );
+
+  //   // update the lensCollectRecipientRef
+  //   assetsRecipientRef.current = newArray;
+
+  //   // get the lensHandle from the newArray
+  //   const newArrayHandles = newArray.map((item) => item.handle);
+  //   return {
+  //     assetsRecipientWithElementIds: assetsRecipientRef.current,
+  //     assetsRecipientHandles: newArrayHandles,
+  //   };
+  // };
+
+  // funtion for checking + updating the assets recipient (final list)
+  const recipientDataFilter = () => {
+    parentRecipientObjRef.current = [
+      ...preStoredRecipientObjRef.current,
+      ...lensCollectRecipientRef.current,
+      ...assetsRecipientRef.current,
+    ];
+
+    const recipientRefArr = parentRecipientObjRef.current;
 
     // array of indexes for the elements that are not found
     const notFoundIndexes = [];
 
     // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
-    for (let i = 0; i < assetsRecipientRefArr.length; i++) {
-      const item = assetsRecipientRefArr[i];
+    for (let i = 0; i < recipientRefArr.length; i++) {
+      const item = recipientRefArr[i];
       const foundElement = store.getElementById(item.elementId);
 
       if (!foundElement) {
@@ -170,16 +214,20 @@ const Editor = () => {
     }
 
     // Generate a new array by removing elements at notFoundIndexes
-    const newArray = assetsRecipientRefArr.filter(
+    const newArray = recipientRefArr.filter(
       (_, index) => !notFoundIndexes.includes(index)
     );
 
     // update the lensCollectRecipientRef
-    assetsRecipientRef.current = newArray;
+    parentRecipientObjRef.current = newArray;
 
     // get the lensHandle from the newArray
     const newArrayHandles = newArray.map((item) => item.handle);
-    return newArrayHandles;
+
+    return {
+      recipientWithElementIds: parentRecipientObjRef.current,
+      recipientHandles: newArrayHandles,
+    };
   };
 
   // store the canvas and update it by traching the changes
@@ -214,23 +262,22 @@ const Editor = () => {
         const parentArray = [
           address,
           ...referredFromRef.current,
-          ...checkLensCollectRecipient(),
-          ...checkAssetsRecipient(),
+          ...recipientDataFilter().recipientHandles,
         ];
 
-        // update the parentRecipientRef to the uniq values
+        // update the parentRecipientRef to the uniq values (final list for split revenue)
         parentRecipientRef.current = [...new Set(parentArray)];
 
-        // console.log("lensWithElements", lensCollectRecipientRef.current);
-        // console.log("lensRecipients", checkLensCollectRecipient());
-        // console.log("parentRecipientRef", parentRecipientRef.current);
-        // return;
+        console.log("parentRecipientObj", recipientDataFilter());
+        console.log("parentRecipientRef", parentRecipientRef.current);
 
         // create new canvas
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
             referredFrom: parentRecipientRef.current,
+            assetsRecipientElementData:
+              recipientDataFilter().recipientWithElementIds,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -252,6 +299,8 @@ const Editor = () => {
             data: json,
             isPublic: false,
             referredFrom: parentRecipientRef.current,
+            assetsRecipientElementData:
+              recipientDataFilter().recipientWithElementIds,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -355,7 +404,11 @@ const Editor = () => {
               <div className="mb-2 mr-2">
                 <Toolbar store={store} />
               </div>
-              <Workspace store={store} components={{ Tooltip }} backgroundColor="#e8e8ec" />
+              <Workspace
+                store={store}
+                components={{ Tooltip }}
+                backgroundColor="#e8e8ec"
+              />
 
               {/* Bottom section */}
               <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">

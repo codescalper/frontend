@@ -95,7 +95,7 @@ const Tabs = ({
                 );
               })}
           </div>
-          <LoadMoreComponent
+          <LoadMoreComponent 
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
           />

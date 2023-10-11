@@ -1,15 +1,27 @@
 import React from "react";
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { polygon, polygonMumbai } from "wagmi/chains";
+import {
+  getDefaultWallets,
+  RainbowKitProvider,
+  connectorsForWallets,
+} from "@rainbow-me/rainbowkit";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { polygon, polygonMumbai, zora, zoraTestnet } from "wagmi/chains";
+import {
+  coinbaseWallet,
+  metaMaskWallet,
+  phantomWallet,
+  rabbyWallet,
+  rainbowWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import { publicProvider } from "wagmi/providers/public";
+
 import ContextProvider from "./context/ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ENVIRONMENT } from "./services/env/env";
+import { ENVIRONMENT, WALLETCONNECT_PROJECT_ID } from "./services/env/env";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import App from "./app/App";
 import { AuthComponent } from "./app/auth";
 import { TourProvider } from "@reactour/tour";
@@ -17,32 +29,40 @@ import { OnboardingSteps } from "./app/editor/common";
 
 const radius = 8;
 
-const { chains, provider } = configureChains(
-  [ENVIRONMENT === "production" ? polygon : polygonMumbai],
+const { chains, publicClient } = configureChains(
+  ENVIRONMENT === "production" ? [polygon, zora] : [polygonMumbai, zoraTestnet],
   [
     // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),
   ]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "LensPost",
-  projectId: "755e88fd4f93da5f0dadcf2dee54e6a0",
-  chains,
-});
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      metaMaskWallet({ chains }),
+      phantomWallet({ chains }),
+      rabbyWallet({ chains }),
+      rainbowWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),
+      walletConnectWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),
+      coinbaseWallet({ chains }),
+    ],
+  },
+]);
 
-const wagmiClient = createClient({
+const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
-  provider,
+  publicClient,
 });
 
 const queryClient = new QueryClient();
 
 export const Wrapper = () => {
   return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains}>
+    <WagmiConfig config={wagmiConfig}>
+      <RainbowKitProvider chains={chains} coolMode={true}>
         <ContextProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>

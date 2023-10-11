@@ -44,7 +44,7 @@ import { fnPageHasElements } from "../../../../../utils/fnPageHasElements";
 // Design card component start - 23Jun2023
 
 const DesignCard = ({
-  design,
+  item,
   preview,
   json,
   onDelete,
@@ -52,14 +52,15 @@ const DesignCard = ({
   isPublic,
   openTokengateModal,
 }) => {
-  const { fastPreview, contextCanvasIdRef, referredFromRef } =
+  const { fastPreview, contextCanvasIdRef, referredFromRef, preStoredRecipientObjRef } =
     useContext(Context);
   const store = useStore();
 
   const handleClickOrDrop = () => {
     store.loadJSON(json);
-    contextCanvasIdRef.current = design.id;
-    referredFromRef.current = design.referredFrom;
+    contextCanvasIdRef.current = item.id;
+    referredFromRef.current = item.referredFrom;
+    preStoredRecipientObjRef.current = item.assetsRecipientElementData;
   };
 
   return (
@@ -74,7 +75,7 @@ const DesignCard = ({
           placeholderSrc={replaceImageURL(preview)}
           effect="blur"
           src={
-            contextCanvasIdRef.current === design.id
+            contextCanvasIdRef.current === item.id
               ? fastPreview[0]
               : replaceImageURL(preview)
           }
@@ -370,31 +371,30 @@ export const DesignPanel = () => {
           )}
           {data?.pages
             .flatMap((item) => item?.data)
-            .map((design) => {
+            .map((item) => {
               return (
                 <DesignCard
-                  design={design}
-                  json={design?.data}
-                  referredFrom={design?.referredFrom}
+                  item={item}
+                  json={item?.data}
                   preview={
-                    design?.imageLink != null &&
-                    design?.imageLink.length > 0 &&
-                    design?.imageLink[0]
+                    item?.imageLink != null &&
+                    item?.imageLink.length > 0 &&
+                    item?.imageLink[0]
                   }
-                  key={design.id}
-                  onDelete={() => deleteCanvas(design.id)}
+                  key={item.id}
+                  onDelete={() => deleteCanvas(item.id)}
                   onPublic={() => {
-                    design?.isPublic
-                      ? changeVisibility({ id: design?.id, isPublic: false })
-                      : changeVisibility({ id: design?.id, isPublic: true });
+                    item?.isPublic
+                      ? changeVisibility({ id: item?.id, isPublic: false })
+                      : changeVisibility({ id: item?.id, isPublic: true });
                   }}
-                  isPublic={design?.isPublic}
+                  isPublic={item?.isPublic}
                   openTokengateModal={() =>
                     setModal({
                       ...modal,
                       isOpen: true,
                       isTokengate: true,
-                      canvasId: design?.id,
+                      canvasId: item?.id,
                     })
                   }
                 />
