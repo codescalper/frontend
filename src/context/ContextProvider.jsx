@@ -47,6 +47,9 @@ const ContextProvider = ({ children }) => {
     },
 
     whoCanCollect: false,
+
+    // Solana Mint Switch States
+    
   });
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);

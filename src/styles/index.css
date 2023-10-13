@@ -23,6 +23,11 @@ img {
 .appFont{
   font-family: "Josefin Sans" !important;
 }
+
+.hCustom{
+  /* height: 80dvh !important; */
+  height: calc(100dvh - 80px) !important;
+}
 /* css for designed scrollbar start here */
 ::-webkit-scrollbar {
   width: 2px;

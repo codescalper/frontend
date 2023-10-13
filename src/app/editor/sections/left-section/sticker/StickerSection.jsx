@@ -145,10 +145,19 @@ export const CompIcons = () => {
 
 export const StickerPanel = () => {
   const [currentTab, setCurrentTab] = useState("lensjump");
-  const tabArray = ["lensjump", "supducks", "lens", "nouns", "fls", "assorted"];
+  const tabArray = [
+    "lensjump",
+    "icons",
+    "supducks",
+    "lens",
+    "nouns",
+    "fls",
+    "assorted",
+  ];
   const store = useStore();
 
   return (
+    <>
     <div className="flex flex-col h-full">
       {/* <div className="mx-2 mt-1" id="stickerCategories">
         {tabArray.map((tab, index) => (
@@ -178,8 +187,8 @@ export const StickerPanel = () => {
         </Button>
       </div> */}
 
-{/* New Material Tailwind Buttons / Tabs : */}
-{/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
+      {/* New Material Tailwind Buttons / Tabs : */}
+      {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
       <Tabs id="custom-animation" value="lensjump">
         <div className="w-full overflow-scroll m-2" id="stickerCategories">
           <TabsHeader
@@ -195,31 +204,40 @@ export const StickerPanel = () => {
                   setCurrentTab(tab);
                 }}
               >
-                <div style={{"fontFamily": "Josefin Sans"}}> {firstLetterCapital(tab)} </div>
+                <div className="appFont"> {firstLetterCapital(tab)} </div>
               </Tab>
             ))}
           </TabsHeader>
         </div>
-        <div className="h-full overflow-y-scroll">
-          <TabsBody
+        {/* <div className="h-full overflow-y-scroll"> */}
+
+        {/* <TabsBody
             animate={{
               initial: { y: 250 },
               mount: { y: 0 },
               unmount: { y: 250 },
             }}
-          >
-            {/* <TabPanel key={currentTab} value={currentTab}> */}
+          > */}
 
-            <TabsCustom
-              defaultQuery={currentTab}
-              getAssetsFn={
-                currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
-              }
-              queryKey="stickers"
-            />
-            {/* </TabPanel> */}
-          </TabsBody>
-        </div>
+
+          <TabPanel key={currentTab} value={currentTab}>
+            {currentTab === "icons" ? (
+              <CompIcons />
+            ) : (
+              <div className="hCustom overflow-y-scroll">
+              <TabsCustom
+                defaultQuery={currentTab}
+                getAssetsFn={
+                  currentTab === "lensjump"
+                    ? getFeaturedAssets
+                    : getAssetByQuery
+                }
+                queryKey="stickers"
+                />
+                </div>
+            )}
+          </TabPanel>
+        {/* </TabsBody> */}
       </Tabs>
 
       {/* <StickerReacTour /> */}
@@ -236,7 +254,7 @@ export const StickerPanel = () => {
         />
       )} */}
     </div>
-  );
+    </> );
 };
 
 // define the new custom section
