@@ -35,12 +35,36 @@ const SolanaMint = () => {
         panelContent={
           <>
             {/* Switch Number 1 Start */}
-            <SwitchGroup
-              switchHead="Charge for Mint"
-              switchDesc="Set an amount to be charged for mint"
-              mintOption={chargeForMint}
-            />
-            <div className="ml-4 mr-4 flex ">
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> Charge for mint </h2>
+                <Switch
+                  checked={enabled.chargeForMint}
+                  onChange={() =>
+                    setEnabled({
+                      ...enabled,
+                      chargeForMint: !enabled.chargeForMint,
+                    })
+                  }
+                  className={`${
+                    enabled.chargeForMint ? "bg-[#008080]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      enabled.chargeForMint ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Set an amount to be charged for minting{" "}
+              </div>
+            </div>
+            <div
+              className={`${!enabled.chargeForMint && "hidden"} ml-4 mr-4 flex`}
+            >
               <InputBox
                 className={"W-3/4"}
                 placeholder="erc20 address"
@@ -248,7 +272,7 @@ const SolanaMint = () => {
               </div>
               <div className="w-4/5 opacity-75">
                 {" "}
-                Allow specific contract addresses to mint {" "}
+                Allow specific contract addresses to mint{" "}
               </div>
             </div>
 
@@ -285,11 +309,34 @@ const SolanaMint = () => {
             {/* Switch Number 4 End */}
 
             {/* Switch Number 5 Start */}
-            <SwitchGroup
-              switchHead="NFT Burn"
-              switchDesc="Add NFT contract addresses"
-            />
-            <div className="ml-4 mr-4">
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> NFT Burn </h2>
+                <Switch
+                  checked={enabled.nftBurn}
+                  onChange={() =>
+                    setEnabled({
+                      ...enabled,
+                      nftBurn: !enabled.nftBurn,
+                    })
+                  }
+                  className={`${
+                    enabled.nftBurn ? "bg-[#008080]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      enabled.nftBurn ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Add NFT Contract Addresses{" "}
+              </div>
+            </div>
+            <div className={`${!enabled.nftBurn && "hidden"} ml-4 mr-4 `}>
               <InputBox
                 placeholder="erc20 address"
                 value={""}
@@ -309,11 +356,34 @@ const SolanaMint = () => {
             {/* Switch Number 5 End */}
 
             {/* Switch Number 6 Start */}
-            <SwitchGroup
-              switchHead="NFT Gate"
-              switchDesc="Add NFT contract addresses to gate"
-            />
-            <div className="ml-4 mr-4">
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> NFT Gate </h2>
+                <Switch
+                  checked={enabled.nftGate}
+                  onChange={() =>
+                    setEnabled({
+                      ...enabled,
+                      nftGate: !enabled.nftGate,
+                    })
+                  }
+                  className={`${
+                    enabled.nftGate ? "bg-[#008080]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      enabled.nftGate ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Add NFT contract addresses to gate{" "}
+              </div>
+            </div>
+            <div className={`${!enabled.nftGate && "hidden"} ml-4 mr-4 `}>
               <InputBox
                 placeholder="erc20 address"
                 value={""}
@@ -333,16 +403,40 @@ const SolanaMint = () => {
             {/* Switch Number 6 End */}
 
             {/* Switch Number 7 Start */}
-            <SwitchGroup
-              switchHead="Token Gate"
-              switchDesc="Add Token contract addresses to gate"
-            />
-            <div className="ml-4 mr-4">
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> Token Gate </h2>
+                <Switch
+                  checked={enabled.tokenGate}
+                  onChange={() =>
+                    setEnabled({
+                      ...enabled,
+                      tokenGate: !enabled.tokenGate,
+                    })
+                  }
+                  className={`${
+                    enabled.tokenGate ? "bg-[#008080]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      enabled.tokenGate ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Add Token contract addresses to gate{" "}
+              </div>
+            </div>
+            <div className={`${!enabled.tokenGate && "hidden"} ml-4 mr-4 `}>
               <InputBox
                 placeholder="erc20 address"
                 value={""}
                 onChange={handleChange}
               />
+
               <Button
                 color="teal"
                 size="sm"
@@ -354,6 +448,8 @@ const SolanaMint = () => {
               </Button>
             </div>
             {/* Switch Number 7 End */}
+
+            <Button color="teal" className="m-4"> Mint </Button>
           </>
         }
       />
