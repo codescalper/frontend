@@ -5,13 +5,28 @@ import { SwitchGroup } from "../components";
 import BsPlus from "@meronex/icons/bs/BsPlus";
 import { Button } from "@material-tailwind/react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
+import { useContext } from "react";
+import { Context } from "../../../../../../context/ContextProvider";
+import { useEffect } from "react";
+import { Switch } from "@headlessui/react";
 
 const SolanaMint = () => {
   // const [ipBoxValue, setIpBoxValue] = useState({mintAmt})
-
+  const {
+    enabled,
+    setEnabled,
+    chargeForMint,
+    onChainSplits,
+    limitNoOfEditions,
+  } = useContext(Context);
   const handleChange = (e) => {
     console.log(e.target.value);
   };
+
+  // useEffect(() => {
+  //   console.log(enabled.onChainSplits);
+  // }, enabled);
+
   return (
     <>
       <SharePanelHeaders
@@ -23,6 +38,7 @@ const SolanaMint = () => {
             <SwitchGroup
               switchHead="Charge for Mint"
               switchDesc="Set an amount to be charged for mint"
+              mintOption={chargeForMint}
             />
             <div className="ml-4 mr-4 flex ">
               <InputBox
@@ -56,11 +72,44 @@ const SolanaMint = () => {
             {/* Switch Number 1 End */}
 
             {/* Switch Number 2 Start */}
-            <SwitchGroup
+            {/* <SwitchGroup
+              mintOption={onChainSplits}
               switchHead="On Chain Splits"
               switchDesc="Split between multiple recipients"
-            />
-            <div className="">
+            /> */}
+
+            {/* Working Start */}
+
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> On Chain Splits </h2>
+                <Switch
+                  checked={enabled.onChainSplits}
+                  onChange={() =>
+                    setEnabled({
+                      ...enabled,
+                      onChainSplits: !enabled.onChainSplits,
+                    })
+                  }
+                  className={`${
+                    enabled.onChainSplits ? "bg-[#008080]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      enabled.onChainSplits ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Split between multiple recipients{" "}
+              </div>
+            </div>
+
+            {/* {enabled.onChainSplits && ( */}
+            <div className={`${!enabled.onChainSplits && "hidden"}`}>
               <div className="ml-4 mr-4 flex flex-row">
                 <div className="w-3/4">
                   <InputBox
@@ -87,25 +136,80 @@ const SolanaMint = () => {
                 Add Recipient
               </Button>
             </div>
+            {/* )} */}
             {/* Switch Number 2 End */}
+            {/* Working End */}
 
             {/* Switch Number 3 Start */}
-            <SwitchGroup
-              switchHead="Limit number of editions"
-              switchDesc="Limit the number of editions that can be minted"
-            />
-            <div className="ml-4 mr-4">
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> Limit number of editions </h2>
+                <Switch
+                  checked={enabled.limitNoOfEditions}
+                  onChange={() =>
+                    setEnabled({
+                      ...enabled,
+                      limitNoOfEditions: !enabled.limitNoOfEditions,
+                    })
+                  }
+                  className={`${
+                    enabled.limitNoOfEditions ? "bg-[#008080]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      enabled.limitNoOfEditions
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Limit the number of editions that can be minted{" "}
+              </div>
+            </div>
+
+            <div
+              className={`${!enabled.limitNoOfEditions && "hidden"} ml-4 mr-4`}
+            >
               <InputBox placeholder="100" value={""} onChange={handleChange} />
             </div>
             {/* Switch Number 3 End */}
 
             {/* Switch Number 4 Start */}
-            <SwitchGroup
-              switchHead="Schedule your Mint"
-              switchDesc="Set a start and end date for your mint"
-            />
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> Schedule your Mint </h2>
+                <Switch
+                  checked={enabled.scheduleMint}
+                  onChange={() =>
+                    setEnabled({
+                      ...enabled,
+                      scheduleMint: !enabled.scheduleMint,
+                    })
+                  }
+                  className={`${
+                    enabled.scheduleMint ? "bg-[#008080]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      enabled.scheduleMint ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Set a start and end date for your mint{" "}
+              </div>
+            </div>
 
-            <div className="flex flex-col">
+            <div
+              className={`flex flex-col ${!enabled.scheduleMint && "hidden"} `}
+            >
               <div className="ml-4 mr-4 flex justify-between text-center align-middle">
                 <div>Start</div> <DateTimePicker />
               </div>
@@ -116,11 +220,39 @@ const SolanaMint = () => {
             {/* Switch Number 4 End */}
 
             {/* Switch Number 4 Start */}
-            <SwitchGroup
+            {/* <SwitchGroup
               switchHead="Allowlist"
               switchDesc="Allow specific contract addresses to mint"
-            />
-            <div className="ml-4 mr-4">
+            /> */}
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> Allowlist </h2>
+                <Switch
+                  checked={enabled.allowlist}
+                  onChange={() =>
+                    setEnabled({
+                      ...enabled,
+                      allowlist: !enabled.allowlist,
+                    })
+                  }
+                  className={`${
+                    enabled.allowlist ? "bg-[#008080]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      enabled.allowlist ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Allow specific contract addresses to mint {" "}
+              </div>
+            </div>
+
+            <div className={`ml-4 mr-4 ${!enabled.allowlist && "hidden"} `}>
               <InputBox
                 placeholder="erc20 address"
                 value={""}
