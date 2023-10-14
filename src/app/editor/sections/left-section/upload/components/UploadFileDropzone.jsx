@@ -4,7 +4,7 @@ import TiDelete from "@meronex/icons/ti/TiDelete";
 import { uploadUserAssets } from "../../../../../../services/apis/BE-apis/backendApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { fnMessage } from "../../../../../../utils/fnMessage";
+import { errorMessage } from "../../../../../../utils/errorMessage";
 
 const UploadFileDropzone = () => {
   const [stFiles, setStFiles] = useState([]);
@@ -104,7 +104,7 @@ const UploadFileDropzone = () => {
         })
         .catch((err) => {
           toast.update(id, {
-            render: fnMessage(err),
+            render: errorMessage(err),
             type: "error",
             isLoading: false,
             autoClose: 3000,

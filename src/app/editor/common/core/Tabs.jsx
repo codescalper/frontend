@@ -12,6 +12,7 @@ import {
   SearchComponent,
 } from "..";
 import { fnLoadMore } from "../../../../utils";
+import { useAppAuth } from "../../../../hooks/app";
 
 // `changeCanvasDimension` is True/False from the Passing Component
 const Tabs = ({
@@ -20,6 +21,7 @@ const Tabs = ({
   queryKey,
   changeCanvasDimension,
 }) => {
+  const { isAuthenticated } = useAppAuth();
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -42,6 +44,7 @@ const Tabs = ({
       defaultQuery === "lensjump"
         ? getAssetsFn(getType, pageParam)
         : getAssetsFn(getType, delayedQuery || defaultQuery, pageParam),
+    enabled: isAuthenticated ? true : false,
   });
 
   useEffect(() => {
@@ -54,11 +57,11 @@ const Tabs = ({
   }, [query]);
 
   useEffect(() => {
-    if (isDisconnected || !address) return;
+    if (!isAuthenticated) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
-  if (isDisconnected || !address) {
+  if (!isAuthenticated) {
     return <ConnectWalletMsgComponent />;
   }
 
@@ -95,7 +98,7 @@ const Tabs = ({
                 );
               })}
           </div>
-          <LoadMoreComponent 
+          <LoadMoreComponent
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
           />

@@ -29,7 +29,7 @@ import { Context } from "../../../../../../providers/context/ContextProvider";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
-  fnMessage,
+  errorMessage,
   isEthAddress,
   isLensHandle,
 } from "../../../../../../utils";
@@ -145,7 +145,7 @@ const LensShare = () => {
       })
       .catch((err) => {
         console.log(err);
-        toast.error(fnMessage(err));
+        toast.error(errorMessage(err));
         setSharing(false);
         setIsLoading(false);
         setText("");
@@ -564,7 +564,7 @@ const LensShare = () => {
       })
       .catch((err) => {
         toast.update(id, {
-          render: fnMessage(err),
+          render: errorMessage(err),
           type: "error",
           isLoading: false,
           autoClose: 3000,

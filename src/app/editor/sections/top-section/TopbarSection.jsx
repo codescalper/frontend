@@ -5,9 +5,12 @@ import { ENVIRONMENT } from "../../../../services";
 import ProfileMenu from "./user/ProfileMenu";
 import LoginBtn from "./auth/LoginBtn";
 import { useAppAuth } from "../../../../hooks/app";
+import { Typography } from "@material-tailwind/react";
+import { EVMWallets, SolanaWallets } from "./auth/wallets";
+import Logo from "./logo/Logo";
 
 const TopbarSection = () => {
-  const isAuthenticated = useAppAuth();
+  const { isAuthenticated } = useAppAuth();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
 
@@ -22,18 +25,17 @@ const TopbarSection = () => {
   return (
     <div className="bg-white mb-2 w-full p-2 sm:overflow-x-auto sm:overflow-y-hidden sm:max-w-[100vw] sticky border">
       <div className="flex items-center justify-between">
-        <a href="/">
-          <div className="flex items-center justify-between cursor-pointer">
-            <img
-              className="flex items-center justify-start object-contain mt-2"
-              src="/LenspostAlphaLogo.png"
-              alt="lenspost"
-              width={170}
-            />
-          </div>
-        </a>
+        <Logo />
 
-        {!isAuthenticated && <LoginBtn />}
+        {!isAuthenticated && (
+          <div className="flex items-center gap-3">
+            <Typography className="font-semibold text-lg">
+              Login with
+            </Typography>
+            <SolanaWallets />
+            <EVMWallets />
+          </div>
+        )}
 
         {isAuthenticated ? (
           <div className="flex items-center justify-center space-x-6">

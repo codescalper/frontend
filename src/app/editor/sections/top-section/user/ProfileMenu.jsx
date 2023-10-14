@@ -46,36 +46,26 @@ const ProfileMenu = () => {
   };
 
   // state for profile menu items
-  const [profileMenuItems, setProfileMenuItems] = useState([
+  const profileMenuItems = [
+    {
+      label: address && addressCrop(address),
+      icon: ClipboardIcon,
+      onClick: handleEVMAddressCopy,
+      shouldRender: address ? true : false,
+    },
+    {
+      label: solanaAddress && addressCrop(solanaAddress),
+      icon: ClipboardIcon,
+      onClick: handleSolanaAddressCopy,
+      shouldRender: solanaAddress ? true : false,
+    },
     {
       label: "Logout",
       icon: PowerIcon,
       onClick: logout,
+      shouldRender: true,
     },
-  ]);
-
-  useEffect(() => {
-    // Modify the menu items array based on solanaAddress
-    if (solanaAddress) {
-      setProfileMenuItems([
-        {
-          label: solanaAddress && addressCrop(solanaAddress),
-          icon: ClipboardIcon,
-          onClick: handleSolanaAddressCopy,
-        },
-        ...profileMenuItems,
-      ]);
-    } else if (address) {
-      setProfileMenuItems([
-        {
-          label: address && addressCrop(address),
-          icon: ClipboardIcon,
-          onClick: handleEVMAddressCopy,
-        },
-        ...profileMenuItems,
-      ]);
-    }
-  }, [solanaAddress, address]);
+  ];
 
   return (
     <Menu placement="bottom-end">
@@ -88,37 +78,39 @@ const ProfileMenu = () => {
         />
       </MenuHandler>
       <MenuList className="p-1 mt-2">
-        {profileMenuItems.map(({ label, icon, onClick }, key) => {
-          const isLastItem = key === profileMenuItems.length - 1;
-          return (
-            <div className="outline-none">
-              {isLastItem && <hr className="my-2 border-blue-gray-50" />}
-              <MenuItem
-                key={label}
-                onClick={onClick}
-                className={`flex items-center gap-2 rounded ${
-                  isLastItem
-                    ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                    : ""
-                }`}
-              >
-                {React.createElement(icon, {
-                  className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                  strokeWidth: 2,
-                })}
-
-                <Typography
-                  as="span"
-                  variant="small"
-                  className="font-normal"
-                  color={isLastItem ? "red" : "inherit"}
+        {profileMenuItems
+          .filter((item) => item.shouldRender === true)
+          .map(({ label, icon, onClick }, key) => {
+            const isLastItem = label === "Logout";
+            return (
+              <div className="outline-none">
+                {isLastItem && <hr className="my-2 border-blue-gray-50" />}
+                <MenuItem
+                  key={label}
+                  onClick={onClick}
+                  className={`flex items-center gap-2 rounded ${
+                    isLastItem
+                      ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                      : ""
+                  }`}
                 >
-                  {label}
-                </Typography>
-              </MenuItem>
-            </div>
-          );
-        })}
+                  {React.createElement(icon, {
+                    className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                    strokeWidth: 2,
+                  })}
+
+                  <Typography
+                    as="span"
+                    variant="small"
+                    className="font-normal"
+                    color={isLastItem ? "red" : "inherit"}
+                  >
+                    {label}
+                  </Typography>
+                </MenuItem>
+              </div>
+            );
+          })}
       </MenuList>
     </Menu>
   );

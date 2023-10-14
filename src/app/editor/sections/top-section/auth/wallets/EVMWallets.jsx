@@ -10,10 +10,7 @@ const EVMWallets = () => {
       size="lg"
       color="black"
       className="flex items-center gap-3 outline-none"
-      onClick={() => {
-        openConnectModal();
-        // handleOpen();
-      }}
+      onClick={openConnectModal}
     >
       <img
         src="https://ethereum.org/static/eth-diamond-rainbow.svg"

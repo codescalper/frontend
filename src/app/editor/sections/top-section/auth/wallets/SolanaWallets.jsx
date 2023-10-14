@@ -115,7 +115,7 @@ const SolanaWallets = () => {
         </DialogBody>
         <DialogFooter className="justify-between gap-2 border-t border-blue-gray-50">
           <Typography variant="small" color="gray" className="font-normal">
-            New to Ethereum wallets?
+            New to Soalana wallets?
           </Typography>
           <Button variant="text" size="sm">
             Learn More

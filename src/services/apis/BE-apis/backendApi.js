@@ -7,6 +7,7 @@ import {
   ALCHEMY_API,
 } from "../../env/env";
 import { getFromLocalStorage } from "../../../utils/localStorage";
+import { LOCAL_STORAGE } from "../../../data";
 
 const API =
   ENVIRONMENT === "production"
@@ -35,7 +36,7 @@ const api = axios.create();
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    const jwtToken = getFromLocalStorage("userAuthToken");
+    const jwtToken = getFromLocalStorage(LOCAL_STORAGE.userAuthToken);
 
     // Exclude the login API from adding the default header
 
@@ -53,58 +54,29 @@ api.interceptors.request.use(
 
 const limit = 10;
 
-// authentication apis start
-// no need auth token (jwt)
-export const login = async (walletAddress, signature, message) => {
-  try {
-    const result = await axios.post(`${API}/auth/login`, {
-      address: walletAddress,
-      signature: signature,
-      message: message,
-    });
+// evm auth apis start
+export const evmAuth = async ({ walletAddress, signature, message }) => {
+  const result = await api.post(`${API}/auth/evm`, {
+    evm_address: walletAddress,
+    signature: signature,
+    message: message,
+  });
 
-    if (result?.status === 200) {
-      if (result?.data?.status === "success") {
-        return {
-          jwt: result?.data?.jwt,
-          lensHandle: result?.data?.message,
-        };
-      } else if (result?.data?.status === "failed") {
-        return {
-          error: result?.data?.message,
-        };
-      }
-    } else if (result?.status === 400) {
-      return {
-        error: result?.data?.message,
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  return result?.data;
 };
-// authentication apis end
+// evm auth apis end
+
+// solana auth apis start
+export const solanaAuth = async ({ walletAddress, signature, message }) => {
+  const result = await api.post(`${API}/auth/solana`, {
+    solana_address: walletAddress,
+    signature: signature,
+    message: message,
+  });
+
+  return result?.data;
+};
+// solaana auth apis end
 
 // lensauth apis start
 // need auth token (jwt)
@@ -116,18 +88,6 @@ export const lensAuthenticate = async (signature) => {
   return result?.data;
 };
 // lensauth apis end
-
-// solana auth apis start
-export const solanaAuth = async (walletAddress, signature, message) => {
-  const result = await api.post(`${API}/auth/solana/authenticate`, {
-    address: walletAddress,
-    signature: signature,
-    message: message,
-  });
-
-  return result?.data;
-};
-// solaana auth apis end
 
 // twitter apis start
 // need auth token (jwt)

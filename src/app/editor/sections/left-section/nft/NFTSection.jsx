@@ -29,9 +29,14 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { fnLoadMore, fnMessage, replaceImageURL } from "../../../../../utils";
+import {
+  fnLoadMore,
+  errorMessage,
+  replaceImageURL,
+} from "../../../../../utils";
 import { lensCollect } from "./utils";
 import { LoadingAnimatedComponent } from "../../../common";
+import { useAppAuth } from "../../../../../hooks/app";
 
 const NFTPanel = () => {
   const [tab, setTab] = useState("wallet");
@@ -87,6 +92,7 @@ export default NFTSection;
 
 // catogoery component (child component of LenspostNFT component)
 const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
+  const { isAuthenticated } = useAppAuth();
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
   const {
@@ -101,11 +107,12 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
     queryKey: ["lenspost-nft-collections"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) => getAllCollection(pageParam),
+    enabled: isAuthenticated ? true : false,
   });
 
   // run fetchNextPage() function when scroll to bottom
   useEffect(() => {
-    if (isDisconnected || !address) return;
+    if (!isAuthenticated) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -158,6 +165,7 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
 
 // nft component (child component of LenspostNFT component)
 const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
+  const { isAuthenticated } = useAppAuth();
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -176,6 +184,7 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
       getNftByCollection(contractAddressRef.current, pageParam),
+    enabled: isAuthenticated ? true : false,
   });
 
   useEffect(() => {
@@ -263,6 +272,7 @@ const RenderSearchedNFTs = ({
   goBack,
   delayedQuery,
 }) => {
+  const { isAuthenticated } = useAppAuth();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [
       "lenspost-nft-collections",
@@ -270,6 +280,7 @@ const RenderSearchedNFTs = ({
       { tokenID: delayedQuery },
     ],
     queryFn: () => getCollectionNftById(delayedQuery, contractAddress),
+    enabled: isAuthenticated ? true : false,
   });
 
   if (isLoading) {
@@ -308,11 +319,12 @@ const RenderSearchedNFTs = ({
 };
 
 const LenspostNFT = () => {
+  const { isAuthenticated } = useAppAuth();
   const [activeCat, setActiveCat] = useState("");
   const { address, isDisconnected, isConnected } = useAccount();
   const contractAddressRef = useRef(null);
 
-  if (isDisconnected || !address) {
+  if (!isAuthenticated) {
     return <ConnectWalletMsgComponent />;
   }
 
@@ -378,8 +390,8 @@ const RenderSearchedWalletNFT = ({ goBack, delayedQuery }) => {
 };
 
 const WalletNFT = () => {
-  const { isConnected, isDisconnected, address } = useAccount();
-
+  const { isAuthenticated } = useAppAuth();
+  const { isDisconnected, address } = useAccount();
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
@@ -396,6 +408,7 @@ const WalletNFT = () => {
     queryKey: ["userNFTs", delayedQuery || "userNFTs"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) => getNFTs(delayedQuery || "", pageParam),
+    enabled: isAuthenticated ? true : false,
   });
 
   const { mutateAsync } = useMutation({
@@ -431,7 +444,7 @@ const WalletNFT = () => {
       })
       .catch((err) => {
         toast.update(id, {
-          render: fnMessage(err),
+          render: errorMessage(err),
           type: "error",
           isLoading: false,
           autoClose: 3000,
@@ -441,7 +454,7 @@ const WalletNFT = () => {
   };
 
   useEffect(() => {
-    if (isDisconnected || !address) return;
+    if (!isAuthenticated) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
@@ -450,7 +463,7 @@ const WalletNFT = () => {
     setQuery("");
   };
 
-  if (isDisconnected || !address) {
+  if (!isAuthenticated) {
     return <ConnectWalletMsgComponent />;
   }
 

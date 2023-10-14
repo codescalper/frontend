@@ -1,6 +1,6 @@
 const useAppAuth = () => {
   const isAuthenticated = localStorage.getItem("userAuthToken");
-  return isAuthenticated;
+  return { isAuthenticated };
 };
 
 export default useAppAuth;

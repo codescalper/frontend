@@ -8,8 +8,6 @@ const useSolanaWalletError = () => {
     message: "",
   });
 
-  console.log("error", error);
-
   const onSolanaWalletError = (isError, name, message) => {
     setError({
       isError: isError,
