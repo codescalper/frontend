@@ -11,13 +11,13 @@ import {
 import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
 import { createCanvas, updateCanvas } from "../../services";
-import { Context } from "../../context/ContextProvider";
+import { Context } from "../../providers/context/ContextProvider";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fnMessage, loadFile, base64Stripper, wait } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
-import { useStore } from "../../hooks";
+import { useStore } from "../../hooks/polotno";
 import { TopbarSection } from "./sections/top-section";
 import {
   AIImageSection,

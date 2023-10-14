@@ -15,9 +15,9 @@ import SuCreate from "@meronex/icons/su/SuCreate";
 import SuChevronUp from "@meronex/icons/su/SuChevronUp";
 import SuCapture from "@meronex/icons/su/SuCapture";
 import { fnPageHasElements } from "../../../../utils";
-import { useStore } from "../../../../hooks";
+import { useStore } from "../../../../hooks/polotno";
 import { useContext } from "react";
-import { Context } from "../../../../context/ContextProvider";
+import { Context } from "../../../../providers/context/ContextProvider";
 
 export function SpeedDialX() {
   const store = useStore();

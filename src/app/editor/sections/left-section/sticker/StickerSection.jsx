@@ -13,7 +13,7 @@ import {
   StickerReacTour,
   Tabs as TabsCustom,
 } from "../../../common"; // Since Material already has builtin component `Tab`
-import { useStore } from "../../../../../hooks";
+import { useStore } from "../../../../../hooks/polotno";
 import { LoadingAnimatedComponent } from "../../../common";
 import { firstLetterCapital, fnLoadMore } from "../../../../../utils";
 import FeaturedTabs from "../../../common/core/FeaturedTabs";

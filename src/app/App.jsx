@@ -1,13 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
-import { login, refreshNFT } from "../services/apis/BE-apis/backendApi";
+import {
+  login,
+  refreshNFT,
+  solanaAuth,
+} from "../services/apis/BE-apis/backendApi";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   removeFromLocalStorage,
 } from "../utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
-import { Context } from "../context/ContextProvider";
+import { Context } from "../providers/context/ContextProvider";
 import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
 
@@ -19,15 +23,16 @@ import {
   OnboardingStepsWithShare,
 } from "./editor/common";
 import { clearAllLocalStorageData } from "../utils";
+import { useSolanaWallet, useSolanaWalletError } from "../hooks/solana";
+import { useMutation } from "@tanstack/react-query";
+import { EVM_MESSAGE, SOLANA_MESSAGE } from "../data";
 
 const App = () => {
+  const {solanaWalletError} = useSolanaWalletError();
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const [initialRender, setInitialRender] = useState(true);
   const { isLoading, setIsLoading, text, setText, posthog } =
     useContext(Context);
-  const [message, setMessage] = useState(
-    "This message is to login you into lenspost dapp."
-  );
   const [sign, setSign] = useState("");
   const { address, isConnected, isDisconnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -45,6 +50,11 @@ const App = () => {
   const getifUserEligible = getFromLocalStorage("ifUserEligible");
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
   const navigate = useNavigate();
+  const { solanaConnected, solanaSignMessage, solanaAddress } =
+    useSolanaWallet();
+  const [solanaSignature, setSolanaSignature] = useState("");
+
+  console.log("solanaWalletError", solanaWalletError);
 
   // remove jwt from localstorage if it is expired (24hrs)
   useEffect(() => {
@@ -72,8 +82,8 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // generate signature
-  const genarateSignature = () => {
+  // generate signature for EVM
+  const generateSignature = () => {
     saveToLocalStorage("hasUserSeenTheApp", true);
     if (isDisconnected) return;
 
@@ -88,11 +98,32 @@ const App = () => {
       clearAllLocalStorageData();
       setIsLoading(true);
       signMessage({
-        message,
+        message: EVM_MESSAGE,
       });
       setText("Sign the message to login");
     }
   };
+
+  // generate signature for solana
+  const generateSignatureSolana = async () => {
+    setIsLoading(true);
+    setText("Sign the message to login");
+
+    // pass the message as Uint8Array
+    const message = new Uint8Array(Buffer.from(SOLANA_MESSAGE));
+    const signature = await solanaSignMessage(message);
+
+    // convert the signature to base64
+    const signatureBase64 = Buffer.from(signature).toString("base64");
+    console.log(signatureBase64);
+    setSolanaSignature(signatureBase64);
+  };
+
+  // solana login
+  const { mutateAsync: solanaLogin } = useMutation({
+    mutationKey: "solanaLogin",
+    mutationFn: solanaAuth,
+  });
 
   // login user
   const userLogin = async () => {
@@ -170,11 +201,32 @@ const App = () => {
   }, [isSuccess]);
 
   useEffect(() => {
+    if (solanaSignature) {
+      solanaLogin({
+        address: solanaAddress,
+        signature: solanaSignature,
+        message: SOLANA_MESSAGE,
+      })
+        .then((res) => {})
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [solanaSignature]);
+
+  useEffect(() => {
     // Run the effect when isConnected and address change
     if (isConnected && address) {
-      genarateSignature();
+      generateSignature();
     }
   }, [isConnected, address, initialRender]);
+
+  useEffect(() => {
+    // Run the effect when isConnected and address change
+    if (solanaConnected && solanaAddress) {
+      generateSignatureSolana();
+    }
+  }, [solanaConnected]);
 
   useEffect(() => {
     // check if browser is Brave

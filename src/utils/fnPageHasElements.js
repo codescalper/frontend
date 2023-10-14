@@ -2,7 +2,7 @@
 // Function to check if a page has elements
 // --------
 
-import { useStore } from "../hooks";
+import { useStore } from "../hooks/polotno";
 
 const store = useStore()
 

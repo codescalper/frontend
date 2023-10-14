@@ -7,7 +7,7 @@ import EmojiPicker, {
 } from "emoji-picker-react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import { getFromLocalStorage } from "../../../../../utils";
-import { Context } from "../../../../../context/ContextProvider";
+import { Context } from "../../../../../providers/context/ContextProvider";
 import BsX from '@meronex/icons/bs/BsX';
 import { Textarea } from "@material-tailwind/react";
 

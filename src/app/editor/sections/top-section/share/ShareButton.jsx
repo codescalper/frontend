@@ -1,6 +1,6 @@
 import { Fragment, useContext, useState } from "react";
 import { ShareIcon } from "../../../../../assets";
-import { Context } from "../../../../../context/ContextProvider";
+import { Context } from "../../../../../providers/context/ContextProvider";
 import { LensShare, ShareSection } from "../../right-section";
 import { Drawer } from "@blueprintjs/core";
 

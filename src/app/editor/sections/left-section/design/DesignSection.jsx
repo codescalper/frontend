@@ -30,8 +30,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useStore } from "../../../../../hooks";
-import { Context } from "../../../../../context/ContextProvider";
+import { useStore } from "../../../../../hooks/polotno";
+import { Context } from "../../../../../providers/context/ContextProvider";
 import {
   fnLoadMore,
   fnMessage,

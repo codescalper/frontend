@@ -117,6 +117,18 @@ export const lensAuthenticate = async (signature) => {
 };
 // lensauth apis end
 
+// solana auth apis start
+export const solanaAuth = async (walletAddress, signature, message) => {
+  const result = await api.post(`${API}/auth/solana/authenticate`, {
+    address: walletAddress,
+    signature: signature,
+    message: message,
+  });
+
+  return result?.data;
+};
+// solaana auth apis end
+
 // twitter apis start
 // need auth token (jwt)
 export const twitterAuthenticate = async () => {
@@ -289,7 +301,7 @@ export const updateCanvas = async ({
       data: data,
       isPublic: isPublic,
       referredFrom: referredFrom,
-      assetsRecipientElementData: assetsRecipientElementData
+      assetsRecipientElementData: assetsRecipientElementData,
     },
     preview: preview,
   });

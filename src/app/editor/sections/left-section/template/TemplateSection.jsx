@@ -21,7 +21,7 @@ import {
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner, Icon } from "@blueprintjs/core";
-import { useStore } from "../../../../../hooks";
+import { useStore } from "../../../../../hooks/polotno";
 import {
   fnLoadJsonOnPage,
   fnLoadMore,
@@ -30,7 +30,7 @@ import {
 } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import SuChevronRightDouble from "@meronex/icons/su/SuChevronRightDouble";
-import { Context } from "../../../../../context/ContextProvider";
+import { Context } from "../../../../../providers/context/ContextProvider";
 
 // import CustomHorizontalScroller from "../../../common/";
 import MdcImageMultipleOutline from "@meronex/icons/mdc/MdcImageMultipleOutline";

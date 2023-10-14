@@ -25,7 +25,7 @@ import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Context } from "../../../../../../context/ContextProvider";
+import { Context } from "../../../../../../providers/context/ContextProvider";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
@@ -41,7 +41,7 @@ import {
   InputErrorMsg,
   NumberInputBox,
 } from "../../../../common";
-import { useStore } from "../../../../../../hooks";
+import { useStore } from "../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
 import { SplitPolicyCard } from "./components";

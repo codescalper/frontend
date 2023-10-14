@@ -5,7 +5,7 @@ import { Button } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { Slider } from "@blueprintjs/core";
 import { useState } from "react";
-import { Context } from "../../../../context/ContextProvider";
+import { Context } from "../../../../providers/context/ContextProvider";
 
 const CustomPopover = ({ icon, animationData }) => {
   const { enabled, setEnabled } = useContext(Context);

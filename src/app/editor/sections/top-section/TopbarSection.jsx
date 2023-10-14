@@ -1,15 +1,15 @@
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
-import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import ShareButton from "./share/ShareButton";
 import DownloadBtn from "./download/DownloadBtn";
 import { ENVIRONMENT } from "../../../../services";
 import ProfileMenu from "./user/ProfileMenu";
+import LoginBtn from "./auth/LoginBtn";
+import { useAppAuth } from "../../../../hooks/app";
 
 const TopbarSection = () => {
-  const { isConnected, address } = useAccount();
+  const isAuthenticated = useAppAuth();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
-  const { openConnectModal } = useConnectModal();
 
   const isSupportedChain = () => {
     if (ENVIRONMENT === "production") {
@@ -32,19 +32,10 @@ const TopbarSection = () => {
             />
           </div>
         </a>
-        {!isConnected && (
-          <div>
-            <div className="flex items-center justify-center space-x-6" id="first-step">
-              <button
-                className="bg-blue-700 text-white px-4 py-2 rounded-md outline-none"
-                onClick={openConnectModal}
-              >
-                Login
-              </button>
-            </div>
-          </div>
-        )}
-        {isConnected && (
+
+        {!isAuthenticated && <LoginBtn />}
+
+        {isAuthenticated ? (
           <div className="flex items-center justify-center space-x-6">
             {/* Discord Links - 19Jul2023 */}
             <a
@@ -56,16 +47,17 @@ const TopbarSection = () => {
               <img src="/topbar-icons/iconDiscord.svg" alt="" />
             </a>
 
-            <div id={`${isConnected ? "fifth-step" : ""}`}>
+            <div id="fifth-step">
               <ShareButton />
             </div>
             <DownloadBtn />
             <div className="" id="first-step">
               {/* user profile circular */}
-              {isSupportedChain() ? (
-                <ProfileMenu  />
+              <ProfileMenu />
+              {/* {isSupportedChain() ? (
+                <></>
               ) : (
-                <div  className="flex items-center justify-center space-x-6">
+                <div className="flex items-center justify-center space-x-6">
                   <button
                     className="bg-red-500 text-white px-4 py-2 rounded-md outline-none"
                     onClick={() =>
@@ -75,10 +67,10 @@ const TopbarSection = () => {
                     Wrong Network
                   </button>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

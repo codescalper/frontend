@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   addressCrop,
   clearAllLocalStorageData,
@@ -7,7 +7,7 @@ import {
 } from "../../../../../utils";
 import { useAccount, useDisconnect } from "wagmi";
 import { toast } from "react-toastify";
-import { Context } from "../../../../../context/ContextProvider";
+import { Context } from "../../../../../providers/context/ContextProvider";
 import {
   Typography,
   Button,
@@ -19,15 +19,21 @@ import {
 } from "@material-tailwind/react";
 
 import { ClipboardIcon, PowerIcon } from "@heroicons/react/24/outline";
+import { useSolanaWallet } from "../../../../../hooks/solana";
 
 const ProfileMenu = () => {
+  const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const getLensAuth = getFromLocalStorage("lensAuth");
   const { posthog } = useContext(Context);
 
-  const handleCopy = () => {
+  const handleEVMAddressCopy = () => {
     navigator.clipboard.writeText(address);
+    toast.success("address copied");
+  };
+
+  const handleSolanaAddressCopy = () => {
+    navigator.clipboard.writeText(solanaAddress);
     toast.success("address copied");
   };
 
@@ -35,22 +41,41 @@ const ProfileMenu = () => {
     posthog.reset();
     clearAllLocalStorageData();
     disconnect();
+    solanaDisconnect();
     toast.success("Logout successful");
   };
 
-  // profile menu component
-  const profileMenuItems = [
-    {
-      label: addressCrop(address),
-      icon: ClipboardIcon,
-      onClick: handleCopy,
-    },
+  // state for profile menu items
+  const [profileMenuItems, setProfileMenuItems] = useState([
     {
       label: "Logout",
       icon: PowerIcon,
       onClick: logout,
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    // Modify the menu items array based on solanaAddress
+    if (solanaAddress) {
+      setProfileMenuItems([
+        {
+          label: solanaAddress && addressCrop(solanaAddress),
+          icon: ClipboardIcon,
+          onClick: handleSolanaAddressCopy,
+        },
+        ...profileMenuItems,
+      ]);
+    } else if (address) {
+      setProfileMenuItems([
+        {
+          label: address && addressCrop(address),
+          icon: ClipboardIcon,
+          onClick: handleEVMAddressCopy,
+        },
+        ...profileMenuItems,
+      ]);
+    }
+  }, [solanaAddress, address]);
 
   return (
     <Menu placement="bottom-end">
@@ -59,7 +84,7 @@ const ProfileMenu = () => {
           variant="circular"
           alt="profile picture"
           className="cursor-pointer outline outline-black"
-          src={getAvatar(address)}
+          src={getAvatar(address || solanaAddress)}
         />
       </MenuHandler>
       <MenuList className="p-1 mt-2">
