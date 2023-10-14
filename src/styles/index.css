@@ -26,7 +26,7 @@ img {
 
 .hCustom{
   /* height: 80dvh !important; */
-  height: calc(100dvh - 80px) !important;
+  height: calc(100vh - 160px) !important;
 }
 /* css for designed scrollbar start here */
 ::-webkit-scrollbar {
