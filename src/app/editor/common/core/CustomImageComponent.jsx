@@ -11,6 +11,7 @@ import { Context } from "../../../../providers/context/ContextProvider";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
+  item,
   id,
   preview,
   dimensions,
@@ -22,7 +23,8 @@ const CustomImageComponent = ({
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");
-  const { lensCollectRecipientRef, assetsRecipientRef } = useContext(Context);
+  const { lensCollectRecipientRef, assetsRecipientRef, solanaNFTCreatorRef } =
+    useContext(Context);
 
   // convert to base64
   const getBase64 = async (image) => {
@@ -80,6 +82,16 @@ const CustomImageComponent = ({
       assetsRecipientRef.current.push({
         elementId: store.selectedElements[0]?.id,
         handle: recipientWallet + ".lens",
+      });
+    }
+
+    // add creator address to solanaNFTCreatorRef for solana NFTs
+    if (item?.creators.length > 0) {
+      item?.creators.map((creator) => {
+        solanaNFTCreatorRef.current.push({
+          address: creator?.address,
+          share: creator?.share,
+        });
       });
     }
   };

@@ -9,23 +9,147 @@ import { useContext } from "react";
 import { useEffect } from "react";
 import { Switch } from "@headlessui/react";
 import { Context } from "../../../../../../providers/context";
+import { LOCAL_STORAGE } from "../../../../../../data";
+import { SolanaWallets } from "../../../top-section/auth/wallets";
+import { errorMessage, getFromLocalStorage } from "../../../../../../utils";
+import { toast } from "react-toastify";
+import { shareOnSocials } from "../../../../../../services";
+import { useMutation } from "@tanstack/react-query";
 
 const SolanaMint = () => {
-  // const [ipBoxValue, setIpBoxValue] = useState({mintAmt})
+  const [sharing, setSharing] = useState(false);
+  const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const {
-    enabled,
-    setEnabled,
+    solanaEnabled,
+    setSolanaEnabled,
     chargeForMint,
     onChainSplits,
     limitNoOfEditions,
+    postDescription,
+    setPostDescription,
+    contextCanvasIdRef,
+    solanaNFTCreatorRef,
+    setMenu,
+    setIsShareOpen,
   } = useContext(Context);
+
+  const { mutateAsync: shareOnSolana } = useMutation({
+    mutationKey: "shareOnSolana",
+    mutationFn: shareOnSocials,
+  });
+
+  let creatorAdd = true;
+
+  const mintSettings = () => {
+    // TODO: check if here needs to be any checks
+    // if (
+    //   !solanaEnabled.chargeForMint &&
+    //   !solanaEnabled.onChainSplits &&
+    //   !solanaEnabled.limitNoOfEditions &&
+    //   !solanaEnabled.scheduleMint &&
+    //   !solanaEnabled.allowlist &&
+    //   !solanaEnabled.nftBurn &&
+    //   !solanaEnabled.nftGate &&
+    //   !solanaEnabled.tokenGate
+    // ) {
+    //   return false;
+    // }
+
+    let canvasParams = {};
+
+    if (creatorAdd) {
+      canvasParams = {
+        ...canvasParams,
+        creators: solanaNFTCreatorRef.current,
+      };
+    }
+
+    return canvasParams;
+  };
+
+  const sharePost = (platform) => {
+    // TODO:  enables some checks here
+
+    // check if canvasId is provided
+    if (contextCanvasIdRef.current === null) {
+      toast.error("Please select a design");
+      return;
+    }
+    // check if description is provided
+    if (!postDescription) {
+      toast.error("Please provide a description");
+      return;
+    }
+
+    setSharing(true);
+
+    const canvasData = {
+      id: contextCanvasIdRef.current,
+      name: "solana post",
+      content: postDescription,
+    };
+
+    const id = toast.loading(`Sharing on ${platform}...`);
+    shareOnSolana({
+      canvasData: canvasData,
+      canvasParams: mintSettings(),
+      platform: platform,
+      // timeStamp: formatDateTimeUnix(stFormattedDate, stFormattedTime),
+    })
+      .then((res) => {
+        if (res?.txHash) {
+          const jsConfetti = new JSConfetti();
+          jsConfetti.addConfetti({
+            emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
+            confettiNumber: 100,
+          });
+
+          toast.update(id, {
+            render: `Shared on ${platform}`,
+            type: "success",
+            isLoading: false,
+            autoClose: 3000,
+          });
+
+          // TODO: clear all the states and variables
+          setSharing(false);
+          setIsShareOpen(false);
+          setMenu("share");
+          setPostDescription("");
+          setSolanaEnabled({
+            chargeForMint: false,
+            onChainSplits: false,
+            limitNoOfEditions: false,
+            scheduleMint: false,
+            allowlist: false,
+            nftBurn: false,
+            nftGate: false,
+            tokenGate: false,
+          });
+        } else {
+          toast.update(id, {
+            render: `Error sharing on ${platform}`,
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+          });
+          setSharing(false);
+        }
+      })
+      .catch((err) => {
+        toast.update(id, {
+          render: errorMessage(err),
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+        setSharing(false);
+      });
+  };
+
   const handleChange = (e) => {
     console.log(e.target.value);
   };
-
-  // useEffect(() => {
-  //   console.log(enabled.onChainSplits);
-  // }, enabled);
 
   return (
     <>
@@ -39,20 +163,22 @@ const SolanaMint = () => {
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> Charge for mint </h2>
                 <Switch
-                  checked={enabled.chargeForMint}
+                  checked={solanaEnabled.chargeForMint}
                   onChange={() =>
-                    setEnabled({
-                      ...enabled,
-                      chargeForMint: !enabled.chargeForMint,
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      chargeForMint: !solanaEnabled.chargeForMint,
                     })
                   }
                   className={`${
-                    enabled.chargeForMint ? "bg-[#008080]" : "bg-gray-200"
+                    solanaEnabled.chargeForMint ? "bg-[#008080]" : "bg-gray-200"
                   } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
-                      enabled.chargeForMint ? "translate-x-6" : "translate-x-1"
+                      solanaEnabled.chargeForMint
+                        ? "translate-x-6"
+                        : "translate-x-1"
                     } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                   />{" "}
                 </Switch>
@@ -63,7 +189,9 @@ const SolanaMint = () => {
               </div>
             </div>
             <div
-              className={`${!enabled.chargeForMint && "hidden"} ml-4 mr-4 flex`}
+              className={`${
+                !solanaEnabled.chargeForMint && "hidden"
+              } ml-4 mr-4 flex`}
             >
               <InputBox
                 className={"W-3/4"}
@@ -108,20 +236,22 @@ const SolanaMint = () => {
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> On Chain Splits </h2>
                 <Switch
-                  checked={enabled.onChainSplits}
+                  checked={solanaEnabled.onChainSplits}
                   onChange={() =>
-                    setEnabled({
-                      ...enabled,
-                      onChainSplits: !enabled.onChainSplits,
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      onChainSplits: !solanaEnabled.onChainSplits,
                     })
                   }
                   className={`${
-                    enabled.onChainSplits ? "bg-[#008080]" : "bg-gray-200"
+                    solanaEnabled.onChainSplits ? "bg-[#008080]" : "bg-gray-200"
                   } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
-                      enabled.onChainSplits ? "translate-x-6" : "translate-x-1"
+                      solanaEnabled.onChainSplits
+                        ? "translate-x-6"
+                        : "translate-x-1"
                     } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                   />{" "}
                 </Switch>
@@ -133,7 +263,7 @@ const SolanaMint = () => {
             </div>
 
             {/* {enabled.onChainSplits && ( */}
-            <div className={`${!enabled.onChainSplits && "hidden"}`}>
+            <div className={`${!solanaEnabled.onChainSplits && "hidden"}`}>
               <div className="ml-4 mr-4 flex flex-row">
                 <div className="w-3/4">
                   <InputBox
@@ -169,20 +299,22 @@ const SolanaMint = () => {
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> Limit number of editions </h2>
                 <Switch
-                  checked={enabled.limitNoOfEditions}
+                  checked={solanaEnabled.limitNoOfEditions}
                   onChange={() =>
-                    setEnabled({
-                      ...enabled,
-                      limitNoOfEditions: !enabled.limitNoOfEditions,
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      limitNoOfEditions: !solanaEnabled.limitNoOfEditions,
                     })
                   }
                   className={`${
-                    enabled.limitNoOfEditions ? "bg-[#008080]" : "bg-gray-200"
+                    solanaEnabled.limitNoOfEditions
+                      ? "bg-[#008080]"
+                      : "bg-gray-200"
                   } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
-                      enabled.limitNoOfEditions
+                      solanaEnabled.limitNoOfEditions
                         ? "translate-x-6"
                         : "translate-x-1"
                     } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
@@ -196,7 +328,9 @@ const SolanaMint = () => {
             </div>
 
             <div
-              className={`${!enabled.limitNoOfEditions && "hidden"} ml-4 mr-4`}
+              className={`${
+                !solanaEnabled.limitNoOfEditions && "hidden"
+              } ml-4 mr-4`}
             >
               <InputBox placeholder="100" value={""} onChange={handleChange} />
             </div>
@@ -207,20 +341,22 @@ const SolanaMint = () => {
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> Schedule your Mint </h2>
                 <Switch
-                  checked={enabled.scheduleMint}
+                  checked={solanaEnabled.scheduleMint}
                   onChange={() =>
-                    setEnabled({
-                      ...enabled,
-                      scheduleMint: !enabled.scheduleMint,
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      scheduleMint: !solanaEnabled.scheduleMint,
                     })
                   }
                   className={`${
-                    enabled.scheduleMint ? "bg-[#008080]" : "bg-gray-200"
+                    solanaEnabled.scheduleMint ? "bg-[#008080]" : "bg-gray-200"
                   } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
-                      enabled.scheduleMint ? "translate-x-6" : "translate-x-1"
+                      solanaEnabled.scheduleMint
+                        ? "translate-x-6"
+                        : "translate-x-1"
                     } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                   />{" "}
                 </Switch>
@@ -232,7 +368,9 @@ const SolanaMint = () => {
             </div>
 
             <div
-              className={`flex flex-col ${!enabled.scheduleMint && "hidden"} `}
+              className={`flex flex-col ${
+                !solanaEnabled.scheduleMint && "hidden"
+              } `}
             >
               <div className="ml-4 mr-4 flex justify-between text-center align-middle">
                 <div>Start</div> <DateTimePicker />
@@ -252,20 +390,22 @@ const SolanaMint = () => {
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> Allowlist </h2>
                 <Switch
-                  checked={enabled.allowlist}
+                  checked={solanaEnabled.allowlist}
                   onChange={() =>
-                    setEnabled({
-                      ...enabled,
-                      allowlist: !enabled.allowlist,
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      allowlist: !solanaEnabled.allowlist,
                     })
                   }
                   className={`${
-                    enabled.allowlist ? "bg-[#008080]" : "bg-gray-200"
+                    solanaEnabled.allowlist ? "bg-[#008080]" : "bg-gray-200"
                   } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
-                      enabled.allowlist ? "translate-x-6" : "translate-x-1"
+                      solanaEnabled.allowlist
+                        ? "translate-x-6"
+                        : "translate-x-1"
                     } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                   />{" "}
                 </Switch>
@@ -276,7 +416,9 @@ const SolanaMint = () => {
               </div>
             </div>
 
-            <div className={`ml-4 mr-4 ${!enabled.allowlist && "hidden"} `}>
+            <div
+              className={`ml-4 mr-4 ${!solanaEnabled.allowlist && "hidden"} `}
+            >
               <InputBox
                 placeholder="erc20 address"
                 value={""}
@@ -313,20 +455,20 @@ const SolanaMint = () => {
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> NFT Burn </h2>
                 <Switch
-                  checked={enabled.nftBurn}
+                  checked={solanaEnabled.nftBurn}
                   onChange={() =>
-                    setEnabled({
-                      ...enabled,
-                      nftBurn: !enabled.nftBurn,
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      nftBurn: !solanaEnabled.nftBurn,
                     })
                   }
                   className={`${
-                    enabled.nftBurn ? "bg-[#008080]" : "bg-gray-200"
+                    solanaEnabled.nftBurn ? "bg-[#008080]" : "bg-gray-200"
                   } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
-                      enabled.nftBurn ? "translate-x-6" : "translate-x-1"
+                      solanaEnabled.nftBurn ? "translate-x-6" : "translate-x-1"
                     } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                   />{" "}
                 </Switch>
@@ -336,7 +478,7 @@ const SolanaMint = () => {
                 Add NFT Contract Addresses{" "}
               </div>
             </div>
-            <div className={`${!enabled.nftBurn && "hidden"} ml-4 mr-4 `}>
+            <div className={`${!solanaEnabled.nftBurn && "hidden"} ml-4 mr-4 `}>
               <InputBox
                 placeholder="erc20 address"
                 value={""}
@@ -360,20 +502,20 @@ const SolanaMint = () => {
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> NFT Gate </h2>
                 <Switch
-                  checked={enabled.nftGate}
+                  checked={solanaEnabled.nftGate}
                   onChange={() =>
-                    setEnabled({
-                      ...enabled,
-                      nftGate: !enabled.nftGate,
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      nftGate: !solanaEnabled.nftGate,
                     })
                   }
                   className={`${
-                    enabled.nftGate ? "bg-[#008080]" : "bg-gray-200"
+                    solanaEnabled.nftGate ? "bg-[#008080]" : "bg-gray-200"
                   } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
-                      enabled.nftGate ? "translate-x-6" : "translate-x-1"
+                      solanaEnabled.nftGate ? "translate-x-6" : "translate-x-1"
                     } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                   />{" "}
                 </Switch>
@@ -383,7 +525,7 @@ const SolanaMint = () => {
                 Add NFT contract addresses to gate{" "}
               </div>
             </div>
-            <div className={`${!enabled.nftGate && "hidden"} ml-4 mr-4 `}>
+            <div className={`${!solanaEnabled.nftGate && "hidden"} ml-4 mr-4 `}>
               <InputBox
                 placeholder="erc20 address"
                 value={""}
@@ -407,20 +549,22 @@ const SolanaMint = () => {
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> Token Gate </h2>
                 <Switch
-                  checked={enabled.tokenGate}
+                  checked={solanaEnabled.tokenGate}
                   onChange={() =>
-                    setEnabled({
-                      ...enabled,
-                      tokenGate: !enabled.tokenGate,
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      tokenGate: !solanaEnabled.tokenGate,
                     })
                   }
                   className={`${
-                    enabled.tokenGate ? "bg-[#008080]" : "bg-gray-200"
+                    solanaEnabled.tokenGate ? "bg-[#008080]" : "bg-gray-200"
                   } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
-                      enabled.tokenGate ? "translate-x-6" : "translate-x-1"
+                      solanaEnabled.tokenGate
+                        ? "translate-x-6"
+                        : "translate-x-1"
                     } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                   />{" "}
                 </Switch>
@@ -430,7 +574,9 @@ const SolanaMint = () => {
                 Add Token contract addresses to gate{" "}
               </div>
             </div>
-            <div className={`${!enabled.tokenGate && "hidden"} ml-4 mr-4 `}>
+            <div
+              className={`${!solanaEnabled.tokenGate && "hidden"} ml-4 mr-4 `}
+            >
               <InputBox
                 placeholder="erc20 address"
                 value={""}
@@ -448,8 +594,19 @@ const SolanaMint = () => {
               </Button>
             </div>
             {/* Switch Number 7 End */}
-
-            <Button color="teal" className="m-4"> Mint </Button>
+            {getSolanaAuth ? (
+              <Button
+                disabled={sharing}
+                onClick={() => sharePost("solana")}
+                color="teal"
+                className="mx-4"
+              >
+                {" "}
+                Mint{" "}
+              </Button>
+            ) : (
+              <SolanaWallets />
+            )}
           </>
         }
       />

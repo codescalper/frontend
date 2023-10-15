@@ -313,7 +313,7 @@ const LensShare = () => {
   };
 
   // funtions to handle split revenue
-  const addRecipient = () => {
+  const addRecipientInputBox = () => {
     if (enabled.splitRevenueRecipients.length < 5) {
       setEnabled({
         ...enabled,
@@ -325,7 +325,7 @@ const LensShare = () => {
     }
   };
 
-  const removeRecipient = (index) => {
+  const removeRecipientInputBox = (index) => {
     const updatedRecipients = enabled.splitRevenueRecipients.filter(
       (_, i) => i !== index
     );
@@ -504,6 +504,7 @@ const LensShare = () => {
             emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
             confettiNumber: 100,
           });
+          
           toast.update(id, {
             render: `Successfully shared on ${platform}`,
             type: "success",
@@ -656,7 +657,7 @@ const LensShare = () => {
     }
   };
 
-  const restrictRemoveRecipient = (index, recipient) => {
+  const restrictremoveRecipientInputBox = (index, recipient) => {
     const istext = parentRecipientRef.current.includes(recipient.recipient);
     if (index === 0 || istext) {
       return true;
@@ -893,11 +894,11 @@ const LensShare = () => {
                                   );
                                 }}
                               />
-                              {!restrictRemoveRecipient(index, recipient) && (
+                              {!restrictremoveRecipientInputBox(index, recipient) && (
                                 <TiDelete
                                   className="h-6 w-6 cursor-pointer"
                                   color="red"
-                                  onClick={() => removeRecipient(index)}
+                                  onClick={() => removeRecipientInputBox(index)}
                                 />
                               )}
                             </div>
@@ -924,7 +925,7 @@ const LensShare = () => {
                     {enabled.splitRevenueRecipients.length < 5 && (
                       <div
                         className="bg-[#E1F26C] flex justify-between items-center cursor-pointer w-[40%] text-black p-2 rounded outline-none"
-                        onClick={addRecipient}
+                        onClick={addRecipientInputBox}
                       >
                         <AiOutlinePlus className="h-5 w-5" />
                         <span>Add recipient</span>

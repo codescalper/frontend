@@ -52,8 +52,12 @@ const App = () => {
   const getifUserEligible = getFromLocalStorage("ifUserEligible");
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
   const navigate = useNavigate();
-  const { solanaConnected, solanaSignMessage, solanaAddress } =
-    useSolanaWallet();
+  const {
+    solanaConnected,
+    solanaSignMessage,
+    solanaAddress,
+    solanaDisconnect,
+  } = useSolanaWallet();
   const [solanaSignature, setSolanaSignature] = useState("");
 
   // clear the session if it is expired (24hrs)
@@ -69,11 +73,14 @@ const App = () => {
 
       if (jwtTimestamp && currentTimestamp - jwtTimestamp > jwtExpiration) {
         posthog.reset();
+        disconnect();
+        solanaDisconnect();
         clearAllLocalStorageData();
         setSession("");
-        disconnect();
         console.log("session expired");
         toast.error("Session expired");
+
+        // TODO: clear all local storage data + states
       }
     };
 
@@ -115,7 +122,6 @@ const App = () => {
 
       // convert the signature to base58
       const signatureBase58 = bs58.encode(signature);
-      console.log(signatureBase58);
       setSolanaSignature(signatureBase58);
     }
   };
@@ -142,7 +148,6 @@ const App = () => {
       message: EVM_MESSAGE,
     })
       .then((res) => {
-        console.log(res);
         if (res?.status === "success") {
           setText("");
           setIsLoading(false);
@@ -181,7 +186,6 @@ const App = () => {
       message: SOLANA_MESSAGE,
     })
       .then((res) => {
-        console.log(res);
         if (res?.status === "success") {
           setText("");
           setIsLoading(false);
@@ -189,7 +193,7 @@ const App = () => {
           saveToLocalStorage(LOCAL_STORAGE.solanaAuth, true);
           saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
           saveToLocalStorage(LOCAL_STORAGE.usertAuthTime, new Date().getTime());
-          saveToLocalStorage(LOCAL_STORAGE.userAddress, address);
+          saveToLocalStorage(LOCAL_STORAGE.userAddress, solanaAddress);
           saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
           setSession(res.jwt);
           posthog.identify(address);
@@ -211,7 +215,7 @@ const App = () => {
   };
 
   // update nfts for EVM + Solana
-  const {mutate: updateNft} = useMutation({
+  const { mutate: updateNft } = useMutation({
     mutationKey: "refreshNFT",
     mutationFn: refreshNFT,
     onSuccess: (res) => {

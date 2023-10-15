@@ -34,11 +34,14 @@ import {
   errorMessage,
   replaceImageURL,
   firstLetterCapital,
+  getFromLocalStorage,
 } from "../../../../../utils";
 import { lensCollect } from "./utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import { useAppAuth } from "../../../../../hooks/app";
 import { Tab, Tabs, TabsHeader, TabsBody } from "@material-tailwind/react";
+import { LOCAL_STORAGE } from "../../../../../data";
+import { EVMWallets, SolanaWallets } from "../../top-section/auth/wallets";
 
 const NFTPanel = () => {
   const [tab, setTab] = useState("wallet");
@@ -399,6 +402,21 @@ const WalletNFT = () => {
   const requestTimeout = useRef();
   const [currentTab, setCurrentTab] = useState("solana");
   const tabsArray = ["solana", "ethereum", "polygon", "zora"];
+  const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
+  const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+
+  const isSolana = "solana";
+  const isEVM = "ethereum" || "polygon" || "zora";
+
+  const getChainId = () => {
+    if (currentTab === "ethereum") {
+      return 1;
+    } else if (currentTab === "polygon") {
+      return 137;
+    } else if (currentTab === "solana") {
+      return 2;
+    }
+  };
 
   const queryClient = useQueryClient();
   const {
@@ -414,7 +432,7 @@ const WalletNFT = () => {
     queryKey: ["userNFTs", delayedQuery || currentTab || "userNFTs"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
-      getNFTs(delayedQuery || "", pageParam, currentTab),
+      getNFTs(delayedQuery || "", pageParam, getChainId()),
     enabled: isAuthenticated ? true : false,
   });
 
@@ -513,6 +531,7 @@ const WalletNFT = () => {
                     .map((item, index) => {
                       return (
                         <CustomImageComponent
+                        item={item}
                           id={item?.id}
                           key={index}
                           preview={item?.imageURL || item?.permaLink}
