@@ -39,7 +39,13 @@ import {
 import { lensCollect } from "./utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import { useAppAuth } from "../../../../../hooks/app";
-import { Tab, Tabs, TabsHeader, TabsBody } from "@material-tailwind/react";
+import {
+  Tab,
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Typography,
+} from "@material-tailwind/react";
 import { LOCAL_STORAGE } from "../../../../../data";
 import { EVMWallets, SolanaWallets } from "../../top-section/auth/wallets";
 
@@ -531,7 +537,7 @@ const WalletNFT = () => {
                     .map((item, index) => {
                       return (
                         <CustomImageComponent
-                        item={item}
+                          item={item}
                           id={item?.id}
                           key={index}
                           preview={item?.imageURL || item?.permaLink}
@@ -550,7 +556,31 @@ const WalletNFT = () => {
                 />
               </>
             ) : (
-              <MessageComponent message="No Results" />
+              <>
+                <MessageComponent message="No Results" />
+                {currentTab === "solana" && !getSolanaAuth ? (
+                  <>
+                    <Typography color="blueGray" className="text-center my-3">
+                      Or connect the Solana Wallet to see your NFTs
+                    </Typography>
+                    <div className=" flex justify-center">
+                      <SolanaWallets />
+                    </div>
+                  </>
+                ) : (currentTab === "ethereum" ||
+                    currentTab === "polygon" ||
+                    currentTab == "zora") &&
+                  !getEVMAuth ? (
+                  <>
+                    <Typography color="blueGray" className="text-center my-3">
+                      Or connect the EVM Wallet to see your NFTs
+                    </Typography>
+                    <div className=" flex justify-center">
+                      <EVMWallets />
+                    </div>
+                  </>
+                ) : null}
+              </>
             )}
           </div>
         </TabsBody>

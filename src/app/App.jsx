@@ -196,7 +196,7 @@ const App = () => {
           saveToLocalStorage(LOCAL_STORAGE.userAddress, solanaAddress);
           saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
           setSession(res.jwt);
-          posthog.identify(address);
+          posthog.identify(solanaAddress);
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
