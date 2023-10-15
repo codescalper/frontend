@@ -1,7 +1,7 @@
 import { Fragment, useContext, useState } from "react";
 import { ShareIcon } from "../../../../../assets";
-import { Context } from "../../../../../providers/context/ContextProvider";
-import { LensShare, ShareSection } from "../../right-section";
+import { Context } from "../../../../../context/ContextProvider";
+import { LensShare, ShareSection, SolanaMint } from "../../right-section";
 import { Drawer } from "@blueprintjs/core";
 
 const ShareButton = () => {
@@ -39,6 +39,7 @@ const ShareButton = () => {
                 {menu === "share" && <ShareSection />}
 
                 {menu === "lensmonetization" && <LensShare />}
+                {menu === "solanaMint" && <SolanaMint />}
               </div>
             </div>
           </div>

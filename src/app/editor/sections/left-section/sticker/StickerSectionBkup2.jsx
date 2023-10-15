@@ -13,7 +13,7 @@ import {
   StickerReacTour,
   Tabs as TabsCustom,
 } from "../../../common"; // Since Material already has builtin component `Tab`
-import { useStore } from "../../../../../hooks/polotno";
+import { useStore } from "../../../../../hooks";
 import { LoadingAnimatedComponent } from "../../../common";
 import { firstLetterCapital, fnLoadMore } from "../../../../../utils";
 import FeaturedTabs from "../../../common/core/FeaturedTabs";
@@ -189,7 +189,7 @@ export const StickerPanel = () => {
 
         {/* New Material Tailwind Buttons / Tabs : */}
         {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
-        <Tabs id="custom-animation" value="lensjump">
+        {/* <Tabs id="custom-animation" value="lensjump"> */}
         <div className="w-full overflow-scroll m-2" id="stickerCategories">
           <TabsHeader
           // className="bg-transparent"
@@ -198,18 +198,18 @@ export const StickerPanel = () => {
           // }}
           >
             {tabArray.map((tab, index) => (
-              <Tab
-                value={tab}
-                onClick={() => {
-                  setCurrentTab(tab);
-                }}
-              >
+              // <Tab
+              //   value={tab}
+              //   onClick={() => {
+              //     setCurrentTab(tab);
+              //   }}
+              // >
                 <div className="appFont"> {firstLetterCapital(tab)} </div>
-               </Tab>
+              // </Tab>
             ))}
           </TabsHeader>
         </div>
-        <div className="hCustom overflow-y-scroll">
+        {/* <div className="h-full overflow-y-scroll"> */}
 
         {/* <TabsBody
             animate={{
@@ -232,10 +232,10 @@ export const StickerPanel = () => {
               queryKey="stickers"
             />
           )}
-        </div>
+        {/* </div> */}
         {/* </TabPanel> */}
         {/* </TabsBody> */}
-        </Tabs>
+        {/* </Tabs> */}
 
         {/* <StickerReacTour /> */}
 

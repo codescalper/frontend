@@ -10,6 +10,7 @@ import { getFromLocalStorage } from "../../../../../utils";
 import { Context } from "../../../../../providers/context/ContextProvider";
 import BsX from '@meronex/icons/bs/BsX';
 import { Textarea } from "@material-tailwind/react";
+import logoSolana from "../../../../../assets/logos/logoSolana.png";
 
 const ShareSection = () => {
   const { address, isConnected } = useAccount();
@@ -195,6 +196,23 @@ const ShareSection = () => {
             <img
               className="w-10 cursor-pointer"
               src="/other-icons/share-section/iconLens.png"
+              alt="Lens"
+            />{" "}
+          </div>
+        </div>
+      </div>
+      <hr />
+
+
+      <hr />
+      <div className={`relative mt-6 px-4 sm:px-6`}>
+        <p className="text-lg">Mint as an NFT</p>
+        <div className="flex items-center space-x-12 py-5">
+          <div onClick={() => setMenu("solanaMint")}>
+            {" "}
+            <img
+              className="w-10 cursor-pointer"
+              src={logoSolana}
               alt="Lens"
             />{" "}
           </div>

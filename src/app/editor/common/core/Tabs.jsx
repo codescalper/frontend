@@ -82,7 +82,8 @@ const Tabs = ({
       />
 
       {data?.pages[0]?.data.length > 0 ? (
-        <div className="h-full overflow-y-auto">
+        // <div className="h-full overflow-y-auto">
+        // <div className="overflow-y-auto">
           <div className="grid grid-cols-2 overflow-y-auto">
             {data?.pages
               .flatMap((item) => item?.data)
@@ -97,7 +98,7 @@ const Tabs = ({
                   />
                 );
               })}
-          </div>
+          {/* </div> */}
           <LoadMoreComponent
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}

@@ -37,6 +37,7 @@ import {
 import { lensCollect } from "./utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import { useAppAuth } from "../../../../../hooks/app";
+import { Tab, Tabs, TabsHeader, TabsBody } from "@material-tailwind/react";
 
 const NFTPanel = () => {
   const [tab, setTab] = useState("wallet");
@@ -470,7 +471,7 @@ const WalletNFT = () => {
   if (isLoading) {
     return <LoadingAnimatedComponent />;
   }
-
+  const tabsArray = ["Solana", "Ethereum", "Polygon", "Zora"];
   return (
     <>
       <SearchComponent
@@ -479,6 +480,33 @@ const WalletNFT = () => {
         placeholder="Search NFTs by id"
         onClick={refreshNFTs}
       />
+      <Tabs className="mr-2 ml-2" id="custom-animation" value="Solana">
+        <TabsHeader>
+          {tabsArray.map((val, index) => (
+            <Tab key={index} value={val}>
+              <div className="appFont">{val}</div>
+            </Tab>
+          ))}
+        </TabsHeader>
+        {/* 
+        <TabsBody
+          animate={{
+            initial: { y: 250 },
+            mount: { y: 0 },
+            unmount: { y: 250 },
+          }}
+        >
+          {data.map(({ value, desc }) => (
+            <TabPanel key={value} value={value}>
+              {desc}
+            </TabPanel>
+          ))}
+        </TabsBody> */}
+
+        {/* Render Tabs body in Here or in TabPanel */}
+        
+      </Tabs>
+
       <div className="h-88 overflow-y-auto">
         {isError ? (
           <ErrorComponent error={error} />
