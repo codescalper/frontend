@@ -202,10 +202,11 @@ export const refreshNFT = async () => {
 
 // gwt users' nft endpoint
 // need auth token (jwt)
-export const getNFTs = async (query, page) => {
+export const getNFTs = async (query, page, chainId) => {
   const result = await api.get(`${API}/user/nft?query=${query}`, {
     params: {
       page: page,
+      chainId: chainId,
     },
   });
 

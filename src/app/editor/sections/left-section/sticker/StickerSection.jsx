@@ -190,12 +190,8 @@ export const StickerPanel = () => {
         {/* New Material Tailwind Buttons / Tabs : */}
         {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
         <Tabs id="custom-animation" value="lensjump">
-        <div className="w-full overflow-scroll m-2" id="stickerCategories">
           <TabsHeader
-          // className="bg-transparent"
-          // indicatorProps={{
-          //   className: "bg-gray-900/10 shadow-none !text-gray-900",
-          // }}
+          className="overflow-x-auto"
           >
             {tabArray.map((tab, index) => (
               <Tab
@@ -208,7 +204,7 @@ export const StickerPanel = () => {
                </Tab>
             ))}
           </TabsHeader>
-        </div>
+        {/* </div> */}
         <div className="hCustom overflow-y-scroll">
 
         {/* <TabsBody

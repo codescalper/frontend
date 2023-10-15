@@ -6,9 +6,9 @@ import BsPlus from "@meronex/icons/bs/BsPlus";
 import { Button } from "@material-tailwind/react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import { useContext } from "react";
-import { Context } from "../../../../../../context/ContextProvider";
 import { useEffect } from "react";
 import { Switch } from "@headlessui/react";
+import { Context } from "../../../../../../providers/context";
 
 const SolanaMint = () => {
   // const [ipBoxValue, setIpBoxValue] = useState({mintAmt})

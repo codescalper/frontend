@@ -33,6 +33,7 @@ import {
   fnLoadMore,
   errorMessage,
   replaceImageURL,
+  firstLetterCapital,
 } from "../../../../../utils";
 import { lensCollect } from "./utils";
 import { LoadingAnimatedComponent } from "../../../common";
@@ -396,6 +397,9 @@ const WalletNFT = () => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
+  const [currentTab, setCurrentTab] = useState("solana");
+  const tabsArray = ["solana", "ethereum", "polygon", "zora"];
+
   const queryClient = useQueryClient();
   const {
     data,
@@ -405,10 +409,12 @@ const WalletNFT = () => {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
+    refetch,
   } = useInfiniteQuery({
-    queryKey: ["userNFTs", delayedQuery || "userNFTs"],
+    queryKey: ["userNFTs", delayedQuery || currentTab || "userNFTs"],
     getNextPageParam: (prevData) => prevData.nextPage,
-    queryFn: ({ pageParam = 1 }) => getNFTs(delayedQuery || "", pageParam),
+    queryFn: ({ pageParam = 1 }) =>
+      getNFTs(delayedQuery || "", pageParam, currentTab),
     enabled: isAuthenticated ? true : false,
   });
 
@@ -459,6 +465,10 @@ const WalletNFT = () => {
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
+  useEffect(() => {
+    refetch();
+  }, [currentTab]);
+
   const goBack = () => {
     setDelayedQuery("");
     setQuery("");
@@ -471,7 +481,7 @@ const WalletNFT = () => {
   if (isLoading) {
     return <LoadingAnimatedComponent />;
   }
-  const tabsArray = ["Solana", "Ethereum", "Polygon", "Zora"];
+
   return (
     <>
       <SearchComponent
@@ -480,62 +490,52 @@ const WalletNFT = () => {
         placeholder="Search NFTs by id"
         onClick={refreshNFTs}
       />
-      <Tabs className="mr-2 ml-2" id="custom-animation" value="Solana">
+      <Tabs className="overflow-y-auto" id="custom-animation" value="solana">
         <TabsHeader>
-          {tabsArray.map((val, index) => (
-            <Tab key={index} value={val}>
-              <div className="appFont">{val}</div>
+          {tabsArray.map((tab, index) => (
+            <Tab key={index} value={tab} onClick={() => setCurrentTab(tab)}>
+              <div className="appFont">{firstLetterCapital(tab)}</div>
             </Tab>
           ))}
         </TabsHeader>
-        {/* 
-        <TabsBody
-          animate={{
-            initial: { y: 250 },
-            mount: { y: 0 },
-            unmount: { y: 250 },
-          }}
-        >
-          {data.map(({ value, desc }) => (
-            <TabPanel key={value} value={value}>
-              {desc}
-            </TabPanel>
-          ))}
-        </TabsBody> */}
 
         {/* Render Tabs body in Here or in TabPanel */}
-        
-      </Tabs>
-
-      <div className="h-88 overflow-y-auto">
-        {isError ? (
-          <ErrorComponent error={error} />
-        ) : data?.pages[0]?.data?.length > 0 ? (
-          //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
-          <div className="h-full overflow-y-auto">
-            <div className="grid grid-cols-2 overflow-y-auto">
-              {data?.pages
-                .flatMap((item) => item?.data)
-                .map((item, index) => {
-                  return (
-                    <CustomImageComponent
-                      id={item?.id}
-                      key={index}
-                      preview={item?.imageURL || item?.permaLink}
-                      isLensCollect={lensCollect(item?.title, item?.id, item)}
-                    />
-                  );
-                })}
-            </div>
-            <LoadMoreComponent
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-            />
+        <TabsBody>
+          <div className="">
+            {isError ? (
+              <ErrorComponent error={error} />
+            ) : data?.pages[0]?.data?.length > 0 ? (
+              //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
+              <>
+                <div className="grid grid-cols-2">
+                  {data?.pages
+                    .flatMap((item) => item?.data)
+                    .map((item, index) => {
+                      return (
+                        <CustomImageComponent
+                          id={item?.id}
+                          key={index}
+                          preview={item?.imageURL || item?.permaLink}
+                          isLensCollect={lensCollect(
+                            item?.title,
+                            item?.id,
+                            item
+                          )}
+                        />
+                      );
+                    })}
+                </div>
+                <LoadMoreComponent
+                  hasNextPage={hasNextPage}
+                  isFetchingNextPage={isFetchingNextPage}
+                />
+              </>
+            ) : (
+              <MessageComponent message="No Results" />
+            )}
           </div>
-        ) : (
-          <MessageComponent message="No Results" />
-        )}
-      </div>
+        </TabsBody>
+      </Tabs>
     </>
   );
 };
