@@ -47,6 +47,18 @@ const ContextProvider = ({ children }) => {
     },
 
     whoCanCollect: false,
+
+    // Solana Mint Switch States
+    chargeForMint : false,
+    onChainSplits : false,
+    limitNoOfEditions : false,
+    scheduleMint : false,
+    allowlist : false,
+    nftBurn : false,
+    nftGate : false,
+    tokenGate : false,
+    
+
   });
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);

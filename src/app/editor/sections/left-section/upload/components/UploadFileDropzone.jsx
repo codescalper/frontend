@@ -121,11 +121,11 @@ const UploadFileDropzone = () => {
     <>
       <section
         {...getRootProps({ refKey: "innerRef" })}
-        className="p-4 outline-none rounded-lg border border-dashed border-blue-500 cursor-pointer"
+        className="p-4 outline-none rounded-lg border border-dashed border-blue-500 cursor-pointer active:border-blue-200"
       >
         <div className="outline-none">
           <input {...getInputProps()} />
-          <p>Drag 'n' drop, or Click to browse files</p>
+          <p>Drag 'n' drop, or Click to browse files</p>  
         </div>
       </section>
       <aside className="flex flex-row flex-wrap mt-4">{thumbs}</aside>
