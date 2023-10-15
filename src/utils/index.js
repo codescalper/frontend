@@ -2,7 +2,7 @@ export * from "./base64Stripper";
 export * from "./credits";
 export * from "./file";
 export * from "./fnLoadMore";
-export * from "./fnMessage";
+export * from "./errorMessage";
 export * from "./generateRandomId";
 export * from "./imageUrl";
 export * from "./loadJsonOnPage";

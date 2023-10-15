@@ -25,11 +25,11 @@ import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Context } from "../../../../../../context/ContextProvider";
+import { Context } from "../../../../../../providers/context/ContextProvider";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
-  fnMessage,
+  errorMessage,
   isEthAddress,
   isLensHandle,
 } from "../../../../../../utils";
@@ -41,7 +41,7 @@ import {
   InputErrorMsg,
   NumberInputBox,
 } from "../../../../common";
-import { useStore } from "../../../../../../hooks";
+import { useStore } from "../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
 import { SplitPolicyCard } from "./components";
@@ -145,7 +145,7 @@ const LensShare = () => {
       })
       .catch((err) => {
         console.log(err);
-        toast.error(fnMessage(err));
+        toast.error(errorMessage(err));
         setSharing(false);
         setIsLoading(false);
         setText("");
@@ -564,7 +564,7 @@ const LensShare = () => {
       })
       .catch((err) => {
         toast.update(id, {
-          render: fnMessage(err),
+          render: errorMessage(err),
           type: "error",
           isLoading: false,
           autoClose: 3000,

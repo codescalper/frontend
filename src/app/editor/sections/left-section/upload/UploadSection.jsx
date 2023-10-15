@@ -26,8 +26,10 @@ import { deleteUserAsset, getUserAssets } from "../../../../../services";
 import { fnLoadMore } from "../../../../../utils";
 import { UploadFileDropzone } from "./components";
 import { LoadingAnimatedComponent } from "../../../common";
+import { useAppAuth } from "../../../../../hooks/app";
 
 const UploadPanel = () => {
+  const { isAuthenticated } = useAppAuth();
   const { isDisconnected, address } = useAccount();
   const queryClient = useQueryClient();
 
@@ -44,7 +46,7 @@ const UploadPanel = () => {
     queryKey: ["userAssets"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) => getUserAssets(pageParam),
-    enabled: address ? true : false,
+    enabled: isAuthenticated ? true : false,
   });
 
   // delete user asset
@@ -67,17 +69,17 @@ const UploadPanel = () => {
   // delete error message
   useEffect(() => {
     if (isDeleteError) {
-      toast.error(fnMessage(deleteError));
+      toast.error(errorMessage(deleteError));
     }
   }, [isDeleteError]);
 
   // load more
   useEffect(() => {
-    if (isDisconnected || !address) return;
+    if (!isAuthenticated) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
-  if (isDisconnected || !address) {
+  if (!isAuthenticated) {
     return (
       <div className="h-full flex flex-col">
         <h1 className="text-lg">Upload Gallery</h1>
@@ -88,9 +90,7 @@ const UploadPanel = () => {
 
   // Show Loading - 06Jul2023
   if (isLoading) {
-    return (
-        <LoadingAnimatedComponent/>
-    );
+    return <LoadingAnimatedComponent />;
   }
 
   return (

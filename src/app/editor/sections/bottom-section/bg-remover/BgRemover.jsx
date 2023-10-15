@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useStore } from "../../../../../hooks";
+import { useStore } from "../../../../../hooks/polotno";
 import { Button } from "@blueprintjs/core";
 import { replaceImageURL } from "../../../../../utils";
 import { getRemovedBgS3Link } from "../../../../../services";

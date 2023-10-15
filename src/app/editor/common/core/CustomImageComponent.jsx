@@ -5,9 +5,9 @@ import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import { replaceImageURL } from "../../../../utils/replaceUrl";
 import { useEffect, useState } from "react";
-import { useStore } from "../../../../hooks";
+import { useStore } from "../../../../hooks/polotno";
 import { useContext } from "react";
-import { Context } from "../../../../context/ContextProvider";
+import { Context } from "../../../../providers/context/ContextProvider";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({

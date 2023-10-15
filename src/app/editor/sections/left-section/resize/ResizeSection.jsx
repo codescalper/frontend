@@ -3,7 +3,7 @@ import { SectionTab } from "polotno/side-panel";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import { ResizeIcon } from "../../../../../assets";
-import { useStore } from "../../../../../hooks";
+import { useStore } from "../../../../../hooks/polotno";
 
 const AVAILABLE_SIZES = [
   // {

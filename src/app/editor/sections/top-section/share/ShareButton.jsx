@@ -1,8 +1,8 @@
 import { Fragment, useContext, useState } from "react";
 import { ShareIcon } from "../../../../../assets";
-import { Context } from "../../../../../context/ContextProvider";
 import { LensShare, ShareSection, SolanaMint } from "../../right-section";
 import { Drawer } from "@blueprintjs/core";
+import { Context } from "../../../../../providers/context";
 
 const ShareButton = () => {
   const [transitionRtoL, setTransitionRtoL] = useState(false);

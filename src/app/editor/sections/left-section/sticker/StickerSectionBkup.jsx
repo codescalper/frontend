@@ -9,7 +9,7 @@ import { useInfiniteAPI } from "polotno/utils/use-api";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { getAssetByQuery, getFeaturedAssets } from "../../../../../services";
 import { SearchComponent, StickerReacTour, Tabs } from "../../../common";
-import { useStore } from "../../../../../hooks";
+import { useStore } from "../../../../../hooks/polotno";
 import { LoadingAnimatedComponent } from "../../../common";
 import { firstLetterCapital, fnLoadMore } from "../../../../../utils";
 import FeaturedTabs from "../../../common/core/FeaturedTabs";

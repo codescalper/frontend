@@ -30,16 +30,17 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useStore } from "../../../../../hooks";
-import { Context } from "../../../../../context/ContextProvider";
+import { useStore } from "../../../../../hooks/polotno";
+import { Context } from "../../../../../providers/context/ContextProvider";
 import {
   fnLoadMore,
-  fnMessage,
+  errorMessage,
   randomThreeDigitNumber,
   replaceImageURL,
 } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import { fnPageHasElements } from "../../../../../utils/fnPageHasElements";
+import { useAppAuth } from "../../../../../hooks/app";
 
 // Design card component start - 23Jun2023
 
@@ -52,8 +53,12 @@ const DesignCard = ({
   isPublic,
   openTokengateModal,
 }) => {
-  const { fastPreview, contextCanvasIdRef, referredFromRef, preStoredRecipientObjRef } =
-    useContext(Context);
+  const {
+    fastPreview,
+    contextCanvasIdRef,
+    referredFromRef,
+    preStoredRecipientObjRef,
+  } = useContext(Context);
   const store = useStore();
 
   const handleClickOrDrop = () => {
@@ -136,6 +141,7 @@ const DesignCard = ({
 // Design card component end - 23Jun2023
 
 export const DesignPanel = () => {
+  const { isAuthenticated } = useAppAuth();
   const store = useStore();
   const {
     fastPreview,
@@ -149,7 +155,7 @@ export const DesignPanel = () => {
     assetsRecipientRef,
     parentRecipientRef,
   } = useContext(Context);
-  const { isDisconnected, address, isConnected } = useAccount();
+  const { isDisconnected, address } = useAccount();
   const [modal, setModal] = useState({
     isOpen: false,
     isTokengate: false,
@@ -175,6 +181,7 @@ export const DesignPanel = () => {
     queryKey: ["my-designs"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) => getAllCanvas(pageParam),
+    enabled: isAuthenticated ? true : false,
   });
 
   // mutationFn delete a canvas
@@ -275,25 +282,23 @@ export const DesignPanel = () => {
   };
 
   useEffect(() => {
-    if (isDisconnected || !address) return;
+    if (!isAuthenticated) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
   useEffect(() => {
     if (isDeleteError) {
-      toast.error(fnMessage(deleteError));
+      toast.error(errorMessage(deleteError));
     } else if (isVisibilityError) {
-      toast.error(fnMessage(visibilityError));
+      toast.error(errorMessage(visibilityError));
     } else if (isTokengateError) {
-      toast.error(fnMessage(tokengateError));
+      toast.error(errorMessage(tokengateError));
     }
   }, [isDeleteError, isVisibilityError, isTokengateError]);
 
-  if (isDisconnected || !address) {
+  if (!isAuthenticated) {
     return (
-      <div className="h-full flex flex-col">
         <ConnectWalletMsgComponent />
-      </div>
     );
   }
 

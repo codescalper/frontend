@@ -11,13 +11,13 @@ import {
 import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
 import { createCanvas, updateCanvas } from "../../services";
-import { Context } from "../../context/ContextProvider";
+import { Context } from "../../providers/context/ContextProvider";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fnMessage, loadFile, base64Stripper, wait } from "../../utils";
+import { errorMessage, loadFile, base64Stripper, wait } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
-import { useStore } from "../../hooks";
+import { useStore } from "../../hooks/polotno";
 import { TopbarSection } from "./sections/top-section";
 import {
   AIImageSection,
@@ -288,7 +288,7 @@ const Editor = () => {
               }
             })
             .catch((err) => {
-              console.log("Canvas creation error", { error: fnMessage(err) });
+              console.log("Canvas creation error", { error: errorMessage(err) });
             });
         }
 
@@ -309,7 +309,7 @@ const Editor = () => {
               }
             })
             .catch((err) => {
-              console.log("Canvas Update error", { error: fnMessage(err) });
+              console.log("Canvas Update error", { error: errorMessage(err) });
             });
         }
       }

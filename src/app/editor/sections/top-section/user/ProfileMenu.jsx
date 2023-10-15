@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   addressCrop,
   clearAllLocalStorageData,
@@ -7,7 +7,7 @@ import {
 } from "../../../../../utils";
 import { useAccount, useDisconnect } from "wagmi";
 import { toast } from "react-toastify";
-import { Context } from "../../../../../context/ContextProvider";
+import { Context } from "../../../../../providers/context/ContextProvider";
 import {
   Typography,
   Button,
@@ -19,15 +19,21 @@ import {
 } from "@material-tailwind/react";
 
 import { ClipboardIcon, PowerIcon } from "@heroicons/react/24/outline";
+import { useSolanaWallet } from "../../../../../hooks/solana";
 
 const ProfileMenu = () => {
+  const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const getLensAuth = getFromLocalStorage("lensAuth");
   const { posthog } = useContext(Context);
 
-  const handleCopy = () => {
+  const handleEVMAddressCopy = () => {
     navigator.clipboard.writeText(address);
+    toast.success("address copied");
+  };
+
+  const handleSolanaAddressCopy = () => {
+    navigator.clipboard.writeText(solanaAddress);
     toast.success("address copied");
   };
 
@@ -35,20 +41,29 @@ const ProfileMenu = () => {
     posthog.reset();
     clearAllLocalStorageData();
     disconnect();
+    solanaDisconnect();
     toast.success("Logout successful");
   };
 
-  // profile menu component
+  // state for profile menu items
   const profileMenuItems = [
     {
-      label: addressCrop(address),
+      label: address && addressCrop(address),
       icon: ClipboardIcon,
-      onClick: handleCopy,
+      onClick: handleEVMAddressCopy,
+      shouldRender: address ? true : false,
+    },
+    {
+      label: solanaAddress && addressCrop(solanaAddress),
+      icon: ClipboardIcon,
+      onClick: handleSolanaAddressCopy,
+      shouldRender: solanaAddress ? true : false,
     },
     {
       label: "Logout",
       icon: PowerIcon,
       onClick: logout,
+      shouldRender: true,
     },
   ];
 
@@ -59,41 +74,43 @@ const ProfileMenu = () => {
           variant="circular"
           alt="profile picture"
           className="cursor-pointer outline outline-black"
-          src={getAvatar(address)}
+          src={getAvatar(address || solanaAddress)}
         />
       </MenuHandler>
       <MenuList className="p-1 mt-2">
-        {profileMenuItems.map(({ label, icon, onClick }, key) => {
-          const isLastItem = key === profileMenuItems.length - 1;
-          return (
-            <div className="outline-none">
-              {isLastItem && <hr className="my-2 border-blue-gray-50" />}
-              <MenuItem
-                key={label}
-                onClick={onClick}
-                className={`flex items-center gap-2 rounded ${
-                  isLastItem
-                    ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                    : ""
-                }`}
-              >
-                {React.createElement(icon, {
-                  className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                  strokeWidth: 2,
-                })}
-
-                <Typography
-                  as="span"
-                  variant="small"
-                  className="font-normal"
-                  color={isLastItem ? "red" : "inherit"}
+        {profileMenuItems
+          .filter((item) => item.shouldRender === true)
+          .map(({ label, icon, onClick }, key) => {
+            const isLastItem = label === "Logout";
+            return (
+              <div className="outline-none">
+                {isLastItem && <hr className="my-2 border-blue-gray-50" />}
+                <MenuItem
+                  key={label}
+                  onClick={onClick}
+                  className={`flex items-center gap-2 rounded ${
+                    isLastItem
+                      ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                      : ""
+                  }`}
                 >
-                  {label}
-                </Typography>
-              </MenuItem>
-            </div>
-          );
-        })}
+                  {React.createElement(icon, {
+                    className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                    strokeWidth: 2,
+                  })}
+
+                  <Typography
+                    as="span"
+                    variant="small"
+                    className="font-normal"
+                    color={isLastItem ? "red" : "inherit"}
+                  >
+                    {label}
+                  </Typography>
+                </MenuItem>
+              </div>
+            );
+          })}
       </MenuList>
     </Menu>
   );

@@ -21,7 +21,7 @@ import {
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { Spinner, Icon } from "@blueprintjs/core";
-import { useStore } from "../../../../../hooks";
+import { useStore } from "../../../../../hooks/polotno";
 import {
   fnLoadJsonOnPage,
   fnLoadMore,
@@ -30,7 +30,7 @@ import {
 } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import SuChevronRightDouble from "@meronex/icons/su/SuChevronRightDouble";
-import { Context } from "../../../../../context/ContextProvider";
+import { Context } from "../../../../../providers/context/ContextProvider";
 
 // import CustomHorizontalScroller from "../../../common/";
 import MdcImageMultipleOutline from "@meronex/icons/mdc/MdcImageMultipleOutline";
@@ -46,6 +46,7 @@ import {
   Tab,
   TabPanel,
 } from "@material-tailwind/react";
+import { useAppAuth } from "../../../../../hooks/app";
 
 // Design card component start
 const DesignCard = ({
@@ -205,6 +206,7 @@ const TemplatePanel = () => {
 };
 
 const LenspostTemplates = () => {
+  const { isAuthenticated } = useAppAuth();
   const store = useStore();
   const { address, isDisconnected } = useAccount();
   const [query, setQuery] = useState("");
@@ -229,14 +231,15 @@ const LenspostTemplates = () => {
     queryKey: ["lenspost-templates"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) => getAllTemplates(pageParam),
+    enabled: isAuthenticated ? true : false,
   });
 
   useEffect(() => {
-    if (isDisconnected || !address) return;
+    if (!isAuthenticated) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
-  if (isDisconnected || !address) {
+  if (!isAuthenticated) {
     return <ConnectWalletMsgComponent />;
   }
 
@@ -337,7 +340,7 @@ const LenspostTemplates = () => {
 
         {/* Tabs for Mobile : Start */}
         {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
-        
+
         <div className="sm:hidden">
           <Tabs id="custom-animation" value="featStickers">
             <div className="m-3 mt-0 mb-0">
@@ -431,6 +434,7 @@ const LenspostTemplates = () => {
 };
 
 const UserTemplates = () => {
+  const { isAuthenticated } = useAppAuth();
   const store = useStore();
   const { referredFromRef } = useContext(Context);
   const { address, isDisconnected } = useAccount();
@@ -454,14 +458,15 @@ const UserTemplates = () => {
     queryKey: ["community-pool"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) => getUserPublicTemplates(pageParam),
+    enabled: isAuthenticated ? true : false,
   });
 
   useEffect(() => {
-    if (isDisconnected || !address) return;
+    if (!isAuthenticated) return;
     fnLoadMore(hasNextPage, fetchNextPage);
   }, [hasNextPage, fetchNextPage]);
 
-  if (isDisconnected || !address) {
+  if (!isAuthenticated) {
     return <ConnectWalletMsgComponent />;
   }
 

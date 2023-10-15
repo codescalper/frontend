@@ -1,7 +1,7 @@
 // import { Switch } from "@material-tailwind/react";
 import React, { useContext } from "react";
-import { Context } from "../../../../../../context/ContextProvider";
 import { Switch } from "@headlessui/react";
+import { Context } from "../../../../../../providers/context";
 
 const SwitchGroup = ({ switchHead, switchDesc, mintOption }) => {
   const { enabled, setEnabled } = useContext(Context);

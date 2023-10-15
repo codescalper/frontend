@@ -3,7 +3,7 @@ import React from "react";
 import { SectionTab } from "polotno/side-panel";
 import { Shapes } from "polotno/side-panel/elements-panel";
 import { Icon } from "@blueprintjs/core";
-import { useStore } from "../../../../../hooks";
+import { useStore } from "../../../../../hooks/polotno";
 
  const ShapePanel = () => {
   const store = useStore();

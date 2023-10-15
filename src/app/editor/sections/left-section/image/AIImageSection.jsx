@@ -20,7 +20,7 @@ import { AIIcon } from "../../../../../assets";
 // New imports:
 import axios from "axios";
 import FormData from "form-data";
-import { useStore } from "../../../../../hooks";
+import { useStore } from "../../../../../hooks/polotno";
 import {
   CustomImageComponent,
   MessageComponent,

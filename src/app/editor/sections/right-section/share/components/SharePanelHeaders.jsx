@@ -3,9 +3,9 @@
 // panelHeader - the Name to be displayed, menuName - name that's Linked Globally [ useContext - setMenu ]
 // --------
 import React, { useContext } from "react";
-import { Context } from "../../../../../../context/ContextProvider";
 import BsArrowLeft from "@meronex/icons/bs/BsArrowLeft";
 import BsX from "@meronex/icons/bs/BsX";
+import { Context } from "../../../../../../providers/context";
 
 const SharePanelHeaders = ({ panelHeader, menuName, panelContent }) => {
   const { isShareOpen, setIsShareOpen, setMenu } = useContext(Context);

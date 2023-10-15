@@ -1,13 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
-import { login, refreshNFT } from "../services/apis/BE-apis/backendApi";
+import {
+  refreshNFT,
+  solanaAuth,
+  evmAuth,
+} from "../services/apis/BE-apis/backendApi";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   removeFromLocalStorage,
 } from "../utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
-import { Context } from "../context/ContextProvider";
+import { Context } from "../providers/context/ContextProvider";
 import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
 
@@ -18,35 +22,41 @@ import {
   OnboardingSteps,
   OnboardingStepsWithShare,
 } from "./editor/common";
-import { clearAllLocalStorageData } from "../utils";
+import { clearAllLocalStorageData, errorMessage } from "../utils";
+import { useSolanaWallet } from "../hooks/solana";
+import { useMutation } from "@tanstack/react-query";
+import { ERROR, EVM_MESSAGE, LOCAL_STORAGE, SOLANA_MESSAGE } from "../data";
+import bs58 from "bs58";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const [initialRender, setInitialRender] = useState(true);
   const { isLoading, setIsLoading, text, setText, posthog } =
     useContext(Context);
-  const [message, setMessage] = useState(
-    "This message is to login you into lenspost dapp."
-  );
   const [sign, setSign] = useState("");
   const { address, isConnected, isDisconnected } = useAccount();
   const { disconnect } = useDisconnect();
   const {
-    data: signature,
+    data: evmSignature,
     isError,
     isSuccess,
     error,
     signMessage,
   } = useSignMessage();
   const [session, setSession] = useState("");
+  const getEvmAuth = getFromLocalStorage("evmAuth");
+  const getSolanaAuth = getFromLocalStorage("solanaAuth");
   const getUserAuthToken = getFromLocalStorage("userAuthToken");
   const getUserAddress = getFromLocalStorage("userAddress");
   const getUsertAuthTmestamp = getFromLocalStorage("usertAuthTmestamp");
   const getifUserEligible = getFromLocalStorage("ifUserEligible");
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
   const navigate = useNavigate();
+  const { solanaConnected, solanaSignMessage, solanaAddress } =
+    useSolanaWallet();
+  const [solanaSignature, setSolanaSignature] = useState("");
 
-  // remove jwt from localstorage if it is expired (24hrs)
+  // clear the session if it is expired (24hrs)
   useEffect(() => {
     const clearLocalStorage = () => {
       if (getUserAuthToken === undefined) return;
@@ -72,62 +82,145 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // generate signature
-  const genarateSignature = () => {
+  // generate signature for EVM
+  const generateSignature = () => {
     saveToLocalStorage("hasUserSeenTheApp", true);
     if (isDisconnected) return;
 
-    if (
-      getUserAuthToken &&
-      getUserAddress &&
-      getUsertAuthTmestamp &&
-      address === getUserAddress
-    ) {
+    if (getEvmAuth) {
       return setSession(getUserAuthToken);
     } else if (isConnected) {
       clearAllLocalStorageData();
       setIsLoading(true);
       signMessage({
-        message,
+        message: EVM_MESSAGE,
       });
       setText("Sign the message to login");
     }
   };
 
-  // login user
-  const userLogin = async () => {
-    if (isSuccess && address !== getUserAddress) {
-      setIsLoading(true);
-      setText("Logging in...");
-      const res = await login(address, signature, message);
+  // generate signature for solana
+  const generateSignatureSolana = async () => {
+    saveToLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp, true);
 
-      if (res?.jwt) {
-        setText("");
-        setIsLoading(false);
-        toast.success("Login successful");
-        saveToLocalStorage("userAuthToken", res.jwt);
-        saveToLocalStorage("usertAuthTmestamp", new Date().getTime());
-        saveToLocalStorage("userAddress", address);
-        saveToLocalStorage("lensAuth", res?.lensHandle);
-        setSession(res.jwt);
-        posthog.identify(address);
-      } else if (res?.error) {
+    if (getSolanaAuth) {
+      return setSession(getUserAuthToken);
+    } else if (solanaConnected) {
+      setIsLoading(true);
+      setText("Sign the message to login");
+
+      // pass the message as Uint8Array
+      const message = new TextEncoder().encode(SOLANA_MESSAGE);
+      const signature = await solanaSignMessage(message);
+
+      // convert the signature to base58
+      const signatureBase58 = bs58.encode(signature);
+      console.log(signatureBase58);
+      setSolanaSignature(signatureBase58);
+    }
+  };
+
+  // EVM login
+  const { mutateAsync: evmAuthAsync } = useMutation({
+    mutationKey: "evmAuth",
+    mutationFn: evmAuth,
+  });
+
+  // Solana login
+  const { mutateAsync: solanaAuthAsync } = useMutation({
+    mutationKey: "solanaAuth",
+    mutationFn: solanaAuth,
+  });
+
+  // EVM auth handler
+  const evmAuthHandler = async () => {
+    setIsLoading(true);
+    setText("Logging in...");
+    await evmAuthAsync({
+      walletAddress: address,
+      signature: evmSignature,
+      message: EVM_MESSAGE,
+    })
+      .then((res) => {
+        console.log(res);
+        if (res?.status === "success") {
+          setText("");
+          setIsLoading(false);
+          toast.success("Login successful");
+          saveToLocalStorage(LOCAL_STORAGE.evmAuth, true);
+          saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
+          saveToLocalStorage(LOCAL_STORAGE.usertAuthTime, new Date().getTime());
+          saveToLocalStorage(LOCAL_STORAGE.userAddress, address);
+          saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
+          setSession(res.jwt);
+          posthog.identify(address);
+        } else {
+          toast.error(ERROR.SOMETHING_WENT_WRONG);
+          disconnect();
+          setText("");
+          setIsLoading(false);
+          toast.error(res);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(errorMessage(err));
         disconnect();
         setText("");
         setIsLoading(false);
-        toast.error(res);
-      }
-    }
+      });
   };
 
-  const updateNft = async () => {
-    const res = await refreshNFT(address);
-    if (res?.data) {
-      console.log(res.data);
-    } else if (res?.error) {
-      console.log(res.error);
-    }
+  // Solana auth handler
+  const solanaAuthHandler = async () => {
+    setIsLoading(true);
+    setText("Logging in...");
+    await solanaAuthAsync({
+      walletAddress: solanaAddress,
+      signature: solanaSignature,
+      message: SOLANA_MESSAGE,
+    })
+      .then((res) => {
+        console.log(res);
+        if (res?.status === "success") {
+          setText("");
+          setIsLoading(false);
+          toast.success("Login successful");
+          saveToLocalStorage(LOCAL_STORAGE.solanaAuth, true);
+          saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
+          saveToLocalStorage(LOCAL_STORAGE.usertAuthTime, new Date().getTime());
+          saveToLocalStorage(LOCAL_STORAGE.userAddress, address);
+          saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
+          setSession(res.jwt);
+          posthog.identify(address);
+        } else {
+          toast.error(ERROR.SOMETHING_WENT_WRONG);
+          disconnect();
+          setText("");
+          setIsLoading(false);
+          toast.error(res);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(errorMessage(err));
+        disconnect();
+        setText("");
+        setIsLoading(false);
+      });
   };
+
+  // update nfts for EVM + Solana
+  const {mutate: updateNft} = useMutation({
+    mutationKey: "refreshNFT",
+    mutationFn: refreshNFT,
+    onSuccess: (res) => {
+      console.log(res?.message);
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
 
   const isUserEligible = () => {
     if (
@@ -166,15 +259,30 @@ const App = () => {
   }, [session]);
 
   useEffect(() => {
-    userLogin();
+    if (isSuccess) {
+      evmAuthHandler();
+    }
   }, [isSuccess]);
+
+  useEffect(() => {
+    if (solanaSignature) {
+      solanaAuthHandler();
+    }
+  }, [solanaSignature]);
 
   useEffect(() => {
     // Run the effect when isConnected and address change
     if (isConnected && address) {
-      genarateSignature();
+      generateSignature();
     }
   }, [isConnected, address, initialRender]);
+
+  useEffect(() => {
+    // Run the effect when solanaConnected and solanaAddress change
+    if (solanaConnected && solanaAddress) {
+      generateSignatureSolana();
+    }
+  }, [solanaConnected]);
 
   useEffect(() => {
     // check if browser is Brave

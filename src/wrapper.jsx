@@ -1,23 +1,5 @@
 import React from "react";
-import "@rainbow-me/rainbowkit/styles.css";
-import {
-  getDefaultWallets,
-  RainbowKitProvider,
-  connectorsForWallets,
-} from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { polygon, polygonMumbai, zora, zoraTestnet } from "wagmi/chains";
-import {
-  coinbaseWallet,
-  metaMaskWallet,
-  phantomWallet,
-  rabbyWallet,
-  rainbowWallet,
-  walletConnectWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-import { publicProvider } from "wagmi/providers/public";
-
-import ContextProvider from "./context/ContextProvider";
+import ContextProvider from "./providers/context/ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ENVIRONMENT, WALLETCONNECT_PROJECT_ID } from "./services/env/env";
@@ -26,43 +8,17 @@ import App from "./app/App";
 import { AuthComponent } from "./app/auth";
 import { TourProvider } from "@reactour/tour";
 import { OnboardingSteps } from "./app/editor/common";
+import { EVMWalletProvider } from "./providers/EVM";
+import { SolanaWalletProvider } from "./providers/solana";
 
 const radius = 8;
-
-const { chains, publicClient } = configureChains(
-  ENVIRONMENT === "production" ? [polygon, zora] : [polygonMumbai, zoraTestnet],
-  [
-    // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
-    publicProvider(),
-  ]
-);
-
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      metaMaskWallet({ chains }),
-      phantomWallet({ chains }),
-      rabbyWallet({ chains }),
-      rainbowWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),
-      walletConnectWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),
-      coinbaseWallet({ chains }),
-    ],
-  },
-]);
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-});
 
 const queryClient = new QueryClient();
 
 export const Wrapper = () => {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains} coolMode={true}>
+    <EVMWalletProvider>
+      <SolanaWalletProvider>
         <ContextProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
@@ -119,7 +75,7 @@ export const Wrapper = () => {
             </BrowserRouter>
           </QueryClientProvider>
         </ContextProvider>
-      </RainbowKitProvider>
-    </WagmiConfig>
+      </SolanaWalletProvider>
+    </EVMWalletProvider>
   );
 };
