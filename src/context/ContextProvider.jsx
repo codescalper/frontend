@@ -79,6 +79,12 @@ const ContextProvider = ({ children }) => {
 
   // for split revenue eligible assets holder address/handles
   const assetsRecipientRef = useRef([{ elementId: "", handle: "" }]);
+  
+  // The pre stored Array of Objects with elementsId for split revenue eligible assets holder address/handles
+  const preStoredRecipientObjRef = useRef([]);
+  
+  // The parent Array of Objects with elementsId for split revenue eligible assets holder address/handles
+  const parentRecipientObjRef = useRef([]);
 
   // The parent Array for split revenue eligible assets holder address/handles
   const parentRecipientRef = useRef([]);
@@ -109,6 +115,8 @@ const ContextProvider = ({ children }) => {
     isError: false,
     message: "",
   });
+
+  // console.log("ContextProvider", preStoredRecipientObjRef.current);
 
   return (
     <Context.Provider
@@ -162,6 +170,12 @@ const ContextProvider = ({ children }) => {
 
         // The parent Array for split revenue eligible assets holder address/handles
         parentRecipientRef,
+
+        // The pre stored Array of Objects with elementsId for split revenue eligible assets holder address/handles
+        preStoredRecipientObjRef,
+
+        // The parent Array of Objects with elementsId for split revenue eligible assets holder address/handles
+        parentRecipientObjRef,
 
         // for lens monetization price error
         priceError,

@@ -1,3 +1,3 @@
 export const getAvatar = (address) => {
-  return `https://avatars.dicebear.com/api/pixel-art/${address}.svg`;
+  return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${address}`;
 };
