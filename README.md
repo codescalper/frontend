@@ -6,19 +6,7 @@ This is the official github repository for [Lenspost Studio](https://lenspost.xy
 ## Deployment
 [Live](https://app.lenspost.xyz) 
 
-[Alternate](https://lenspost-vite.vercel.app)
+[Staging](https://lenspost-vite.vercel.app)
 
-## For local development
-
-1. Install all the dependencies:  `npm install` or `yarn`
-
-2. Start the development server `npm run dev` or `yarn dev`
-
-3. Visit [localhost:3000 || 5173](http://localhost:5173)
-
-## Tech Stack
-
-| Technology             | Official Link                                                                |
-| ----------------- | ------------------------------------------------------------------ |
-| React.js | https://react.dev/ |
-| Tailwindcss | https://tailwindcss.com/ |
+## For more information
+- [Docs](./docs/README.md)
