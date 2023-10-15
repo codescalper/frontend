@@ -273,32 +273,31 @@ const CompInstructImage = () => {
     setBase64ImgLink("");
 
     const options = {
-      // method: "POST",
+      method: "POST",
       headers: {
         accept: "application/json",
-        "content-type": "application/json",
-        authorization:
-          "Bearer key-oVrGU2b6BBsUvRyzacjQFF4BcyqQM6bnO18F6rfeXdmCahX6EaWSDu47TXH5CPzsMcpTQny2Ls6Q6V6ONKxujesILyY4fEo",
+        'content-type': "application/json",
+        authorization: "Bearer key-SQPbl4vBrLiOoEe1szionhtBfhqvtLvCOb6y2Sw0cW9fRPj1AidOkbmuCM68IEpaOCkJ9H7lWkEBBe1JqEQqn05rX08AN8p",
       },
       body: JSON.stringify({
+      // data: {
         prompt: stImgPrompt,
         image: base64Stripper(imageBase64),
-        // mask_image: img2,
-      }),
+      } 
+      ),
     };
 
     console.log("Calling API Start");
 
-    // await fetch("https://api.getimg.ai/v1/stable-diffusion/inpaint", options)
-    await axios
-      .post("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
-      .then((response) => response.json())
+    await fetch("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
+    // await axios.post("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
+      // .then((response) => response.json())
       .then((response) => {
         console.log(" Response from Axios ");
         console.log(response);
-        if (response.status === 200) {
-          setBase64ImgLink(response.image);
-        }
+        // if (response.status === 200) {
+          setBase64ImgLink(response.data.image);
+        // }
       })
       .catch((err) => {
         console.log(" Response from Axios ");
@@ -344,12 +343,12 @@ const CompInstructImage = () => {
     <>
     <div className="h-full overflow-y-auto">
       <div className="">
-        <div className="m-1 mb-2"> Original Image </div>
+        <div className="m-1 mb-2 ml-2"> Original Image </div>
 
         {/* <Input onChange={(e) => setStOriginalImage(e.target.value)} type="file" name="" id="" accept="image/*" /> */}
         <div className="mb-4 rounded-md">
           <input
-            className="mb-2"
+            className="mb-2 ml-2"
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
@@ -423,7 +422,7 @@ const AIImagePanel = () => {
       >
         <Tab id="tabPrompt" title="Prompt" />
         {/* <Tab id="tabDesignify" title="Designify" /> */}
-        {/* <Tab id="tabInstructImage" title="Instruct" /> */}
+        <Tab id="tabInstructImage" title="Instruct" />
       </Tabs>
 
       <div
@@ -436,7 +435,7 @@ const AIImagePanel = () => {
       >
         {currentTab === "tabPrompt" && <CompSearch />}
         {currentTab === "tabDesignify" && <CompDesignify />}
-        {/* {currentTab === "tabInstructImage" && <CompInstructImage />} */}
+        {currentTab === "tabInstructImage" && <CompInstructImage />}
       </div>
     </div>
   );

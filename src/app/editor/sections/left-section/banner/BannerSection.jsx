@@ -79,7 +79,8 @@ export const BannerPanel = () => {
             ))}
           </TabsHeader>
         </div>
-        <div className="h-full overflow-y-scroll">
+        {/* <div className="h-full overflow-y-scroll"> */}
+        <div className="hCustom overflow-y-scroll">
           <TabsBody
             animate={{
               initial: { y: 250 },
