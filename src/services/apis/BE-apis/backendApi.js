@@ -81,7 +81,7 @@ export const solanaAuth = async ({ walletAddress, signature, message }) => {
 // lensauth apis start
 // need auth token (jwt)
 export const lensAuthenticate = async (signature) => {
-  const result = await api.post(`${API}/auth/lens/authenticate`, {
+  const result = await api.post(`${API}/auth/evm/lens`, {
     signature: signature,
   });
 
@@ -389,7 +389,7 @@ export const checkDispatcher = async () => {
 
 export const setDispatcher = async () => {
   try {
-    const result = await api.get(`${API}/auth/lens/set-dispatcher`);
+    const result = await api.get(`${API}/auth/evm/lens/set-dispatcher`);
 
     return result?.data?.message;
   } catch (error) {

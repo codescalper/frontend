@@ -14,7 +14,13 @@ import { createCanvas, updateCanvas } from "../../services";
 import { Context } from "../../providers/context/ContextProvider";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { errorMessage, loadFile, base64Stripper, wait } from "../../utils";
+import {
+  errorMessage,
+  loadFile,
+  base64Stripper,
+  wait,
+  getFromLocalStorage,
+} from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
 import { useStore } from "../../hooks/polotno";
@@ -35,6 +41,8 @@ import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 import { SpeedDialX } from "./common/elements/SpeedDial";
 import CustomTabsMaterial from "./common/core/CustomTabsMaterial";
 import { Tooltip } from "polotno/canvas/tooltip";
+import { useSolanaWallet } from "../../hooks/solana";
+import { LOCAL_STORAGE } from "../../data";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -68,6 +76,8 @@ const Editor = () => {
   const store = useStore();
   const height = useHeight();
   const { address, isConnected } = useAccount();
+  const { solanaAddress } = useSolanaWallet();
+  const currentUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
   const canvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
   const {
@@ -260,7 +270,7 @@ const Editor = () => {
       if (canvasChildren?.length > 0) {
         // create an array of all the recipients then make it uniq
         const parentArray = [
-          address,
+          currentUserAddress,
           ...referredFromRef.current,
           ...recipientDataFilter().recipientHandles,
         ];
@@ -268,8 +278,10 @@ const Editor = () => {
         // update the parentRecipientRef to the uniq values (final list for split revenue)
         parentRecipientRef.current = [...new Set(parentArray)];
 
-        console.log("parentRecipientObj", recipientDataFilter());
-        console.log("parentRecipientRef", parentRecipientRef.current);
+        // console.log("parentRecipientObj", recipientDataFilter());
+        // console.log("parentRecipientRef", parentRecipientRef.current);
+
+        // return;
 
         // create new canvas
         if (!canvasIdRef.current) {
@@ -288,7 +300,9 @@ const Editor = () => {
               }
             })
             .catch((err) => {
-              console.log("Canvas creation error", { error: errorMessage(err) });
+              console.log("Canvas creation error", {
+                error: errorMessage(err),
+              });
             });
         }
 

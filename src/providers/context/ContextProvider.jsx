@@ -47,19 +47,20 @@ const ContextProvider = ({ children }) => {
     },
 
     whoCanCollect: false,
-
-    // Solana Mint Switch States
-    chargeForMint : false,
-    onChainSplits : false,
-    limitNoOfEditions : false,
-    scheduleMint : false,
-    allowlist : false,
-    nftBurn : false,
-    nftGate : false,
-    tokenGate : false,
-    
-
   });
+
+  const [solanaEnabled, setSolanaEnabled] = useState({
+    // Solana Mint Switch States
+    chargeForMint: false,
+    onChainSplits: false,
+    limitNoOfEditions: false,
+    scheduleMint: false,
+    allowlist: false,
+    nftBurn: false,
+    nftGate: false,
+    tokenGate: false,
+  });
+
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -79,15 +80,21 @@ const ContextProvider = ({ children }) => {
 
   // for split revenue eligible assets holder address/handles
   const assetsRecipientRef = useRef([{ elementId: "", handle: "" }]);
-  
+
   // The pre stored Array of Objects with elementsId for split revenue eligible assets holder address/handles
   const preStoredRecipientObjRef = useRef([]);
-  
+
   // The parent Array of Objects with elementsId for split revenue eligible assets holder address/handles
   const parentRecipientObjRef = useRef([]);
 
   // The parent Array for split revenue eligible assets holder address/handles
   const parentRecipientRef = useRef([]);
+
+  // solana NFT creator address
+  const solanaNFTCreatorRef = useRef([]);
+
+  // solana nft creator/recipients elementID data
+  const solanaNFTCreatorElementIDRef = useRef([{ elementId: "", handle: "" }]);
 
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -116,7 +123,7 @@ const ContextProvider = ({ children }) => {
     message: "",
   });
 
-  // console.log("ContextProvider", preStoredRecipientObjRef.current);
+  // console.log("ContextProvider", solanaNFTCreatorRef.current);
 
   return (
     <Context.Provider
@@ -195,6 +202,16 @@ const ContextProvider = ({ children }) => {
 
         // posthog analytics
         posthog,
+
+        // for solana mint
+        solanaEnabled,
+        setSolanaEnabled,
+
+        // solana NFT creator address
+        solanaNFTCreatorRef,
+
+        // solana nft creator/recipients elementID data
+        solanaNFTCreatorElementIDRef,
       }}
     >
       {children}

@@ -38,11 +38,13 @@ const ProfileMenu = () => {
   };
 
   const logout = () => {
-    posthog.reset();
-    clearAllLocalStorageData();
     disconnect();
     solanaDisconnect();
+    posthog.reset();
+    clearAllLocalStorageData();
     toast.success("Logout successful");
+
+    // TODO: clear all local storage data + states
   };
 
   // state for profile menu items
