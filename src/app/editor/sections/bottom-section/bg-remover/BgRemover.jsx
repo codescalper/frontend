@@ -5,10 +5,11 @@ import { replaceImageURL } from "../../../../../utils";
 import { getRemovedBgS3Link } from "../../../../../services";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
+import { useAppAuth } from "../../../../../hooks/app";
 
 const BgRemover = () => {
   const store = useStore();
-  const { isConnected } = useAccount();
+  const { isAuthenticated } = useAppAuth();
   const [stActivePageNo, setStActivePageNo] = useState(0);
   var varActivePageNo = 0;
 
@@ -91,8 +92,8 @@ const BgRemover = () => {
         id="fourth-step"
         icon="clean"
         onClick={fnCallToast}
-        title={isConnected ? "" : "Please connect your wallet"}
-        disabled={!isConnected}
+        title={!isAuthenticated ? "" : "Please connect your wallet"}
+        disabled={!isAuthenticated}
         className="mt-2 mb-2 ml-3 py-1 px-4"
       >
         {`Remove background`}
