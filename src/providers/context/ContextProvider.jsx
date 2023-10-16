@@ -123,6 +123,12 @@ const ContextProvider = ({ children }) => {
     message: "",
   });
 
+  // for exploere dilog
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [explorerLink, setExplorerLink] = useState("");
+
+  const handleOpen = () => setDialogOpen((cur) => !cur);
+
   // console.log("ContextProvider", solanaNFTCreatorRef.current);
 
   return (
@@ -212,6 +218,14 @@ const ContextProvider = ({ children }) => {
 
         // solana nft creator/recipients elementID data
         solanaNFTCreatorElementIDRef,
+
+        // for explorer dilog
+        dialogOpen,
+        setDialogOpen,
+        explorerLink,
+        setExplorerLink,
+        handleOpen,
+        
       }}
     >
       {children}

@@ -19,6 +19,7 @@ import { useMutation } from "@tanstack/react-query";
 const SolanaMint = () => {
   const [sharing, setSharing] = useState(false);
   const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
+
   const {
     solanaEnabled,
     setSolanaEnabled,
@@ -31,6 +32,8 @@ const SolanaMint = () => {
     solanaNFTCreatorRef,
     setMenu,
     setIsShareOpen,
+    setDialogOpen,
+    setExplorerLink,
   } = useContext(Context);
 
   const { mutateAsync: shareOnSolana } = useMutation({
@@ -97,7 +100,7 @@ const SolanaMint = () => {
       // timeStamp: formatDateTimeUnix(stFormattedDate, stFormattedTime),
     })
       .then((res) => {
-        if (res?.txHash) {
+        if (res?.status === 200) {
           const jsConfetti = new JSConfetti();
           jsConfetti.addConfetti({
             emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
@@ -110,6 +113,10 @@ const SolanaMint = () => {
             isLoading: false,
             autoClose: 3000,
           });
+
+          // open explorer link
+          setExplorerLink(res?.assetId);
+          setDialogOpen(true);
 
           // TODO: clear all the states and variables
           setSharing(false);

@@ -27,12 +27,21 @@ import { useSolanaWallet } from "../hooks/solana";
 import { useMutation } from "@tanstack/react-query";
 import { ERROR, EVM_MESSAGE, LOCAL_STORAGE, SOLANA_MESSAGE } from "../data";
 import bs58 from "bs58";
+import { ExplorerDialog } from "./editor/sections/right-section/share/components";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const [initialRender, setInitialRender] = useState(true);
-  const { isLoading, setIsLoading, text, setText, posthog } =
-    useContext(Context);
+  const {
+    isLoading,
+    setIsLoading,
+    text,
+    setText,
+    posthog,
+    dialogOpen,
+    explorerLink,
+    handleOpen,
+  } = useContext(Context);
   const [sign, setSign] = useState("");
   const { address, isConnected, isDisconnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -313,6 +322,11 @@ const App = () => {
   return (
     <>
       <Editor />
+      <ExplorerDialog
+        handleOpen={handleOpen}
+        open={dialogOpen}
+        link={explorerLink}
+      />
       <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
       <ToastContainer
