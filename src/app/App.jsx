@@ -28,6 +28,7 @@ import { useMutation } from "@tanstack/react-query";
 import { ERROR, EVM_MESSAGE, LOCAL_STORAGE, SOLANA_MESSAGE } from "../data";
 import bs58 from "bs58";
 import { ExplorerDialog } from "./editor/sections/right-section/share/components";
+import { ENVIRONMENT } from "../services";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
@@ -250,9 +251,11 @@ const App = () => {
   };
 
   useEffect(() => {
-    // if false redirect to ifUserEligible page
-    if (!isUserEligible()) {
-      navigate("/ifUserEligible");
+    // if false redirect to ifUserEligible page but only in production
+    if (ENVIRONMENT === "production") {
+      if (!isUserEligible()) {
+        navigate("/ifUserEligible");
+      }
     }
   }, []);
 
