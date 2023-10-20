@@ -370,7 +370,7 @@ const LensShare = () => {
     }
   };
 
-  // function to handel recipient field change
+  // function to handle recipient field change
   const handleRecipientChange = (index, field, value) => {
     // check index 0 price should min 10
     if (field === "split" && index === 0) {
@@ -504,7 +504,7 @@ const LensShare = () => {
             emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
             confettiNumber: 100,
           });
-          
+
           toast.update(id, {
             render: `Successfully shared on ${platform}`,
             type: "success",
@@ -894,7 +894,10 @@ const LensShare = () => {
                                   );
                                 }}
                               />
-                              {!restrictremoveRecipientInputBox(index, recipient) && (
+                              {!restrictremoveRecipientInputBox(
+                                index,
+                                recipient
+                              ) && (
                                 <TiDelete
                                   className="h-6 w-6 cursor-pointer"
                                   color="red"

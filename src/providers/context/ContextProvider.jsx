@@ -50,6 +50,19 @@ const ContextProvider = ({ children }) => {
   });
 
   const [solanaEnabled, setSolanaEnabled] = useState({
+    
+    // Array of List of Contract Addresses / Input Boxes
+    arrOnChainSplitRecipients: [
+      {
+        recipient: "lenspost.xyz",
+        split: 10.0,
+      },
+    ],
+    arrAllowlist: [{ recipient: "" }],
+    arrNFTBurn: [{ recipient: "" }],
+    arrNFTGate: [{ recipient: "" }],
+    arrTokenGate: [{ recipient: "" }],
+
     // Solana Mint Switch States
     chargeForMint: false,
     onChainSplits: false,
@@ -92,6 +105,12 @@ const ContextProvider = ({ children }) => {
 
   // solana NFT creator address
   const solanaNFTCreatorRef = useRef([]);
+
+  // The parent Array for On Chain Split recepients
+  const parentOnChainSplitsRef = useRef([]);
+
+  // The parent Array for allowlist recepients
+  const parentAllowlistRef = useRef([]);
 
   // solana nft creator/recipients elementID data
   const solanaNFTCreatorElementIDRef = useRef([{ elementId: "", handle: "" }]);
@@ -225,7 +244,6 @@ const ContextProvider = ({ children }) => {
         explorerLink,
         setExplorerLink,
         handleOpen,
-        
       }}
     >
       {children}

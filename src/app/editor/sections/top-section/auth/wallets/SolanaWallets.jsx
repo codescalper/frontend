@@ -37,7 +37,7 @@ const SolanaWallets = () => {
         onClick={handleOpen}
         size="lg"
         color="black"
-        className="flex items-center gap-3 outline-none"
+        className="flex items-center gap-3 outline-none m-2 p-4"
       >
         <img src={SolanaLogo} alt="solana" className="h-6 w-6" />
         Solana
