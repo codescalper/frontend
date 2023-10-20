@@ -79,7 +79,7 @@ const App = () => {
 
       console.log("checking session");
       const jwtExpiration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-      const jwtTimestamp = getFromLocalStorage("usertAuthTmestamp");
+      const jwtTimestamp = getFromLocalStorage(LOCAL_STORAGE.usertAuthTime);
 
       const currentTimestamp = new Date().getTime();
 

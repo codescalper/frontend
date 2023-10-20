@@ -574,8 +574,7 @@ const WalletNFT = () => {
                     </div>
                   </>
                 ) : (currentTab === "ethereum" ||
-                    currentTab === "polygon" ||
-                    currentTab == "zora") &&
+                    currentTab === "polygon") &&
                   !getEVMAuth ? (
                   <>
                     <Typography color="blueGray" className="text-center my-3">
@@ -585,7 +584,11 @@ const WalletNFT = () => {
                       <EVMWallets />
                     </div>
                   </>
-                ) : null}
+                ) : (currentTab === "zora") && (
+                  <Typography color="blueGray" className="text-center my-3">
+                      Coming Soon
+                    </Typography>
+                ) }
               </>
             )}
           </div>
