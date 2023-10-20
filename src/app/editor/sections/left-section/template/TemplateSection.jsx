@@ -59,12 +59,16 @@ const DesignCard = ({
   referredFrom,
   modal,
   setModal,
+  ownerAddress,
+  assetsRecipientElementData
 }) => {
   const store = useStore();
-  const { referredFromRef } = useContext(Context);
+  const { referredFromRef, preStoredRecipientObjRef } = useContext(Context);
 
   const [stPreviewIndex, setStPreviewIndex] = useState(0);
   const [stHovered, setStHovered] = useState(false);
+
+  // TODO: if any public template ha no refferedFrom, then add owneraddress to refferedFrom
 
   const handleClickOrDrop = () => {
     // Show Modal: if it's tokengated
@@ -84,12 +88,14 @@ const DesignCard = ({
           isNewDesign: true,
           json: json,
           referredFrom: referredFrom,
+          preStoredRecipientObj: assetsRecipientElementData
         });
       } else {
         // If not load the clicked JSON
         fnLoadJsonOnPage(store, json);
         if (tab === "user") {
           referredFromRef.current = referredFrom;
+          preStoredRecipientObjRef.current = assetsRecipientElementData
         }
       }
     }
@@ -502,6 +508,7 @@ const UserTemplates = () => {
           onClickFunction={() => {
             fnLoadJsonOnPage(store, modal?.json);
             referredFromRef.current = modal?.referredFrom;
+            preStoredRecipientObjRef.current = modal?.preStoredRecipientObj
             setModal({
               ...modal,
               isOpen: false,
@@ -534,6 +541,7 @@ const UserTemplates = () => {
                     gatedWith={item?.gatedWith}
                     json={item?.data}
                     ownerAddress={item?.ownerAddress}
+                    assetsRecipientElementData={item?.assetsRecipientElementData}
                     preview={
                       item?.imageLink != null &&
                       item?.imageLink.length > 0 &&

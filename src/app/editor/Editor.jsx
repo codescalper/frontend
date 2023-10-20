@@ -203,9 +203,11 @@ const Editor = () => {
   // funtion for checking + updating the assets recipient (final list)
   const recipientDataFilter = () => {
     parentRecipientObjRef.current = [
-      ...preStoredRecipientObjRef.current,
-      ...lensCollectRecipientRef.current,
-      ...assetsRecipientRef.current,
+      ...preStoredRecipientObjRef.current, // recipient data geting from BE
+      ...lensCollectRecipientRef.current, // recipient data of lens collect
+      ...assetsRecipientRef.current, // recipient data of assets
+
+      // recipient data of solana
     ];
 
     const recipientRefArr = parentRecipientObjRef.current;
@@ -271,7 +273,7 @@ const Editor = () => {
         // create an array of all the recipients then make it uniq
         const parentArray = [
           currentUserAddress,
-          ...referredFromRef.current,
+          // ...referredFromRef.current,
           ...recipientDataFilter().recipientHandles,
         ];
 
