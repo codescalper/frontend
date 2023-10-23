@@ -63,12 +63,12 @@ const DesignCard = ({
   assetsRecipientElementData
 }) => {
   const store = useStore();
-  const { referredFromRef, preStoredRecipientObjRef } = useContext(Context);
+  const { referredFromRef, preStoredRecipientDataRef } = useContext(Context);
 
   const [stPreviewIndex, setStPreviewIndex] = useState(0);
   const [stHovered, setStHovered] = useState(false);
 
-  // TODO: if any public template ha no refferedFrom, then add owneraddress to refferedFrom
+  // TODO: if any public template has no refferedFrom, then add owneraddress to refferedFrom
 
   const handleClickOrDrop = () => {
     // Show Modal: if it's tokengated
@@ -95,7 +95,7 @@ const DesignCard = ({
         fnLoadJsonOnPage(store, json);
         if (tab === "user") {
           referredFromRef.current = referredFrom;
-          preStoredRecipientObjRef.current = assetsRecipientElementData
+          preStoredRecipientDataRef.current = assetsRecipientElementData
         }
       }
     }
@@ -442,8 +442,7 @@ const LenspostTemplates = () => {
 const UserTemplates = () => {
   const { isAuthenticated } = useAppAuth();
   const store = useStore();
-  const { referredFromRef } = useContext(Context);
-  const { address, isDisconnected } = useAccount();
+  const { referredFromRef, preStoredRecipientDataRef } = useContext(Context);
   const [query, setQuery] = useState("");
   const [modal, setModal] = useState({
     isOpen: false,
@@ -508,7 +507,7 @@ const UserTemplates = () => {
           onClickFunction={() => {
             fnLoadJsonOnPage(store, modal?.json);
             referredFromRef.current = modal?.referredFrom;
-            preStoredRecipientObjRef.current = modal?.preStoredRecipientObj
+            preStoredRecipientDataRef.current = modal?.preStoredRecipientObj
             setModal({
               ...modal,
               isOpen: false,

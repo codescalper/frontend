@@ -75,26 +75,28 @@ const ContextProvider = ({ children }) => {
   // for split revenue eligible address/recipient
   const referredFromRef = useRef([]);
 
-  // for split revenue eligible lens collect address/handles
-  const lensCollectRecipientRef = useRef([{ elementId: "", handle: "" }]);
+  // elementId and handle data for lens collect nft
+  const lensCollectNftRecipientDataRef = useRef([
+    { elementId: "", handle: "" },
+  ]);
 
-  // for split revenue eligible assets holder address/handles
-  const assetsRecipientRef = useRef([{ elementId: "", handle: "" }]);
+  // elementId and handle data for assets nft
+  const assetsRecipientDataRef = useRef([{ elementId: "", handle: "" }]);
 
-  // The pre stored Array of Objects with elementsId for split revenue eligible assets holder address/handles
-  const preStoredRecipientObjRef = useRef([]);
+  // elementId and handle data for solana nfts nft
+  const solanaNftRecipientDataRef = useRef([{ elementId: "", handle: "" }]);
 
-  // The parent Array of Objects with elementsId for split revenue eligible assets holder address/handles
-  const parentRecipientObjRef = useRef([]);
+  // elementId and handle data getting from BE
+  const preStoredRecipientDataRef = useRef([]);
 
-  // The parent Array for split revenue eligible assets holder address/handles
-  const parentRecipientRef = useRef([]);
+  // It has all the DataRefs data
+  const parentRecipientDataRef = useRef([]);
 
-  // solana NFT creator address
-  const solanaNFTCreatorRef = useRef([]);
+  // solana NFT recipients list
+  const solanaNftRecipientListRef = useRef([]);
 
-  // solana nft creator/recipients elementID data
-  const solanaNFTCreatorElementIDRef = useRef([{ elementId: "", handle: "" }]);
+  // It hass all the recipients list (kind of final recipient list but some address/)
+  const parentRecipientListRef = useRef([]);
 
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -175,20 +177,26 @@ const ContextProvider = ({ children }) => {
         // user public templates states
         referredFromRef,
 
-        // for split revenue eligible lens collect address/handles
-        lensCollectRecipientRef,
+        // elementId and handle data for lens collect nft
+        lensCollectNftRecipientDataRef,
 
-        // for split revenue eligible assets holder address/handles
-        assetsRecipientRef,
+        // elementId and handle data for assets nft
+        assetsRecipientDataRef,
 
-        // The parent Array for split revenue eligible assets holder address/handles
-        parentRecipientRef,
+        // elementId and handle data for solana nfts nft
+        solanaNftRecipientDataRef,
 
-        // The pre stored Array of Objects with elementsId for split revenue eligible assets holder address/handles
-        preStoredRecipientObjRef,
+        // elementId and handle data getting from BE
+        preStoredRecipientDataRef,
 
-        // The parent Array of Objects with elementsId for split revenue eligible assets holder address/handles
-        parentRecipientObjRef,
+        // It has all the DataRefs data
+        parentRecipientDataRef,
+
+        // solana NFT recipients list
+        solanaNftRecipientListRef,
+
+        // It hass all the recipients list (kind of final recipient list but some address/)
+        parentRecipientListRef,
 
         // for lens monetization price error
         priceError,
@@ -213,19 +221,12 @@ const ContextProvider = ({ children }) => {
         solanaEnabled,
         setSolanaEnabled,
 
-        // solana NFT creator address
-        solanaNFTCreatorRef,
-
-        // solana nft creator/recipients elementID data
-        solanaNFTCreatorElementIDRef,
-
         // for explorer dilog
         dialogOpen,
         setDialogOpen,
         explorerLink,
         setExplorerLink,
         handleOpen,
-        
       }}
     >
       {children}

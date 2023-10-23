@@ -57,7 +57,7 @@ const DesignCard = ({
     fastPreview,
     contextCanvasIdRef,
     referredFromRef,
-    preStoredRecipientObjRef,
+    preStoredRecipientDataRef,
   } = useContext(Context);
   const store = useStore();
 
@@ -65,7 +65,7 @@ const DesignCard = ({
     store.loadJSON(json);
     contextCanvasIdRef.current = item.id;
     referredFromRef.current = item.referredFrom;
-    preStoredRecipientObjRef.current = item.assetsRecipientElementData;
+    preStoredRecipientDataRef.current = item.assetsRecipientElementData;
   };
 
   return (

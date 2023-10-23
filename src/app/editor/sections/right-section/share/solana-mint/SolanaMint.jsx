@@ -604,7 +604,7 @@ const SolanaMint = () => {
             {getSolanaAuth ? (
               <Button
                 disabled={sharing}
-                onClick={() => sharePost("solana")}
+                onClick={() => sharePost("solana-cnft")}
                 color="teal"
                 className="mx-4"
               >
