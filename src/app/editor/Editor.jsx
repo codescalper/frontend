@@ -280,10 +280,10 @@ const Editor = () => {
         // update the parentRecipientRef to the uniq values (final list for split revenue)
         parentRecipientRef.current = [...new Set(parentArray)];
 
-        // console.log("parentRecipientObj", recipientDataFilter());
-        // console.log("parentRecipientRef", parentRecipientRef.current);
+        console.log("parentRecipientObj", recipientDataFilter());
+        console.log("parentRecipientRef", parentRecipientRef.current);
 
-        // return;
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {

@@ -29,7 +29,6 @@ import { ERROR, EVM_MESSAGE, LOCAL_STORAGE, SOLANA_MESSAGE } from "../data";
 import bs58 from "bs58";
 import { ExplorerDialog } from "./editor/sections/right-section/share/components";
 import { ENVIRONMENT } from "../services";
-import { useLocalStorage } from "../hooks/app";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
@@ -70,7 +69,6 @@ const App = () => {
     solanaDisconnect,
   } = useSolanaWallet();
   const [solanaSignature, setSolanaSignature] = useState("");
-  const {} = useLocalStorage();
 
   // clear the session if it is expired (24hrs)
   useEffect(() => {
