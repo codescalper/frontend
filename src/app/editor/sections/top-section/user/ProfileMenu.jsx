@@ -20,12 +20,14 @@ import {
 
 import { ClipboardIcon, PowerIcon } from "@heroicons/react/24/outline";
 import { useSolanaWallet } from "../../../../../hooks/solana";
+import { useLogout } from "../../../../../hooks/app";
 
 const ProfileMenu = () => {
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const { posthog } = useContext(Context);
+  const { logout } = useLogout();
 
   const handleEVMAddressCopy = () => {
     navigator.clipboard.writeText(address);
@@ -37,11 +39,8 @@ const ProfileMenu = () => {
     toast.success("address copied");
   };
 
-  const logout = () => {
-    disconnect();
-    solanaDisconnect();
-    posthog.reset();
-    clearAllLocalStorageData();
+  const fnLogout = () => {
+    logout();
     toast.success("Logout successful");
 
     // TODO: clear all local storage data + states
@@ -64,7 +63,7 @@ const ProfileMenu = () => {
     {
       label: "Logout",
       icon: PowerIcon,
-      onClick: logout,
+      onClick: fnLogout,
       shouldRender: true,
     },
   ];

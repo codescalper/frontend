@@ -45,10 +45,12 @@ import { useStore } from "../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
 import { SplitPolicyCard } from "./components";
+import { useReset } from "../../../../../../hooks/app";
 
 const LensShare = () => {
   const store = useStore();
   const { address, isConnected } = useAccount();
+  const { resetState } = useReset();
   const getDispatcherStatus = getFromLocalStorage("dispatcher");
 
   const {
@@ -56,7 +58,6 @@ const LensShare = () => {
     setText,
     setMenu,
     postDescription,
-    setPostDescription,
     enabled,
     setEnabled,
     stFormattedTime,
@@ -72,10 +73,7 @@ const LensShare = () => {
     setEditionError,
     referralError,
     setReferralError,
-    referredFromRef,
-    lensCollectRecipientRef,
-    assetsRecipientRef,
-    parentRecipientRef,
+    parentRecipientListRef,
   } = useContext(Context);
   const {
     data: signature,
@@ -504,7 +502,7 @@ const LensShare = () => {
             emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
             confettiNumber: 100,
           });
-          
+
           toast.update(id, {
             render: `Successfully shared on ${platform}`,
             type: "success",
@@ -514,44 +512,7 @@ const LensShare = () => {
           });
 
           // clear all the variables
-          setSharing(false);
-          setPostDescription("");
-          store.clear({ keepHistory: true });
-          store.addPage();
-          referredFromRef.current = [];
-          lensCollectRecipientRef.current = [];
-          assetsRecipientRef.current = [];
-          parentRecipientRef.current = [];
-          contextCanvasIdRef.current = null;
-          setEnabled({
-            chargeForCollect: false,
-            chargeForCollectPrice: "1",
-            chargeForCollectCurrency: "WMATIC",
-
-            mirrorReferralReward: false,
-            mirrorReferralRewardFee: 25.0,
-
-            splitRevenueRecipients: [
-              {
-                recipient: "",
-                split: 0.0,
-              },
-            ],
-
-            limitedEdition: false,
-            limitedEditionNumber: "1",
-
-            timeLimit: false,
-            endTimestamp: {
-              date: "",
-              time: "",
-            },
-
-            whoCanCollect: false,
-          });
-
-          setIsShareOpen(false);
-          setMenu("share");
+          resetState();
         } else if (res?.error) {
           toast.update(id, {
             render: res?.error,
@@ -646,7 +607,7 @@ const LensShare = () => {
   };
 
   const restrictRecipientInput = (e, index, recipient) => {
-    const isText = parentRecipientRef.current.includes(recipient.recipient);
+    const isText = parentRecipientListRef.current.includes(recipient.recipient);
     const isUserAddress = recipient.recipient === address;
     if (index === 0 || isText) {
       if (isUserAddress) {
@@ -658,7 +619,7 @@ const LensShare = () => {
   };
 
   const restrictremoveRecipientInputBox = (index, recipient) => {
-    const istext = parentRecipientRef.current.includes(recipient.recipient);
+    const istext = parentRecipientListRef.current.includes(recipient.recipient);
     if (index === 0 || istext) {
       return true;
     }
@@ -666,7 +627,7 @@ const LensShare = () => {
   // add recipient to the split list
   useEffect(() => {
     if (isConnected) {
-      const updatedRecipients = parentRecipientRef.current
+      const updatedRecipients = parentRecipientListRef.current
         .slice(0, 4)
         .map((item) => ({
           recipient: item,
@@ -894,7 +855,10 @@ const LensShare = () => {
                                   );
                                 }}
                               />
-                              {!restrictremoveRecipientInputBox(index, recipient) && (
+                              {!restrictremoveRecipientInputBox(
+                                index,
+                                recipient
+                              ) && (
                                 <TiDelete
                                   className="h-6 w-6 cursor-pointer"
                                   color="red"
