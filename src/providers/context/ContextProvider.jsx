@@ -75,16 +75,19 @@ const ContextProvider = ({ children }) => {
   // for split revenue eligible address/recipient
   const referredFromRef = useRef([]);
 
+  // NOTE: dataRefs has elementId and handle data {elementId: "elementId", handle: "handle"}
+
   // elementId and handle data for lens collect nft
-  const lensCollectNftRecipientDataRef = useRef([
-    { elementId: "", handle: "" },
-  ]);
+  const lensCollectNftRecipientDataRef = useRef([]);
 
   // elementId and handle data for assets nft
-  const assetsRecipientDataRef = useRef([{ elementId: "", handle: "" }]);
+  const assetsRecipientDataRef = useRef([]);
 
   // elementId and handle data for solana nfts nft
-  const solanaNftRecipientDataRef = useRef([{ elementId: "", handle: "" }]);
+  const solanaNftRecipientDataRef = useRef([]);
+
+  // elementId and handle data for BG remover nft
+  const bgRemoverRecipientDataRef = useRef([]);
 
   // elementId and handle data getting from BE
   const preStoredRecipientDataRef = useRef([]);
@@ -185,6 +188,9 @@ const ContextProvider = ({ children }) => {
 
         // elementId and handle data for solana nfts nft
         solanaNftRecipientDataRef,
+
+        // elementId and handle data for BG remover nft
+        bgRemoverRecipientDataRef,
 
         // elementId and handle data getting from BE
         preStoredRecipientDataRef,

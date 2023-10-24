@@ -26,7 +26,7 @@ const CustomImageComponent = ({
   const {
     lensCollectNftRecipientDataRef,
     assetsRecipientDataRef,
-    solanaNftRecipientListRef,
+    solanaNftRecipientDataRef
   } = useContext(Context);
 
   // convert to base64
@@ -88,10 +88,13 @@ const CustomImageComponent = ({
       });
     }
 
-    // if it is a solana nft, add it to the recipient list to solanaNftRecipientListRef
+    // if it is a solana nft, add creators address to the recipient list to solanaNftRecipientListRef
     if (item?.creators.length > 0) {
       item?.creators.map((creator) => {
-        solanaNftRecipientListRef.current.push(creator?.address);
+        solanaNftRecipientDataRef.current.push({
+          elementId: store.selectedElements[0]?.id,
+          handle: creator.address,
+        });
       });
     }
   };

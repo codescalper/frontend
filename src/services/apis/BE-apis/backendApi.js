@@ -490,16 +490,23 @@ export const getFeaturedAssets = async (type, page) => {
 // asset apis end
 
 // Remove Background API
-export const getRemovedBgS3Link = async (query) => {
+export const getRemovedBgS3Link = async (query, elementId) => {
   try {
-    const result = await api.post(
-      `${API}/util/remove-bg?image=${encodeURIComponent(query)}`
-    );
+    const result = await api.post(`${API}/util/remove-bg?image=${encodeURIComponent(query)}&id=${elementId}`);
 
     if (result?.status === 200) {
-      return {
-        data: result?.data,
-      };
+      if (result?.data?.s3link) {
+        return {
+          data: {
+            s3link: result?.data?.s3link,
+            id: result?.data?.id,
+          },
+        };
+      } else if (result?.data?.error) {
+        return {
+          error: result?.data?.error,
+        };
+      }
     }
   } catch (error) {
     if (error?.response?.status === 500) {

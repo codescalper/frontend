@@ -88,9 +88,9 @@ const Editor = () => {
     lensCollectNftRecipientDataRef,
     assetsRecipientDataRef,
     solanaNftRecipientDataRef,
+    bgRemoverRecipientDataRef,
     preStoredRecipientDataRef,
     parentRecipientDataRef,
-    solanaNftRecipientListRef,
     parentRecipientListRef,
   } = useContext(Context);
   const timeoutRef = useRef(null);
@@ -142,8 +142,8 @@ const Editor = () => {
       ...preStoredRecipientDataRef.current, // recipient data geting from BE
       ...lensCollectNftRecipientDataRef.current, // recipient data of lens collect
       ...assetsRecipientDataRef.current, // recipient data of assets
-
-      // recipient data of solana
+      ...solanaNftRecipientDataRef.current, // recipient data of solana
+      ...bgRemoverRecipientDataRef.current, // recipient data of bg remover
     ];
 
     const recipientDataRefArr = parentRecipientDataRef.current;
@@ -218,15 +218,14 @@ const Editor = () => {
         console.log("parentRecipientObj", recipientDataFilter());
         console.log("parentRecipientRef", parentRecipientListRef.current);
 
-        // return;
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
             referredFrom: parentRecipientListRef.current,
-            assetsRecipientElementData:
-              recipientDataFilter().recipientData,
+            assetsRecipientElementData: recipientDataFilter().recipientData,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -250,8 +249,7 @@ const Editor = () => {
             data: json,
             isPublic: false,
             referredFrom: parentRecipientListRef.current,
-            assetsRecipientElementData:
-              recipientDataFilter().recipientData,
+            assetsRecipientElementData: recipientDataFilter().recipientData,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
