@@ -29,7 +29,7 @@ const SolanaMint = () => {
     postDescription,
     setPostDescription,
     contextCanvasIdRef,
-    solanaNFTCreatorRef,
+    parentRecipientListRef,
     setMenu,
     setIsShareOpen,
     setDialogOpen,
@@ -63,7 +63,7 @@ const SolanaMint = () => {
     if (creatorAdd) {
       canvasParams = {
         ...canvasParams,
-        creators: solanaNFTCreatorRef.current,
+        creators: parentRecipientListRef.current.slice(1),
       };
     }
 

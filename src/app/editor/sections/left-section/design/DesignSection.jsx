@@ -40,7 +40,7 @@ import {
 } from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import { fnPageHasElements } from "../../../../../utils/fnPageHasElements";
-import { useAppAuth } from "../../../../../hooks/app";
+import { useAppAuth, useReset } from "../../../../../hooks/app";
 
 // Design card component start - 23Jun2023
 
@@ -142,20 +142,9 @@ const DesignCard = ({
 
 export const DesignPanel = () => {
   const { isAuthenticated } = useAppAuth();
+  const { resetState } = useReset();
+  const { fastPreview, contextCanvasIdRef } = useContext(Context);
   const store = useStore();
-  const {
-    fastPreview,
-    contextCanvasIdRef,
-    setPostDescription,
-    setEnabled,
-    setIsShareOpen,
-    setMenu,
-    referredFromRef,
-    lensCollectRecipientRef,
-    assetsRecipientRef,
-    parentRecipientRef,
-  } = useContext(Context);
-  const { isDisconnected, address } = useAccount();
   const [modal, setModal] = useState({
     isOpen: false,
     isTokengate: false,
@@ -241,43 +230,8 @@ export const DesignPanel = () => {
   // Function to delete all the canvas on confirmation - 25Jun2023
   const fnDeleteCanvas = () => {
     // clear all the variables
-    setPostDescription("");
-    store.clear({ keepHistory: true });
-    store.addPage();
-    referredFromRef.current = [];
-    lensCollectRecipientRef.current = [];
-    assetsRecipientRef.current = [];
-    parentRecipientRef.current = [];
-    contextCanvasIdRef.current = null;
-    setEnabled({
-      chargeForCollect: false,
-      chargeForCollectPrice: "1",
-      chargeForCollectCurrency: "WMATIC",
+    resetState();
 
-      mirrorReferralReward: false,
-      mirrorReferralRewardFee: 25.0,
-
-      splitRevenueRecipients: [
-        {
-          recipient: "",
-          split: 0.0,
-        },
-      ],
-
-      limitedEdition: false,
-      limitedEditionNumber: "1",
-
-      timeLimit: false,
-      endTimestamp: {
-        date: "",
-        time: "",
-      },
-
-      whoCanCollect: false,
-    });
-
-    setIsShareOpen(false);
-    setMenu("share");
     setModal({ ...modal, isOpen: false, isNewDesign: false });
   };
 
@@ -297,9 +251,7 @@ export const DesignPanel = () => {
   }, [isDeleteError, isVisibilityError, isTokengateError]);
 
   if (!isAuthenticated) {
-    return (
-        <ConnectWalletMsgComponent />
-    );
+    return <ConnectWalletMsgComponent />;
   }
 
   // Show Loading - 06Jul2023
@@ -314,7 +266,7 @@ export const DesignPanel = () => {
       <Button
         className="m-2 p-1"
         onClick={() => {
-          if (fnPageHasElements) {
+          if (fnPageHasElements(store)) {
             setModal({ ...modal, isOpen: true, isNewDesign: true });
           }
         }}

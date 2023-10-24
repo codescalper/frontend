@@ -422,7 +422,7 @@ const WalletNFT = () => {
     } else if (currentTab === "solana") {
       return 2;
     } else if (currentTab === "zora") {
-      return 3;
+      return 7777777;
     }
   };
 
@@ -574,7 +574,8 @@ const WalletNFT = () => {
                     </div>
                   </>
                 ) : (currentTab === "ethereum" ||
-                    currentTab === "polygon") &&
+                    currentTab === "polygon" ||
+                    currentTab === "zora") &&
                   !getEVMAuth ? (
                   <>
                     <Typography color="blueGray" className="text-center my-3">
@@ -584,11 +585,7 @@ const WalletNFT = () => {
                       <EVMWallets />
                     </div>
                   </>
-                ) : (currentTab === "zora") && (
-                  <Typography color="blueGray" className="text-center my-3">
-                      Coming Soon
-                    </Typography>
-                ) }
+                ) : null}
               </>
             )}
           </div>
