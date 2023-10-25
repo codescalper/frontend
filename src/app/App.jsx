@@ -23,12 +23,13 @@ import {
   OnboardingStepsWithShare,
 } from "./editor/common";
 import { clearAllLocalStorageData, errorMessage } from "../utils";
-import { useSolanaWallet } from "../hooks/solana";
+import { useSolanaWallet, useSolanaWalletError } from "../hooks/solana";
 import { useMutation } from "@tanstack/react-query";
 import { ERROR, EVM_MESSAGE, LOCAL_STORAGE, SOLANA_MESSAGE } from "../data";
 import bs58 from "bs58";
 import { ExplorerDialog } from "./editor/sections/right-section/share/components";
 import { ENVIRONMENT } from "../services";
+import { SolanaWalletErrorContext } from "../providers/solana/SolanaWalletProvider";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
@@ -69,6 +70,9 @@ const App = () => {
     solanaDisconnect,
   } = useSolanaWallet();
   const [solanaSignature, setSolanaSignature] = useState("");
+  const { solanaWalletError, setSolanaWalletError } = useContext(
+    SolanaWalletErrorContext
+  );
 
   // clear the session if it is expired (24hrs)
   useEffect(() => {
@@ -267,6 +271,23 @@ const App = () => {
       toast.error("User rejected the signature request");
     }
   }, [isError]);
+
+  useEffect(() => {
+    if (solanaWalletError.isError) {
+      saveToLocalStorage("hasUserSeenTheApp", true);
+      solanaDisconnect();
+      setIsLoading(false);
+      toast.error(solanaWalletError.message);
+
+      setTimeout(() => {
+        setSolanaWalletError({
+          isError: false,
+          name: "",
+          message: "",
+        });
+      }, 2000);
+    }
+  }, [solanaWalletError.isError]);
 
   useEffect(() => {
     if (session) {

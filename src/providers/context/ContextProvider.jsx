@@ -105,13 +105,6 @@ const ContextProvider = ({ children }) => {
   // elementId and handle data getting from BE
   const preStoredRecipientDataRef = useRef([]);
 
-
-  // The parent Array for On Chain Split recepients
-  const parentOnChainSplitsRef = useRef([]);
-
-  // The parent Array for allowlist recepients
-  const parentAllowlistRef = useRef([]);
-
   // It has all the DataRefs data
   const parentRecipientDataRef = useRef([]);
 

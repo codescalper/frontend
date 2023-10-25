@@ -17,11 +17,16 @@ import {
 } from "@solana/wallet-adapter-wallets";
 
 import { clusterApiUrl } from "@solana/web3.js";
-import { useCallback, useMemo } from "react";
-import { useSolanaWalletError } from "../../hooks/solana";
+import { createContext, useCallback, useMemo, useState } from "react";
+
+export const SolanaWalletErrorContext = createContext();
 
 const SolanaWalletProvider = ({ children }) => {
-  const { onSolanaWalletError } = useSolanaWalletError();
+  const [solanaWalletError, setSolanaWalletError] = useState({
+    isError: false,
+    name: "",
+    message: "",
+  });
 
   // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
   const network = WalletAdapterNetwork.Mainnet;
@@ -49,18 +54,35 @@ const SolanaWalletProvider = ({ children }) => {
   );
 
   const onError = useCallback((error) => {
-    // console.log({
-    //   message: error.message ? `${error.name}: ${error.message}` : error.name,
-    // });
+    console.log({
+      message: error.message ? `${error.name}: ${error.message}` : error.name,
+    });
     if (error.message) {
-      onSolanaWalletError(true, error.name, error.message);
+      setSolanaWalletError({
+        isError: true,
+        name: error.name,
+        message: error.message,
+      });
+    } else {
+      setSolanaWalletError({
+        isError: false,
+        name: "",
+        message: "",
+      });
     }
   }, []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} onError={onError} autoConnect>
-        {children}
+        <SolanaWalletErrorContext.Provider
+          value={{
+            solanaWalletError,
+            setSolanaWalletError
+          }}
+        >
+          {children}
+        </SolanaWalletErrorContext.Provider>
       </WalletProvider>
     </ConnectionProvider>
   );
