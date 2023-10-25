@@ -368,7 +368,7 @@ const LensShare = () => {
     }
   };
 
-  // function to handel recipient field change
+  // function to handle recipient field change
   const handleRecipientChange = (index, field, value) => {
     // check index 0 price should min 10
     if (field === "split" && index === 0) {

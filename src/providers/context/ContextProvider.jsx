@@ -50,6 +50,19 @@ const ContextProvider = ({ children }) => {
   });
 
   const [solanaEnabled, setSolanaEnabled] = useState({
+    
+    // Array of List of Contract Addresses / Input Boxes
+    arrOnChainSplitRecipients: [
+      {
+        recipient: "lenspost.xyz",
+        split: 10.0,
+      },
+    ],
+    arrAllowlist: [{ recipient: "" }],
+    arrNFTBurn: [{ recipient: "" }],
+    arrNFTGate: [{ recipient: "" }],
+    arrTokenGate: [{ recipient: "" }],
+
     // Solana Mint Switch States
     chargeForMint: false,
     onChainSplits: false,
@@ -92,6 +105,13 @@ const ContextProvider = ({ children }) => {
   // elementId and handle data getting from BE
   const preStoredRecipientDataRef = useRef([]);
 
+
+  // The parent Array for On Chain Split recepients
+  const parentOnChainSplitsRef = useRef([]);
+
+  // The parent Array for allowlist recepients
+  const parentAllowlistRef = useRef([]);
+
   // It has all the DataRefs data
   const parentRecipientDataRef = useRef([]);
 
@@ -100,6 +120,7 @@ const ContextProvider = ({ children }) => {
 
   // It hass all the recipients list (kind of final recipient list but some address/)
   const parentRecipientListRef = useRef([]);
+
 
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
