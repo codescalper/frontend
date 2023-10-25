@@ -13,7 +13,7 @@ import {
 import { SolanaLogo } from "../../../../../../assets";
 import { useSolanaWallet } from "../../../../../../hooks/solana";
 
-const SolanaWallets = () => {
+const SolanaWallets = ({title}) => {
   const {
     solanaWallets,
     solanaSelect,
@@ -27,7 +27,7 @@ const SolanaWallets = () => {
 
   useEffect(() => {
     if (solanaConnected) {
-      setOpen(false);
+      setOpen(false);   
     }
   }, [solanaConnected]);
 
@@ -40,7 +40,7 @@ const SolanaWallets = () => {
         className="flex items-center gap-3 outline-none m-2 p-4"
       >
         <img src={SolanaLogo} alt="solana" className="h-6 w-6" />
-        Solana
+        {title}
       </Button>
       <Dialog
         className="outline-none"

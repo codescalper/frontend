@@ -32,8 +32,8 @@ const TopbarSection = () => {
             <Typography className="font-semibold text-lg">
               Login with
             </Typography>
-            <SolanaWallets />
-            <EVMWallets />
+            <SolanaWallets title="Solana" />
+            <EVMWallets title="EVM" />
           </div>
         )}
 

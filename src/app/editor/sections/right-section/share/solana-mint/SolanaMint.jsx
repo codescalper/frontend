@@ -951,7 +951,7 @@ const SolanaMint = () => {
                 Mint{" "}
               </Button>
             ) : (
-              <SolanaWallets className="m-2" />
+              <SolanaWallets title="Login with Solana" className="mx-2" />
             )}
           </>
         }
