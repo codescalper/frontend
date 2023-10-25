@@ -570,7 +570,7 @@ const WalletNFT = () => {
                       Or connect the Solana Wallet to see your NFTs
                     </Typography>
                     <div className=" flex justify-center">
-                      <SolanaWallets />
+                      <SolanaWallets title="Solana" />
                     </div>
                   </>
                 ) : (currentTab === "ethereum" ||
@@ -582,7 +582,7 @@ const WalletNFT = () => {
                       Or connect the EVM Wallet to see your NFTs
                     </Typography>
                     <div className=" flex justify-center">
-                      <EVMWallets />
+                      <EVMWallets title="EVM" />
                     </div>
                   </>
                 ) : null}

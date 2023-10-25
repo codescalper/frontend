@@ -46,12 +46,16 @@ import { useStore } from "../../../../../../hooks/polotno";
 import BsX from "@meronex/icons/bs/BsX";
 import { SplitPolicyCard } from "./components";
 import { useReset } from "../../../../../../hooks/app";
+import { LOCAL_STORAGE } from "../../../../../../data";
+import { Button } from "@material-tailwind/react";
+import { EVMWallets } from "../../../top-section/auth/wallets";
 
 const LensShare = () => {
   const store = useStore();
   const { address, isConnected } = useAccount();
   const { resetState } = useReset();
   const getDispatcherStatus = getFromLocalStorage("dispatcher");
+  const getEVMAuh = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
 
   const {
     setIsLoading,
@@ -1030,17 +1034,19 @@ const LensShare = () => {
               </Switch.Group>
             </div>
           </div>
-          <button
+        </div>
+        {getEVMAuh ? (
+          <Button
             disabled={sharing}
             onClick={handleLensClick}
-            className={`flex items-center justify-center w-full text-md ${
-              sharing ? "bg-[#eef4c6]" : "bg-[#E1F26C]"
-            }  py-2 h-10 rounded-md outline-none`}
+            color="teal"
+            className="mx-4"
           >
-            <BsLink45Deg className="m-2" />
             Share Now
-          </button>
-        </div>
+          </Button>
+        ) : (
+          <EVMWallets title="Login with EVM" className="mx-2" />
+        )}
       </div>
     </>
   );

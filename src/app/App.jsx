@@ -23,7 +23,7 @@ import {
   OnboardingStepsWithShare,
 } from "./editor/common";
 import { clearAllLocalStorageData, errorMessage } from "../utils";
-import { useSolanaWallet, useSolanaWalletError } from "../hooks/solana";
+import { useSolanaWallet } from "../hooks/solana";
 import { useMutation } from "@tanstack/react-query";
 import { ERROR, EVM_MESSAGE, LOCAL_STORAGE, SOLANA_MESSAGE } from "../data";
 import bs58 from "bs58";
