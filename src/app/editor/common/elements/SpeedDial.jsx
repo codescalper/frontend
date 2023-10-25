@@ -16,22 +16,12 @@ import SuChevronUp from "@meronex/icons/su/SuChevronUp";
 import SuCapture from "@meronex/icons/su/SuCapture";
 import { fnPageHasElements } from "../../../../utils";
 import { useStore } from "../../../../hooks/polotno";
-import { useContext } from "react";
-import { Context } from "../../../../providers/context/ContextProvider";
+import { useReset } from "../../../../hooks/app";
+import { toast } from "react-toastify";
 
 export function SpeedDialX() {
   const store = useStore();
-  const {
-    contextCanvasIdRef,
-    setPostDescription,
-    setEnabled,
-    setIsShareOpen,
-    setMenu,
-    referredFromRef,
-    lensCollectRecipientRef,
-    assetsRecipientRef,
-    parentRecipientRef,
-  } = useContext(Context);
+  const { resetState } = useReset();
 
   const labelProps = {
     variant: "small",
@@ -40,50 +30,10 @@ export function SpeedDialX() {
       "text-sm absolute top-2/4 -left-2/4 -translate-y-2/4 -translate-x-3/4",
   };
 
-  const fnCreateNewDesign = () => {
-    // console.log("fnCreateNewDesign");
-    if (fnPageHasElements) {
+  const clearAllData = () => {
       // clear all the variables
-      setPostDescription("");
-      store.clear({ keepHistory: true });
-      store.addPage();
-      referredFromRef.current = [];
-      lensCollectRecipientRef.current = [];
-      assetsRecipientRef.current = [];
-      parentRecipientRef.current = [];
-      contextCanvasIdRef.current = null;
-      setEnabled({
-        chargeForCollect: false,
-        chargeForCollectPrice: "1",
-        chargeForCollectCurrency: "WMATIC",
-
-        mirrorReferralReward: false,
-        mirrorReferralRewardFee: 25.0,
-
-        splitRevenueRecipients: [
-          {
-            recipient: "",
-            split: 0.0,
-          },
-        ],
-
-        limitedEdition: false,
-        limitedEditionNumber: "1",
-
-        timeLimit: false,
-        endTimestamp: {
-          date: "",
-          time: "",
-        },
-
-        whoCanCollect: false,
-      });
-
-      setIsShareOpen(false);
-      setMenu("share");
-    } else {
-      console.log("fnCreateNewDesign: No elements");
-    }
+      resetState();
+      toast.success("Cleared successfully");
   };
 
   return (
@@ -105,7 +55,7 @@ export function SpeedDialX() {
               </SpeedDialAction>
             </div>
 
-            <div className="" onClick={() => fnCreateNewDesign()}>
+            <div className="" onClick={() => clearAllData()}>
               <SpeedDialAction className="relative">
                 <SuCreate className="h-5 w-5" />
                 <Typography {...labelProps}>{`Clear`}</Typography>

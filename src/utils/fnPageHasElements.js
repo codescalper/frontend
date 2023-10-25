@@ -4,22 +4,11 @@
 
 import { useStore } from "../hooks/polotno";
 
-const store = useStore()
-
-export const fnPageHasElements = () => {
-     
-    // If Canvas has pages then,
-
-    // const ids = store.pages
-    //     .map((page) => page.children.map((child) => child.id))
-    //     .flat();
-    
-    // const hasObjects = ids?.length;
-    // console.log(store.activePage.children.length)
+export const fnPageHasElements = (store) => {
 
     if(store.activePage.children.length > 0){
         console.log("true")
         return true;
     } 
-    else return false;
+    // else return false;
 }

@@ -85,11 +85,13 @@ const Editor = () => {
     setEnabled,
     setFastPreview,
     referredFromRef,
-    lensCollectRecipientRef,
-    assetsRecipientRef,
-    parentRecipientRef,
-    preStoredRecipientObjRef,
-    parentRecipientObjRef,
+    lensCollectNftRecipientDataRef,
+    assetsRecipientDataRef,
+    solanaNftRecipientDataRef,
+    bgRemoverRecipientDataRef,
+    preStoredRecipientDataRef,
+    parentRecipientDataRef,
+    parentRecipientListRef,
   } = useContext(Context);
   const timeoutRef = useRef(null);
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
@@ -134,88 +136,24 @@ const Editor = () => {
   });
   // 03June2023
 
-  // funtion for checking + updating the lens collect recipient
-  // const checkLensCollectRecipient = () => {
-  //   const lensCollectRecipientRefArr = lensCollectRecipientRef.current;
-
-  //   // array of indexes for the elements that are not found
-  //   const notFoundIndexes = [];
-
-  //   // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
-  //   for (let i = 0; i < lensCollectRecipientRefArr.length; i++) {
-  //     const item = lensCollectRecipientRefArr[i];
-  //     const foundElement = store.getElementById(item.elementId);
-
-  //     if (!foundElement) {
-  //       notFoundIndexes.push(i);
-  //     }
-  //   }
-
-  //   // Generate a new array by removing elements at notFoundIndexes
-  //   const newArray = lensCollectRecipientRefArr.filter(
-  //     (_, index) => !notFoundIndexes.includes(index)
-  //   );
-
-  //   // update the lensCollectRecipientRef
-  //   lensCollectRecipientRef.current = newArray;
-
-  //   // get the lensHandle from the newArray
-  //   const newArrayLensHandles = newArray.map((item) => item.handle);
-  //   return {
-  //     lensCollectRecipientWithElementIds: lensCollectRecipientRef.current,
-  //     lensCollectRecipientHandles: newArrayLensHandles,
-  //   };
-  // };
-
-  // funtion for checking + updating the assets recipient
-  // const checkAssetsRecipient = () => {
-  //   const assetsRecipientRefArr = assetsRecipientRef.current;
-
-  //   // array of indexes for the elements that are not found
-  //   const notFoundIndexes = [];
-
-  //   // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
-  //   for (let i = 0; i < assetsRecipientRefArr.length; i++) {
-  //     const item = assetsRecipientRefArr[i];
-  //     const foundElement = store.getElementById(item.elementId);
-
-  //     if (!foundElement) {
-  //       notFoundIndexes.push(i);
-  //     }
-  //   }
-
-  //   // Generate a new array by removing elements at notFoundIndexes
-  //   const newArray = assetsRecipientRefArr.filter(
-  //     (_, index) => !notFoundIndexes.includes(index)
-  //   );
-
-  //   // update the lensCollectRecipientRef
-  //   assetsRecipientRef.current = newArray;
-
-  //   // get the lensHandle from the newArray
-  //   const newArrayHandles = newArray.map((item) => item.handle);
-  //   return {
-  //     assetsRecipientWithElementIds: assetsRecipientRef.current,
-  //     assetsRecipientHandles: newArrayHandles,
-  //   };
-  // };
-
-  // funtion for checking + updating the assets recipient (final list)
+  // this is recipient data for filter.
   const recipientDataFilter = () => {
-    parentRecipientObjRef.current = [
-      ...preStoredRecipientObjRef.current,
-      ...lensCollectRecipientRef.current,
-      ...assetsRecipientRef.current,
+    parentRecipientDataRef.current = [
+      ...preStoredRecipientDataRef.current, // recipient data geting from BE
+      ...lensCollectNftRecipientDataRef.current, // recipient data of lens collect
+      ...assetsRecipientDataRef.current, // recipient data of assets
+      ...solanaNftRecipientDataRef.current, // recipient data of solana
+      ...bgRemoverRecipientDataRef.current, // recipient data of bg remover
     ];
 
-    const recipientRefArr = parentRecipientObjRef.current;
+    const recipientDataRefArr = parentRecipientDataRef.current;
 
     // array of indexes for the elements that are not found
     const notFoundIndexes = [];
 
-    // iterate through lensCollectRecipientRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
-    for (let i = 0; i < recipientRefArr.length; i++) {
-      const item = recipientRefArr[i];
+    // iterate through recipientDataRefArr and check if each element's id exists in the store by using store.getElementById(item.id).
+    for (let i = 0; i < recipientDataRefArr.length; i++) {
+      const item = recipientDataRefArr[i];
       const foundElement = store.getElementById(item.elementId);
 
       if (!foundElement) {
@@ -224,18 +162,18 @@ const Editor = () => {
     }
 
     // Generate a new array by removing elements at notFoundIndexes
-    const newArray = recipientRefArr.filter(
+    const newArray = recipientDataRefArr.filter(
       (_, index) => !notFoundIndexes.includes(index)
     );
 
-    // update the lensCollectRecipientRef
-    parentRecipientObjRef.current = newArray;
+    // update the parentRecipientDataRef with the new array
+    parentRecipientDataRef.current = newArray;
 
     // get the lensHandle from the newArray
     const newArrayHandles = newArray.map((item) => item.handle);
 
     return {
-      recipientWithElementIds: parentRecipientObjRef.current,
+      recipientData: parentRecipientDataRef.current,
       recipientHandles: newArrayHandles,
     };
   };
@@ -271,25 +209,23 @@ const Editor = () => {
         // create an array of all the recipients then make it uniq
         const parentArray = [
           currentUserAddress,
-          ...referredFromRef.current,
           ...recipientDataFilter().recipientHandles,
         ];
 
         // update the parentRecipientRef to the uniq values (final list for split revenue)
-        parentRecipientRef.current = [...new Set(parentArray)];
+        parentRecipientListRef.current = [...new Set(parentArray)];
 
-        // console.log("parentRecipientObj", recipientDataFilter());
-        // console.log("parentRecipientRef", parentRecipientRef.current);
+        console.log("parentRecipientObj", recipientDataFilter());
+        console.log("parentRecipientRef", parentRecipientListRef.current);
 
-        // return;
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
-            referredFrom: parentRecipientRef.current,
-            assetsRecipientElementData:
-              recipientDataFilter().recipientWithElementIds,
+            referredFrom: parentRecipientListRef.current,
+            assetsRecipientElementData: recipientDataFilter().recipientData,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -312,9 +248,8 @@ const Editor = () => {
             id: canvasIdRef.current,
             data: json,
             isPublic: false,
-            referredFrom: parentRecipientRef.current,
-            assetsRecipientElementData:
-              recipientDataFilter().recipientWithElementIds,
+            referredFrom: parentRecipientListRef.current,
+            assetsRecipientElementData: recipientDataFilter().recipientData,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {

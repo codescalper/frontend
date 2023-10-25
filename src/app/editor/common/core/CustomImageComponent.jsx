@@ -23,8 +23,11 @@ const CustomImageComponent = ({
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");
-  const { lensCollectRecipientRef, assetsRecipientRef, solanaNFTCreatorRef } =
-    useContext(Context);
+  const {
+    lensCollectNftRecipientDataRef,
+    assetsRecipientDataRef,
+    solanaNftRecipientDataRef
+  } = useContext(Context);
 
   // convert to base64
   const getBase64 = async (image) => {
@@ -66,31 +69,31 @@ const CustomImageComponent = ({
       y: changeCanvasDimension ? 0 : store.height / 4,
     });
 
-    // if nft is a lens collect, add it to the referredFromRef
+    // if nft is a lens collect, add it to the lensCollectNftRecipientDataRef
     if (isLensCollect?.isLensCollect) {
       // if it is a the handle is @lenspostxyz.len, then don't add
       if (isLensCollect?.lensHandle?.startsWith("@lenspostxyz")) return;
 
-      lensCollectRecipientRef.current.push({
+      lensCollectNftRecipientDataRef.current.push({
         elementId: store.selectedElements[0]?.id,
         handle: isLensCollect?.lensHandle,
       });
     }
 
-    // if nft is a featured bg, and has recipientWallet / wallet address/handle is present, add it to the assetsRecipientRef
+    // if nft is a featured bg, and has recipientWallet / wallet address/handle is present, add it to the assetsRecipientDataRef
     if (recipientWallet) {
-      assetsRecipientRef.current.push({
+      assetsRecipientDataRef.current.push({
         elementId: store.selectedElements[0]?.id,
         handle: recipientWallet + ".lens",
       });
     }
 
-    // add creator address to solanaNFTCreatorRef for solana NFTs
+    // if it is a solana nft, add creators address to the recipient list to solanaNftRecipientListRef
     if (item?.creators.length > 0) {
       item?.creators.map((creator) => {
-        solanaNFTCreatorRef.current.push({
-          address: creator?.address,
-          share: creator?.share,
+        solanaNftRecipientDataRef.current.push({
+          elementId: store.selectedElements[0]?.id,
+          handle: creator.address,
         });
       });
     }

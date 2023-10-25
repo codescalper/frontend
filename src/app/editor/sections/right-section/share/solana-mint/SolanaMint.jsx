@@ -34,7 +34,7 @@ const SolanaMint = () => {
     postDescription,
     setPostDescription,
     contextCanvasIdRef,
-    solanaNFTCreatorRef,
+    parentRecipientListRef,
     setMenu,
     setIsShareOpen,
     setDialogOpen,
@@ -68,7 +68,7 @@ const SolanaMint = () => {
     if (creatorAdd) {
       canvasParams = {
         ...canvasParams,
-        creators: solanaNFTCreatorRef.current,
+        creators: parentRecipientListRef.current.slice(1),
       };
     }
 
@@ -943,7 +943,7 @@ const SolanaMint = () => {
             {getSolanaAuth ? (
               <Button
                 disabled={sharing}
-                onClick={() => sharePost("solana")}
+                onClick={() => sharePost("solana-cnft")}
                 color="teal"
                 className="mx-4"
               >

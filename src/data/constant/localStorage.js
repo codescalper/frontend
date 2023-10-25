@@ -3,7 +3,7 @@ export const LOCAL_STORAGE = {
   evmAuth: "evmAuth",
   solanaAuth: "solanaAuth",
   userAddress: "userAddress",
-  usertAuthTime: "usertauthTime",
+  usertAuthTime: "usertAuthTmestamp",
   lensAuth: "lensAuth",
   ifUserEligible: "ifUserEligible",
   hasUserSeenTheApp: "hasUserSeenTheApp",

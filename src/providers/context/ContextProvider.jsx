@@ -88,23 +88,23 @@ const ContextProvider = ({ children }) => {
   // for split revenue eligible address/recipient
   const referredFromRef = useRef([]);
 
-  // for split revenue eligible lens collect address/handles
-  const lensCollectRecipientRef = useRef([{ elementId: "", handle: "" }]);
+  // NOTE: dataRefs has elementId and handle data {elementId: "elementId", handle: "handle"}
 
-  // for split revenue eligible assets holder address/handles
-  const assetsRecipientRef = useRef([{ elementId: "", handle: "" }]);
+  // elementId and handle data for lens collect nft
+  const lensCollectNftRecipientDataRef = useRef([]);
 
-  // The pre stored Array of Objects with elementsId for split revenue eligible assets holder address/handles
-  const preStoredRecipientObjRef = useRef([]);
+  // elementId and handle data for assets nft
+  const assetsRecipientDataRef = useRef([]);
 
-  // The parent Array of Objects with elementsId for split revenue eligible assets holder address/handles
-  const parentRecipientObjRef = useRef([]);
+  // elementId and handle data for solana nfts nft
+  const solanaNftRecipientDataRef = useRef([]);
 
-  // The parent Array for split revenue eligible assets holder address/handles
-  const parentRecipientRef = useRef([]);
+  // elementId and handle data for BG remover nft
+  const bgRemoverRecipientDataRef = useRef([]);
 
-  // solana NFT creator address
-  const solanaNFTCreatorRef = useRef([]);
+  // elementId and handle data getting from BE
+  const preStoredRecipientDataRef = useRef([]);
+
 
   // The parent Array for On Chain Split recepients
   const parentOnChainSplitsRef = useRef([]);
@@ -112,8 +112,15 @@ const ContextProvider = ({ children }) => {
   // The parent Array for allowlist recepients
   const parentAllowlistRef = useRef([]);
 
-  // solana nft creator/recipients elementID data
-  const solanaNFTCreatorElementIDRef = useRef([{ elementId: "", handle: "" }]);
+  // It has all the DataRefs data
+  const parentRecipientDataRef = useRef([]);
+
+  // solana NFT recipients list
+  const solanaNftRecipientListRef = useRef([]);
+
+  // It hass all the recipients list (kind of final recipient list but some address/)
+  const parentRecipientListRef = useRef([]);
+
 
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -194,20 +201,29 @@ const ContextProvider = ({ children }) => {
         // user public templates states
         referredFromRef,
 
-        // for split revenue eligible lens collect address/handles
-        lensCollectRecipientRef,
+        // elementId and handle data for lens collect nft
+        lensCollectNftRecipientDataRef,
 
-        // for split revenue eligible assets holder address/handles
-        assetsRecipientRef,
+        // elementId and handle data for assets nft
+        assetsRecipientDataRef,
 
-        // The parent Array for split revenue eligible assets holder address/handles
-        parentRecipientRef,
+        // elementId and handle data for solana nfts nft
+        solanaNftRecipientDataRef,
 
-        // The pre stored Array of Objects with elementsId for split revenue eligible assets holder address/handles
-        preStoredRecipientObjRef,
+        // elementId and handle data for BG remover nft
+        bgRemoverRecipientDataRef,
 
-        // The parent Array of Objects with elementsId for split revenue eligible assets holder address/handles
-        parentRecipientObjRef,
+        // elementId and handle data getting from BE
+        preStoredRecipientDataRef,
+
+        // It has all the DataRefs data
+        parentRecipientDataRef,
+
+        // solana NFT recipients list
+        solanaNftRecipientListRef,
+
+        // It hass all the recipients list (kind of final recipient list but some address/)
+        parentRecipientListRef,
 
         // for lens monetization price error
         priceError,
@@ -231,12 +247,6 @@ const ContextProvider = ({ children }) => {
         // for solana mint
         solanaEnabled,
         setSolanaEnabled,
-
-        // solana NFT creator address
-        solanaNFTCreatorRef,
-
-        // solana nft creator/recipients elementID data
-        solanaNFTCreatorElementIDRef,
 
         // for explorer dilog
         dialogOpen,

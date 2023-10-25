@@ -421,6 +421,8 @@ const WalletNFT = () => {
       return 137;
     } else if (currentTab === "solana") {
       return 2;
+    } else if (currentTab === "zora") {
+      return 7777777;
     }
   };
 
@@ -514,7 +516,11 @@ const WalletNFT = () => {
         placeholder="Search NFTs by id"
         onClick={refreshNFTs}
       />
-      <Tabs className="overflow-y-auto" id="custom-animation" value="solana">
+      <Tabs
+        className="overflow-y-auto"
+        id="custom-animation"
+        value={currentTab}
+      >
         <TabsHeader>
           {tabsArray.map((tab, index) => (
             <Tab key={index} value={tab} onClick={() => setCurrentTab(tab)}>
@@ -569,7 +575,7 @@ const WalletNFT = () => {
                   </>
                 ) : (currentTab === "ethereum" ||
                     currentTab === "polygon" ||
-                    currentTab == "zora") &&
+                    currentTab === "zora") &&
                   !getEVMAuth ? (
                   <>
                     <Typography color="blueGray" className="text-center my-3">
