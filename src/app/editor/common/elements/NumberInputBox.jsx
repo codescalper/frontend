@@ -2,6 +2,7 @@ import { Input } from "@material-tailwind/react";
 import React from "react";
 
 const NumberInputBox = ({
+  label,
   value,
   onChange,
   placeholder,
@@ -18,9 +19,9 @@ const NumberInputBox = ({
       max={max}
       step={step}
       name={name}
-      // className={`border px-2 py-2 rounded-md w-full outline-none focus:ring-1 focus:ring-blue-500 ${className}`}
-      // className={`border px-2 py-2 rounded-md outline-none focus:ring-1 focus:ring-blue-500 ${className}`}
-      label={placeholder}
+      className={className}
+      label={label}
+      placeholder={placeholder}
       onChange={onChange}
       value={value}
     />

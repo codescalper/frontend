@@ -50,28 +50,43 @@ const ContextProvider = ({ children }) => {
   });
 
   const [solanaEnabled, setSolanaEnabled] = useState({
-    
+    isChargeForMint: false,
+    chargeForMintPrice: "1",
+    chargeForMintCurrency: "",
+
     // Array of List of Contract Addresses / Input Boxes
-    arrOnChainSplitRecipients: [
+    isOnChainSplits: true,
+    onChainSplitRecipients: [
       {
-        recipient: "lenspost.xyz",
-        split: 10.0,
+        address: "",
+        share: 0.0,
       },
     ],
-    arrAllowlist: [{ recipient: "" }],
-    arrNFTBurn: [{ recipient: "" }],
-    arrNFTGate: [{ recipient: "" }],
-    arrTokenGate: [{ recipient: "" }],
 
-    // Solana Mint Switch States
-    chargeForMint: false,
-    onChainSplits: false,
-    limitNoOfEditions: false,
-    scheduleMint: false,
-    allowlist: false,
-    nftBurn: false,
-    nftGate: false,
-    tokenGate: false,
+    isLimitedEdition: false,
+    limitedEditionNumber: "1",
+
+    isTimeLimit: false,
+    startTimeStamp: {
+      date: "",
+      time: "",
+    },
+    endTimestamp: {
+      date: "",
+      time: "",
+    },
+
+    isAllowlist: false,
+    allowlistAddresses: [],
+
+    isNftBurnable: false,
+    nftBurnableContractAddresses: [],
+
+    isNftGate: false,
+    nftGateContractAddresses: [],
+
+    isTokenGate: false,
+    tokenGateContractAddresses: [],
   });
 
   const [postDescription, setPostDescription] = useState("");
@@ -114,7 +129,6 @@ const ContextProvider = ({ children }) => {
   // It hass all the recipients list (kind of final recipient list but some address/)
   const parentRecipientListRef = useRef([]);
 
-
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
 
@@ -142,13 +156,13 @@ const ContextProvider = ({ children }) => {
     message: "",
   });
 
-  // for exploere dilog
+  // for explore dilog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [explorerLink, setExplorerLink] = useState("");
 
   const handleOpen = () => setDialogOpen((cur) => !cur);
 
-  // console.log("ContextProvider", solanaNFTCreatorRef.current);
+  console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
 
   return (
     <Context.Provider
