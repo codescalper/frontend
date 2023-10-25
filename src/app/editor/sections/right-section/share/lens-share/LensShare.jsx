@@ -628,6 +628,7 @@ const LensShare = () => {
       return true;
     }
   };
+  
   // add recipient to the split list
   useEffect(() => {
     if (isConnected) {
@@ -728,7 +729,7 @@ const LensShare = () => {
                         <NumberInputBox
                           min={"1"}
                           step={"0.01"}
-                          placeholder="1$"
+                          placeholder="1"
                           name="chargeForCollectPrice"
                           onChange={(e) => handleChange(e)}
                           value={enabled.chargeForCollectPrice}

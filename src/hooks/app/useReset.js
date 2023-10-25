@@ -72,10 +72,6 @@ const useReset = () => {
 
     // for solana mint
     setSolanaEnabled,
-
-    // for explorer dilog
-    setDialogOpen,
-    setExplorerLink,
   } = useContext(Context);
 
   const resetState = () => {
@@ -151,17 +147,44 @@ const useReset = () => {
       message: "",
     });
     setSolanaEnabled({
-      chargeForMint: false,
-      onChainSplits: false,
-      limitNoOfEditions: false,
-      scheduleMint: false,
-      allowlist: false,
-      nftBurn: false,
-      nftGate: false,
-      tokenGate: false,
+      isChargeForMint: false,
+      chargeForMintPrice: "1",
+      chargeForMintCurrency: "",
+
+      // Array of List of Contract Addresses / Input Boxes
+      isOnChainSplits: true,
+      onChainSplitRecipients: [
+        {
+          address: "",
+          share: null,
+        },
+      ],
+
+      isLimitedEdition: false,
+      limitedEditionNumber: "1",
+
+      isTimeLimit: false,
+      startTimeStamp: {
+        date: "",
+        time: "",
+      },
+      endTimestamp: {
+        date: "",
+        time: "",
+      },
+
+      isAllowlist: false,
+      allowlistAddresses: [],
+
+      isNftBurnable: false,
+      nftBurnableContractAddresses: [],
+
+      isNftGate: false,
+      nftGateContractAddresses: [],
+
+      isTokenGate: false,
+      tokenGateContractAddresses: [],
     });
-    setDialogOpen(false);
-    setExplorerLink("");
   };
 
   return { resetState };
