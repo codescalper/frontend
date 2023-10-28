@@ -326,13 +326,11 @@ export const shareOnSocials = async ({
   canvasData,
   canvasParams,
   platform,
-  timeStamp,
 }) => {
   const result = await api.post(`${API}/user/canvas/publish`, {
     canvasData: canvasData,
     canvasParams: canvasParams,
     platform: platform,
-    timeStamp: timeStamp,
   });
 
   return result?.data;
