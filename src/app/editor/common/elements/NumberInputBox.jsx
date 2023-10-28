@@ -24,6 +24,7 @@ const NumberInputBox = ({
       placeholder={placeholder}
       onChange={onChange}
       value={value}
+      containerProps={{ className: "min-w-[100px]" }} // To override min width from material
     />
   );
 };

@@ -142,13 +142,14 @@ const ShareSection = () => {
                 <EmojiPicker
                   onEmojiClick={fnEmojiClick}
                   autoFocusSearch={true}
-                  width="96%"
+                  // width="96%"
+                  className="m-2"
                   lazyLoadEmojis={true}
                   previewConfig={{
                     defaultCaption: "Pick one!",
                     defaultEmoji: "1f92a", // 🤪
                   }}
-                  searchPlaceHolder="Filter"
+                  searchPlaceHolder="Search"
                   emojiStyle={EmojiStyle.NATIVE}
                 />
               </div>

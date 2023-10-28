@@ -343,25 +343,27 @@ const SolanaMint = () => {
             <div
               className={`${
                 !solanaEnabled.isChargeForMint && "hidden"
-              } ml-4 mr-4 flex`}
+              } ml-4 mr-4 flex flex-row`}
             >
-              <NumberInputBox
-                min={"1"}
-                step={"0.01"}
-                className={"W-3/4"}
-                placeholder="1"
-                name="chargeForMintPrice"
-                value={solanaEnabled.chargeForMintPrice}
-                onChange={(e) => handleChange(e)}
-              />
-
-              <div className="flex flex-col w-1/4">
-                {/* <label htmlFor="price"></label> */}
+              <div className=" w-1/3">
+                <NumberInputBox
+                  min={"1"}
+                  step={"0.01"}
+                  label={"Amount"}
+                  placeholder="1"
+                  name="chargeForMintPrice"
+                  value={solanaEnabled.chargeForMintPrice}
+                  onChange={(e) => handleChange(e)}
+                />
+              </div>
+              {/* <div className="flex flex-col w-1/4"> */}
+              {/* <label htmlFor="price"></label> */}
+              <div className="w-2/3 ml-2">
                 <Select
                   label="Currency"
                   name="chargeForMintCurrency"
                   id="chargeForMintCurrency"
-                  className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
+                  // className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
                   onChange={handleChange}
                   value={solanaEnabled.chargeForMintCurrency}
                 >
@@ -369,6 +371,7 @@ const SolanaMint = () => {
                   <Option>ETH</Option>
                 </Select>
               </div>
+              {/* </div> */}
               {priceError.isError && (
                 <InputErrorMsg message={priceError.message} />
               )}
@@ -515,11 +518,12 @@ const SolanaMint = () => {
               } ml-4 mr-4`}
             >
               <div className="flex flex-col w-full py-2">
-                <label htmlFor="price">Collect limit</label>
+                {/* <label htmlFor="price">Collect limit</label> */}
                 <NumberInputBox
                   min={"1"}
                   step={"1"}
                   placeholder="1"
+                  label={"Collect limit (%)"}
                   name="limitedEditionNumber"
                   onChange={(e) => handleChange(e)}
                   value={solanaEnabled.limitedEditionNumber}
@@ -629,7 +633,7 @@ const SolanaMint = () => {
                               recipient
                             ) && ( */}
                         <TiDelete
-                          className="h-6 w-6 cursor-pointer"
+                          className="ml-2 h-6 w-6 cursor-pointer"
                           color="red"
                           // onClick={() => removeRecipientInputBox(index)}
                         />
@@ -801,7 +805,7 @@ const SolanaMint = () => {
                               recipient
                             ) && ( */}
                           <TiDelete
-                            className="h-6 w-6 cursor-pointer"
+                            className="ml-2 h-6 w-6 cursor-pointer"
                             color="red"
                             // onClick={() => removeRecipientInputBox(index)}
                           />
