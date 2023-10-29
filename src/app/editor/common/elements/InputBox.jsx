@@ -11,6 +11,7 @@ const InputBox = ({ label, value, onChange, placeholder, className, name }) => {
       value={value}
       name={name}
       placeholder={placeholder}
+      containerProps={{ className: "min-w-[100px]" }}
     />
   );
 };

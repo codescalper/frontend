@@ -47,7 +47,7 @@ import BsX from "@meronex/icons/bs/BsX";
 import { SplitPolicyCard } from "./components";
 import { useAppAuth, useReset } from "../../../../../../hooks/app";
 import { LOCAL_STORAGE } from "../../../../../../data";
-import { Button } from "@material-tailwind/react";
+import { Button, Select, Option } from "@material-tailwind/react";
 import { EVMWallets } from "../../../top-section/auth/wallets";
 
 const LensShare = () => {
@@ -698,7 +698,7 @@ const LensShare = () => {
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Charge for collecting</h2>
                   <div className="flex justify-between">
-                    <Switch.Label className="w-4/5">
+                    <Switch.Label className="w-4/5 opacity-50">
                       Get paid when someone collects your post
                     </Switch.Label>
                     <Switch
@@ -726,34 +726,36 @@ const LensShare = () => {
                   </div>
                   <div className={` ${!enabled.chargeForCollect && "hidden"}`}>
                     <div className="flex gap-5">
-                      <div className="flex flex-col w-1/2 py-2">
-                        <label htmlFor="price">Price</label>
+                      <div className="flex flex-col py-2">
+                        {/* <label htmlFor="price">Price</label> */}
                         <NumberInputBox
                           min={"1"}
                           step={"0.01"}
-                          placeholder="1"
+                          label="Price (%)"
+                          // placeholder="1"
                           name="chargeForCollectPrice"
                           onChange={(e) => handleChange(e)}
                           value={enabled.chargeForCollectPrice}
                         />
                       </div>
-                      <div className="flex flex-col w-1/2 py-2">
-                        <label htmlFor="price">Currency</label>
-                        <select
+                      <div className="flex flex-col py-2">
+                        {/* <label htmlFor="price">Currency</label> */}
+                        <Select
                           name="chargeForCollectCurrency"
                           id="chargeForCollectCurrency"
-                          className="border rounded-md py-[10px] outline-none focus:ring-1 focus:ring-blue-500"
+                          // className="border rounded-md py-[10px] outline-none focus:ring-1 focus:ring-blue-500"
                           onChange={handleChange}
+                          label="Currency"
                           value={enabled.chargeForCollectCurrency}
                         >
                           {tokenList().map((token, index) => {
                             return (
-                              <option key={index} value={token.symbol}>
+                              <Option key={index} value={token.symbol}>
                                 {token.name}
-                              </option>
+                              </Option>
                             );
                           })}
-                        </select>
+                        </Select>
                       </div>
                     </div>
                     {priceError.isError && (
@@ -766,7 +768,7 @@ const LensShare = () => {
                 >
                   <h2 className="text-lg mb-2">Mirror referral award</h2>
                   <div className="flex justify-between">
-                    <Switch.Label className="w-4/5">
+                    <Switch.Label className="w-4/5 opacity-60">
                       Share your fee with people who amplify your content
                     </Switch.Label>
                     <Switch
@@ -798,13 +800,14 @@ const LensShare = () => {
                     }`}
                   >
                     <div className="flex flex-col w-full py-2">
-                      <label htmlFor="price">Referral fee(%)</label>
+                      {/* <label htmlFor="price">Referral fee(%)</label> */}
                       <NumberInputBox
                         min={0.0}
                         max={100.0}
                         step={0.01}
                         name="mirrorReferralRewardFee"
-                        placeholder="1%"
+                        label="Referral fee (%)"
+                        // placeholder="1%"
                         onChange={(e) => handleChange(e)}
                         value={enabled.mirrorReferralRewardFee}
                       />
@@ -826,7 +829,7 @@ const LensShare = () => {
                 >
                   <h2 className="text-lg mb-2">Split Revenue</h2>
                   <div className="flex justify-between">
-                    <Switch.Label className="w-4/5">
+                    <Switch.Label className="w-4/5 opacity-60">
                       Set multiple recipients for the collect fee
                     </Switch.Label>
                   </div>
@@ -839,7 +842,8 @@ const LensShare = () => {
                             className="flex justify-between gap-2 items-center w-full py-2"
                           >
                             <InputBox
-                              placeholder="erc20 address or @xyz.lens"
+                              label={"ERC20 Address / Lens handle"}
+                              // placeholder="erc20 address or @xyz.lens"
                               value={recipient.recipient}
                               onChange={(e) =>
                                 restrictRecipientInput(e, index, recipient)
@@ -850,7 +854,8 @@ const LensShare = () => {
                                 min={0}
                                 max={100}
                                 step={0.01}
-                                placeholder="0.0%"
+                                label={"%"}
+                                // placeholder="0.0%"
                                 value={recipient.split}
                                 onChange={(e) => {
                                   handleRecipientChange(
@@ -876,7 +881,7 @@ const LensShare = () => {
                           </div>
                           {index == 0 && (
                             <div className="flex flex-row align-middle  text-center justify-start mt-1">
-                              <span className="italic mt-2">
+                              <span className="italic mt-2 opacity-80">
                                 Small fee to support our team!
                               </span>
 
@@ -907,7 +912,7 @@ const LensShare = () => {
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Limited Edition</h2>
                   <div className="flex justify-between">
-                    <Switch.Label className="w-4/5">
+                    <Switch.Label className="w-4/5 opacity-60">
                       Make the collects exclusive
                     </Switch.Label>
                     <Switch
@@ -934,12 +939,13 @@ const LensShare = () => {
                   <div
                     className={`flex ${!enabled.limitedEdition && "hidden"}`}
                   >
-                    <div className="flex flex-col w-full py-2">
-                      <label htmlFor="price">Collect limit</label>
+                    <div className="flex flex-col w-full py-2 opacity-60">
+                      {/* <label htmlFor="price">Collect limit</label> */}
                       <NumberInputBox
                         min={"1"}
                         step={"1"}
-                        placeholder="1"
+                        label={"Collect limit (%)"}
+                        // placeholder="1"
                         name="limitedEditionNumber"
                         onChange={(e) => handleChange(e)}
                         value={enabled.limitedEditionNumber}
@@ -953,7 +959,7 @@ const LensShare = () => {
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Time Limit</h2>
                   <div className="flex justify-between">
-                    <Switch.Label className="w-4/5">
+                    <Switch.Label className="w-4/5 opacity-60">
                       Collect duration
                     </Switch.Label>
                     <Switch
@@ -1009,7 +1015,7 @@ const LensShare = () => {
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Who can collect</h2>
                   <div className="flex justify-between">
-                    <Switch.Label className="w-4/5">
+                    <Switch.Label className="w-4/5 opacity-60">
                       Only followers can collect
                     </Switch.Label>
                     <Switch
@@ -1042,8 +1048,8 @@ const LensShare = () => {
           <Button
             disabled={sharing}
             onClick={handleLensClick}
-            color="teal"
-            className="mx-4"
+            // color="yellow"
+            className="mx-4 mb-4 bg-[#e1f16b] text-black"
           >
             Share Now
           </Button>

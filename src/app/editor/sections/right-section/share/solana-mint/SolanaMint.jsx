@@ -578,6 +578,7 @@ const SolanaMint = () => {
                 <InputErrorMsg
                   message={solanaStatesError.chargeForMintErrorMessage}
                 />
+
               )}
             </div>
 
@@ -765,6 +766,7 @@ const SolanaMint = () => {
                   min={"1"}
                   step={"1"}
                   label="Collect limit"
+
                   name="limitedEditionNumber"
                   onChange={(e) => handleChange(e)}
                   value={solanaEnabled.limitedEditionNumber}
@@ -879,6 +881,7 @@ const SolanaMint = () => {
                           )
                         }
                       />
+
                       <div className="flex justify-between items-center">
                         {index != 0 && (
                           <TiDelete
@@ -1072,6 +1075,7 @@ const SolanaMint = () => {
                             )
                           }
                         />
+
                         <div className="flex justify-between items-center">
                           {index != 0 && (
                             <TiDelete
@@ -1085,6 +1089,7 @@ const SolanaMint = () => {
                               }
                             />
                           )}
+
                         </div>
                       </div>
                     </>
