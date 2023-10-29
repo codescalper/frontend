@@ -72,6 +72,9 @@ const useReset = () => {
 
     // for solana mint
     setSolanaEnabled,
+
+    // for solana mint error
+    setSolanaStatesError,
   } = useContext(Context);
 
   const resetState = () => {
@@ -148,7 +151,7 @@ const useReset = () => {
     });
     setSolanaEnabled({
       isChargeForMint: false,
-      chargeForMintPrice: "1",
+      chargeForMintPrice: "",
       chargeForMintCurrency: "",
 
       // Array of List of Contract Addresses / Input Boxes
@@ -160,8 +163,11 @@ const useReset = () => {
         },
       ],
 
+      isSellerFeeBasisPoints: false,
+      sellerFeeBasisPoints: "",
+
       isLimitedEdition: false,
-      limitedEditionNumber: "1",
+      limitedEditionNumber: "",
 
       isTimeLimit: false,
       startTimeStamp: {
@@ -174,16 +180,44 @@ const useReset = () => {
       },
 
       isAllowlist: false,
-      allowlistAddresses: [],
+      allowlistAddresses: [""],
 
       isNftBurnable: false,
-      nftBurnableContractAddresses: [],
+      nftBurnableContractAddresses: [""],
 
       isNftGate: false,
-      nftGateContractAddresses: [],
+      nftGateContractAddresses: [""],
 
       isTokenGate: false,
-      tokenGateContractAddresses: [],
+      tokenGateContractAddresses: [""],
+    });
+    setSolanaStatesError({
+      isChargeForMintError: false,
+      chargeForMintErrorMessage: "",
+
+      isSplitError: false,
+      splitErrorMessage: "",
+
+      isSellerFeeError: false,
+      sellerFeeErrorMessage: "",
+
+      isLimitedEditionError: false,
+      limitedEditionErrorMessage: "",
+
+      isTimeLimitError: false,
+      timeLimitErrorMessage: "",
+
+      isAllowlistError: false,
+      allowlistErrorMessage: "",
+
+      isNftBurnableError: false,
+      nftBurnableErrorMessage: "",
+
+      isNftGateError: false,
+      nftGateErrorMessage: "",
+
+      isTokenGateError: false,
+      tokenGateErrorMessage: "",
     });
   };
 
