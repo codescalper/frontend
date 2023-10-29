@@ -82,25 +82,25 @@ const SolanaMint = () => {
       if (solanaEnabled.isSellerFeeBasisPoints) {
         canvasParams = {
           ...canvasParams,
-          seller_fee_basis_points: solanaEnabled.sellerFeeBasisPoints,
+          sellerFeeBasisPoints: solanaEnabled.sellerFeeBasisPoints,
         };
       }
 
       if (solanaEnabled.isLimitedEdition) {
         canvasParams = {
           ...canvasParams,
-          max_supply: solanaEnabled.limitedEditionNumber,
+          maxEditionSupply: solanaEnabled.limitedEditionNumber,
         };
       }
 
       if (solanaEnabled.isTimeLimit) {
         canvasParams = {
           ...canvasParams,
-          start_date: formatDateTimeISO8601(
+          startDate: formatDateTimeISO8601(
             solanaEnabled.startTimeStamp.date,
             solanaEnabled.startTimeStamp.time
           ),
-          end_date: formatDateTimeISO8601(
+          endDate: formatDateTimeISO8601(
             solanaEnabled.endTimestamp.date,
             solanaEnabled.endTimestamp.time
           ),
@@ -243,8 +243,6 @@ const SolanaMint = () => {
       onChainSplitRecipients: updatedRecipients,
     }));
   };
-
-  console.log("solanaEnabled", solanaEnabled.onChainSplitRecipients);
 
   // funtions for adding new input box for split revenue
   const addRecipientInputBox = () => {
@@ -426,8 +424,6 @@ const SolanaMint = () => {
 
     setSharing(true);
 
-    return;
-
     const canvasData = {
       id: contextCanvasIdRef.current,
       name: "solana post",
@@ -442,7 +438,7 @@ const SolanaMint = () => {
       // timeStamp: formatDateTimeUnix(stFormattedDate, stFormattedTime),
     })
       .then((res) => {
-        if (res?.status === 200) {
+        if (res?.assetId || res?.tx) {
           const jsConfetti = new JSConfetti();
           jsConfetti.addConfetti({
             emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
@@ -457,8 +453,13 @@ const SolanaMint = () => {
           });
 
           // open explorer link
-          setExplorerLink(res?.assetId);
-          setDialogOpen(true);
+          if (res?.assetId) {
+            setExplorerLink(res?.assetId);
+            setDialogOpen(true);
+          } else if (res?.tx) {
+            setExplorerLink("https://mint.lenspost.xyz/" + res?.tx);
+            setDialogOpen(true);
+          }
 
           // TODO: clear all the states and variables
           resetState();
@@ -486,22 +487,19 @@ const SolanaMint = () => {
   // add recipient to the split list
   useEffect(() => {
     if (isAuthenticated) {
-      const updatedRecipients = parentRecipientListRef.current
-        .slice(1)
-        .map((item) => ({
-          address: item,
-          share: 1.0,
-        }));
+      const updatedRecipients = parentRecipientListRef.current.map((item) => ({
+        address: item,
+        share: 1.0,
+      }));
 
       setSolanaEnabled((prevEnabled) => ({
         ...prevEnabled,
         onChainSplitRecipients: [
           {
-            address:
-              "2aadDWCB5BbF4MDLY2sdzH9svLrzCnDj4LKVdbPcPHXn55TNDtQxVoqwSN9SH2gmwab4YVZsahVyAbYWg2JoYSJC",
+            address: "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa",
             share: solanaEnabled.onChainSplitRecipients[0].share || 10.0,
           },
-          ...solanaEnabled.onChainSplitRecipients.slice(1),
+          // ...solanaEnabled.onChainSplitRecipients.slice(1),
           ...updatedRecipients,
         ],
       }));

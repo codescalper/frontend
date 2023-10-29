@@ -27,3 +27,13 @@ export const isLensHandle = (title) => {
     return false;
   }
 };
+
+// regex for solana address
+export const isSolAddress = (address) => {
+  const solAddressRegex = /^[\w]{44}$/;
+  if (solAddressRegex.test(address)) {
+    return true;
+  } else {
+    return false;
+  }
+};

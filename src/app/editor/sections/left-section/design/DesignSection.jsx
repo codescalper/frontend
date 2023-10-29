@@ -87,8 +87,6 @@ const DesignCard = ({
           }
           alt="Preview Image"
         />
-
-        {item.id}
       </div>
 
       <div

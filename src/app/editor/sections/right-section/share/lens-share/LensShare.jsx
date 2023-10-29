@@ -650,7 +650,7 @@ const LensShare = () => {
                 : "@lenspostxyz.test",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
-          ...enabled.splitRevenueRecipients.slice(1),
+          // ...enabled.splitRevenueRecipients.slice(1),
           ...updatedRecipients,
         ],
       }));
