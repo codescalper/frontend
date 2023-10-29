@@ -62,12 +62,13 @@ const DesignCard = ({
   const store = useStore();
 
   const handleClickOrDrop = () => {
+    console.log("image", replaceImageURL(preview));
     store.loadJSON(json);
     contextCanvasIdRef.current = item.id;
     referredFromRef.current = item.referredFrom;
     preStoredRecipientDataRef.current = item.assetsRecipientElementData;
   };
-
+  
   return (
     <Card
       className="relative p-0 m-1 rounded-lg h-fit"

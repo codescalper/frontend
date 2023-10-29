@@ -30,6 +30,7 @@ import bs58 from "bs58";
 import { ExplorerDialog } from "./editor/sections/right-section/share/components";
 import { ENVIRONMENT } from "../services";
 import { SolanaWalletErrorContext } from "../providers/solana/SolanaWalletProvider";
+import { useLogout } from "../hooks/app";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
@@ -55,13 +56,13 @@ const App = () => {
     signMessage,
   } = useSignMessage();
   const [session, setSession] = useState("");
-  const getEvmAuth = getFromLocalStorage("evmAuth");
-  const getSolanaAuth = getFromLocalStorage("solanaAuth");
-  const getUserAuthToken = getFromLocalStorage("userAuthToken");
-  const getUserAddress = getFromLocalStorage("userAddress");
-  const getUsertAuthTmestamp = getFromLocalStorage("usertAuthTmestamp");
-  const getifUserEligible = getFromLocalStorage("ifUserEligible");
-  const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
+  const getEvmAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
+  const getUserAuthToken = getFromLocalStorage(LOCAL_STORAGE.userAuthToken);
+  const getUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
+  const getUsertAuthTmestamp = getFromLocalStorage(LOCAL_STORAGE.usertAuthTime);
+  const getifUserEligible = getFromLocalStorage(LOCAL_STORAGE.ifUserEligible);
+  const getHasUserSeenTheApp = getFromLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp);
   const navigate = useNavigate();
   const {
     solanaConnected,
@@ -73,6 +74,7 @@ const App = () => {
   const { solanaWalletError, setSolanaWalletError } = useContext(
     SolanaWalletErrorContext
   );
+  const { logout } = useLogout();
 
   // clear the session if it is expired (24hrs)
   useEffect(() => {
@@ -86,10 +88,7 @@ const App = () => {
       const currentTimestamp = new Date().getTime();
 
       if (jwtTimestamp && currentTimestamp - jwtTimestamp > jwtExpiration) {
-        posthog.reset();
-        disconnect();
-        solanaDisconnect();
-        clearAllLocalStorageData();
+        logout();
         setSession("");
         console.log("session expired");
         toast.error("Session expired");

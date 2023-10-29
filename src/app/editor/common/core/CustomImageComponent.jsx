@@ -26,7 +26,7 @@ const CustomImageComponent = ({
   const {
     lensCollectNftRecipientDataRef,
     assetsRecipientDataRef,
-    solanaNftRecipientDataRef
+    solanaNftRecipientDataRef,
   } = useContext(Context);
 
   // convert to base64
