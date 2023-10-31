@@ -96,6 +96,8 @@ const Tabs = ({
                     dimensions={item?.dimensions != null && item.dimensions}
                     changeCanvasDimension={changeCanvasDimension}
                     recipientWallet={item?.wallet}
+                    author={item?.author}
+                    tab={campaignName}
                   />
                 );
               })}

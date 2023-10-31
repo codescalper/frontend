@@ -21,10 +21,14 @@ import { useSolanaWallet } from "../../../../../../hooks/solana";
 import { useAppAuth, useReset } from "../../../../../../hooks/app";
 
 const SolanaMint = () => {
-  const { solanaAddress } = useSolanaWallet();
+  const { solanaAddress, solanaSignTransaction } = useSolanaWallet();
   const [sharing, setSharing] = useState(false);
   const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const { isAuthenticated } = useAppAuth();
+  const [solanaMasterEditionData, setSolanaMasterEditionData] = useState({
+    tx: "",
+    mintId: "",
+  });
 
   const {
     solanaEnabled,
@@ -490,6 +494,10 @@ const SolanaMint = () => {
             setExplorerLink(res?.assetId);
             setDialogOpen(true);
           } else if (res?.tx) {
+            setSolanaMasterEditionData({
+              tx: res?.tx,
+              mintId: res?.mintId,
+            });
             setExplorerLink("https://mint.lenspost.xyz/" + res?.tx);
             setDialogOpen(true);
           }
@@ -517,6 +525,27 @@ const SolanaMint = () => {
       });
   };
 
+  // funtion for sign the transaction for solana master edition
+  const signTransaction = async () => {
+    //   try {    
+    //     const recoveredTransaction = Transaction.from(Buffer.from(solanaMasterEditionData.tx, 'base64'));
+    //     recoveredTransaction.partialSign(feePayer);
+    //     const txnSignature = await connection.sendRawTransaction(
+    //       recoveredTransaction.serialize(),
+    //     );
+    //     return txnSignature;
+    //   } catch (error) {
+    //     console.log(error);    
+    //   }
+    // }
+  };
+
+  useEffect(() => {
+    if (solanaMasterEditionData.tx) {
+      signTransaction();
+    }
+  }, [solanaMasterEditionData]);
+
   // add recipient to the split list
   useEffect(() => {
     if (isAuthenticated) {
@@ -532,7 +561,6 @@ const SolanaMint = () => {
             address: "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa",
             share: solanaEnabled.onChainSplitRecipients[0].share || 10.0,
           },
-          // ...solanaEnabled.onChainSplitRecipients.slice(1),
           ...updatedRecipients,
         ],
       }));
@@ -1248,13 +1276,13 @@ const SolanaMint = () => {
                 </Button>
 
                 <Button
-                  disabled={sharing}
+                  disabled={true}
                   onClick={() => sharePost("solana-master")}
                   color="teal"
                   className="mx-4"
                 >
                   {" "}
-                  Mint as master edition{" "}
+                  Mint as master edition (Coming Soon) {" "}
                 </Button>
               </div>
             ) : (
