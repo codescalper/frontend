@@ -208,7 +208,7 @@ const Editor = () => {
       if (canvasChildren?.length > 0) {
         // create an array of all the recipients then make it uniq
         const parentArray = [
-          currentUserAddress,
+          currentUserAddress || address || solanaAddress,
           ...recipientDataFilter().recipientHandles,
         ];
 
