@@ -45,7 +45,7 @@ import { useStore } from "../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
 import { SplitPolicyCard } from "./components";
-import { useReset } from "../../../../../../hooks/app";
+import { useAppAuth, useReset } from "../../../../../../hooks/app";
 import { LOCAL_STORAGE } from "../../../../../../data";
 import { Button, Select, Option } from "@material-tailwind/react";
 import { EVMWallets } from "../../../top-section/auth/wallets";
@@ -56,6 +56,7 @@ const LensShare = () => {
   const { resetState } = useReset();
   const getDispatcherStatus = getFromLocalStorage("dispatcher");
   const getEVMAuh = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const { isAuthenticated } = useAppAuth();
 
   const {
     setIsLoading,
@@ -255,8 +256,8 @@ const LensShare = () => {
     return dateTime.getTime();
   };
 
-  // monatization settings
-  const monatizationSettings = () => {
+  // monetization settings
+  const monetizationSettings = () => {
     if (
       !enabled.chargeForCollect &&
       !enabled.limitedEdition &&
@@ -495,7 +496,7 @@ const LensShare = () => {
     const id = toast.loading(`Sharing on ${platform}...`);
     shareOnLens({
       canvasData: canvasData,
-      canvasParams: monatizationSettings(),
+      canvasParams: monetizationSettings(),
       platform: platform,
       timeStamp: formatDateTimeUnix(stFormattedDate, stFormattedTime),
     })
@@ -611,9 +612,9 @@ const LensShare = () => {
   };
 
   const restrictRecipientInput = (e, index, recipient) => {
-    const isText = parentRecipientListRef.current.includes(recipient.recipient);
+    const isRecipient = parentRecipientListRef.current.includes(recipient.recipient);
     const isUserAddress = recipient.recipient === address;
-    if (index === 0 || isText) {
+    if (index === 0 || isRecipient) {
       if (isUserAddress) {
         handleRecipientChange(index, "recipient", e.target.value);
       }
@@ -622,16 +623,16 @@ const LensShare = () => {
     }
   };
 
-  const restrictremoveRecipientInputBox = (index, recipient) => {
-    const istext = parentRecipientListRef.current.includes(recipient.recipient);
-    if (index === 0 || istext) {
+  const restrictRemoveRecipientInputBox = (index, recipient) => {
+    const isRecipient = parentRecipientListRef.current.includes(recipient.recipient);
+    if (index === 0 || isRecipient) {
       return true;
     }
   };
-  
+
   // add recipient to the split list
   useEffect(() => {
-    if (isConnected) {
+    if (isAuthenticated) {
       const updatedRecipients = parentRecipientListRef.current
         .slice(0, 4)
         .map((item) => ({
@@ -649,11 +650,12 @@ const LensShare = () => {
                 : "@lenspostxyz.test",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
+          // ...enabled.splitRevenueRecipients.slice(1),
           ...updatedRecipients,
         ],
       }));
     }
-  }, [address]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
@@ -865,7 +867,7 @@ const LensShare = () => {
                                   );
                                 }}
                               />
-                              {!restrictremoveRecipientInputBox(
+                              {!restrictRemoveRecipientInputBox(
                                 index,
                                 recipient
                               ) && (

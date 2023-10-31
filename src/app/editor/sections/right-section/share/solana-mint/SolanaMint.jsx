@@ -37,15 +37,8 @@ const SolanaMint = () => {
     setIsShareOpen,
     setDialogOpen,
     setExplorerLink,
-
-    priceError,
-    setPriceError,
-    splitError,
-    setSplitError,
-    editionError,
-    setEditionError,
-    referralError,
-    setReferralError,
+    solanaStatesError,
+    setSolanaStatesError,
   } = useContext(Context);
   const { resetState } = useReset();
 
@@ -54,104 +47,96 @@ const SolanaMint = () => {
     mutationFn: shareOnSocials,
   });
 
-  let creatorAdd = true;
+  // formate date and time in ISO 8601 format for monatizationn settings
+  const formatDateTimeISO8601 = (date, time) => {
+    if (!date || !time) return;
+    const dateTime = new Date(`${date} ${time}`);
+    return dateTime.toISOString();
+  };
 
-  const mintSettings = () => {
+  const mintSettings = (platform) => {
     // TODO: check if here needs to be any checks
-    // if (
-    //   !solanaEnabled.chargeForMint &&
-    //   !solanaEnabled.onChainSplits &&
-    //   !solanaEnabled.limitNoOfEditions &&
-    //   !solanaEnabled.scheduleMint &&
-    //   !solanaEnabled.allowlist &&
-    //   !solanaEnabled.nftBurn &&
-    //   !solanaEnabled.nftGate &&
-    //   !solanaEnabled.tokenGate
-    // ) {
-    //   return false;
-    // }
 
     let canvasParams = {};
 
-    if (creatorAdd) {
+    if (platform === "solana-cnft") {
       canvasParams = {
         ...canvasParams,
         creators: solanaEnabled.onChainSplitRecipients,
       };
+
+      if (solanaEnabled.isSellerFeeBasisPoints) {
+        canvasParams = {
+          ...canvasParams,
+          seller_fee_basis_points: solanaEnabled.sellerFeeBasisPoints,
+        };
+      }
+    }
+
+    if (platform === "solana-master") {
+      canvasParams = {
+        ...canvasParams,
+        creators: solanaEnabled.onChainSplitRecipients,
+      };
+
+      if (solanaEnabled.isSellerFeeBasisPoints) {
+        canvasParams = {
+          ...canvasParams,
+          sellerFeeBasisPoints: solanaEnabled.sellerFeeBasisPoints,
+        };
+      }
+
+      if (solanaEnabled.isLimitedEdition) {
+        canvasParams = {
+          ...canvasParams,
+          maxEditionSupply: solanaEnabled.limitedEditionNumber,
+        };
+      }
+
+      if (solanaEnabled.isTimeLimit) {
+        canvasParams = {
+          ...canvasParams,
+          startDate: formatDateTimeISO8601(
+            solanaEnabled.startTimeStamp.date,
+            solanaEnabled.startTimeStamp.time
+          ),
+          endDate: formatDateTimeISO8601(
+            solanaEnabled.endTimestamp.date,
+            solanaEnabled.endTimestamp.time
+          ),
+        };
+      }
+
+      if (solanaEnabled.isAllowlist) {
+        canvasParams = {
+          ...canvasParams,
+          allow_list: solanaEnabled.allowlistAddresses,
+        };
+      }
+
+      if (solanaEnabled.isNftBurnable) {
+        canvasParams = {
+          ...canvasParams,
+          burnable: nftBurnableContractAddresses,
+        };
+      }
+
+      if (solanaEnabled.isNftGate) {
+        canvasParams = {
+          ...canvasParams,
+          is_nft_gate: nftGateContractAddresses,
+        };
+      }
+
+      if (solanaEnabled.isTokenGate) {
+        canvasParams = {
+          ...canvasParams,
+          is_token_gate: tokenGateContractAddresses,
+        };
+      }
     }
 
     return canvasParams;
-  };
-
-  const sharePost = (platform) => {
-    // TODO:  enables some checks here
-
-    // check if canvasId is provided
-    if (contextCanvasIdRef.current === null) {
-      toast.error("Please select a design");
-      return;
-    }
-    // check if description is provided
-    if (!postDescription) {
-      toast.error("Please provide a description");
-      return;
-    }
-
-    setSharing(true);
-
-    const canvasData = {
-      id: contextCanvasIdRef.current,
-      name: "solana post",
-      content: postDescription,
-    };
-
-    const id = toast.loading(`Sharing on ${platform}...`);
-    shareOnSolana({
-      canvasData: canvasData,
-      canvasParams: mintSettings(),
-      platform: platform,
-      // timeStamp: formatDateTimeUnix(stFormattedDate, stFormattedTime),
-    })
-      .then((res) => {
-        if (res?.status === 200) {
-          const jsConfetti = new JSConfetti();
-          jsConfetti.addConfetti({
-            emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
-            confettiNumber: 100,
-          });
-
-          toast.update(id, {
-            render: `Shared on ${platform}`,
-            type: "success",
-            isLoading: false,
-            autoClose: 3000,
-          });
-
-          // open explorer link
-          setExplorerLink(res?.assetId);
-          setDialogOpen(true);
-
-          // TODO: clear all the states and variables
-          resetState();
-        } else {
-          toast.update(id, {
-            render: `Error sharing on ${platform}`,
-            type: "error",
-            isLoading: false,
-            autoClose: 3000,
-          });
-          setSharing(false);
-        }
-      })
-      .catch((err) => {
-        toast.update(id, {
-          render: errorMessage(err),
-          type: "error",
-          isLoading: false,
-          autoClose: 3000,
-        });
-        setSharing(false);
-      });
   };
 
   const handleChange = (e) => {
@@ -159,54 +144,98 @@ const SolanaMint = () => {
 
     if (name === "chargeForMintPrice") {
       if (value < 0.1) {
-        setPriceError({
-          isError: true,
-          message: "Price should be minimum 0.1",
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isChargeForMintError: true,
+          chargeForMintErrorMessage: "Price should be greater than 0.1",
         });
       } else {
-        setPriceError({
-          isError: false,
-          message: "",
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isChargeForMintError: false,
+          chargeForMintErrorMessage: "",
         });
       }
-    } else if (name === "limitedEditionNumber") {
-      if (value < 1) {
-        setEditionError({
-          isError: true,
-          message: "Collect limit should be minimum 1",
+    } else if (name === "sellerFeeBasisPoints") {
+      if (value < 1 || value > 100) {
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isSellerFeeError: true,
+          sellerFeeErrorMessage: "Royalty should be between 1% to 100%",
         });
       } else {
-        setEditionError({
-          isError: false,
-          message: "",
-        });
-      }
-    } else if (name === "mirrorReferralRewardFee") {
-      if (value < 1) {
-        setReferralError({
-          isError: true,
-          message: "Referral fee should be between 1% to 100%",
-        });
-      } else {
-        setReferralError({
-          isError: false,
-          message: "",
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isSellerFeeError: false,
+          sellerFeeErrorMessage: "",
         });
       }
     }
 
-    if (name === "mirrorReferralRewardFee") {
-      setSolanaEnabled((prevEnabled) => ({
-        ...prevEnabled,
-        [name]: Number(parseFloat(value).toFixed(2)),
-      }));
-    } else {
-      setSolanaEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
-    }
+    setSolanaEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
   };
 
-  // funtions adding removing data
+  // funtions adding data for allowlist
+  const handleArrlistChange = (index, value, key) => {
+    setSolanaEnabled((prevEnabled) => ({
+      ...prevEnabled,
+      [key]: prevEnabled[key].map((item, i) => (i === index ? value : item)),
+    }));
+  };
+
+  // funtions for adding new input box for allowlist
+  const addArrlistInputBox = (key) => {
+    setSolanaEnabled({
+      ...solanaEnabled,
+      [key]: [...solanaEnabled[key], ""],
+    });
+  };
+
+  // funtions for removing input box for allowlist
+  const removeArrlistInputBox = (index, key) => {
+    setSolanaEnabled({
+      ...solanaEnabled,
+      [key]: solanaEnabled[key].filter((_, i) => i !== index),
+    });
+  };
+
+  // funtions adding data for split revenues recipients
   const handleRecipientChange = (index, key, value) => {
+    // check index 0 price should min 10
+    if (key === "share" && index === 0) {
+      if (value < 10 || value > 100 || isNaN(value)) {
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isSplitError: true,
+          splitErrorMessage: "Platform fee should be between 10% to 100%",
+        });
+      } else {
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isSplitError: false,
+          splitErrorMessage: "",
+        });
+      }
+    }
+
+    // any index price should be greater min 1 and max 100
+    if (key === "share" && index !== 0) {
+      if (value < 1 || value > 100 || isNaN(value)) {
+        setSolanaStatesError({
+          isSplitError: true,
+          splitErrorMessage: "Split should be between 1% to 100%",
+        });
+      } else {
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isSplitError: false,
+          splitErrorMessage: "",
+        });
+      }
+    }
+
+    // check if the address is not same
+
     const updatedRecipients = [...solanaEnabled.onChainSplitRecipients];
     updatedRecipients[index][key] = value;
     setSolanaEnabled((prevEnabled) => ({
@@ -222,14 +251,14 @@ const SolanaMint = () => {
       onChainSplitRecipients: [
         ...solanaEnabled.onChainSplitRecipients,
         {
-          recipient: "",
-          split: 1.0,
+          address: "",
+          share: null,
         },
       ],
     });
   };
 
-  // funtions for removing input box
+  // funtions for removing input box for split revenue
   const removeRecipientInputBox = (index) => {
     const updatedRecipients = solanaEnabled.onChainSplitRecipients.filter(
       (_, i) => i !== index
@@ -240,10 +269,32 @@ const SolanaMint = () => {
       onChainSplitRecipients: updatedRecipients,
     });
 
-    setSplitError({
-      isError: false,
-      message: "",
+    setSolanaStatesError({
+      ...solanaStatesError,
+      isSplitError: false,
+      splitErrorMessage: "",
     });
+  };
+
+  // restrict the input box if the recipient is in the parent list
+  const restrictRecipientInput = (e, index, recipient) => {
+    const isRecipient = parentRecipientListRef.current.includes(recipient);
+    const isUserAddress = recipient === solanaAddress;
+    if (index === 0 || isRecipient) {
+      if (isUserAddress) {
+        handleRecipientChange(index, "address", e.target.value);
+      }
+    } else {
+      handleRecipientChange(index, "address", e.target.value);
+    }
+  };
+
+  // restrict ther delete button if recipient is in the parent list
+  const restrictRemoveRecipientInputBox = (index, recipient) => {
+    const isRecipient = parentRecipientListRef.current.includes(recipient);
+    if (index === 0 || isRecipient) {
+      return true;
+    }
   };
 
   // Calendar Functions:
@@ -273,33 +324,187 @@ const SolanaMint = () => {
     });
   };
 
+  // check if recipient address is same
+  const isAddressDuplicate = () => {
+    const arr = solanaEnabled.onChainSplitRecipients;
+    let isError = false;
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr.length; j++) {
+        if (i !== j && arr[i].address === arr[j].address) {
+          isError = true;
+          break;
+        }
+      }
+    }
+
+    return isError;
+  };
+
+  // check if recipient percentage is more than 100
+  const isPercentage100 = () => {
+    const arr = solanaEnabled.onChainSplitRecipients;
+    let totalPercentage = 0;
+    for (let i = 0; i < arr.length; i++) {
+      totalPercentage += arr[i].share;
+    }
+
+    if (totalPercentage == 100) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // share on solana
+  const sharePost = (platform) => {
+    // TODO:  enables some checks here
+
+    // check if canvasId is provided
+    if (contextCanvasIdRef.current === null) {
+      toast.error("Please select a design");
+      return;
+    }
+    // check if description is provided
+    if (!postDescription) {
+      toast.error("Please provide a description");
+      return;
+    }
+
+    if (solanaEnabled.isChargeForMint) {
+      if (solanaStatesError.isChargeForMintError) return;
+    }
+
+    if (solanaEnabled.isSellerFeeBasisPoints) {
+      if (solanaStatesError.isSellerFeeError) return;
+    }
+
+    if (solanaEnabled.isLimitedEdition) {
+      if (solanaStatesError.isLimitedEditionError) return;
+    }
+
+    if (solanaEnabled.isTimeLimit) {
+      if (solanaStatesError.isTimeLimitError) return;
+    }
+
+    if (solanaEnabled.isAllowlist) {
+      if (solanaStatesError.isAllowlistError) return;
+    }
+
+    if (solanaEnabled.isNftBurnable) {
+      if (solanaStatesError.isNftBurnableError) return;
+    }
+
+    if (solanaEnabled.isNftGate) {
+      if (solanaStatesError.isNftGateError) return;
+    }
+
+    if (solanaStatesError.isSplitError) return;
+
+    if (isAddressDuplicate()) {
+      setSolanaStatesError({
+        ...solanaStatesError,
+        isSplitError: true,
+        splitErrorMessage: "Duplicate address or handle found",
+      });
+      return;
+    } else if (!isPercentage100()) {
+      setSolanaStatesError({
+        ...solanaStatesError,
+        isSplitError: true,
+        splitErrorMessage: "Total split should be 100%",
+      });
+      return;
+    } else {
+      setSolanaStatesError({
+        ...solanaStatesError,
+        isSplitError: false,
+        splitErrorMessage: "",
+      });
+    }
+
+    setSharing(true);
+
+    const canvasData = {
+      id: contextCanvasIdRef.current,
+      name: "solana post",
+      content: postDescription,
+    };
+
+    const id = toast.loading(`Sharing on ${platform}...`);
+    shareOnSolana({
+      canvasData: canvasData,
+      canvasParams: mintSettings(platform),
+      platform: platform,
+      // timeStamp: formatDateTimeUnix(stFormattedDate, stFormattedTime),
+    })
+      .then((res) => {
+        if (res?.assetId || res?.tx) {
+          const jsConfetti = new JSConfetti();
+          jsConfetti.addConfetti({
+            emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
+            confettiNumber: 100,
+          });
+
+          toast.update(id, {
+            render: `Shared on ${platform}`,
+            type: "success",
+            isLoading: false,
+            autoClose: 3000,
+          });
+
+          // open explorer link
+          if (res?.assetId) {
+            setExplorerLink(res?.assetId);
+            setDialogOpen(true);
+          } else if (res?.tx) {
+            setExplorerLink("https://mint.lenspost.xyz/" + res?.tx);
+            setDialogOpen(true);
+          }
+
+          // TODO: clear all the states and variables
+          resetState();
+        } else {
+          toast.update(id, {
+            render: `Error sharing on ${platform}`,
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+          });
+          setSharing(false);
+        }
+      })
+      .catch((err) => {
+        toast.update(id, {
+          render: errorMessage(err),
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+        setSharing(false);
+      });
+  };
+
   // add recipient to the split list
   useEffect(() => {
-    if (isAuthenticated && parentRecipientListRef.current.length > 0) {
-      const updatedRecipients = parentRecipientListRef.current
-        .slice(1)
-        .map((item) => ({
-          address: item,
-          share: 1.0,
-        }));
+    if (isAuthenticated) {
+      const updatedRecipients = parentRecipientListRef.current.map((item) => ({
+        address: item,
+        share: 1.0,
+      }));
 
       setSolanaEnabled((prevEnabled) => ({
         ...prevEnabled,
-        onChainSplitRecipients: [...updatedRecipients],
+        onChainSplitRecipients: [
+          {
+            address: "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa",
+            share: solanaEnabled.onChainSplitRecipients[0].share || 10.0,
+          },
+          // ...solanaEnabled.onChainSplitRecipients.slice(1),
+          ...updatedRecipients,
+        ],
       }));
     }
   }, [isAuthenticated]);
-
-  // useEffect(() => {
-  //   const isRecipients = solanaEnabled.onChainSplitRecipients.length > 0;
-
-  //   if (isRecipients) {
-  //     setSolanaEnabled({
-  //       ...solanaEnabled,
-  //       isOnChainSplits: true,
-  //     });
-  //   }
-  // }, [solanaEnabled.onChainSplitRecipients]);
 
   return (
     <>
@@ -308,7 +513,6 @@ const SolanaMint = () => {
         panelHeader={"Mint Options"}
         panelContent={
           <>
-            {/* Switch Number 1 Start */}
             <div className="mb-4 m-4">
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> Charge for mint </h2>
@@ -340,68 +544,47 @@ const SolanaMint = () => {
                 Set an amount to be charged for minting{" "}
               </div>
             </div>
+
             <div
-              className={`${
-                !solanaEnabled.isChargeForMint && "hidden"
-              } ml-4 mr-4 flex flex-row`}
+              className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}
             >
-              <div className=" w-1/3">
+              <div className="flex">
                 <NumberInputBox
                   min={"1"}
                   step={"0.01"}
-                  label={"Amount"}
-                  placeholder="1"
+                  className={"W-3/4"}
+                  label="Price"
                   name="chargeForMintPrice"
                   value={solanaEnabled.chargeForMintPrice}
                   onChange={(e) => handleChange(e)}
                 />
+
+                <div className="flex flex-col w-1/4">
+                  {/* <label htmlFor="price"></label> */}
+                  <Select
+                    label="Currency"
+                    name="chargeForMintCurrency"
+                    id="chargeForMintCurrency"
+                    className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
+                    onChange={handleChange}
+                    value={solanaEnabled.chargeForMintCurrency}
+                  >
+                    <Option>SOL</Option>
+                    <Option>ETH</Option>
+                  </Select>
+                </div>
               </div>
-              {/* <div className="flex flex-col w-1/4"> */}
-              {/* <label htmlFor="price"></label> */}
-              <div className="w-2/3 ml-2">
-                <Select
-                  label="Currency"
-                  name="chargeForMintCurrency"
-                  id="chargeForMintCurrency"
-                  // className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
-                  onChange={handleChange}
-                  value={solanaEnabled.chargeForMintCurrency}
-                >
-                  <Option>SOL</Option>
-                  <Option>ETH</Option>
-                </Select>
-              </div>
-              {/* </div> */}
-              {priceError.isError && (
-                <InputErrorMsg message={priceError.message} />
+              {solanaStatesError.isChargeForMintError && (
+                <InputErrorMsg
+                  message={solanaStatesError.chargeForMintErrorMessage}
+                />
+
               )}
             </div>
 
             <div className="mb-4 m-4">
               <div className="flex justify-between">
                 <h2 className="text-lg mb-2"> On Chain Splits </h2>
-                <Switch
-                  checked={solanaEnabled.isOnChainSplits}
-                  onChange={() =>
-                    setSolanaEnabled({
-                      ...solanaEnabled,
-                      isOnChainSplits: !solanaEnabled.isOnChainSplits,
-                    })
-                  }
-                  className={`${
-                    solanaEnabled.isOnChainSplits
-                      ? "bg-[#008080]"
-                      : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
-                >
-                  <span
-                    className={`${
-                      solanaEnabled.isOnChainSplits
-                        ? "translate-x-6"
-                        : "translate-x-1"
-                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                  />{" "}
-                </Switch>
               </div>
               <div className="w-4/5 opacity-75">
                 {" "}
@@ -426,10 +609,10 @@ const SolanaMint = () => {
                             label="Wallet Address"
                             value={recipient.address}
                             onChange={(e) =>
-                              handleRecipientChange(
+                              restrictRecipientInput(
+                                e,
                                 index,
-                                "address",
-                                e.target.value
+                                recipient.address
                               )
                             }
                           />
@@ -450,17 +633,27 @@ const SolanaMint = () => {
                                 );
                               }}
                             />
-                            <XCircleIcon
-                              className="h-6 w-6 cursor-pointer"
-                              color="red"
-                              onClick={() => removeRecipientInputBox(index)}
-                            />
-                            {/* )} */}
+                            {!restrictRemoveRecipientInputBox(
+                              index,
+                              recipient.address
+                            ) && (
+                              <XCircleIcon
+                                className="h-6 w-6 cursor-pointer"
+                                color="red"
+                                onClick={() => removeRecipientInputBox(index)}
+                              />
+                            )}
                           </div>
                         </div>
                       </>
                     );
                   }
+                )}
+
+                {solanaStatesError.isSplitError && (
+                  <InputErrorMsg
+                    message={solanaStatesError.splitErrorMessage}
+                  />
                 )}
 
                 <Button
@@ -473,6 +666,57 @@ const SolanaMint = () => {
                   <BsPlus />
                   Add Recipient
                 </Button>
+              </div>
+            </div>
+
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> Seller Fees </h2>
+                <Switch
+                  checked={solanaEnabled.isSellerFeeBasisPoints}
+                  onChange={() =>
+                    setSolanaEnabled({
+                      ...solanaEnabled,
+                      isSellerFeeBasisPoints:
+                        !solanaEnabled.isSellerFeeBasisPoints,
+                    })
+                  }
+                  className={`${
+                    solanaEnabled.isSellerFeeBasisPoints
+                      ? "bg-[#008080]"
+                      : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      solanaEnabled.isSellerFeeBasisPoints
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75"> Seller fee basis point </div>
+            </div>
+
+            <div
+              className={`${
+                !solanaEnabled.isSellerFeeBasisPoints && "hidden"
+              } ml-4 mr-4`}
+            >
+              <div className="flex flex-col w-full py-2">
+                {/* <label htmlFor="price">Collect limit</label> */}
+                <InputBox
+                  label="Seller Fees"
+                  name="sellerFeeBasisPoints"
+                  onChange={(e) => handleChange(e)}
+                  value={solanaEnabled.sellerFeeBasisPoints}
+                />
+                {solanaStatesError.isSellerFeeError && (
+                  <InputErrorMsg
+                    message={solanaStatesError.sellerFeeErrorMessage}
+                  />
+                )}
               </div>
             </div>
             {/* )} */}
@@ -518,18 +762,19 @@ const SolanaMint = () => {
               } ml-4 mr-4`}
             >
               <div className="flex flex-col w-full py-2">
-                {/* <label htmlFor="price">Collect limit</label> */}
                 <NumberInputBox
                   min={"1"}
                   step={"1"}
-                  placeholder="1"
-                  label={"Collect limit (%)"}
+                  label="Collect limit"
+
                   name="limitedEditionNumber"
                   onChange={(e) => handleChange(e)}
                   value={solanaEnabled.limitedEditionNumber}
                 />
-                {editionError.isError && (
-                  <InputErrorMsg message={editionError.message} />
+                {solanaStatesError.isLimitedEditionError && (
+                  <InputErrorMsg
+                    message={solanaStatesError.limitedEditionErrorMessage}
+                  />
                 )}
               </div>
             </div>
@@ -577,6 +822,12 @@ const SolanaMint = () => {
               <div className="m-4 flex justify-between text-center align-middle">
                 <div>End</div> <DateTimePicker onChange={onCalChange} />
               </div>
+
+              {solanaStatesError.isTimeLimitError && (
+                <InputErrorMsg
+                  message={solanaStatesError.timeLimitErrorMessage}
+                />
+              )}
             </div>
 
             <div className="mb-4 m-4">
@@ -605,7 +856,7 @@ const SolanaMint = () => {
               </div>
               <div className="w-4/5 opacity-75">
                 {" "}
-                Allow specific contract addresses to mint{" "}
+                Allow specific wallet addresses to mint{" "}
               </div>
             </div>
 
@@ -620,35 +871,43 @@ const SolanaMint = () => {
                       className="flex justify-between gap-2 items-center w-full py-2"
                     >
                       <InputBox
-                        placeholder="ERC20 Address"
+                        label="Wallet Address"
                         value={recipient}
                         onChange={(e) =>
-                          // restrictRecipientInput(e, index, recipient)
-                          console.log(e.target.value)
+                          handleArrlistChange(
+                            index,
+                            e.target.value,
+                            "allowlistAddresses"
+                          )
                         }
                       />
-                      <div className="flex justify-between items-center w-1/3">
-                        {/* {!restrictremoveRecipientInputBox(
-                              index,
-                              recipient
-                            ) && ( */}
-                        <TiDelete
-                          className="ml-2 h-6 w-6 cursor-pointer"
-                          color="red"
-                          // onClick={() => removeRecipientInputBox(index)}
-                        />
-                        {/* )} */}
+
+                      <div className="flex justify-between items-center">
+                        {index != 0 && (
+                          <TiDelete
+                            className="h-6 w-6 cursor-pointer"
+                            color="red"
+                            onClick={() =>
+                              removeArrlistInputBox(index, "allowlistAddresses")
+                            }
+                          />
+                        )}
                       </div>
                     </div>
                   </>
                 );
               })}
+              {solanaStatesError.isAllowlistError && (
+                <InputErrorMsg
+                  message={solanaStatesError.allowlistErrorMessage}
+                />
+              )}
               <Button
                 color="teal"
                 size="sm"
                 variant="filled"
                 className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-                onClick={() => {}}
+                onClick={() => addArrlistInputBox("allowlistAddresses")}
               >
                 <BsPlus />
                 Add Recipient
@@ -713,36 +972,50 @@ const SolanaMint = () => {
                         className="flex justify-between gap-2 items-center w-full py-2"
                       >
                         <InputBox
-                          placeholder="ERC20 Address"
+                          label="Contract Address"
                           value={recipient}
                           onChange={(e) =>
-                            // restrictRecipientInput(e, index, recipient)
-                            console.log(e.target.value)
+                            handleArrlistChange(
+                              index,
+                              e.target.value,
+                              "nftBurnableContractAddresses"
+                            )
                           }
                         />
-                        <div className="flex justify-between items-center w-1/3">
-                          {/* {!restrictremoveRecipientInputBox(
-                              index,
-                              recipient
-                            ) && ( */}
-                          <TiDelete
-                            className="h-6 w-6 cursor-pointer"
-                            color="red"
-                            // onClick={() => removeRecipientInputBox(index)}
-                          />
-                          {/* )} */}
+                        <div className="flex justify-between items-center">
+                          {index != 0 && (
+                            <TiDelete
+                              className="h-6 w-6 cursor-pointer"
+                              color="red"
+                              onClick={() =>
+                                removeArrlistInputBox(
+                                  index,
+                                  "nftBurnableContractAddresses"
+                                )
+                              }
+                            />
+                          )}
                         </div>
                       </div>
                     </>
                   );
                 }
               )}
+
+              {solanaStatesError.isNftBurnableError && (
+                <InputErrorMsg
+                  message={solanaStatesError.nftBurnableErrorMessage}
+                />
+              )}
+
               <Button
                 color="teal"
                 size="sm"
                 variant="filled"
                 className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-                onClick={() => {}}
+                onClick={() =>
+                  addArrlistInputBox("nftBurnableContractAddresses")
+                }
               >
                 <BsPlus />
                 Add Recipient
@@ -792,36 +1065,50 @@ const SolanaMint = () => {
                         className="flex justify-between gap-2 items-center w-full py-2"
                       >
                         <InputBox
-                          placeholder="ERC20 Address"
+                          label="Contract Address"
                           value={recipient}
                           onChange={(e) =>
-                            // restrictRecipientInput(e, index, recipient)
-                            console.log(e.target.value)
+                            handleArrlistChange(
+                              index,
+                              e.target.value,
+                              "nftGateContractAddresses"
+                            )
                           }
                         />
-                        <div className="flex justify-between items-center w-1/3">
-                          {/* {!restrictremoveRecipientInputBox(
-                              index,
-                              recipient
-                            ) && ( */}
-                          <TiDelete
-                            className="ml-2 h-6 w-6 cursor-pointer"
-                            color="red"
-                            // onClick={() => removeRecipientInputBox(index)}
-                          />
-                          {/* )} */}
+
+                        <div className="flex justify-between items-center">
+                          {index != 0 && (
+                            <TiDelete
+                              className="h-6 w-6 cursor-pointer"
+                              color="red"
+                              onClick={() =>
+                                removeArrlistInputBox(
+                                  index,
+                                  "nftGateContractAddresses"
+                                )
+                              }
+                            />
+                          )}
+
                         </div>
                       </div>
                     </>
                   );
                 }
               )}
+
+              {solanaStatesError.isNftGateError && (
+                <InputErrorMsg
+                  message={solanaStatesError.nftGateErrorMessage}
+                />
+              )}
+
               <Button
                 color="teal"
                 size="sm"
                 variant="filled"
                 className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-                onClick={() => {}}
+                onClick={() => addArrlistInputBox("nftGateContractAddresses")}
               >
                 <BsPlus />
                 Add Recipient
@@ -871,36 +1158,48 @@ const SolanaMint = () => {
                         className="flex justify-between gap-2 items-center w-full py-2"
                       >
                         <InputBox
-                          placeholder="ERC20 Address"
+                          label="Contract Address"
                           value={recipient}
                           onChange={(e) =>
-                            // restrictRecipientInput(e, index, recipient)
-                            console.log(e.target.value)
+                            handleArrlistChange(
+                              index,
+                              e.target.value,
+                              "tokenGateContractAddresses"
+                            )
                           }
                         />
-                        <div className="flex justify-between items-center w-1/3">
-                          {/* {!restrictremoveRecipientInputBox(
-                              index,
-                              recipient
-                            ) && ( */}
-                          <TiDelete
-                            className="h-6 w-6 cursor-pointer"
-                            color="red"
-                            // onClick={() => removeRecipientInputBox(index)}
-                          />
-                          {/* )} */}
+                        <div className="flex justify-between items-center">
+                          {index != 0 && (
+                            <TiDelete
+                              className="h-6 w-6 cursor-pointer"
+                              color="red"
+                              onClick={() =>
+                                removeArrlistInputBox(
+                                  index,
+                                  "tokenGateContractAddresses"
+                                )
+                              }
+                            />
+                          )}
                         </div>
                       </div>
                     </>
                   );
                 }
               )}
+
+              {solanaStatesError.isTokenGateError && (
+                <InputErrorMsg
+                  message={solanaStatesError.tokenGateErrorMessage}
+                />
+              )}
+
               <Button
                 color="teal"
                 size="sm"
                 variant="filled"
                 className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-                onClick={() => {}}
+                onClick={() => addArrlistInputBox("tokenGateContractAddresses")}
               >
                 <BsPlus />
                 Add Recipient
@@ -908,15 +1207,27 @@ const SolanaMint = () => {
             </div>
             {/* Switch Number 7 End */}
             {getSolanaAuth ? (
-              <Button
-                disabled={sharing}
-                onClick={() => sharePost("solana-cnft")}
-                color="teal"
-                className="mx-4"
-              >
-                {" "}
-                Mint{" "}
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  disabled={sharing}
+                  onClick={() => sharePost("solana-cnft")}
+                  color="teal"
+                  className="mx-4"
+                >
+                  {" "}
+                  Mint as cNFT{" "}
+                </Button>
+
+                <Button
+                  disabled={sharing}
+                  onClick={() => sharePost("solana-master")}
+                  color="teal"
+                  className="mx-4"
+                >
+                  {" "}
+                  Mint as master edition{" "}
+                </Button>
+              </div>
             ) : (
               <SolanaWallets title="Login with Solana" className="mx-2" />
             )}

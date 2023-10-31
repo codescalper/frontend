@@ -51,7 +51,7 @@ const ContextProvider = ({ children }) => {
 
   const [solanaEnabled, setSolanaEnabled] = useState({
     isChargeForMint: false,
-    chargeForMintPrice: "1",
+    chargeForMintPrice: "",
     chargeForMintCurrency: "",
 
     // Array of List of Contract Addresses / Input Boxes
@@ -59,12 +59,15 @@ const ContextProvider = ({ children }) => {
     onChainSplitRecipients: [
       {
         address: "",
-        share: 0.0,
+        share: null,
       },
     ],
 
+    isSellerFeeBasisPoints: false,
+    sellerFeeBasisPoints: "",
+
     isLimitedEdition: false,
-    limitedEditionNumber: "1",
+    limitedEditionNumber: "",
 
     isTimeLimit: false,
     startTimeStamp: {
@@ -77,16 +80,45 @@ const ContextProvider = ({ children }) => {
     },
 
     isAllowlist: false,
-    allowlistAddresses: [],
+    allowlistAddresses: [""],
 
     isNftBurnable: false,
-    nftBurnableContractAddresses: [],
+    nftBurnableContractAddresses: [""],
 
     isNftGate: false,
-    nftGateContractAddresses: [],
+    nftGateContractAddresses: [""],
 
     isTokenGate: false,
-    tokenGateContractAddresses: [],
+    tokenGateContractAddresses: [""],
+  });
+
+  const [solanaStatesError, setSolanaStatesError] = useState({
+    isChargeForMintError: false,
+    chargeForMintErrorMessage: "",
+
+    isSplitError: false,
+    splitErrorMessage: "",
+
+    isSellerFeeError: false,
+    sellerFeeErrorMessage: "",
+
+    isLimitedEditionError: false,
+    limitedEditionErrorMessage: "",
+
+    isTimeLimitError: false,
+    timeLimitErrorMessage: "",
+
+    isAllowlistError: false,
+    allowlistErrorMessage: "",
+
+    isNftBurnableError: false,
+    nftBurnableErrorMessage: "",
+
+    isNftGateError: false,
+    nftGateErrorMessage: "",
+
+    isTokenGateError: false,
+    tokenGateErrorMessage: "",
   });
 
   const [postDescription, setPostDescription] = useState("");
@@ -162,7 +194,7 @@ const ContextProvider = ({ children }) => {
 
   const handleOpen = () => setDialogOpen((cur) => !cur);
 
-  console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
+  // console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
 
   return (
     <Context.Provider
@@ -254,6 +286,10 @@ const ContextProvider = ({ children }) => {
         // for solana mint
         solanaEnabled,
         setSolanaEnabled,
+
+        // for solana mint error
+        solanaStatesError,
+        setSolanaStatesError,
 
         // for explorer dilog
         dialogOpen,
