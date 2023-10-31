@@ -62,7 +62,6 @@ const DesignCard = ({
   const store = useStore();
 
   const handleClickOrDrop = () => {
-    console.log("image", replaceImageURL(preview));
     store.loadJSON(json);
     contextCanvasIdRef.current = item.id;
     referredFromRef.current = item.referredFrom;

@@ -518,9 +518,9 @@ const LensShare = () => {
 
           // clear all the variables
           resetState();
-        } else if (res?.error) {
+        } else if (res?.error || res?.reason === "REJECTED") {
           toast.update(id, {
-            render: res?.error,
+            render: res?.error || "Request rejected",
             type: "error",
             isLoading: false,
             autoClose: 3000,
@@ -654,7 +654,6 @@ const LensShare = () => {
                 : "@lenspostxyz.test",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
-          // ...enabled.splitRevenueRecipients.slice(1),
           ...updatedRecipients,
         ],
       }));

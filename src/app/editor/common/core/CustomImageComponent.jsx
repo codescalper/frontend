@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "../../../../hooks/polotno";
 import { useContext } from "react";
 import { Context } from "../../../../providers/context/ContextProvider";
+import { addressCrop } from "../../../../utils";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
@@ -20,6 +21,8 @@ const CustomImageComponent = ({
   isLensCollect,
   changeCanvasDimension,
   recipientWallet,
+  tab,
+  author,
 }) => {
   const store = useStore();
   const [base64Data, setBase64Data] = useState("");
@@ -81,10 +84,15 @@ const CustomImageComponent = ({
     }
 
     // if nft is a featured bg, and has recipientWallet / wallet address/handle is present, add it to the assetsRecipientDataRef
-    if (recipientWallet) {
+    if (recipientWallet && recipientWallet.startsWith("@")) {
       assetsRecipientDataRef.current.push({
         elementId: store.selectedElements[0]?.id,
         handle: recipientWallet + ".lens",
+      });
+    } else if (recipientWallet) {
+      assetsRecipientDataRef.current.push({
+        elementId: store.selectedElements[0]?.id,
+        handle: recipientWallet,
       });
     }
 
@@ -96,13 +104,6 @@ const CustomImageComponent = ({
           handle: creator.address,
         });
       });
-    }
-  };
-
-  const fnGetShortenedWalletAddress = (strWalletAddress) => {
-    if (strWalletAddress != null) {
-      // console.log(strWalletAddress);
-      return strWalletAddress.slice(0, 4) + "...." + strWalletAddress.slice(-4);
     }
   };
 
@@ -141,7 +142,8 @@ const CustomImageComponent = ({
         </div>
 
         {/* if nft is a lens collect */}
-        {isLensCollect?.isLensCollect || recipientWallet ? (
+        {isLensCollect?.isLensCollect ||
+        (recipientWallet && recipientWallet.startsWith("@")) ? (
           <>
             <div
               title="Collected from Lens"
@@ -157,7 +159,6 @@ const CustomImageComponent = ({
               }}
             >
               {isLensCollect?.lensHandle || recipientWallet + ".lens"}
-              {/* {isLensCollect?.lensHandle + ".lens"} */}
             </div>
           </>
         ) : (
@@ -166,12 +167,12 @@ const CustomImageComponent = ({
 
         {/* If the BE sends Wallet address - recipientWallet */}
         {/* Shorten it and Show on the FrontEnd */}
-        {/* {recipientWallet && (
+        {tab === "halloween" && (
           <div className="text-white appFont text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96">
             {" "}
-            {fnGetShortenedWalletAddress(recipientWallet)}{" "}
+            {author}{" "}
           </div>
-        )} */}
+        )}
 
         {hasOptionBtn && (
           <div

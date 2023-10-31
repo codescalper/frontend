@@ -224,7 +224,7 @@ export const StickerPanel = () => {
           ) : (
             <TabsCustom
               defaultQuery={currentTab === "halloween" ? "" : currentTab}
-              campaignName={currentTab === "halloween"? "Halloween" : ""}
+              campaignName={currentTab === "halloween"? "halloween" : ""}
               getAssetsFn={
                 currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
               }
