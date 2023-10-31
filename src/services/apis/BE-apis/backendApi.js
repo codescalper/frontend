@@ -454,12 +454,13 @@ export const getUserPublicTemplates = async (page) => {
 
 // asset apis start
 // need auth token (jwt)
-export const getAssetByQuery = async (type, author, page) => {
+export const getAssetByQuery = async (type, author, campaign, page) => {
   // const result = await api.get(`${API}/asset/?query=${query}`, {
   const result = await api.get(`${API}/asset`, {
     params: {
       type: type,
       author: author,
+      campaign: campaign,
       page: page,
     },
   });

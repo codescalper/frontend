@@ -99,6 +99,13 @@ const CustomImageComponent = ({
     }
   };
 
+  const fnGetShortenedWalletAddress = (strWalletAddress) => {
+    if (strWalletAddress != null) {
+      // console.log(strWalletAddress);
+      return strWalletAddress.slice(0, 4) + "...." + strWalletAddress.slice(-4);
+    }
+  };
+
   useEffect(() => {
     const fetchImage = async () => {
       try {
@@ -134,7 +141,8 @@ const CustomImageComponent = ({
         </div>
 
         {/* if nft is a lens collect */}
-        {isLensCollect?.isLensCollect || recipientWallet ? (
+        {isLensCollect?.isLensCollect ? (
+          // || recipientWallet
           <>
             <div
               title="Collected from Lens"
@@ -143,17 +151,27 @@ const CustomImageComponent = ({
               onClick={(e) => {
                 e.stopPropagation();
 
-                const onlyHandle =
-                  isLensCollect?.lensHandle?.split("@")[1] ||
-                  recipientWallet?.split("@")[1];
+                const onlyHandle = isLensCollect?.lensHandle?.split("@")[1];
+                // ||
+                // recipientWallet?.split("@")[1];
                 window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
               }}
             >
-              {isLensCollect?.lensHandle || recipientWallet + ".lens"}
+              {/* {isLensCollect?.lensHandle || recipientWallet + ".lens"} */}
+              {isLensCollect?.lensHandle + ".lens"}
             </div>
           </>
         ) : (
           <></>
+        )}
+
+        {/* If the BE sends Wallet address - recipientWallet */}
+        {/* Shorten it and Show on the FrontEnd */}
+        {recipientWallet && (
+          <div className="text-white appFont text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96">
+            {" "}
+            {fnGetShortenedWalletAddress(recipientWallet)}{" "}
+          </div>
         )}
 
         {hasOptionBtn && (
