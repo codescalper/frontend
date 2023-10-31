@@ -578,27 +578,26 @@ const SolanaMint = () => {
               </div>
             </div>
 
-            <div
-              className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}
-            >
-              <div className="flex">
-                <NumberInputBox
-                  min={"1"}
-                  step={"0.01"}
-                  className={"W-3/4"}
-                  label="Price"
-                  name="chargeForMintPrice"
-                  value={solanaEnabled.chargeForMintPrice}
-                  onChange={(e) => handleChange(e)}
-                />
-
-                <div className="flex flex-col w-1/4">
+            <div className={`${!solanaEnabled.isChargeForMint && "hidden"}`}>
+              <div className="flex gap-5 mx-4">
+                <div className="flex flex-col py-2">
+                  <NumberInputBox
+                    min={"1"}
+                    step={"0.01"}
+                    // className={"W-3/4"}
+                    label="Price"
+                    name="chargeForMintPrice"
+                    value={solanaEnabled.chargeForMintPrice}
+                    onChange={(e) => handleChange(e)}
+                  />
+                </div>
+                <div className="flex flex-col py-2">
                   {/* <label htmlFor="price"></label> */}
                   <Select
                     label="Currency"
                     name="chargeForMintCurrency"
                     id="chargeForMintCurrency"
-                    className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
+                    // className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
                     onChange={handleChange}
                     value={solanaEnabled.chargeForMintCurrency}
                   >

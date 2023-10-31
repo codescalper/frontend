@@ -21,7 +21,7 @@
 }
 
 #outsider {
-    height: 160px;
+    height: 96px; /* For Halloween Campaign */
     /* max-height: 1000px; */
     width: 100%;
     /* overflow: scroll; */
@@ -61,8 +61,8 @@
     /* height: 100%; */
     /* height: fit-content; */
     /* min-width: 120px; */
-    width: 80px;
-    height: 80px;
+    width: 96px; 
+    height: 96px;
     /* height: 4vh !important; */
     object-fit: contain !important;
     /* margin: 0 -2px; */

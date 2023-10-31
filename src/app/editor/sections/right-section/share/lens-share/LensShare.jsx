@@ -612,7 +612,9 @@ const LensShare = () => {
   };
 
   const restrictRecipientInput = (e, index, recipient) => {
-    const isRecipient = parentRecipientListRef.current.includes(recipient.recipient);
+    const isRecipient = parentRecipientListRef.current.includes(
+      recipient.recipient
+    );
     const isUserAddress = recipient.recipient === address;
     if (index === 0 || isRecipient) {
       if (isUserAddress) {
@@ -624,7 +626,9 @@ const LensShare = () => {
   };
 
   const restrictRemoveRecipientInputBox = (index, recipient) => {
-    const isRecipient = parentRecipientListRef.current.includes(recipient.recipient);
+    const isRecipient = parentRecipientListRef.current.includes(
+      recipient.recipient
+    );
     if (index === 0 || isRecipient) {
       return true;
     }
