@@ -17,6 +17,7 @@ import { useAppAuth } from "../../../../hooks/app";
 // `changeCanvasDimension` is True/False from the Passing Component
 const Tabs = ({
   defaultQuery,
+  campaignName,
   getAssetsFn,
   queryKey,
   changeCanvasDimension,
@@ -43,10 +44,10 @@ const Tabs = ({
     queryFn: ({ pageParam = 1 }) =>
       defaultQuery === "lensjump"
         ? getAssetsFn(getType, pageParam)
-        : getAssetsFn(getType, delayedQuery || defaultQuery, pageParam),
+        : getAssetsFn(getType, delayedQuery || defaultQuery, campaignName, pageParam),
     enabled: isAuthenticated ? true : false,
   });
-
+ 
   useEffect(() => {
     requestTimeout.current = setTimeout(() => {
       setDelayedQuery(query);

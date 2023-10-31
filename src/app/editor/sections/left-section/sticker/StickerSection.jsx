@@ -145,9 +145,9 @@ export const CompIcons = () => {
 
 export const StickerPanel = () => {
   // Halloween use 'H' and not 'h' - BE Response
-  const [currentTab, setCurrentTab] = useState("Halloween");
+  const [currentTab, setCurrentTab] = useState("halloween");
   const tabArray = [
-    "Halloween",
+    "halloween",
     "lensjump",
     "icons",
     "supducks",
@@ -191,7 +191,7 @@ export const StickerPanel = () => {
 
         {/* New Material Tailwind Buttons / Tabs : */}
         {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
-        <Tabs id="custom-animation" value="Halloween">
+        <Tabs id="custom-animation" value={currentTab}>
           <TabsHeader
           className="overflow-x-auto"
           >
@@ -223,7 +223,8 @@ export const StickerPanel = () => {
             <CompIcons />
           ) : (
             <TabsCustom
-              defaultQuery={currentTab}
+              defaultQuery={currentTab === "halloween" ? "" : currentTab}
+              campaignName={currentTab === "halloween"? "Halloween" : ""}
               getAssetsFn={
                 currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
               }
