@@ -57,7 +57,9 @@ const SolanaMint = () => {
   const mintSettings = (platform) => {
     // TODO: check if here needs to be any checks
 
-    let canvasParams = {};
+    let canvasParams = {
+      guards: {},
+    };
 
     if (platform === "solana-cnft") {
       canvasParams = {
@@ -86,52 +88,83 @@ const SolanaMint = () => {
         };
       }
 
+      if (solanaEnabled.isChargeForMint) {
+        canvasParams = {
+          ...canvasParams,
+          guards: {
+            ...canvasParams.guards,
+            chargeForMint: {
+              amount: solanaEnabled.chargeForMintPrice,
+              currency: solanaEnabled.chargeForMintCurrency,
+            },
+          },
+        };
+      }
+
       if (solanaEnabled.isLimitedEdition) {
         canvasParams = {
           ...canvasParams,
-          maxEditionSupply: solanaEnabled.limitedEditionNumber,
+          guards: {
+            ...canvasParams.guards,
+            maxEditionSupply: solanaEnabled.limitedEditionNumber,
+          },
         };
       }
 
       if (solanaEnabled.isTimeLimit) {
         canvasParams = {
           ...canvasParams,
-          startDate: formatDateTimeISO8601(
-            solanaEnabled.startTimeStamp.date,
-            solanaEnabled.startTimeStamp.time
-          ),
-          endDate: formatDateTimeISO8601(
-            solanaEnabled.endTimestamp.date,
-            solanaEnabled.endTimestamp.time
-          ),
+          guards: {
+            ...canvasParams.guards,
+            startDate: formatDateTimeISO8601(
+              solanaEnabled.startTimeStamp.date,
+              solanaEnabled.startTimeStamp.time
+            ),
+            endDate: formatDateTimeISO8601(
+              solanaEnabled.endTimestamp.date,
+              solanaEnabled.endTimestamp.time
+            ),
+          },
         };
       }
 
       if (solanaEnabled.isAllowlist) {
         canvasParams = {
           ...canvasParams,
-          allow_list: solanaEnabled.allowlistAddresses,
+          guards: {
+            ...canvasParams.guards,
+            allowList: solanaEnabled.allowlistAddresses,
+          },
         };
       }
 
       if (solanaEnabled.isNftBurnable) {
         canvasParams = {
           ...canvasParams,
-          burnable: nftBurnableContractAddresses,
+          guards: {
+            ...canvasParams.guards,
+            nftBurn: solanaEnabled.nftBurnableContractAddresses,
+          },
         };
       }
 
       if (solanaEnabled.isNftGate) {
         canvasParams = {
           ...canvasParams,
-          is_nft_gate: nftGateContractAddresses,
+          guards: {
+            ...canvasParams.guards,
+            nftGate: solanaEnabled.nftGateContractAddresses,
+          },
         };
       }
 
       if (solanaEnabled.isTokenGate) {
         canvasParams = {
           ...canvasParams,
-          is_token_gate: tokenGateContractAddresses,
+          guards: {
+            ...canvasParams.guards,
+            tokenGate: solanaEnabled.tokenGateContractAddresses,
+          },
         };
       }
     }
@@ -578,7 +611,6 @@ const SolanaMint = () => {
                 <InputErrorMsg
                   message={solanaStatesError.chargeForMintErrorMessage}
                 />
-
               )}
             </div>
 
@@ -766,7 +798,6 @@ const SolanaMint = () => {
                   min={"1"}
                   step={"1"}
                   label="Collect limit"
-
                   name="limitedEditionNumber"
                   onChange={(e) => handleChange(e)}
                   value={solanaEnabled.limitedEditionNumber}
@@ -1089,7 +1120,6 @@ const SolanaMint = () => {
                               }
                             />
                           )}
-
                         </div>
                       </div>
                     </>
