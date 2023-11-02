@@ -18,7 +18,8 @@ import { useAccount, useSignMessage } from "wagmi";
 import { Context } from "../../../../../../../providers/context";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
-import { errorMessage } from "../../../../../../../utils";
+import { errorMessage, saveToLocalStorage } from "../../../../../../../utils";
+import { LOCAL_STORAGE } from "../../../../../../../data";
 
 const LensAuthDialog = ({ title, className }) => {
   const [open, setOpen] = useState(false);
@@ -101,9 +102,8 @@ const LensAuthDialog = ({ title, className }) => {
       signature: signature,
     })
       .then((res) => {
-        console.log("lensAuth", res);
         if (res?.status === "success") {
-          saveToLocalStorage("lensAuth", res?.message);
+          saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
           toast.success("Successfully authenticated");
           setLensAuthState((cur) => ({
             ...cur,
@@ -218,30 +218,31 @@ const LensAuthDialog = ({ title, className }) => {
               Fetching lens profile profiles...
             </Typography>
           )}
-          {lensAuthState.lensProfileData.map((item) => {
-            const handle = item?.handle?.localName;
-            return (
-              <div
-                key={item.id}
-                className="rounded-lg w-full h-full border p-3 my-2 text-black cursor-pointer hover:bg-blue-gray-50 flex items-center justify-between"
-                onClick={() => {
-                  generateSignature(item.id);
-                  setActiveProfile({
-                    id: item.id,
-                    handle: handle,
-                  });
-                }}
-              >
-                <Typography variant="h6" color="blue-gray">
-                  @{handle}
-                </Typography>
-                {lensAuthState.loading.isLoading &&
-                activeProfile.id === item.id ? (
-                  <Spinner />
-                ) : null}
-              </div>
-            );
-          })}
+          {!loading &&
+            lensAuthState.lensProfileData.map((item) => {
+              const handle = item?.handle?.localName;
+              return (
+                <div
+                  key={item.id}
+                  className="rounded-lg w-full h-full border p-3 my-2 text-black cursor-pointer hover:bg-blue-gray-50 flex items-center justify-between"
+                  onClick={() => {
+                    generateSignature(item.id);
+                    setActiveProfile({
+                      id: item.id,
+                      handle: handle,
+                    });
+                  }}
+                >
+                  <Typography variant="h6" color="blue-gray">
+                    @{handle}
+                  </Typography>
+                  {lensAuthState.loading.isLoading &&
+                  activeProfile.id === item.id ? (
+                    <Spinner />
+                  ) : null}
+                </div>
+              );
+            })}
         </DialogBody>
       </Dialog>
     </>
