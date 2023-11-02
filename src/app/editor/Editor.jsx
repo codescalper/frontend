@@ -77,6 +77,8 @@ const Editor = () => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const { solanaAddress } = useSolanaWallet();
+  const isEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const isSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const currentUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
   const canvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
@@ -204,21 +206,30 @@ const Editor = () => {
         contextCanvasIdRef.current = null;
       }
 
+      console.log(currentUserAddress)
+      console.log(address, solanaAddress)
+
       // save it to the backend
       if (canvasChildren?.length > 0) {
         // create an array of all the recipients then make it uniq
         const parentArray = [
-          currentUserAddress || address || solanaAddress,
+          currentUserAddress
+            ? currentUserAddress
+            : isEVMAuth
+            ? address
+            : isSolanaAuth
+            ? solanaAddress
+            : "",
           ...recipientDataFilter().recipientHandles,
         ];
 
         // update the parentRecipientRef to the uniq values (final list for split revenue)
         parentRecipientListRef.current = [...new Set(parentArray)];
 
-        // console.log("parentRecipientObj", recipientDataFilter());
-        // console.log("parentRecipientRef", parentRecipientListRef.current);
+        console.log("parentRecipientObj", recipientDataFilter());
+        console.log("parentRecipientRef", parentRecipientListRef.current);
 
-        // return;
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {

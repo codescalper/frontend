@@ -498,8 +498,8 @@ const SolanaMint = () => {
               tx: res?.tx,
               mintId: res?.mintId,
             });
-            setExplorerLink("https://mint.lenspost.xyz/" + res?.tx);
-            setDialogOpen(true);
+            // setExplorerLink("https://mint.lenspost.xyz/" + res?.tx);
+            // setDialogOpen(true);
           }
 
           // TODO: clear all the states and variables
@@ -527,17 +527,14 @@ const SolanaMint = () => {
 
   // funtion for sign the transaction for solana master edition
   const signTransaction = async () => {
-    //   try {    
-    //     const recoveredTransaction = Transaction.from(Buffer.from(solanaMasterEditionData.tx, 'base64'));
-    //     recoveredTransaction.partialSign(feePayer);
-    //     const txnSignature = await connection.sendRawTransaction(
-    //       recoveredTransaction.serialize(),
-    //     );
-    //     return txnSignature;
-    //   } catch (error) {
-    //     console.log(error);    
-    //   }
-    // }
+    try {
+      const txSignature = await solanaSignTransaction(
+        solanaMasterEditionData.tx
+      );
+      console.log("txSignature", txSignature);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -1276,13 +1273,13 @@ const SolanaMint = () => {
                 </Button>
 
                 <Button
-                  disabled={true}
+                  disabled={sharing}
                   onClick={() => sharePost("solana-master")}
                   color="teal"
                   className="mx-4"
                 >
                   {" "}
-                  Mint as master edition (Coming Soon) {" "}
+                  Mint as master edition (Coming Soon){" "}
                 </Button>
               </div>
             ) : (
