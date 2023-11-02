@@ -286,7 +286,7 @@ const ContextProvider = ({ children }) => {
 
   const handleOpen = () => setDialogOpen((cur) => !cur);
 
-  // console.log("ContextProvider", referredFromRef.current);
+  // console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
 
   return (
     <Context.Provider
@@ -392,14 +392,6 @@ const ContextProvider = ({ children }) => {
         explorerLink,
         setExplorerLink,
         handleOpen,
-
-        // For zora mint Switches
-        zoraEnabled,
-        setZoraEnabled,
-
-        // For Zora Mint Error
-        zoraStatesError,
-        setZoraStatesError,
       }}
     >
       {children}

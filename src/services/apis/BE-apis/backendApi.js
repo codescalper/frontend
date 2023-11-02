@@ -80,8 +80,11 @@ export const solanaAuth = async ({ walletAddress, signature, message }) => {
 
 // lensauth apis start
 // need auth token (jwt)
-export const lensAuthenticate = async (signature) => {
+export const lensAuthenticate = async ({profileId, profileHandle, id, signature}) => {
   const result = await api.post(`${API}/auth/evm/lens`, {
+    profileId: profileId,
+    profileHandle: profileHandle,
+    id: id,
     signature: signature,
   });
 

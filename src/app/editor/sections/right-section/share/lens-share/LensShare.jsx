@@ -44,7 +44,7 @@ import {
 import { useStore } from "../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
-import { SplitPolicyCard } from "./components";
+import { LensAuthDialog, SplitPolicyCard } from "./components";
 import { useAppAuth, useReset } from "../../../../../../hooks/app";
 import { LOCAL_STORAGE } from "../../../../../../data";
 import { Button, Select, Option } from "@material-tailwind/react";
@@ -54,8 +54,9 @@ const LensShare = () => {
   const store = useStore();
   const { address, isConnected } = useAccount();
   const { resetState } = useReset();
-  const getDispatcherStatus = getFromLocalStorage("dispatcher");
-  const getEVMAuh = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
+  const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const { isAuthenticated } = useAppAuth();
 
   const {
@@ -87,7 +88,6 @@ const LensShare = () => {
     error,
     signMessage,
   } = useSignMessage();
-  const getLensAuth = getFromLocalStorage("lensAuth");
   const [sharing, setSharing] = useState(false);
 
   const { mutateAsync: shareOnLens } = useMutation({
@@ -1047,7 +1047,11 @@ const LensShare = () => {
             </div>
           </div>
         </div>
-        {getEVMAuh ? (
+        {!getEVMAuth ? (
+          <EVMWallets title="Login with EVM" className="mx-2" />
+        ) : !getLensAuth ? (
+          <LensAuthDialog title="Login with Lens" />
+        ) : (
           <Button
             disabled={sharing}
             onClick={handleLensClick}
@@ -1056,8 +1060,6 @@ const LensShare = () => {
           >
             Share Now
           </Button>
-        ) : (
-          <EVMWallets title="Login with EVM" className="mx-2" />
         )}
       </div>
     </>

@@ -10,7 +10,7 @@ import {
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
-import { createCanvas, updateCanvas } from "../../services";
+import { createCanvas, getProfileData, updateCanvas } from "../../services";
 import { Context } from "../../providers/context/ContextProvider";
 import { unstable_setAnimationsEnabled } from "polotno/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -42,6 +42,7 @@ import { SpeedDialX } from "./common/elements/SpeedDial";
 import { Tooltip } from "polotno/canvas/tooltip";
 import { useSolanaWallet } from "../../hooks/solana";
 import { LOCAL_STORAGE } from "../../data";
+import { Button } from "@material-tailwind/react";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -243,7 +244,7 @@ const Editor = () => {
         //   recipientHandlesCombiner().recipients
         // );
 
-        // return;
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {
@@ -391,7 +392,14 @@ const Editor = () => {
               {/* Bottom section */}
               <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">
                 <BgRemover />
-                <ZoomButtons store={store} />
+                {/* <ZoomButtons store={store} /> */}
+                <Button
+                  onClick={() => getProfileData(address)}
+                  title="get user lens data"
+                  color="white"
+                >
+                  get user lens data
+                </Button>
 
                 {/* Quick Tour on the main page */}
                 <div className="flex flex-row ">

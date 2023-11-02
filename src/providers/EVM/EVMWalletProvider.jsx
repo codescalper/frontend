@@ -19,7 +19,8 @@ import { publicProvider } from "wagmi/providers/public";
 import { ENVIRONMENT, WALLETCONNECT_PROJECT_ID } from "../../services";
 
 const { chains, publicClient } = configureChains(
-  ENVIRONMENT === "production" ? [polygon, zora] : [polygonMumbai, zoraTestnet],
+  [polygon],
+  // ENVIRONMENT === "production" ? [polygon] : [polygonMumbai],
   [
     // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),

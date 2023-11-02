@@ -9,7 +9,7 @@ const EVMWallets = ({title, className}) => {
     <Button
       size="lg"
       color="black"
-      className={`flex items-center gap-3 outline-none ${className}`}
+      className={`flex items-center justify-center gap-3 outline-none my-2 ${className}`}
       onClick={openConnectModal}
     >
       <img

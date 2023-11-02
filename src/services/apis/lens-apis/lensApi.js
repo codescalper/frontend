@@ -27,7 +27,7 @@ export const lensHub = new ethers.Contract(
 const API_URL =
   ENVIRONMENT === "production"
     ? "https://api.lens.dev" // mainnet
-    : "https://api-mumbai.lens.dev"; // mumbai
+    : "https://api-v2-mumbai.lens.dev"; // mumbai
 
 // export const client = new ApolloClient({
 //   uri: API_URL,
@@ -152,9 +152,10 @@ export const CreateSetProfileImageURITypedData = gql`
   }
 `;
 
-export const challengeQuery = gql`
-  query Challenge($address: EthereumAddress!) {
-    challenge(request: { address: $address }) {
+export const challenge = gql`
+  query Challenge($signedBy: EvmAddress!, $for: ProfileId) {
+    challenge(request: { signedBy: $signedBy, for: $for }) {
+      id
       text
     }
   }
@@ -170,10 +171,47 @@ export const authenticate = gql`
 `;
 
 export const getDefaultProfile = gql`
-  query DefaultProfile($address: EthereumAddress!) {
-    defaultProfile(request: { ethereumAddress: $address }) {
-      id
-      handle
+  query ProfilesManaged($for: EvmAddress!) {
+    profilesManaged(request: { for: $for }) {
+      items {
+        id
+        handle {
+          fullHandle
+          localName
+          suggestedFormatted {
+            localName
+          }
+        }
+        metadata {
+          displayName
+          picture {
+            ... on NftImage {
+              collection {
+                chainId
+                address
+              }
+              tokenId
+              image {
+                raw {
+                  uri
+                  mimeType
+                }
+              }
+              verified
+            }
+            ... on ImageSet {
+              raw {
+                mimeType
+                uri
+              }
+            }
+            __typename
+          }
+        }
+      }
+      pageInfo {
+        next
+      }
     }
   }
 `;
@@ -268,10 +306,16 @@ export const signSetProfileImageURITypedData = async (request, token) => {
   return { result, signature };
 };
 
-export const lensChallenge = async (address) => {
-  const variables = { address };
-  let resp = await request(API_URL, challengeQuery, variables);
-  return resp.challenge.text;
+export const lensChallenge = async (address, profileId) => {
+  const variables = { signedBy: address, for: profileId };
+  let result = await request(API_URL, challenge, variables);
+  return result;
+};
+
+export const getProfileData = async (address) => {
+  const variables = { for: address };
+  let result = await request(API_URL, getDefaultProfile, variables);
+  return result;
 };
 
 export const createSetDispatcherTypedDataMutation = async (request) => {
@@ -287,45 +331,6 @@ export const createSetDispatcherTypedDataMutation = async (request) => {
 };
 
 export const signSetDispatcherTypedData = async (typedData) => {
-  // TODO - call /auth/lens/set-dispatcher to get the typed data.
-  // console.log("request", request);
-  // const result = await createSetDispatcherTypedDataMutation(request);
-  // console.log("result", result);
-  // const typedData = result.typedData;
-  // let typedData = {
-  //   types: {
-  //     SetDispatcherWithSig: [
-  //       {
-  //         name: "profileId",
-  //         type: "uint256",
-  //       },
-  //       {
-  //         name: "dispatcher",
-  //         type: "address",
-  //       },
-  //       {
-  //         name: "nonce",
-  //         type: "uint256",
-  //       },
-  //       {
-  //         name: "deadline",
-  //         type: "uint256",
-  //       },
-  //     ],
-  //   },
-  //   domain: {
-  //     name: "Lens Protocol Profiles",
-  //     chainId: 137,
-  //     version: "1",
-  //     verifyingContract: "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82",
-  //   },
-  //   value: {
-  //     nonce: 1,
-  //     deadline: 1690642081,
-  //     profileId: request.profileId,
-  //     dispatcher: "0x761010EFc8826fFdcb8Ad005BD935698ed38DfE7",
-  //   },
-  // };
   const signature = await signedTypeData(
     typedData?.domain,
     typedData?.types,
