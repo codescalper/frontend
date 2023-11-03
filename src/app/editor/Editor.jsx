@@ -138,7 +138,7 @@ const Editor = () => {
   });
   // 03June2023
 
-  // this is recipient data for filter.
+  // function to filter the recipient data
   const recipientDataFilter = () => {
     parentRecipientDataRef.current = [
       ...preStoredRecipientDataRef.current, // recipient data geting from BE
@@ -164,19 +164,47 @@ const Editor = () => {
     }
 
     // Generate a new array by removing elements at notFoundIndexes
-    const newArray = recipientDataRefArr.filter(
+    const newDataRef = recipientDataRefArr.filter(
       (_, index) => !notFoundIndexes.includes(index)
     );
 
     // update the parentRecipientDataRef with the new array
-    parentRecipientDataRef.current = newArray;
+    parentRecipientDataRef.current = newDataRef;
 
-    // get the lensHandle from the newArray
-    const newArrayHandles = newArray.map((item) => item.handle);
+    // get the handles and address from the newArray
+    const newArrayHandles = newDataRef.map((item) => item.handle);
 
     return {
       recipientData: parentRecipientDataRef.current,
       recipientHandles: newArrayHandles,
+    };
+  };
+
+  // function to add the all recipient handles / address
+  const recipientHandlesCombiner = () => {
+    // create an array of all the recipients then make it uniq
+
+    let parentArray = [];
+
+    // if the canvas is owned by other user
+    if (referredFromRef.current.length > 0) {
+      parentArray = [
+        address || solanaAddress, // current recipient address
+        referredFromRef.current[0], // owner address of other created canvas
+        ...recipientDataFilter().recipientHandles, // handles of all the dataRefs recipients
+      ];
+    } else {
+      parentArray = [
+        address || solanaAddress, // current recipient address
+        ...recipientDataFilter().recipientHandles, // handles of all the dataRefs recipients
+      ];
+    }
+
+    // update the parentRecipientRef to the uniq values (final list for split revenue)
+    parentRecipientListRef.current = [...new Set(parentArray)];
+
+    return {
+      recipients: parentRecipientListRef.current,
     };
   };
 
@@ -206,36 +234,21 @@ const Editor = () => {
         contextCanvasIdRef.current = null;
       }
 
-      console.log(currentUserAddress)
-      console.log(address, solanaAddress)
-
       // save it to the backend
       if (canvasChildren?.length > 0) {
-        // create an array of all the recipients then make it uniq
-        const parentArray = [
-          currentUserAddress
-            ? currentUserAddress
-            : isEVMAuth
-            ? address
-            : isSolanaAuth
-            ? solanaAddress
-            : "",
-          ...recipientDataFilter().recipientHandles,
-        ];
+        // console.log("parentRecipientObj", recipientDataFilter().recipientData);
+        // console.log(
+        //   "parentRecipientRef",
+        //   recipientHandlesCombiner().recipients
+        // );
 
-        // update the parentRecipientRef to the uniq values (final list for split revenue)
-        parentRecipientListRef.current = [...new Set(parentArray)];
-
-        console.log("parentRecipientObj", recipientDataFilter());
-        console.log("parentRecipientRef", parentRecipientListRef.current);
-
-        return;
+        // return;
 
         // create new canvas
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
-            referredFrom: parentRecipientListRef.current,
+            referredFrom: recipientHandlesCombiner().recipients,
             assetsRecipientElementData: recipientDataFilter().recipientData,
             preview: canvasBase64Ref.current,
           })
@@ -259,7 +272,7 @@ const Editor = () => {
             id: canvasIdRef.current,
             data: json,
             isPublic: false,
-            referredFrom: parentRecipientListRef.current,
+            referredFrom: recipientHandlesCombiner().recipients,
             assetsRecipientElementData: recipientDataFilter().recipientData,
             preview: canvasBase64Ref.current,
           })

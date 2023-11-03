@@ -135,6 +135,9 @@ const ContextProvider = ({ children }) => {
   // for split revenue eligible address/recipient
   const referredFromRef = useRef([]);
 
+  // owner address of canvas
+  const canvasOwnerAddressRef = useRef("");
+
   // NOTE: dataRefs has elementId and handle data {elementId: "elementId", handle: "handle"}
 
   // elementId and handle data for lens collect nft
@@ -194,7 +197,7 @@ const ContextProvider = ({ children }) => {
 
   const handleOpen = () => setDialogOpen((cur) => !cur);
 
-  // console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
+  // console.log("ContextProvider", referredFromRef.current);
 
   return (
     <Context.Provider
