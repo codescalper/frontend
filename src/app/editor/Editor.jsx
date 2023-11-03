@@ -244,7 +244,7 @@ const Editor = () => {
         //   recipientHandlesCombiner().recipients
         // );
 
-        return;
+        // return;
 
         // create new canvas
         if (!canvasIdRef.current) {
@@ -392,14 +392,14 @@ const Editor = () => {
               {/* Bottom section */}
               <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">
                 <BgRemover />
-                {/* <ZoomButtons store={store} /> */}
-                <Button
+                <ZoomButtons store={store} />
+                {/* <Button
                   onClick={() => getProfileData(address)}
                   title="get user lens data"
                   color="white"
                 >
                   get user lens data
-                </Button>
+                </Button> */}
 
                 {/* Quick Tour on the main page */}
                 <div className="flex flex-row ">

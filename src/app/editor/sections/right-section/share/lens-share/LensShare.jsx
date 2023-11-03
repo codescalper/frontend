@@ -1054,7 +1054,7 @@ const LensShare = () => {
         ) : (
           <Button
             disabled={sharing}
-            onClick={handleLensClick}
+            onClick={setDispatcherFn}
             // color="yellow"
             className="mx-4 mb-4 bg-[#e1f16b] text-black"
           >
