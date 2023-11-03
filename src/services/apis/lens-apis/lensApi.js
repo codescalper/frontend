@@ -319,7 +319,7 @@ export const getProfileData = async (address) => {
 };
 
 export const createSetDispatcherTypedDataMutation = async (request) => {
-  console.log("request: ", request);
+  // console.log("request: ", request);
   const result = await client.mutate({
     mutation: createSetDispatcherTypedData,
     variables: {

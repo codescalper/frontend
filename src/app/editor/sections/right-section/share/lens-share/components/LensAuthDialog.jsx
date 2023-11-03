@@ -112,17 +112,6 @@ const LensAuthDialog = ({ title, className }) => {
               text: "",
             },
           }));
-          //   setTimeout(() => {
-          //     // check the dispatcher
-          //     // if true => sharePost
-          //     if (getDispatcherStatus === true) {
-          //       sharePost("lens");
-          //       // console.log("share on lens");
-          //     } else {
-          //       // else => set the dispatcher
-          //       setDispatcherFn();
-          //     }
-          //   }, 4000);
         }
       })
       .catch((err) => {
@@ -214,35 +203,45 @@ const LensAuthDialog = ({ title, className }) => {
             Select a Lens profile and sign the message.
           </Typography>
           {loading && (
-            <Typography variant="h6" color="blue-gray">
-              Fetching lens profile profiles...
-            </Typography>
+            <div className="flex items-center justify-center rounded-lg border my-2 p-3">
+              <Typography variant="h6" color="blue-gray">
+                Fetching lens profile profiles...
+              </Typography>
+            </div>
           )}
-          {!loading &&
-            lensAuthState.lensProfileData.map((item) => {
-              const handle = item?.handle?.localName;
-              return (
-                <div
-                  key={item.id}
-                  className="rounded-lg w-full h-full border p-3 my-2 text-black cursor-pointer hover:bg-blue-gray-50 flex items-center justify-between"
-                  onClick={() => {
-                    generateSignature(item.id);
-                    setActiveProfile({
-                      id: item.id,
-                      handle: handle,
-                    });
-                  }}
-                >
+          {lensAuthState.lensProfileData.length > 0
+            ? !loading &&
+              lensAuthState.lensProfileData.map((item) => {
+                const handle = item?.handle?.localName;
+                return (
+                  <div
+                    key={item.id}
+                    className="rounded-lg w-full h-full border p-3 my-2 text-black cursor-pointer hover:bg-blue-gray-50 flex items-center justify-between"
+                    onClick={() => {
+                      generateSignature(item.id);
+                      setActiveProfile({
+                        id: item.id,
+                        handle: handle,
+                      });
+                    }}
+                  >
+                    <Typography variant="h6" color="blue-gray">
+                      @{handle}
+                    </Typography>
+                    {lensAuthState.loading.isLoading &&
+                    activeProfile.id === item.id ? (
+                      <Spinner color="red" />
+                    ) : null}
+                  </div>
+                );
+              })
+            : !loading && (
+                <div className="flex items-center justify-center rounded-lg border my-2 p-3">
                   <Typography variant="h6" color="blue-gray">
-                    @{handle}
+                    No Lens profile found
                   </Typography>
-                  {lensAuthState.loading.isLoading &&
-                  activeProfile.id === item.id ? (
-                    <Spinner />
-                  ) : null}
                 </div>
-              );
-            })}
+              )}
         </DialogBody>
       </Dialog>
     </>
