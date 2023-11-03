@@ -7,7 +7,7 @@ export const clearAllLocalStorageData = () => {
   removeFromLocalStorage(LOCAL_STORAGE.userAuthToken);
   removeFromLocalStorage(LOCAL_STORAGE.evmAuth);
   removeFromLocalStorage(LOCAL_STORAGE.solanaAuth);
-  removeFromLocalStorage(LOCAL_STORAGE.usertAuthTime);
+  removeFromLocalStorage(LOCAL_STORAGE.userAuthTime);
   removeFromLocalStorage(LOCAL_STORAGE.userAddress);
   removeFromLocalStorage(LOCAL_STORAGE.lensAuth);
   removeFromLocalStorage(LOCAL_STORAGE.ifUserEligible);

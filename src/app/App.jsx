@@ -167,7 +167,7 @@ const App = () => {
           toast.success("Login successful");
           saveToLocalStorage(LOCAL_STORAGE.evmAuth, true);
           saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
-          saveToLocalStorage(LOCAL_STORAGE.usertAuthTime, new Date().getTime());
+          saveToLocalStorage(LOCAL_STORAGE.userAuthTime, new Date().getTime());
           saveToLocalStorage(LOCAL_STORAGE.userAddress, address);
           saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
           setSession(res.jwt);
@@ -205,7 +205,7 @@ const App = () => {
           toast.success("Login successful");
           saveToLocalStorage(LOCAL_STORAGE.solanaAuth, true);
           saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
-          saveToLocalStorage(LOCAL_STORAGE.usertAuthTime, new Date().getTime());
+          saveToLocalStorage(LOCAL_STORAGE.userAuthTime, new Date().getTime());
           saveToLocalStorage(LOCAL_STORAGE.userAddress, solanaAddress);
           saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
           setSession(res.jwt);
