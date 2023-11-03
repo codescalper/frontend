@@ -80,7 +80,12 @@ export const solanaAuth = async ({ walletAddress, signature, message }) => {
 
 // lensauth apis start
 // need auth token (jwt)
-export const lensAuthenticate = async ({profileId, profileHandle, id, signature}) => {
+export const lensAuthenticate = async ({
+  profileId,
+  profileHandle,
+  id,
+  signature,
+}) => {
   const result = await api.post(`${API}/auth/evm/lens`, {
     profileId: profileId,
     profileHandle: profileHandle,
@@ -389,35 +394,9 @@ export const checkDispatcher = async () => {
 };
 
 export const setDispatcher = async () => {
-  try {
-    const result = await api.get(`${API}/auth/evm/lens/set-dispatcher`);
+  const result = await api.get(`${API}/auth/evm/lens/set-profile-manager`);
 
-    return result?.data?.message;
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      console.log({ 401: error?.response?.statusText });
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
+  return result?.data;
 };
 
 // template apis start
@@ -493,7 +472,9 @@ export const getFeaturedAssets = async (type, page) => {
 // Remove Background API
 export const getRemovedBgS3Link = async (query, elementId) => {
   try {
-    const result = await api.post(`${API}/util/remove-bg?image=${encodeURIComponent(query)}&id=${elementId}`);
+    const result = await api.post(
+      `${API}/util/remove-bg?image=${encodeURIComponent(query)}&id=${elementId}`
+    );
 
     if (result?.status === 200) {
       if (result?.data?.s3link) {
