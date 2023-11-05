@@ -12,13 +12,14 @@ import animationData from "../../../../../../assets/lottie/alertAnimation2.json"
 import {
   checkDispatcher,
   lensAuthenticate,
-  setDispatcher,
+  getBroadcastData,
   shareOnSocials,
   lensChallenge,
   lensHub,
   signSetDispatcherTypedData,
   splitSignature,
   ENVIRONMENT,
+  setBroadcastOnChainTx,
 } from "../../../../../../services";
 import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
@@ -158,30 +159,25 @@ const LensShare = () => {
   // set the dispatcher true or false
   const setDispatcherFn = async () => {
     try {
-      setSharing(true);
-      setIsLoading(true);
-      setText("Sign the message to enable dispatcher");
+      // setSharing(true);
+      // setIsLoading(true);
+      // setText("Sign the message to enable dispatcher");
 
-      const setDispatcherRequest = await setDispatcher();
+      const broadcastData = await getBroadcastData();
+      const { id, typedData } = broadcastData?.message;
 
-      const signedResult = await signSetDispatcherTypedData(
-        setDispatcherRequest
-      );
+      console.log("broadcastData: ", id, typedData);
+      
+      const { signature } = await signSetDispatcherTypedData(typedData);
+      
+      console.log("signedResult: ", signature);
+      
+      const boadcastResult = await setBroadcastOnChainTx(id, signature);
+      
+      console.log("boadcastResult: ", boadcastResult);
+      
+      return;
 
-      const typedData = signedResult.typedData;
-      const { v, r, s } = splitSignature(signedResult.signature);
-      const tx = await lensHub.setDispatcherWithSig({
-        profileId: typedData.value.profileId,
-        dispatcher: typedData.value.dispatcher,
-        sig: {
-          v,
-          r,
-          s,
-          deadline: typedData.value.deadline,
-        },
-      });
-      // console.log("successfully set dispatcher: tx hash", tx.hash);
-      // if tx.hash? => sharePost()
       if (tx.hash) {
         saveToLocalStorage("dispatcher", true);
         setIsLoading(false);

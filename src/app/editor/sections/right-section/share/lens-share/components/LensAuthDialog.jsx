@@ -211,7 +211,7 @@ const LensAuthDialog = ({ title, className }) => {
           )}
           {lensAuthState.lensProfileData.length > 0
             ? !loading &&
-              lensAuthState.lensProfileData.map((item) => {
+              [...lensAuthState.lensProfileData].reverse().map((item) => {
                 const handle = item?.handle?.localName;
                 return (
                   <div
