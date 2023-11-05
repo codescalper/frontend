@@ -170,7 +170,7 @@ export const authenticate = gql`
   }
 `;
 
-export const getDefaultProfile = gql`
+export const getProfileManaged = gql`
   query ProfilesManaged($for: EvmAddress!) {
     profilesManaged(request: { for: $for }) {
       items {
@@ -314,7 +314,7 @@ export const lensChallenge = async (address, profileId) => {
 
 export const getProfileData = async (address) => {
   const variables = { for: address };
-  let result = await request(API_URL, getDefaultProfile, variables);
+  let result = await request(API_URL, getProfileManaged, variables);
   return result;
 };
 
@@ -336,6 +336,6 @@ export const signSetDispatcherTypedData = async (typedData) => {
     typedData?.types,
     typedData?.value
   );
-
+  
   return { typedData, signature };
 };

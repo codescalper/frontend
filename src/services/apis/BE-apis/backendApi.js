@@ -95,6 +95,27 @@ export const lensAuthenticate = async ({
 
   return result?.data;
 };
+
+export const checkDispatcher = async () => {
+  const result = await api.get(`${API}/util/check-dispatcher`);
+
+  return result?.data;
+};
+
+export const getBroadcastData = async () => {
+  const result = await api.get(`${API}/auth/evm/lens/set-profile-manager`);
+
+  return result?.data;
+};
+
+export const setBroadcastOnChainTx = async (id, signature) => {
+  const result = await api.post(`${API}/auth/evm/lens/broadcast-tx`, {
+    id: id,
+    signature: signature,
+  });
+
+  return result?.data;
+};
 // lensauth apis end
 
 // twitter apis start
@@ -385,19 +406,6 @@ export const getCollectionNftById = async (id, contractAddress) => {
   return result?.data;
 };
 // collection apis start
-
-// utils apis
-export const checkDispatcher = async () => {
-  const result = await api.get(`${API}/util/check-dispatcher`);
-
-  return result?.data;
-};
-
-export const setDispatcher = async () => {
-  const result = await api.get(`${API}/auth/evm/lens/set-profile-manager`);
-
-  return result?.data;
-};
 
 // template apis start
 // no need auth token (jwt)
