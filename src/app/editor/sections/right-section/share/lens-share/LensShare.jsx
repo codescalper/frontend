@@ -15,9 +15,7 @@ import {
   getBroadcastData,
   shareOnSocials,
   lensChallenge,
-  lensHub,
   signSetDispatcherTypedData,
-  splitSignature,
   ENVIRONMENT,
   setBroadcastOnChainTx,
 } from "../../../../../../services";
@@ -102,6 +100,7 @@ const LensShare = () => {
   });
 
   const { isLoading: checkingDispatcher } = useQuery({
+    queryKey: ["checkDispatcher"],
     queryFn: checkDispatcher,
     onSuccess: (data) => {
       saveToLocalStorage("dispatcher", data?.message);
@@ -109,7 +108,7 @@ const LensShare = () => {
     onError: (err) => {
       console.log("checkDispatcher error: ", err);
     },
-    enabled: getDispatcherStatus === true ? false : true,
+    // enabled: getDispatcherStatus === true ? false : true,
   });
 
   // generating signature
@@ -159,24 +158,15 @@ const LensShare = () => {
   // set the dispatcher true or false
   const setDispatcherFn = async () => {
     try {
-      // setSharing(true);
-      // setIsLoading(true);
-      // setText("Sign the message to enable dispatcher");
+      setSharing(true);
+      setIsLoading(true);
+      setText("Sign the message to enable gasless transactions");
 
-      const broadcastData = await getBroadcastData();
-      const { id, typedData } = broadcastData?.message;
+      const { id, typedData } = await getBroadcastData();
 
-      console.log("broadcastData: ", id, typedData);
-      
       const { signature } = await signSetDispatcherTypedData(typedData);
-      
-      console.log("signedResult: ", signature);
-      
+
       const boadcastResult = await setBroadcastOnChainTx(id, signature);
-      
-      console.log("boadcastResult: ", boadcastResult);
-      
-      return;
 
       if (tx.hash) {
         saveToLocalStorage("dispatcher", true);
@@ -188,8 +178,8 @@ const LensShare = () => {
         }, 4000);
       }
     } catch (err) {
-      console.log("error setting dispatcher: ", err);
-      toast.error("Error setting dispatcher");
+      console.log("error setting gasless transactions: ", err);
+      toast.error("Error setting gasless transactions");
       setSharing(false);
       setIsLoading(false);
       setText("");

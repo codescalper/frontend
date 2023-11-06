@@ -33,6 +33,11 @@ const LensAuthDialog = ({ title, className }) => {
 
   const handleOpen = () => setOpen(!open);
 
+  const getLensPFP = (address) => {
+    const pfp = `https://cdn.stamp.fyi/avatar/eth:${address}?s=300`;
+    return pfp;
+  };
+
   const {
     data: signature,
     isError,
@@ -103,7 +108,10 @@ const LensAuthDialog = ({ title, className }) => {
     })
       .then((res) => {
         if (res?.status === "success") {
-          saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
+          saveToLocalStorage(LOCAL_STORAGE.lensAuth, {
+            profileId: activeProfile.id,
+            profileHandle: activeProfile.handle,
+          });
           toast.success("Successfully authenticated");
           setLensAuthState((cur) => ({
             ...cur,
@@ -164,6 +172,7 @@ const LensAuthDialog = ({ title, className }) => {
         {title}
       </Button>
       <Dialog
+        size="xs"
         open={open}
         handler={lensAuthState.loading.isLoading ? null : handleOpen}
         animate={{
@@ -225,9 +234,16 @@ const LensAuthDialog = ({ title, className }) => {
                       });
                     }}
                   >
-                    <Typography variant="h6" color="blue-gray">
-                      @{handle}
-                    </Typography>
+                    <div className="flex items-center gap-5">
+                      <img
+                        src={getLensPFP(address)}
+                        alt=""
+                        className="h-10 w-10 rounded-full"
+                      />
+                      <Typography variant="h6" color="blue-gray">
+                        @{handle}
+                      </Typography>
+                    </div>
                     {lensAuthState.loading.isLoading &&
                     activeProfile.id === item.id ? (
                       <Spinner color="red" />
