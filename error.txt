@@ -1,12 +1,12 @@
 response: {
     errors: [
       {
-        message: 'Signless is not enabled',
-        locations: [ { line: 6, column: 5 } ],
-        path: [ 'createChangeProfileManagersTypedData' ],
+        message: 'Address must be defined',
+        locations: [ { line: 3, column: 5 } ],
+        path: [ 'broadcastOnchain' ],
         extensions: {
-          code: 'GRAPHQL_VALIDATION_FAILED',
-          exception: { stacktrace: [Array] }
+          code: 'INTERNAL_SERVER_ERROR',
+          exception: { name: 'InvariantError', stacktrace: [Array] }
         }
       }
     ],
@@ -15,56 +15,43 @@ response: {
     headers: Headers {
       [Symbol(map)]: [Object: null prototype] {
         'content-type': [ 'application/json; charset=utf-8' ],
-        'content-length': [ '984' ],
+        'transfer-encoding': [ 'chunked' ],
         connection: [ 'keep-alive' ],
-        date: [ 'Sat, 04 Nov 2023 18:30:41 GMT' ],
+        vary: [ 'Accept-Encoding' ],
+        date: [ 'Mon, 06 Nov 2023 18:37:46 GMT' ],
         'access-control-allow-origin': [ '*' ],
         'access-control-expose-headers': [ 'x-api-version' ],
         'x-api-version': [ '2.0.0' ],
-        etag: [ 'W/"3d8-+3SbcyGazyHWYp03YyOtzIx2tbE"' ],
+        etag: [ 'W/"65d-g430VKEOnw2JVVcR4eHBxTicV8Y"' ],
+        'content-encoding': [ 'gzip' ],
         'x-cache': [ 'Miss from cloudfront' ],
         via: [
-          '1.1 96e83c7e9c6cc822b8bad237a4d769d8.cloudfront.net (CloudFront)'
+          '1.1 943a49ea95ae39357321330a79b9bbda.cloudfront.net (CloudFront)'
         ],
         'x-amz-cf-pop': [ 'DEL51-P3' ],
         'alt-svc': [ 'h3=":443"; ma=86400' ],
-        'x-amz-cf-id': [ 'O-xS_UPhp_3BgjOsXMXTutpLKtVWgP8ov-Lq_Ks0ybEHOSPwHAmnWg==' ]
+        'x-amz-cf-id': [ 'KCyIJOAksebftBHvGqX-L5OJvxy4pak__e7YyvSPFQmZ-vtGkNFZhA==' ]
       }
     }
   },
   request: {
     query: '\n' +
-      '  mutation createChangeProfileManagersTypedData(\n' +
-      '    $options: TypedDataOptions\n' +
-      '    $request: ChangeProfileManagersRequest!\n' +
-      '  ) {\n' +
-      '    createChangeProfileManagersTypedData(options: $options, request: $request) {\n' +
-      '      id\n' +
-      '      expiresAt\n' +
-      '      typedData {\n' +
-      '        types {\n' +
-      '          ChangeDelegatedExecutorsConfig {\n' +
-      '            name\n' +
-      '            type\n' +
-      '          }\n' +
-      '        }\n' +
-      '        domain {\n' +
-      '          name\n' +
-      '          chainId\n' +
-      '          version\n' +
-      '          verifyingContract\n' +
-      '        }\n' +
-      '        value {\n' +
-      '          nonce\n' +
-      '          deadline\n' +
-      '          delegatorProfileId\n' +
-      '          delegatedExecutors\n' +
-      '          approvals\n' +
-      '          configNumber\n' +
-      '          switchToGivenConfig\n' +
-      '        }\n' +
+      '  mutation BroadcastOnchain($request: BroadcastRequest!) {\n' +
+      '    broadcastOnchain(request: $request) {\n' +
+      '      ... on RelaySuccess {\n' +
+      '        txHash\n' +
+      '        txId\n' +
+      '      }\n' +
+      '      ... on RelayError {\n' +
+      '        reason\n' +
       '      }\n' +
       '    }\n' +
       '  }\n',
-    variables: { request: { approveSignless: false } }
+    variables: {
+      request: {
+        id: 'f94af6fc-a6c4-4b72-8f67-dcddf0b31521',
+        signature: '0x0e8c634663194701790f366c2d9f076d348faacf75bcb8d7ad0c31e9a02d010b1da0f0637f32a664d3702c1ae68017efd6fc816ce81ee7c5bb1f19553619ad9f1c'
+      }
+    }
   }
+}

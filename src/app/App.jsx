@@ -62,7 +62,9 @@ const App = () => {
   const getUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
   const getUsertAuthTmestamp = getFromLocalStorage(LOCAL_STORAGE.usertAuthTime);
   const getifUserEligible = getFromLocalStorage(LOCAL_STORAGE.ifUserEligible);
-  const getHasUserSeenTheApp = getFromLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp);
+  const getHasUserSeenTheApp = getFromLocalStorage(
+    LOCAL_STORAGE.hasUserSeenTheApp
+  );
   const navigate = useNavigate();
   const {
     solanaConnected,
@@ -169,7 +171,10 @@ const App = () => {
           saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
           saveToLocalStorage(LOCAL_STORAGE.usertAuthTime, new Date().getTime());
           saveToLocalStorage(LOCAL_STORAGE.userAddress, address);
-          saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
+          saveToLocalStorage(LOCAL_STORAGE.lensAuth, {
+            profileId: res?.profileId,
+            profileHandle: res?.profileHandle,
+          });
           setSession(res.jwt);
           posthog.identify(address);
         } else {
@@ -207,7 +212,10 @@ const App = () => {
           saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
           saveToLocalStorage(LOCAL_STORAGE.usertAuthTime, new Date().getTime());
           saveToLocalStorage(LOCAL_STORAGE.userAddress, solanaAddress);
-          saveToLocalStorage(LOCAL_STORAGE.lensAuth, res?.message);
+          saveToLocalStorage(LOCAL_STORAGE.lensAuth, {
+            profileId: res?.profileId,
+            profileHandle: res?.profileHandle,
+          });
           setSession(res.jwt);
           posthog.identify(solanaAddress);
         } else {
