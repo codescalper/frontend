@@ -21,7 +21,7 @@ import { useMutation } from "@tanstack/react-query";
 import { errorMessage, saveToLocalStorage } from "../../../../../../../utils";
 import { LOCAL_STORAGE } from "../../../../../../../data";
 
-const LensAuthDialog = ({ title, className }) => {
+const LensAuth = ({ title, className }) => {
   const [open, setOpen] = useState(false);
   const [activeProfile, setActiveProfile] = useState({
     id: "",
@@ -166,13 +166,13 @@ const LensAuthDialog = ({ title, className }) => {
     <>
       <Button
         onClick={handleOpen}
-        // variant="gradient"
-        className={`bg-[#e1f16b] text-black mx-2 outline-none ${className}`}
+        color="teal"
+        className={` mx-2 outline-none ${className}`}
       >
         {title}
       </Button>
       <Dialog
-        size="xs"
+        size="sm"
         open={open}
         handler={lensAuthState.loading.isLoading ? null : handleOpen}
         animate={{
@@ -264,4 +264,4 @@ const LensAuthDialog = ({ title, className }) => {
   );
 };
 
-export default LensAuthDialog;
+export default LensAuth;
