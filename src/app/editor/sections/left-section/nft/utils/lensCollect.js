@@ -8,7 +8,7 @@ export const lensCollect = (title) => {
 
     return {
       isLensCollect: true,
-      lensHandle: "@" + match[1] + ".lens", // Use match[1] to capture the lens handle without "@" if it exists
+      lensHandle: "@" + match[1], // Use match[1] to capture the lens handle without "@" if it exists
     };
   } else {
     return false;

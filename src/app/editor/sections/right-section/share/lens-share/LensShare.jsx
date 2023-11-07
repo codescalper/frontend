@@ -43,7 +43,7 @@ import {
 import { useStore } from "../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
-import { LensAuthDialog, SplitPolicyCard } from "./components";
+import { LensAuth, LensDispatcher, SplitPolicyCard } from "./components";
 import { useAppAuth, useReset } from "../../../../../../hooks/app";
 import { LOCAL_STORAGE } from "../../../../../../data";
 import { Button, Select, Option } from "@material-tailwind/react";
@@ -103,12 +103,13 @@ const LensShare = () => {
     queryKey: ["checkDispatcher"],
     queryFn: checkDispatcher,
     onSuccess: (data) => {
+      console.log("checkDispatcher data: ", data);
       saveToLocalStorage("dispatcher", data?.message);
     },
     onError: (err) => {
       console.log("checkDispatcher error: ", err);
     },
-    // enabled: getDispatcherStatus === true ? false : true,
+    enabled: getDispatcherStatus === true ? false : true,
   });
 
   // generating signature
@@ -160,7 +161,7 @@ const LensShare = () => {
     try {
       setSharing(true);
       setIsLoading(true);
-      setText("Sign the message to enable gasless transactions");
+      setText("Sign the message to enable signless transactions");
 
       const { id, typedData } = await getBroadcastData();
 
@@ -168,18 +169,18 @@ const LensShare = () => {
 
       const boadcastResult = await setBroadcastOnChainTx(id, signature);
 
-      if (tx.hash) {
+      if (boadcastResult.txHash) {
         saveToLocalStorage("dispatcher", true);
         setIsLoading(false);
         setText("");
-        toast.success("Dispatcher enabled");
+        toast.success("Signless transactions enebled");
         setTimeout(() => {
           sharePost("lens");
         }, 4000);
       }
     } catch (err) {
-      console.log("error setting gasless transactions: ", err);
-      toast.error("Error setting gasless transactions");
+      console.log("error setting signless transactions: ", err);
+      toast.error("Error setting signless transactions");
       setSharing(false);
       setIsLoading(false);
       setText("");
@@ -527,25 +528,6 @@ const LensShare = () => {
       });
   };
 
-  // if lensAuth = success => sharePost or else generateSignature then sharePost
-
-  const handleLensClick = async () => {
-    if (isConnected && !getLensAuth) {
-      generateSignature();
-    } else if (isConnected && getLensAuth) {
-      if (checkingDispatcher) {
-        // Wait for checkingDispatcher to finish loading
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Adjust the delay as needed
-      }
-
-      if (!getDispatcherStatus) {
-        setDispatcherFn();
-      } else {
-        sharePost("lens");
-      }
-    }
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -634,10 +616,7 @@ const LensShare = () => {
         ...prevEnabled,
         splitRevenueRecipients: [
           {
-            recipient:
-              ENVIRONMENT === "production"
-                ? "@lenspostxyz.lens"
-                : "@lenspostxyz.test",
+            recipient: "@lenspostxyz",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
           ...updatedRecipients,
@@ -654,11 +633,11 @@ const LensShare = () => {
     }
   }, [isError]);
 
-  useEffect(() => {
-    if (isSuccess) {
-      lensAuth();
-    }
-  }, [isSuccess]);
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     lensAuth();
+  //   }
+  // }, [isSuccess]);
 
   return (
     <>
@@ -1035,14 +1014,16 @@ const LensShare = () => {
         </div>
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
-        ) : !getLensAuth ? (
-          <LensAuthDialog title="Login with Lens" />
+        ) : !getLensAuth?.profileHandle ? (
+          <LensAuth title="Login with Lens" />
+        ) : !getDispatcherStatus ? (
+          <LensDispatcher title="Enable signless transactions" />
         ) : (
           <Button
             disabled={sharing}
-            onClick={setDispatcherFn}
-            // color="yellow"
-            className="mx-4 mb-4 bg-[#e1f16b] text-black"
+            onClick={() => sharePost("lens")}
+            color="teal"
+            className="mx-2 outline-none"
           >
             Share Now
           </Button>

@@ -1,4 +1,5 @@
 import SplitPolicyCard from "./SplitPolicyCard";
-import LensAuthDialog from "./LensAuthDialog";
+import LensAuth from "./LensAuth";
+import LensDispatcher from "./LensDispatcher";
 
-export { SplitPolicyCard, LensAuthDialog };
+export { SplitPolicyCard, LensAuth, LensDispatcher };
