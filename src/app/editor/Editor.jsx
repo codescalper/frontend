@@ -10,16 +10,22 @@ import {
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
-import { createCanvas, updateCanvas } from "../../services";
+import {
+  checkDispatcher,
+  createCanvas,
+  getProfileData,
+  updateCanvas,
+} from "../../services";
 import { Context } from "../../providers/context/ContextProvider";
 import { unstable_setAnimationsEnabled } from "polotno/config";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   errorMessage,
   loadFile,
   base64Stripper,
   wait,
   getFromLocalStorage,
+  saveToLocalStorage,
 } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
@@ -43,6 +49,8 @@ import CustomTabsMaterial from "./common/core/CustomTabsMaterial";
 import { Tooltip } from "polotno/canvas/tooltip";
 import { useSolanaWallet } from "../../hooks/solana";
 import { LOCAL_STORAGE } from "../../data";
+import { Button } from "@material-tailwind/react";
+import { useAppAuth } from "../../hooks/app";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -77,11 +85,16 @@ const Editor = () => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const { solanaAddress } = useSolanaWallet();
+  const { isAuthenticated } = useAppAuth();
   const isEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const isSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const currentUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
+  const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
+  const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const canvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
+  const timeoutRef = useRef(null);
+  const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const {
     contextCanvasIdRef,
     setEnabled,
@@ -95,8 +108,6 @@ const Editor = () => {
     parentRecipientDataRef,
     parentRecipientListRef,
   } = useContext(Context);
-  const timeoutRef = useRef(null);
-  const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
@@ -351,6 +362,23 @@ const Editor = () => {
     };
   }, []);
 
+  //  check for dispatcher
+  useEffect(() => {
+    if(!isAuthenticated) return;
+
+    const checkDispatcherFn = async () => {
+      try {
+        const res = await checkDispatcher()
+        saveToLocalStorage(LOCAL_STORAGE.dispatcher, res?.message);
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+
+    checkDispatcherFn();
+  }, [getDispatcherStatus]);
+
   return (
     <>
       <div
@@ -387,6 +415,13 @@ const Editor = () => {
               <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">
                 <BgRemover />
                 <ZoomButtons store={store} />
+                {/* <Button
+                  onClick={() => getProfileData(address)}
+                  title="get user lens data"
+                  color="white"
+                >
+                  get user lens data
+                </Button> */}
 
                 {/* Quick Tour on the main page */}
                 <div className="flex flex-row ">

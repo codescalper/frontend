@@ -197,7 +197,19 @@ const ContextProvider = ({ children }) => {
 
   const handleOpen = () => setDialogOpen((cur) => !cur);
 
-  // console.log("ContextProvider", referredFromRef.current);
+  // states for lens data
+  const [lensAuthState, setLensAuthState] = useState({
+    lensProfileData: [],
+
+    id: "",
+
+    loading: {
+      isLoading: false,
+      text: "",
+    },
+  });
+
+  // console.log("ContextProvider", lensState.lensProfileData);
 
   return (
     <Context.Provider
@@ -300,6 +312,10 @@ const ContextProvider = ({ children }) => {
         explorerLink,
         setExplorerLink,
         handleOpen,
+
+        // states for lens data
+        lensAuthState,
+        setLensAuthState,
       }}
     >
       {children}

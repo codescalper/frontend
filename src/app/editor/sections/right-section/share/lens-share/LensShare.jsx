@@ -12,13 +12,12 @@ import animationData from "../../../../../../assets/lottie/alertAnimation2.json"
 import {
   checkDispatcher,
   lensAuthenticate,
-  setDispatcher,
+  getBroadcastData,
   shareOnSocials,
   lensChallenge,
-  lensHub,
   signSetDispatcherTypedData,
-  splitSignature,
   ENVIRONMENT,
+  setBroadcastOnChainTx,
 } from "../../../../../../services";
 import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
@@ -44,7 +43,7 @@ import {
 import { useStore } from "../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
-import { SplitPolicyCard } from "./components";
+import { LensAuth, LensDispatcher, SplitPolicyCard } from "./components";
 import { useAppAuth, useReset } from "../../../../../../hooks/app";
 import { LOCAL_STORAGE } from "../../../../../../data";
 import { Button, Select, Option } from "@material-tailwind/react";
@@ -54,8 +53,9 @@ const LensShare = () => {
   const store = useStore();
   const { address, isConnected } = useAccount();
   const { resetState } = useReset();
-  const getDispatcherStatus = getFromLocalStorage("dispatcher");
-  const getEVMAuh = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
+  const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const { isAuthenticated } = useAppAuth();
 
   const {
@@ -80,125 +80,13 @@ const LensShare = () => {
     setReferralError,
     parentRecipientListRef,
   } = useContext(Context);
-  const {
-    data: signature,
-    isError,
-    isSuccess,
-    error,
-    signMessage,
-  } = useSignMessage();
-  const getLensAuth = getFromLocalStorage("lensAuth");
+
   const [sharing, setSharing] = useState(false);
 
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnLens",
     mutationFn: shareOnSocials,
   });
-
-  const { mutateAsync: mutateLensAuth } = useMutation({
-    mutationKey: "lensAuth",
-    mutationFn: lensAuthenticate,
-  });
-
-  const { isLoading: checkingDispatcher } = useQuery({
-    queryFn: checkDispatcher,
-    onSuccess: (data) => {
-      saveToLocalStorage("dispatcher", data?.message);
-    },
-    onError: (err) => {
-      console.log("checkDispatcher error: ", err);
-    },
-    enabled: getDispatcherStatus === true ? false : true,
-  });
-
-  // generating signature
-  const generateSignature = async () => {
-    const message = await lensChallenge(address);
-    setIsLoading(true);
-    setSharing(true);
-    signMessage({
-      message,
-    });
-    setText("Sign the message to authenticate");
-  };
-
-  // authenticating signature on lens
-  const lensAuth = async () => {
-    setSharing(true);
-    setText("Authenticating...");
-    mutateLensAuth(signature)
-      .then((res) => {
-        if (res?.status === "success") {
-          saveToLocalStorage("lensAuth", res?.message);
-          toast.success("Successfully authenticated");
-          setIsLoading(false);
-          setText("");
-          setTimeout(() => {
-            // check the dispatcher
-            // if true => sharePost
-            if (getDispatcherStatus === true) {
-              sharePost("lens");
-              // console.log("share on lens");
-            } else {
-              // else => set the dispatcher
-              setDispatcherFn();
-            }
-          }, 4000);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(errorMessage(err));
-        setSharing(false);
-        setIsLoading(false);
-        setText("");
-      });
-  };
-
-  // set the dispatcher true or false
-  const setDispatcherFn = async () => {
-    try {
-      setSharing(true);
-      setIsLoading(true);
-      setText("Sign the message to enable dispatcher");
-
-      const setDispatcherRequest = await setDispatcher();
-
-      const signedResult = await signSetDispatcherTypedData(
-        setDispatcherRequest
-      );
-
-      const typedData = signedResult.typedData;
-      const { v, r, s } = splitSignature(signedResult.signature);
-      const tx = await lensHub.setDispatcherWithSig({
-        profileId: typedData.value.profileId,
-        dispatcher: typedData.value.dispatcher,
-        sig: {
-          v,
-          r,
-          s,
-          deadline: typedData.value.deadline,
-        },
-      });
-      // console.log("successfully set dispatcher: tx hash", tx.hash);
-      // if tx.hash? => sharePost()
-      if (tx.hash) {
-        saveToLocalStorage("dispatcher", true);
-        setIsLoading(false);
-        setText("");
-        toast.success("Dispatcher enabled");
-        setTimeout(() => {
-          sharePost("lens");
-        }, 4000);
-      }
-    } catch (err) {
-      console.log("error setting dispatcher: ", err);
-      toast.error("Error setting dispatcher");
-      setSharing(false);
-      setIsLoading(false);
-      setText("");
-    }
-  };
 
   // Calendar Functions:
   const onCalChange = (value, dateString) => {
@@ -541,25 +429,6 @@ const LensShare = () => {
       });
   };
 
-  // if lensAuth = success => sharePost or else generateSignature then sharePost
-
-  const handleLensClick = async () => {
-    if (isConnected && !getLensAuth) {
-      generateSignature();
-    } else if (isConnected && getLensAuth) {
-      if (checkingDispatcher) {
-        // Wait for checkingDispatcher to finish loading
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Adjust the delay as needed
-      }
-
-      if (!getDispatcherStatus) {
-        setDispatcherFn();
-      } else {
-        sharePost("lens");
-      }
-    }
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -648,10 +517,7 @@ const LensShare = () => {
         ...prevEnabled,
         splitRevenueRecipients: [
           {
-            recipient:
-              ENVIRONMENT === "production"
-                ? "@lenspostxyz.lens"
-                : "@lenspostxyz.test",
+            recipient: "@lenspostxyz",
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
           ...updatedRecipients,
@@ -659,20 +525,6 @@ const LensShare = () => {
       }));
     }
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (isError && error?.name === "UserRejectedRequestError") {
-      setSharing(false);
-      setIsLoading(false);
-      toast.error("User rejected the signature request");
-    }
-  }, [isError]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      lensAuth();
-    }
-  }, [isSuccess]);
 
   return (
     <>
@@ -1047,17 +899,21 @@ const LensShare = () => {
             </div>
           </div>
         </div>
-        {getEVMAuh ? (
+        {!getEVMAuth ? (
+          <EVMWallets title="Login with EVM" className="mx-2" />
+        ) : !getLensAuth?.profileHandle ? (
+          <LensAuth title="Login with Lens" />
+        ) : !getDispatcherStatus ? (
+          <LensDispatcher title="Enable signless transactions" />
+        ) : (
           <Button
             disabled={sharing}
-            onClick={handleLensClick}
-            // color="yellow"
-            className="mx-4 mb-4 bg-[#e1f16b] text-black"
+            onClick={() => sharePost("lens")}
+            color="teal"
+            className="mx-2 outline-none"
           >
             Share Now
           </Button>
-        ) : (
-          <EVMWallets title="Login with EVM" className="mx-2" />
         )}
       </div>
     </>

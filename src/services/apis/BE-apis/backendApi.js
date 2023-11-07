@@ -80,8 +80,37 @@ export const solanaAuth = async ({ walletAddress, signature, message }) => {
 
 // lensauth apis start
 // need auth token (jwt)
-export const lensAuthenticate = async (signature) => {
+export const lensAuthenticate = async ({
+  profileId,
+  profileHandle,
+  id,
+  signature,
+}) => {
   const result = await api.post(`${API}/auth/evm/lens`, {
+    profileId: profileId,
+    profileHandle: profileHandle,
+    id: id,
+    signature: signature,
+  });
+
+  return result?.data;
+};
+
+export const checkDispatcher = async () => {
+  const result = await api.get(`${API}/util/check-dispatcher`);
+
+  return result?.data;
+};
+
+export const getBroadcastData = async () => {
+  const result = await api.get(`${API}/auth/evm/lens/set-profile-manager`);
+
+  return result?.data;
+};
+
+export const setBroadcastOnChainTx = async (id, signature) => {
+  const result = await api.post(`${API}/auth/evm/lens/broadcast-tx`, {
+    id: id,
     signature: signature,
   });
 
@@ -378,45 +407,6 @@ export const getCollectionNftById = async (id, contractAddress) => {
 };
 // collection apis start
 
-// utils apis
-export const checkDispatcher = async () => {
-  const result = await api.get(`${API}/util/check-dispatcher`);
-
-  return result?.data;
-};
-
-export const setDispatcher = async () => {
-  try {
-    const result = await api.get(`${API}/auth/evm/lens/set-dispatcher`);
-
-    return result?.data?.message;
-  } catch (error) {
-    if (error?.response?.status === 500) {
-      console.log({
-        InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
-      });
-      return {
-        error: "Internal Server Error, please try again later",
-      };
-    } else if (error?.response?.status === 401) {
-      console.log({ 401: error?.response?.statusText });
-      return {
-        error: error?.response?.data?.message,
-      };
-    } else if (error?.response?.status === 404) {
-      console.log({ 404: error?.response?.statusText });
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    } else {
-      return {
-        error: "Something went wrong, please try again later",
-      };
-    }
-  }
-};
-
 // template apis start
 // no need auth token (jwt)
 export const getAllTemplates = async (page) => {
@@ -491,7 +481,9 @@ export const getFeaturedAssets = async (type, page) => {
 // Remove Background API
 export const getRemovedBgS3Link = async (query, elementId) => {
   try {
-    const result = await api.post(`${API}/util/remove-bg?image=${encodeURIComponent(query)}&id=${elementId}`);
+    const result = await api.post(
+      `${API}/util/remove-bg?image=${encodeURIComponent(query)}&id=${elementId}`
+    );
 
     if (result?.status === 200) {
       if (result?.data?.s3link) {

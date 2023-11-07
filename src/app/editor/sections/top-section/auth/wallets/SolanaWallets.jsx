@@ -13,7 +13,7 @@ import {
 import { SolanaLogo } from "../../../../../../assets";
 import { useSolanaWallet } from "../../../../../../hooks/solana";
 
-const SolanaWallets = ({title}) => {
+const SolanaWallets = ({title, className}) => {
   const {
     solanaWallets,
     solanaSelect,
@@ -37,7 +37,7 @@ const SolanaWallets = ({title}) => {
         onClick={handleOpen}
         size="lg"
         color="black"
-        className="flex items-center gap-3 outline-none m-2 p-4"
+        className={`flex items-center justify-center gap-3 outline-none my-2 ${className}`}
       >
         <img src={SolanaLogo} alt="solana" className="h-6 w-6" />
         {title}
