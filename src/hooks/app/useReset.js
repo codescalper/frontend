@@ -81,6 +81,7 @@ const useReset = () => {
     // clear the page
     store.clear({ keepHistory: true });
     store.addPage();
+    store.setSize(1080, 1080);
 
     // reset all the states
     setIsLoading(false);

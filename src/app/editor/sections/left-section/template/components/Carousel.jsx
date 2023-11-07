@@ -5,7 +5,7 @@
 
 import { Carousel } from "@material-tailwind/react";
 import { CustomImageComponent } from "../../../../common";
-import { getFeaturedAssets } from "../../../../../../services";
+import { getAssetByQuery, getFeaturedAssets } from "../../../../../../services";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -22,13 +22,18 @@ const CompCarousel = ({ type }) => {
     queryKey: [type === "background" && "background", "lensjump"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
-      getFeaturedAssets(type === "background" && "background", pageParam),
+      getAssetByQuery(
+        type === "background" && "background",
+        "",
+        "halloween",
+        pageParam
+      ),
   });
 
   return (
-    // autoplay loop autoplayDelay={5000} - For AutoPlay
     <Carousel
-      className="rounded-xl md: h-24 overflow-hidden"
+      autoplay={true}
+      className="rounded-xl h-56  overflow-hidden"
       navigation={({ setActiveIndex, activeIndex, length }) => (
         <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
           {new Array(length).fill("").map((_, i) => (
@@ -47,6 +52,7 @@ const CompCarousel = ({ type }) => {
       {data?.pages[0]?.data.length > 0 &&
         data?.pages
           .flatMap((item) => item?.data)
+          .slice(0, 6)
           .map((item, index) => {
             return (
               <CustomImageComponent
@@ -56,7 +62,9 @@ const CompCarousel = ({ type }) => {
                 dimensions={item?.dimensions != null && item.dimensions}
                 recipientWallet={item?.wallet}
                 changeCanvasDimension={true}
-                className="h-full w-full object-cover overflow-hidden"
+                className="h-fit w-full object-contain overflow-hidden"
+                author={item?.author}
+                tab="halloween"
               />
             );
           })}

@@ -11,7 +11,7 @@ import CustomImageComponent from "../CustomImageComponent";
 import BsChevronLeft from "@meronex/icons/bs/BsChevronLeft";
 import BsChevronRight from "@meronex/icons/bs/BsChevronRight";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getFeaturedAssets } from "../../../../../services";
+import { getAssetByQuery, getFeaturedAssets } from "../../../../../services";
 
 const CustomHorizontalScroller = ({ type }) => {
   const [arrImages, setArrImages] = useState();
@@ -28,7 +28,12 @@ const CustomHorizontalScroller = ({ type }) => {
     queryKey: [type === "stickers" && "stickers", "lensjump"],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
-      getFeaturedAssets(type === "stickers" && "props", pageParam),
+      getAssetByQuery(
+        type === "stickers" && "props",
+        "",
+        "halloween",
+        pageParam
+      ),
   });
 
   const scrollWrapperRef = useRef(null);
@@ -68,7 +73,7 @@ const CustomHorizontalScroller = ({ type }) => {
           <div className="divsWrapper" id="insider">
             {data?.pages[0]?.data.length > 0 &&
               data?.pages
-                .flatMap((item) => item?.data)
+                .flatMap((item) => item?.data).slice(0, 6)
                 .map((item, index) => {
                   return (
                     <div id={index} className="eachDiv">
@@ -78,6 +83,8 @@ const CustomHorizontalScroller = ({ type }) => {
                         preview={item?.image}
                         dimensions={item?.dimensions != null && item.dimensions}
                         recipientWallet={item?.wallet}
+                        author={item?.author}
+                        tab="halloween"
                       />{" "}
                     </div>
                   );

@@ -10,16 +10,22 @@ import {
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
-import { createCanvas, getProfileData, updateCanvas } from "../../services";
+import {
+  checkDispatcher,
+  createCanvas,
+  getProfileData,
+  updateCanvas,
+} from "../../services";
 import { Context } from "../../providers/context/ContextProvider";
 import { unstable_setAnimationsEnabled } from "polotno/config";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   errorMessage,
   loadFile,
   base64Stripper,
   wait,
   getFromLocalStorage,
+  saveToLocalStorage,
 } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
@@ -44,6 +50,7 @@ import { Tooltip } from "polotno/canvas/tooltip";
 import { useSolanaWallet } from "../../hooks/solana";
 import { LOCAL_STORAGE } from "../../data";
 import { Button } from "@material-tailwind/react";
+import { useAppAuth } from "../../hooks/app";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -78,9 +85,16 @@ const Editor = () => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const { solanaAddress } = useSolanaWallet();
+  const { isAuthenticated } = useAppAuth();
+  const isEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const isSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const currentUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
+  const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
+  const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const canvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
+  const timeoutRef = useRef(null);
+  const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const {
     contextCanvasIdRef,
     setEnabled,
@@ -94,8 +108,6 @@ const Editor = () => {
     parentRecipientDataRef,
     parentRecipientListRef,
   } = useContext(Context);
-  const timeoutRef = useRef(null);
-  const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
@@ -137,7 +149,7 @@ const Editor = () => {
   });
   // 03June2023
 
-  // this is recipient data for filter.
+  // function to filter the recipient data
   const recipientDataFilter = () => {
     parentRecipientDataRef.current = [
       ...preStoredRecipientDataRef.current, // recipient data geting from BE
@@ -163,19 +175,47 @@ const Editor = () => {
     }
 
     // Generate a new array by removing elements at notFoundIndexes
-    const newArray = recipientDataRefArr.filter(
+    const newDataRef = recipientDataRefArr.filter(
       (_, index) => !notFoundIndexes.includes(index)
     );
 
     // update the parentRecipientDataRef with the new array
-    parentRecipientDataRef.current = newArray;
+    parentRecipientDataRef.current = newDataRef;
 
-    // get the lensHandle from the newArray
-    const newArrayHandles = newArray.map((item) => item.handle);
+    // get the handles and address from the newArray
+    const newArrayHandles = newDataRef.map((item) => item.handle);
 
     return {
       recipientData: parentRecipientDataRef.current,
       recipientHandles: newArrayHandles,
+    };
+  };
+
+  // function to add the all recipient handles / address
+  const recipientHandlesCombiner = () => {
+    // create an array of all the recipients then make it uniq
+
+    let parentArray = [];
+
+    // if the canvas is owned by other user
+    if (referredFromRef.current.length > 0) {
+      parentArray = [
+        address || solanaAddress, // current recipient address
+        referredFromRef.current[0], // owner address of other created canvas
+        ...recipientDataFilter().recipientHandles, // handles of all the dataRefs recipients
+      ];
+    } else {
+      parentArray = [
+        address || solanaAddress, // current recipient address
+        ...recipientDataFilter().recipientHandles, // handles of all the dataRefs recipients
+      ];
+    }
+
+    // update the parentRecipientRef to the uniq values (final list for split revenue)
+    parentRecipientListRef.current = [...new Set(parentArray)];
+
+    return {
+      recipients: parentRecipientListRef.current,
     };
   };
 
@@ -207,25 +247,19 @@ const Editor = () => {
 
       // save it to the backend
       if (canvasChildren?.length > 0) {
-        // create an array of all the recipients then make it uniq
-        const parentArray = [
-          currentUserAddress,
-          ...recipientDataFilter().recipientHandles,
-        ];
+        // console.log("parentRecipientObj", recipientDataFilter().recipientData);
+        // console.log(
+        //   "parentRecipientRef",
+        //   recipientHandlesCombiner().recipients
+        // );
 
-        // update the parentRecipientRef to the uniq values (final list for split revenue)
-        parentRecipientListRef.current = [...new Set(parentArray)];
-
-        console.log("parentRecipientObj", recipientDataFilter());
-        console.log("parentRecipientRef", parentRecipientListRef.current);
-
-        return;
+        // return;
 
         // create new canvas
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
-            referredFrom: parentRecipientListRef.current,
+            referredFrom: recipientHandlesCombiner().recipients,
             assetsRecipientElementData: recipientDataFilter().recipientData,
             preview: canvasBase64Ref.current,
           })
@@ -249,7 +283,7 @@ const Editor = () => {
             id: canvasIdRef.current,
             data: json,
             isPublic: false,
-            referredFrom: parentRecipientListRef.current,
+            referredFrom: recipientHandlesCombiner().recipients,
             assetsRecipientElementData: recipientDataFilter().recipientData,
             preview: canvasBase64Ref.current,
           })
@@ -327,6 +361,23 @@ const Editor = () => {
       off();
     };
   }, []);
+
+  //  check for dispatcher
+  useEffect(() => {
+    if(!isAuthenticated) return;
+
+    const checkDispatcherFn = async () => {
+      try {
+        const res = await checkDispatcher()
+        saveToLocalStorage(LOCAL_STORAGE.dispatcher, res?.message);
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+
+    checkDispatcherFn();
+  }, [getDispatcherStatus]);
 
   return (
     <>

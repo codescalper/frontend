@@ -17,8 +17,8 @@ import {
 
 export const BannerPanel = () => {
   // const [currentTab, setCurrentTab] = useState("supducks");
-  const [currentTab, setCurrentTab] = useState("lensjump");
-  const tabArray = ["lensjump", "supducks", "moonrunners"];
+  const [currentTab, setCurrentTab] = useState("halloween");
+  const tabArray = ["halloween","lensjump", "supducks", "moonrunners"];
   // const [isFeatured, setIsFeatured] = useState(false);
 
   // const fnGetBGAssets = () => {
@@ -56,7 +56,7 @@ export const BannerPanel = () => {
       {/* New Material Tailwind Buttons / Tabs : */}
       {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
 
-      <Tabs id="custom-animation" value="lensjump">
+      <Tabs id="custom-animation" value={currentTab}>
         <div className="w-100 overflow-scroll m-2">
           <TabsHeader
           // className="bg-transparent"
@@ -91,12 +91,13 @@ export const BannerPanel = () => {
             {/* <TabPanel key={currentTab} value={currentTab}> */}
 
             <TabsCustom
-              changeCanvasDimension={true}
-              defaultQuery={currentTab}
-              getAssetsFn={
-                currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
+             defaultQuery={currentTab === "halloween" ? "" : currentTab}
+             campaignName={currentTab === "halloween"? "halloween" : ""}
+             getAssetsFn={
+               currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
               }
               queryKey="backgrounds"
+              changeCanvasDimension={true}
             />
           </TabsBody>
         </div>

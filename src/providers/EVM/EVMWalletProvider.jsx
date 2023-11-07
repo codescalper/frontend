@@ -31,7 +31,7 @@ const connectors = connectorsForWallets([
   {
     groupName: "Recommended",
     wallets: [
-      metaMaskWallet({ chains }),
+      metaMaskWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),
       phantomWallet({ chains }),
       rabbyWallet({ chains }),
       rainbowWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),

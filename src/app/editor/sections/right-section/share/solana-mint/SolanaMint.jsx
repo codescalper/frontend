@@ -21,10 +21,14 @@ import { useSolanaWallet } from "../../../../../../hooks/solana";
 import { useAppAuth, useReset } from "../../../../../../hooks/app";
 
 const SolanaMint = () => {
-  const { solanaAddress } = useSolanaWallet();
+  const { solanaAddress, solanaSignTransaction } = useSolanaWallet();
   const [sharing, setSharing] = useState(false);
   const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const { isAuthenticated } = useAppAuth();
+  const [solanaMasterEditionData, setSolanaMasterEditionData] = useState({
+    tx: "",
+    mintId: "",
+  });
 
   const {
     solanaEnabled,
@@ -57,7 +61,9 @@ const SolanaMint = () => {
   const mintSettings = (platform) => {
     // TODO: check if here needs to be any checks
 
-    let canvasParams = {};
+    let canvasParams = {
+      guards: {},
+    };
 
     if (platform === "solana-cnft") {
       canvasParams = {
@@ -86,52 +92,83 @@ const SolanaMint = () => {
         };
       }
 
+      if (solanaEnabled.isChargeForMint) {
+        canvasParams = {
+          ...canvasParams,
+          guards: {
+            ...canvasParams.guards,
+            chargeForMint: {
+              amount: solanaEnabled.chargeForMintPrice,
+              currency: solanaEnabled.chargeForMintCurrency,
+            },
+          },
+        };
+      }
+
       if (solanaEnabled.isLimitedEdition) {
         canvasParams = {
           ...canvasParams,
-          maxEditionSupply: solanaEnabled.limitedEditionNumber,
+          guards: {
+            ...canvasParams.guards,
+            maxEditionSupply: solanaEnabled.limitedEditionNumber,
+          },
         };
       }
 
       if (solanaEnabled.isTimeLimit) {
         canvasParams = {
           ...canvasParams,
-          startDate: formatDateTimeISO8601(
-            solanaEnabled.startTimeStamp.date,
-            solanaEnabled.startTimeStamp.time
-          ),
-          endDate: formatDateTimeISO8601(
-            solanaEnabled.endTimestamp.date,
-            solanaEnabled.endTimestamp.time
-          ),
+          guards: {
+            ...canvasParams.guards,
+            startDate: formatDateTimeISO8601(
+              solanaEnabled.startTimeStamp.date,
+              solanaEnabled.startTimeStamp.time
+            ),
+            endDate: formatDateTimeISO8601(
+              solanaEnabled.endTimestamp.date,
+              solanaEnabled.endTimestamp.time
+            ),
+          },
         };
       }
 
       if (solanaEnabled.isAllowlist) {
         canvasParams = {
           ...canvasParams,
-          allow_list: solanaEnabled.allowlistAddresses,
+          guards: {
+            ...canvasParams.guards,
+            allowList: solanaEnabled.allowlistAddresses,
+          },
         };
       }
 
       if (solanaEnabled.isNftBurnable) {
         canvasParams = {
           ...canvasParams,
-          burnable: nftBurnableContractAddresses,
+          guards: {
+            ...canvasParams.guards,
+            nftBurn: solanaEnabled.nftBurnableContractAddresses,
+          },
         };
       }
 
       if (solanaEnabled.isNftGate) {
         canvasParams = {
           ...canvasParams,
-          is_nft_gate: nftGateContractAddresses,
+          guards: {
+            ...canvasParams.guards,
+            nftGate: solanaEnabled.nftGateContractAddresses,
+          },
         };
       }
 
       if (solanaEnabled.isTokenGate) {
         canvasParams = {
           ...canvasParams,
-          is_token_gate: tokenGateContractAddresses,
+          guards: {
+            ...canvasParams.guards,
+            tokenGate: solanaEnabled.tokenGateContractAddresses,
+          },
         };
       }
     }
@@ -457,8 +494,12 @@ const SolanaMint = () => {
             setExplorerLink(res?.assetId);
             setDialogOpen(true);
           } else if (res?.tx) {
-            setExplorerLink("https://mint.lenspost.xyz/" + res?.tx);
-            setDialogOpen(true);
+            setSolanaMasterEditionData({
+              tx: res?.tx,
+              mintId: res?.mintId,
+            });
+            // setExplorerLink("https://mint.lenspost.xyz/" + res?.tx);
+            // setDialogOpen(true);
           }
 
           // TODO: clear all the states and variables
@@ -484,6 +525,24 @@ const SolanaMint = () => {
       });
   };
 
+  // funtion for sign the transaction for solana master edition
+  const signTransaction = async () => {
+    try {
+      const txSignature = await solanaSignTransaction(
+        solanaMasterEditionData.tx
+      );
+      console.log("txSignature", txSignature);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (solanaMasterEditionData.tx) {
+      signTransaction();
+    }
+  }, [solanaMasterEditionData]);
+
   // add recipient to the split list
   useEffect(() => {
     if (isAuthenticated) {
@@ -499,7 +558,6 @@ const SolanaMint = () => {
             address: "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa",
             share: solanaEnabled.onChainSplitRecipients[0].share || 10.0,
           },
-          // ...solanaEnabled.onChainSplitRecipients.slice(1),
           ...updatedRecipients,
         ],
       }));
@@ -545,27 +603,26 @@ const SolanaMint = () => {
               </div>
             </div>
 
-            <div
-              className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}
-            >
-              <div className="flex">
-                <NumberInputBox
-                  min={"1"}
-                  step={"0.01"}
-                  className={"W-3/4"}
-                  label="Price"
-                  name="chargeForMintPrice"
-                  value={solanaEnabled.chargeForMintPrice}
-                  onChange={(e) => handleChange(e)}
-                />
-
-                <div className="flex flex-col w-1/4">
+            <div className={`${!solanaEnabled.isChargeForMint && "hidden"}`}>
+              <div className="flex gap-5 mx-4">
+                <div className="flex flex-col py-2">
+                  <NumberInputBox
+                    min={"1"}
+                    step={"0.01"}
+                    // className={"W-3/4"}
+                    label="Price"
+                    name="chargeForMintPrice"
+                    value={solanaEnabled.chargeForMintPrice}
+                    onChange={(e) => handleChange(e)}
+                  />
+                </div>
+                <div className="flex flex-col py-2">
                   {/* <label htmlFor="price"></label> */}
                   <Select
                     label="Currency"
                     name="chargeForMintCurrency"
                     id="chargeForMintCurrency"
-                    className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
+                    // className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
                     onChange={handleChange}
                     value={solanaEnabled.chargeForMintCurrency}
                   >
@@ -578,7 +635,6 @@ const SolanaMint = () => {
                 <InputErrorMsg
                   message={solanaStatesError.chargeForMintErrorMessage}
                 />
-
               )}
             </div>
 
@@ -766,7 +822,6 @@ const SolanaMint = () => {
                   min={"1"}
                   step={"1"}
                   label="Collect limit"
-
                   name="limitedEditionNumber"
                   onChange={(e) => handleChange(e)}
                   value={solanaEnabled.limitedEditionNumber}
@@ -1089,7 +1144,6 @@ const SolanaMint = () => {
                               }
                             />
                           )}
-
                         </div>
                       </div>
                     </>
@@ -1225,7 +1279,7 @@ const SolanaMint = () => {
                   className="mx-4"
                 >
                   {" "}
-                  Mint as master edition{" "}
+                  Mint as master edition (Coming Soon){" "}
                 </Button>
               </div>
             ) : (
