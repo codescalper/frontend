@@ -207,6 +207,8 @@ const ContextProvider = ({ children }) => {
       isLoading: false,
       text: "",
     },
+
+    dispatcherStatus: false,
   });
 
   // console.log("ContextProvider", lensState.lensProfileData);

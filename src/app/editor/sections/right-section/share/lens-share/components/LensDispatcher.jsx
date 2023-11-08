@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Button,
   Dialog,
@@ -15,11 +15,14 @@ import {
   signSetDispatcherTypedData,
 } from "../../../../../../../services";
 import { toast } from "react-toastify";
-import { LOCAL_STORAGE } from "../../../../../../../data";
+import { ERROR, LOCAL_STORAGE } from "../../../../../../../data";
+import { saveToLocalStorage } from "../../../../../../../utils";
+import { Context } from "../../../../../../../providers/context";
 
 const LensDispatcher = ({ title, className }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { setLensAuthState } = useContext(Context);
 
   const handleOpen = () => setOpen(!open);
 
@@ -35,10 +38,15 @@ const LensDispatcher = ({ title, className }) => {
       const boadcastResult = await setBroadcastOnChainTx(id, signature);
 
       if (boadcastResult?.message?.txHash || boadcastResult?.message?.txId) {
-        handleOpen();
         saveToLocalStorage(LOCAL_STORAGE.dispatcher, true);
+        setLensAuthState((cur) => ({ ...cur, dispatcherStatus: true }));
+        handleOpen();
         setLoading(false);
         toast.success("Signless transactions enebled");
+      } else {
+        setLoading(false);
+        handleOpen();
+        toast.error(ERROR.SOMETHING_WENT_WRONG);
       }
     } catch (err) {
       setLoading(false);
@@ -100,18 +108,15 @@ const LensDispatcher = ({ title, className }) => {
           </Typography>
         </DialogBody>
         <DialogFooter>
-          <Button 
-          disabled={loading}
-           variant="gradient" 
-           color="teal" onClick={setDispatcherFn}
-           className="flex gap-3 items-center"
-           >
+          <Button
+            disabled={loading}
+            variant="gradient"
+            color="teal"
+            onClick={setDispatcherFn}
+            className="flex gap-3 items-center"
+          >
             <span>Enable</span>
-            {loading && (
-              <Spinner
-                color="red"
-              />
-            )}
+            {loading && <Spinner color="red" />}
           </Button>
         </DialogFooter>
       </Dialog>
