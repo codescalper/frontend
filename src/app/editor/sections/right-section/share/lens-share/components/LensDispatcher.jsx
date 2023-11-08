@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Button,
   Dialog,
@@ -9,11 +9,52 @@ import {
   IconButton,
   Spinner,
 } from "@material-tailwind/react";
+import {
+  getBroadcastData,
+  setBroadcastOnChainTx,
+  signSetDispatcherTypedData,
+} from "../../../../../../../services";
+import { toast } from "react-toastify";
+import { ERROR, LOCAL_STORAGE } from "../../../../../../../data";
+import { saveToLocalStorage } from "../../../../../../../utils";
+import { Context } from "../../../../../../../providers/context";
 
 const LensDispatcher = ({ title, className }) => {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { setLensAuthState } = useContext(Context);
 
   const handleOpen = () => setOpen(!open);
+
+  // set the dispatcher true or false
+  const setDispatcherFn = async () => {
+    try {
+      setLoading(true);
+
+      const { id, typedData } = await getBroadcastData();
+
+      const { signature } = await signSetDispatcherTypedData(typedData);
+
+      const boadcastResult = await setBroadcastOnChainTx(id, signature);
+
+      if (boadcastResult?.message?.txHash || boadcastResult?.message?.txId) {
+        saveToLocalStorage(LOCAL_STORAGE.dispatcher, true);
+        setLensAuthState((cur) => ({ ...cur, dispatcherStatus: true }));
+        handleOpen();
+        setLoading(false);
+        toast.success("Signless transactions enebled");
+      } else {
+        setLoading(false);
+        handleOpen();
+        toast.error(ERROR.SOMETHING_WENT_WRONG);
+      }
+    } catch (err) {
+      setLoading(false);
+      handleOpen();
+      console.log("error setting signless transactions: ", err);
+      toast.error("Error setting signless transactions");
+    }
+  };
 
   return (
     <>
@@ -68,11 +109,14 @@ const LensDispatcher = ({ title, className }) => {
         </DialogBody>
         <DialogFooter>
           <Button
+            disabled={loading}
             variant="gradient"
             color="teal"
-            onClick={() => handleOpen(null)}
+            onClick={setDispatcherFn}
+            className="flex gap-3 items-center"
           >
             <span>Enable</span>
+            {loading && <Spinner color="red" />}
           </Button>
         </DialogFooter>
       </Dialog>

@@ -287,6 +287,21 @@ const ContextProvider = ({ children }) => {
   const handleOpen = () => setDialogOpen((cur) => !cur);
 
   // console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
+  // states for lens data
+  const [lensAuthState, setLensAuthState] = useState({
+    lensProfileData: [],
+
+    id: "",
+
+    loading: {
+      isLoading: false,
+      text: "",
+    },
+
+    dispatcherStatus: false,
+  });
+
+  // console.log("ContextProvider", lensState.lensProfileData);
 
   return (
     <Context.Provider

@@ -100,6 +100,8 @@ const Editor = () => {
   const timeoutRef = useRef(null);
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
 
+  console.log(address)
+
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
     // Avoids Duplication issue
@@ -363,6 +365,26 @@ const Editor = () => {
       off();
     };
   }, []);
+
+  //  check for dispatcher
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const checkDispatcherFn = async () => {
+      try {
+        const res = await checkDispatcher();
+        if (res?.status === "success") {
+          saveToLocalStorage(LOCAL_STORAGE.dispatcher, res?.message);
+        } else {
+          saveToLocalStorage(LOCAL_STORAGE.dispatcher, false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    checkDispatcherFn();
+  }, [isAuthenticated]);
 
   return (
     <>

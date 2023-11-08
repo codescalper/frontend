@@ -79,6 +79,8 @@ const LensShare = () => {
     referralError,
     setReferralError,
     parentRecipientListRef,
+
+    lensAuthState,
   } = useContext(Context);
   const {
     data: signature,
