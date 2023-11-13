@@ -1,4 +1,3 @@
-
 import { useContext, useEffect, useState } from "react";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import {
@@ -18,6 +17,7 @@ import { useTour } from "@reactour/tour";
 
 import Editor from "./editor/Editor";
 import {
+  BraveShieldWarn,
   CheckInternetConnection,
   LoadingComponent,
   OnboardingSteps,
@@ -61,8 +61,9 @@ const App = () => {
   const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const getUserAuthToken = getFromLocalStorage(LOCAL_STORAGE.userAuthToken);
   const getUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
-  const getUsertAuthTmestamp = getFromLocalStorage(LOCAL_STORAGE.usertAuthTime);
+  const getUsertAuthTmestamp = getFromLocalStorage(LOCAL_STORAGE.userAuthTime);
   const getifUserEligible = getFromLocalStorage(LOCAL_STORAGE.ifUserEligible);
+  const isBraveShieldWarn = getFromLocalStorage(LOCAL_STORAGE.braveShieldWarn);
   const getHasUserSeenTheApp = getFromLocalStorage(
     LOCAL_STORAGE.hasUserSeenTheApp
   );
@@ -86,7 +87,7 @@ const App = () => {
 
       console.log("checking session");
       const jwtExpiration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-      const jwtTimestamp = getFromLocalStorage(LOCAL_STORAGE.usertAuthTime);
+      const jwtTimestamp = getFromLocalStorage(LOCAL_STORAGE.userAuthTime);
 
       const currentTimestamp = new Date().getTime();
 
@@ -330,13 +331,6 @@ const App = () => {
   }, [solanaConnected]);
 
   useEffect(() => {
-    // check if browser is Brave
-    if (window.navigator?.brave) {
-      toast.warning("Keep Brave shields off for better experience");
-    }
-  }, []);
-
-  useEffect(() => {
     if (isUserEligible) {
       if (!getFromLocalStorage("hasTakenTour")) {
         if (isConnected) {
@@ -354,6 +348,7 @@ const App = () => {
   return (
     <>
       <Editor />
+      {window.navigator?.brave && !isBraveShieldWarn && <BraveShieldWarn />}
       <ExplorerDialog
         handleOpen={handleOpen}
         open={dialogOpen}
