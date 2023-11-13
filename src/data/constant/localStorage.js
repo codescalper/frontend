@@ -9,4 +9,5 @@ export const LOCAL_STORAGE = {
   hasUserSeenTheApp: "hasUserSeenTheApp",
   dispatcher: "dispatcher",
   userGuideTour: "user.guide.tour",
+  braveShieldWarn: "brave.shield.warn",
 };
