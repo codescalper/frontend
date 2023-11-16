@@ -3,10 +3,9 @@
 // ---- This section is same as stable-diffusion-section.jsx ----
 // ---- ----
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { InputGroup, Button, Icon } from "@blueprintjs/core";
-import { Tab, Tabs } from "@blueprintjs/core";
 import { SectionTab } from "polotno/side-panel";
 import { getKey } from "polotno/utils/validate-key";
 import { getImageSize } from "polotno/utils/image";
@@ -16,20 +15,21 @@ import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { getCrop } from "polotno/utils/image";
 import { AIIcon } from "../../../../../assets";
-
-// New imports:
 import axios from "axios";
 import FormData from "form-data";
-import { useStore } from "../../../../../hooks/polotno";
+import { CustomImageComponent, MessageComponent } from "../../../common";
 import {
-  CustomImageComponent,
-  MessageComponent,
-} from "../../../common";
-import { Textarea, Button as MatButton, Input } from "@material-tailwind/react";
-import { base64Stripper } from "../../../../../utils";
+  Textarea,
+  Button as MatButton,
+  Input,
+  Chip,
+} from "@material-tailwind/react";
+import { base64Stripper, firstLetterCapital } from "../../../../../utils";
 import Lottie from "lottie-react";
 import animationData from "../../../../../assets/lottie/loaders/aiGeneration.json";
-
+import { useStore } from "../../../../../hooks/polotno";
+import { Context } from "../../../../../providers/context";
+import { Tab, Tabs, TabsHeader, TabsBody } from "@material-tailwind/react";
 // Tab1 - Search Tab
 
 const RANDOM_QUERIES = [
@@ -110,10 +110,12 @@ const CompSearch = () => {
     <>
       <div className="">
         <div className="flex flex-col">
-          <textarea
-            className="h-16 mb-2 border px-4 py-1 rounded-md w-full outline-none focus:ring-1 focus:ring-blue-500"
+          <Textarea
+            // className="h-16 mb-2 border px-4 py-1 rounded-md w-full outline-none focus:ring-1 focus:ring-blue-500"
             leftIcon="search"
-            placeholder={query || "Search or Give a prompt"}
+            // placeholder={query || "Search or Give a prompt"}
+            label="Search or Give a prompt"
+            // placeholder={query ||  "Search or Give a prompt"}
             onChange={(e) => {
               setQuery(e.target.value);
             }}
@@ -254,8 +256,10 @@ const CompDesignify = () => {
 };
 
 const CompInstructImage = () => {
+  const { fastPreview } = useContext(Context);
+
   const [base64ImgLink, setBase64ImgLink] = useState(""); // For Newly generated Image Preview
-  const [imageBase64, setImageBase64] = useState(""); //For Uploaded Preview
+  const [uploadedImg, setUploadedImg] = useState(); //For Uploaded Preview
   const [clicked, setClicked] = useState(false);
   const [stImgPrompt, setStImgPrompt] = useState(
     "A serene lakeside scene at sunset with vibrant orange and purple hues reflecting off the calm waters."
@@ -264,9 +268,12 @@ const CompInstructImage = () => {
     "Choose an Image & Click on GENERATE to customize image based on your prompt"
   );
 
-  console.log("In CompInstructImage");
-
   // Testing all the APIs from getimg.ai
+  // Function : json to base64
+
+  const fnJsonToBase64 = (json) => {
+    return btoa(JSON.stringify(json));
+  };
 
   const fnCallInstructImgAPI = async () => {
     setClicked(true);
@@ -276,28 +283,45 @@ const CompInstructImage = () => {
       method: "POST",
       headers: {
         accept: "application/json",
-        'content-type': "application/json",
-        authorization: "Bearer key-SQPbl4vBrLiOoEe1szionhtBfhqvtLvCOb6y2Sw0cW9fRPj1AidOkbmuCM68IEpaOCkJ9H7lWkEBBe1JqEQqn05rX08AN8p",
+        "content-type": "application/json",
+        authorization:
+          "Bearer key-2ldCt5QwA0Jt9VxoHDWadZukBnQKqM9Rcj9UBZPRVR0eh8sbhLzMylCMmNreNR5GqwgsMJmoolcBGA5JBgUleuP2BqWNiYZ2",
+          // "Bearer key-4tA8akcKtGFZQwipltBWJz3CCe1Jh6u7PX59uRJY9U6wEvareOdhlhWgCiMWnZeCz9CC6GIJLaddIJGbHr5crjfz6ROXTUXY"
       },
       body: JSON.stringify({
-      // data: {
+        // data: {
         prompt: stImgPrompt,
-        image: base64Stripper(imageBase64),
-      } 
-      ),
+        // image: base64Stripper(uploadedImg),
+        // image: `${base64Stripper(uploadedImg)}`,
+        image: base64Stripper(uploadedImg),
+      }),
     };
 
     console.log("Calling API Start");
 
-    await fetch("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
-    // await axios.post("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
-      // .then((response) => response.json())
+    // await fetch("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
+    await fetch("https://api.getimg.ai/v1/stable-diffusion/image-to-image", options)
+      // await axios.post("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
+      .then((response) => response.json())
       .then((response) => {
-        console.log(" Response from Axios ");
+        console.log(" Response from Fetch ");
         console.log(response);
         // if (response.status === 200) {
-          setBase64ImgLink(response.data.image);
+          if(!response.image){
+            setBase64ImgLink("");
+            setStDisplayMessage("It's not you, it's us. Please try again later.");
+          }
+        setBase64ImgLink(response.image);
         // }
+        // if (response.status === 500) {
+        //   setBase64ImgLink("");
+        //   setStDisplayMessage("It's not you, it's us. Please try again later.");
+        // }
+        // if (response.status > 400 && response.status < 500) {
+        //   setBase64ImgLink("");
+        //   setStDisplayMessage(response.data.error.type);
+        // }
+        setClicked(false);
       })
       .catch((err) => {
         console.log(" Response from Axios ");
@@ -320,123 +344,136 @@ const CompInstructImage = () => {
       reader.onloadend = () => {
         // When the file has been read successfully, the result will be a Base64 encoded string
         const base64String = reader.result;
-        setImageBase64(base64String);
+        setUploadedImg(base64String);
       };
 
       reader.readAsDataURL(file);
     }
   };
 
-  useEffect(() => {
-    // Set Image to State Variable
-    console.log(stImgPrompt);
-    console.log(imageBase64);
+  const fnUseThisCanvas = () => {
+    setUploadedImg(fastPreview[0]);
+  };
 
-    // convertImageToBase64(stOriginalImage, (base64Img) => {
-    //   console.log(base64Img);
-    //   setStOriginalImage(base64Img);
-    // } );
-    console.log(Date.now() - 1 * 60 * 1000);
-  }, [imageBase64]);
+  useEffect(() => {
+    setUploadedImg(uploadedImg);
+    console.log(uploadedImg);
+  }, [uploadedImg]);
 
   return (
     <>
-    <div className="h-full overflow-y-auto">
-      <div className="">
-        <div className="m-1 mb-2 ml-2"> Original Image </div>
+      <div className="h-full overflow-y-auto">
 
-        {/* <Input onChange={(e) => setStOriginalImage(e.target.value)} type="file" name="" id="" accept="image/*" /> */}
-        <div className="mb-4 rounded-md">
-          <input
-            className="mb-2 ml-2"
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-          />
-          {imageBase64 && (
-            <div className="flex justify-center">
-              <img
-                className="m-2 rounded-md h-32 w-full object-contain"
-                src={imageBase64}
-                alt="Uploaded Image"
-              />
-            </div>
-          )}
-        </div>
-      </div>
+          <div className="m-1 mb-2 ml-2">
+            {" "}
+            {/* <Chip color="blue" variant="ghost" value="Original Image" /> */}
+            Original Image{" "}
+          </div>
 
-      <Textarea
-        required
-        color="purple"
-        label="Prompt"
-        onChange={(e) => setStImgPrompt(e.target.value)}
-      />
+          {/* <Input onChange={(e) => setStOriginalImage(e.target.value)} type="file" name="" id="" accept="image/*" /> */}
+          <div className="mb-4 rounded-md">
+            <input
+              className="mb-2 ml-2"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+            <div className="flex justify-center "> OR </div>
+            <MatButton
+              disabled={!fastPreview[0]}
+              size="sm"
+              color="deep-purple"
+              variant="outlined"
+              className="mt-4 p-2"
+              fullWidth
+              onClick={fnUseThisCanvas}
+            >
+              Use this Canvas
+            </MatButton>
+            {uploadedImg && (
+              <div className="flex justify-center">
+                <img
+                  className="m-2 rounded-md h-32 w-full object-contain"
+                  // src={`data:image/jpeg;base64, ${uploadedImg}`}
+                  src={uploadedImg}
+                  alt="Uploaded Image"
+                />
+              </div>
+            )}
+          </div>
 
-      <MatButton disabled={!imageBase64} className="mt-4 w-full" onClick={fnCallInstructImgAPI}>
-        Generate
-      </MatButton>
 
-      {!base64ImgLink && !clicked && (
-        <div className="mt-4 text-center text-md text-green-600">
-          {stDisplayMessage}
-        </div>
-      )}
+        <Textarea
+          required
+          color="purple"
+          label="Prompt"
+          onChange={(e) => setStImgPrompt(e.target.value)}
+        />
 
-      {!base64ImgLink && clicked && (
-        <div className="mt-0 text-center text-blue-600">
-          <Lottie animationData={animationData} className="h-64" />
-          {/* Generating Image... */}
-        </div>
-      )}
+        <MatButton
+          disabled={!uploadedImg}
+          className="mt-4 w-full"
+          onClick={fnCallInstructImgAPI}
+        >
+          Generate
+        </MatButton>
 
-      {/* { base64ImgLink && <img className="mt-4" src={`data:image/jpeg;base64, ${base64ImgLink}`} alt="" /> } */}
-      {base64ImgLink && (
-        <div className="mt-4 h-32">
-          <CustomImageComponent
-            preview={`data:image/jpeg;base64, ${base64ImgLink}`}
-          />
-        </div>
-      )}
+        {!base64ImgLink && !clicked && (
+          <div className="mt-4 text-center text-md text-green-600">
+            {stDisplayMessage}
+          </div>
+        )}
+
+        {!base64ImgLink && clicked && (
+          <div className="mt-0 text-center text-blue-600">
+            <Lottie animationData={animationData} className="h-64" />
+            {/* Generating Image... */}
+          </div>
+        )}
+
+        {/* { base64ImgLink && <img className="mt-4" src={`data:image/jpeg;base64, ${base64ImgLink}`} alt="" /> } */}
+        {base64ImgLink && !clicked && (
+          <div className="mt-4 h-32">
+            <CustomImageComponent
+              preview={`data:image/jpeg;base64, ${base64ImgLink}`}
+            />
+          </div>
+        )}
       </div>
     </>
   );
 };
 
 const AIImagePanel = () => {
-  const [currentTab, setCurrentTab] = useState("tabPrompt");
+  const [currentTab, setCurrentTab] = useState("prompt");
+
+  const tabsArray = ["prompt", "instruct"];
 
   return (
     <div
       style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
+        height: "100dvh",
       }}
     >
       <Tabs
-        id="TabsExample"
-        defaultSelectedTabId="tabPrompt"
-        onChange={(tabId) => {
-          setCurrentTab(tabId);
-        }}
+        id="custom-animation"
+        className="overflow-y-auto h-full"
+        value={currentTab}
       >
-        <Tab id="tabPrompt" title="Prompt" />
-        {/* <Tab id="tabDesignify" title="Designify" /> */}
-        <Tab id="tabInstructImage" title="Instruct" />
-      </Tabs>
+        <TabsHeader>
+          {tabsArray.map((tab, index) => (
+            <Tab key={index} value={tab} onClick={() => setCurrentTab(tab)}>
+              <div className="appFont">{firstLetterCapital(tab)}</div>
+            </Tab>
+          ))}
+        </TabsHeader>
 
-      <div
-        style={{
-          height: "calc(100% - 20px)",
-          display: "flex",
-          flexDirection: "column",
-          paddingTop: "20px",
-        }}
-      >
-        {currentTab === "tabPrompt" && <CompSearch />}
-        {currentTab === "tabDesignify" && <CompDesignify />}
-        {currentTab === "tabInstructImage" && <CompInstructImage />}
-      </div>
+        <TabsBody className="h-full">
+          <div className="p-2"></div>
+          {currentTab === "prompt" && <CompSearch />}
+          {currentTab === "instruct" && <CompInstructImage />}
+        </TabsBody>
+      </Tabs>
     </div>
   );
 };

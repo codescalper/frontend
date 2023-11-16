@@ -1,16 +1,20 @@
 import Lottie from 'lottie-react'
 import React from 'react'
-import animationData from '../../../../assets/lottie/emptystates/emptyState1.json';
+
+// const randomNumber = Math.floor(Math.random() * 3) + 1;
+// const animationData = import(`../../../../assets/lottie/emptystates/EmptyState${randomNumber}.json`);
+
+import animationData from '../../../../assets/lottie/emptystates/EmptyState2.json';
 
 const MessageComponent = ({message}) => {
   return (
     <div className="flex flex-col justify-center items-center">
-      <Lottie className="h-32 pb-2 sm:h-16" animationData={animationData}/>
-      <div className="text-center">
+      <Lottie className="h-16 pb-2 sm:h-40" animationData={animationData}/>
+      <div className="text-center"> 
         <p className="text-gray-500 text-sm mt-4">{message}</p>
       </div>
     </div>
   )
 }
 
-export default MessageComponent
+export default MessageComponent 

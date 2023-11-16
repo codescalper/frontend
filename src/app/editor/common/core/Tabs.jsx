@@ -85,7 +85,8 @@ const Tabs = ({
       {data?.pages[0]?.data.length > 0 ? (
         // <div className="h-full overflow-y-auto">
         // <div className="overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
+        // To Fix Lenspost Banner Preview size issue
+          <div className={`grid ${ defaultQuery === "lensjump" && getType === "background" ? "grid-cols-1" : "grid-cols-2" } overflow-y-auto`}>
             {data?.pages
               .flatMap((item) => item?.data)
               .map((item, index) => {

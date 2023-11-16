@@ -134,7 +134,8 @@ const UploadPanel = () => {
         </>
       ) : (
         <div>
-          <MessageComponent message="You have not Uploaded any assets yet" />
+          {/* <MessageComponent message="You have not Uploaded any assets yet" /> */}
+          <MessageComponent message="Start uploading your Assets Now" />
         </div>
       )}
     </div>

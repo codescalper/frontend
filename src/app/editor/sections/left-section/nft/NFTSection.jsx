@@ -158,7 +158,7 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
                     alt={item.name}
                     className="h-24 w-24 rounded-md"
                   />
-                  <p className="text-lg font-normal">{item.name}</p>
+                  <p className="text-lg font-normal">{firstLetterCapital(item.name)}</p>
                 </div>
               </div>
             ))}
@@ -244,7 +244,7 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
               goBack();
             }}
           ></Button>
-          <h1 className="ml-4 align-middle text-lg font-bold">{activeCat}</h1>
+          <h1 className="ml-4 align-middle text-lg font-bold">{firstLetterCapital(activeCat)}</h1>
         </div>
         {isError ? (
           <ErrorComponent error={error} />
@@ -310,7 +310,7 @@ const RenderSearchedNFTs = ({
               goBack();
             }}
           ></Button>
-          <h1 className="ml-4 align-middle text-lg font-bold">{activeCat}</h1>
+          <h1 className="ml-4 align-middle text-lg font-bold">{firstLetterCapital(activeCat)}</h1>
         </div>
         {isError ? (
           <ErrorComponent error={error} />

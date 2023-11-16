@@ -39,7 +39,6 @@ import {
 import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 import { SpeedDialX } from "./common/elements/SpeedDial";
-import CustomTabsMaterial from "./common/core/CustomTabsMaterial";
 import { Tooltip } from "polotno/canvas/tooltip";
 import { useSolanaWallet } from "../../hooks/solana";
 import { LOCAL_STORAGE } from "../../data";
@@ -71,7 +70,9 @@ const useHeight = () => {
   }, []);
   return height;
 };
-
+const CustomToolTipWrapper = () => {
+  return <div>Test</div>;
+};
 const Editor = () => {
   const store = useStore();
   const height = useHeight();
@@ -367,6 +368,7 @@ const Editor = () => {
           <div className="">
             <TopbarSection />
           </div>
+          {/* <PolotnoContainer className="min-h-screen md:min-h-full"> */}
           <PolotnoContainer>
             <div id="second-step" className="mx-2">
               <SidePanelWrap>
@@ -379,7 +381,10 @@ const Editor = () => {
               </div>
               <Workspace
                 store={store}
-                components={{ Tooltip }}
+                components={{
+                  Tooltip,
+                  // Image: CustomToolTipWrapper
+                }}
                 backgroundColor="#e8e8ec"
               />
 
