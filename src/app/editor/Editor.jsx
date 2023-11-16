@@ -102,7 +102,7 @@ const Editor = () => {
     referredFromRef,
     lensCollectNftRecipientDataRef,
     assetsRecipientDataRef,
-    solanaNftRecipientDataRef,
+    nftRecipientDataRef,
     bgRemoverRecipientDataRef,
     preStoredRecipientDataRef,
     parentRecipientDataRef,
@@ -157,7 +157,7 @@ const Editor = () => {
       ...preStoredRecipientDataRef.current, // recipient data geting from BE
       ...lensCollectNftRecipientDataRef.current, // recipient data of lens collect
       ...assetsRecipientDataRef.current, // recipient data of assets
-      ...solanaNftRecipientDataRef.current, // recipient data of solana
+      ...nftRecipientDataRef.current, // recipient data of solana
       ...bgRemoverRecipientDataRef.current, // recipient data of bg remover
     ];
 
@@ -185,16 +185,16 @@ const Editor = () => {
     parentRecipientDataRef.current = newDataRef;
 
     // get the handles and address from the newArray
-    const newArrayHandles = newDataRef.map((item) => item.handle);
+    const newArrayRecipients = newDataRef.map((item) => item.recipient);
 
     return {
-      recipientData: parentRecipientDataRef.current,
-      recipientHandles: newArrayHandles,
+      recipientsData: parentRecipientDataRef.current,
+      recipients: newArrayRecipients,
     };
   };
 
   // function to add the all recipient handles / address
-  const recipientHandlesCombiner = () => {
+  const recipientDataCombiner = () => {
     // create an array of all the recipients then make it uniq
 
     let parentArray = [];
@@ -204,12 +204,12 @@ const Editor = () => {
       parentArray = [
         address || solanaAddress, // current recipient address
         referredFromRef.current[0], // owner address of other created canvas
-        ...recipientDataFilter().recipientHandles, // handles of all the dataRefs recipients
+        ...recipientDataFilter().recipients, // handles of all the dataRefs recipients
       ];
     } else {
       parentArray = [
         address || solanaAddress, // current recipient address
-        ...recipientDataFilter().recipientHandles, // handles of all the dataRefs recipients
+        ...recipientDataFilter().recipients, // handles of all the dataRefs recipients
       ];
     }
 
@@ -249,10 +249,10 @@ const Editor = () => {
 
       // save it to the backend
       if (canvasChildren?.length > 0) {
-        // console.log("parentRecipientObj", recipientDataFilter().recipientData);
+        // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
         // console.log(
         //   "parentRecipientRef",
-        //   recipientHandlesCombiner().recipients
+        //   recipientDataCombiner().recipients,
         // );
 
         // return;
@@ -261,8 +261,8 @@ const Editor = () => {
         if (!canvasIdRef.current) {
           createCanvasAsync({
             data: json,
-            referredFrom: recipientHandlesCombiner().recipients,
-            assetsRecipientElementData: recipientDataFilter().recipientData,
+            referredFrom: recipientDataCombiner().recipients,
+            assetsRecipientElementData: recipientDataFilter().recipientsData,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -285,8 +285,8 @@ const Editor = () => {
             id: canvasIdRef.current,
             data: json,
             isPublic: false,
-            referredFrom: recipientHandlesCombiner().recipients,
-            assetsRecipientElementData: recipientDataFilter().recipientData,
+            referredFrom: recipientDataCombiner().recipients,
+            assetsRecipientElementData: recipientDataFilter().recipientsData,
             preview: canvasBase64Ref.current,
           })
             .then((res) => {
@@ -420,13 +420,6 @@ const Editor = () => {
               <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">
                 <BgRemover />
                 <ZoomButtons store={store} />
-                {/* <Button
-                  onClick={() => getProfileData(address)}
-                  title="get user lens data"
-                  color="white"
-                >
-                  get user lens data
-                </Button> */}
 
                 {/* Quick Tour on the main page */}
                 <div className="flex flex-row ">
