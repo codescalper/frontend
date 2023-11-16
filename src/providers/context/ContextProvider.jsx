@@ -232,8 +232,8 @@ const ContextProvider = ({ children }) => {
   // elementId and handle data for assets nft
   const assetsRecipientDataRef = useRef([]);
 
-  // elementId and handle data for solana nfts nft
-  const solanaNftRecipientDataRef = useRef([]);
+  // elementId and handle data for nfts
+  const nftRecipientDataRef = useRef([]);
 
   // elementId and handle data for BG remover nft
   const bgRemoverRecipientDataRef = useRef([]);
@@ -243,9 +243,6 @@ const ContextProvider = ({ children }) => {
 
   // It has all the DataRefs data
   const parentRecipientDataRef = useRef([]);
-
-  // solana NFT recipients list
-  const solanaNftRecipientListRef = useRef([]);
 
   // It hass all the recipients list (kind of final recipient list but some address/)
   const parentRecipientListRef = useRef([]);
@@ -354,7 +351,7 @@ const ContextProvider = ({ children }) => {
         assetsRecipientDataRef,
 
         // elementId and handle data for solana nfts nft
-        solanaNftRecipientDataRef,
+        nftRecipientDataRef,
 
         // elementId and handle data for BG remover nft
         bgRemoverRecipientDataRef,
@@ -364,9 +361,6 @@ const ContextProvider = ({ children }) => {
 
         // It has all the DataRefs data
         parentRecipientDataRef,
-
-        // solana NFT recipients list
-        solanaNftRecipientListRef,
 
         // It hass all the recipients list (kind of final recipient list but some address/)
         parentRecipientListRef,

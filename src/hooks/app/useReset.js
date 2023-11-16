@@ -41,7 +41,7 @@ const useReset = () => {
     assetsRecipientDataRef,
 
     // elementId and handle data for solana nfts nft
-    solanaNftRecipientDataRef,
+    nftRecipientDataRef,
 
     // elementId and handle data for BG remover nft
     bgRemoverRecipientDataRef,
@@ -51,9 +51,6 @@ const useReset = () => {
 
     // It has all the DataRefs data
     parentRecipientDataRef,
-
-    // solana NFT recipients list
-    solanaNftRecipientListRef,
 
     // It hass all the recipients list (kind of final recipient list but some address/)
     parentRecipientListRef,
@@ -127,11 +124,10 @@ const useReset = () => {
     referredFromRef.current = [];
     lensCollectNftRecipientDataRef.current = [];
     assetsRecipientDataRef.current = [];
-    solanaNftRecipientDataRef.current = [];
+    nftRecipientDataRef.current = [];
     bgRemoverRecipientDataRef.current = [];
     preStoredRecipientDataRef.current = [];
     parentRecipientDataRef.current = [];
-    solanaNftRecipientListRef.current = [];
     parentRecipientListRef.current = [];
     setPriceError({
       isError: false,

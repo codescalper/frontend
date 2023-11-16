@@ -29,7 +29,7 @@ const CustomImageComponent = ({
   const {
     lensCollectNftRecipientDataRef,
     assetsRecipientDataRef,
-    solanaNftRecipientDataRef,
+    nftRecipientDataRef,
   } = useContext(Context);
 
   // convert to base64
@@ -79,7 +79,7 @@ const CustomImageComponent = ({
 
       lensCollectNftRecipientDataRef.current.push({
         elementId: store.selectedElements[0]?.id,
-        handle: isLensCollect?.lensHandle,
+        recipient: isLensCollect?.lensHandle,
       });
     }
 
@@ -87,21 +87,21 @@ const CustomImageComponent = ({
     if (recipientWallet && recipientWallet.startsWith("@")) {
       assetsRecipientDataRef.current.push({
         elementId: store.selectedElements[0]?.id,
-        handle: recipientWallet + ".lens",
+        recipient: recipientWallet,
       });
     } else if (recipientWallet) {
       assetsRecipientDataRef.current.push({
         elementId: store.selectedElements[0]?.id,
-        handle: recipientWallet,
+        recipient: recipientWallet,
       });
     }
 
-    // if it is a solana nft, add creators address to the recipient list to solanaNftRecipientListRef
+    // if it is a solana nft or eth nft, add creators address to the recipient list to solanaNftRecipientListRef
     if (item?.creators.length > 0) {
       item?.creators.map((creator) => {
-        solanaNftRecipientDataRef.current.push({
+        nftRecipientDataRef.current.push({
           elementId: store.selectedElements[0]?.id,
-          handle: creator.address,
+          recipient: creator.address || creator.recipient,
         });
       });
     }
@@ -139,6 +139,7 @@ const CustomImageComponent = ({
             src={base64Data}
             alt="Preview Image"
           />
+          {id}
         </div>
 
         {/* if nft is a lens collect */}
