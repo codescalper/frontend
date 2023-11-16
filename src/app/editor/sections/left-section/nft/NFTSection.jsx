@@ -407,7 +407,7 @@ const WalletNFT = () => {
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
   const [currentTab, setCurrentTab] = useState("solana");
-  const tabsArray = ["solana", "ethereum", "polygon", "zora"];
+  const tabsArray = ["solana", "ethereum", "polygon", "zora", "base"];
   const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
 
@@ -423,6 +423,8 @@ const WalletNFT = () => {
       return 2;
     } else if (currentTab === "zora") {
       return 7777777;
+    } else if (currentTab === "base") {
+      return 8453;
     }
   };
 
@@ -521,7 +523,7 @@ const WalletNFT = () => {
         id="custom-animation"
         value={currentTab}
       >
-        <TabsHeader>
+        <TabsHeader className="overflow-x-auto gap-3">
           {tabsArray.map((tab, index) => (
             <Tab key={index} value={tab} onClick={() => setCurrentTab(tab)}>
               <div className="appFont">{firstLetterCapital(tab)}</div>

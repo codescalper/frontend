@@ -2,7 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon_io/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Lenspost" />
+    <link rel="icon" href="/favicon_io/favicon-32x32.png" />
+    <meta name="theme-color" content="#ffffff" />
+    
     <meta
       name="viewport"
       content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1"
@@ -19,6 +35,8 @@
       href="https://unpkg.com/@blueprintjs/popover2@1/lib/css/blueprint-popover2.css"
       rel="stylesheet"
     />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -27,12 +45,12 @@
     />
 
     <!-- Zootools Script Start -->
-    <script
+    <!-- <script
       async
       src="https://cdnjs.waitlistpanda.com/embed/web/index.min.js"
       charset="utf-8"
       defer
-    ></script>
+    ></script> -->
     <!-- Zootools Script End -->
 
     <title>Lenspost Studio</title>
@@ -100,4 +118,12 @@
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <!-- conffeti CDN script end -->
   </body>
+
+  <!-- script to make it a desktop application -->
+<script>
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('display-mode is standalone');
+  }
+  </script>
+</html>
 </html>
