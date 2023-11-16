@@ -139,7 +139,6 @@ const CustomImageComponent = ({
             src={base64Data}
             alt="Preview Image"
           />
-          {id}
         </div>
 
         {/* if nft is a lens collect */}
