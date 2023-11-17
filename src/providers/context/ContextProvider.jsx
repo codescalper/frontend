@@ -401,6 +401,17 @@ const ContextProvider = ({ children }) => {
         explorerLink,
         setExplorerLink,
         handleOpen,
+
+        // states for lens data
+        lensAuthState,
+        setLensAuthState,
+        // For zora mint Switches
+        zoraEnabled,
+        setZoraEnabled,
+
+        // For Zora Mint Error
+        zoraStatesError,
+        setZoraStatesError,
       }}
     >
       {children}
