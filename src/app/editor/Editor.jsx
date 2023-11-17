@@ -10,16 +10,22 @@ import {
 } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
-import { createCanvas, getProfileData, updateCanvas } from "../../services";
+import {
+  checkDispatcher,
+  createCanvas,
+  getProfileData,
+  updateCanvas,
+} from "../../services";
 import { Context } from "../../providers/context/ContextProvider";
 import { unstable_setAnimationsEnabled } from "polotno/config";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   errorMessage,
   loadFile,
   base64Stripper,
   wait,
   getFromLocalStorage,
+  saveToLocalStorage,
 } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
@@ -43,6 +49,7 @@ import { Tooltip } from "polotno/canvas/tooltip";
 import { useSolanaWallet } from "../../hooks/solana";
 import { LOCAL_STORAGE } from "../../data";
 import { Button } from "@material-tailwind/react";
+import { useAppAuth } from "../../hooks/app";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -79,11 +86,16 @@ const Editor = () => {
   const height = useHeight();
   const { address, isConnected } = useAccount();
   const { solanaAddress } = useSolanaWallet();
+  const { isAuthenticated } = useAppAuth();
   const isEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const isSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const currentUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
+  const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
+  const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const canvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
+  const timeoutRef = useRef(null);
+  const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const {
     contextCanvasIdRef,
     setEnabled,
@@ -97,8 +109,8 @@ const Editor = () => {
     parentRecipientDataRef,
     parentRecipientListRef,
   } = useContext(Context);
-  const timeoutRef = useRef(null);
-  const { setSteps, setIsOpen, setCurrentStep } = useTour();
+
+  console.log(address)
 
   console.log(address)
 

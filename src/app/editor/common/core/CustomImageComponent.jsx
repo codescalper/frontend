@@ -155,10 +155,10 @@ const CustomImageComponent = ({
                 const onlyHandle =
                   isLensCollect?.lensHandle?.split("@")[1] ||
                   recipientWallet?.split("@")[1];
-                window.open(`https://lenster.xyz/u/${onlyHandle}`, "_blank");
+                window.open(`https://hey.xyz/u/${onlyHandle}`, "_blank");
               }}
             >
-              {isLensCollect?.lensHandle || recipientWallet + ".lens"}
+              {isLensCollect?.lensHandle || recipientWallet}
             </div>
           </>
         ) : (

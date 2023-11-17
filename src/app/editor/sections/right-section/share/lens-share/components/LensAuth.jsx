@@ -211,53 +211,52 @@ const LensAuth = ({ title, className }) => {
           <Typography variant="h6" color="blue-gray">
             Select a Lens profile and sign the message.
           </Typography>
-          {loading && (
+          {loading ? (
             <div className="flex items-center justify-center rounded-lg border my-2 p-3">
               <Typography variant="h6" color="blue-gray">
                 Fetching lens profile profiles...
               </Typography>
             </div>
-          )}
-          {lensAuthState.lensProfileData.length > 0
-            ? !loading &&
-              [...lensAuthState.lensProfileData].reverse().map((item) => {
-                const handle = item?.handle?.localName;
-                return (
-                  <div
-                    key={item.id}
-                    className="rounded-lg w-full h-full border p-3 my-2 text-black cursor-pointer hover:bg-blue-gray-50 flex items-center justify-between"
-                    onClick={() => {
-                      generateSignature(item.id);
-                      setActiveProfile({
-                        id: item.id,
-                        handle: handle,
-                      });
-                    }}
-                  >
-                    <div className="flex items-center gap-5">
-                      <img
-                        src={getLensPFP(address)}
-                        alt=""
-                        className="h-10 w-10 rounded-full"
-                      />
-                      <Typography variant="h6" color="blue-gray">
-                        @{handle}
-                      </Typography>
-                    </div>
-                    {lensAuthState.loading.isLoading &&
-                    activeProfile.id === item.id ? (
-                      <Spinner color="red" />
-                    ) : null}
+          ) : lensAuthState.lensProfileData.length > 0 ? (
+            [...lensAuthState.lensProfileData].reverse().map((item) => {
+              const handle = item?.handle?.localName;
+              return (
+                <div
+                  key={item.id}
+                  className="rounded-lg w-full h-full border p-3 my-2 text-black cursor-pointer hover:bg-blue-gray-50 flex items-center justify-between"
+                  onClick={() => {
+                    if (lensAuthState.loading.isLoading) return;
+                    generateSignature(item.id);
+                    setActiveProfile({
+                      id: item.id,
+                      handle: handle,
+                    });
+                  }}
+                >
+                  <div className="flex items-center gap-5">
+                    <img
+                      src={getLensPFP(address)}
+                      alt=""
+                      className="h-10 w-10 rounded-full"
+                    />
+                    <Typography variant="h6" color="blue-gray">
+                      @{handle}
+                    </Typography>
                   </div>
-                );
-              })
-            : !loading && (
-                <div className="flex items-center justify-center rounded-lg border my-2 p-3">
-                  <Typography variant="h6" color="blue-gray">
-                    No Lens profile found
-                  </Typography>
+                  {lensAuthState.loading.isLoading &&
+                  activeProfile.id === item.id ? (
+                    <Spinner color="red" />
+                  ) : null}
                 </div>
-              )}
+              );
+            })
+          ) : (
+            <div className="flex items-center justify-center rounded-lg border my-2 p-3">
+              <Typography variant="h6" color="blue-gray">
+                No Lens profile found
+              </Typography>
+            </div>
+          )}
         </DialogBody>
       </Dialog>
     </>

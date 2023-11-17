@@ -27,8 +27,6 @@ const { chains, publicClient } = configureChains(
   ]
 );
 
-console.log(WALLETCONNECT_PROJECT_ID);
-
 const connectors = connectorsForWallets([
   {
     groupName: "Recommended",

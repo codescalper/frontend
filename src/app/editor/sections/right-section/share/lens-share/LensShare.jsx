@@ -89,6 +89,7 @@ const LensShare = () => {
     error,
     signMessage,
   } = useSignMessage();
+
   const [sharing, setSharing] = useState(false);
 
   const { mutateAsync: shareOnLens } = useMutation({

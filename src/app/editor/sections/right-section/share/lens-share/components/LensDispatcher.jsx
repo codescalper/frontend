@@ -68,7 +68,7 @@ const LensDispatcher = ({ title, className }) => {
       <Dialog
         size="sm"
         open={open}
-        handler={handleOpen}
+        handler={loading ? null : handleOpen}
         animate={{
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },
@@ -82,7 +82,7 @@ const LensDispatcher = ({ title, className }) => {
             color="blue-gray"
             size="sm"
             variant="text"
-            onClick={handleOpen}
+            onClick={loading ? null : handleOpen}
             className="outline-none"
           >
             <svg
