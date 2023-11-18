@@ -7,7 +7,8 @@ const SearchComponent = ({ query, setQuery, onClick, placeholder, error }) => {
     <div className="flex flex-col justify-between gap-2 my-4 mx-2 ">
       <div className="flex flex-row justify-between gap-2 mx-1">
         <InputBox
-          placeholder={placeholder || "Search"}
+          // placeholder={placeholder || "Search"}
+          label={placeholder || "Search"}
           onChange={(e) => setQuery(e.target.value)}
           value={query}
         />

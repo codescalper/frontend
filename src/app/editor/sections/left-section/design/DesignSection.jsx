@@ -364,7 +364,8 @@ export const DesignPanel = () => {
         </div>
       ) : (
         <div id="RecentDesigns">
-          <MessageComponent message="You have not created any design yet" />
+          {/* <MessageComponent message="You have not created any design yet" /> */}
+          <MessageComponent message="Start Creating you new design" />
         </div>
       )}
 

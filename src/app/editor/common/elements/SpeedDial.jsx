@@ -14,10 +14,12 @@ import {
 import SuCreate from "@meronex/icons/su/SuCreate";
 import SuChevronUp from "@meronex/icons/su/SuChevronUp";
 import SuCapture from "@meronex/icons/su/SuCapture";
+import SuReplicate from '@meronex/icons/su/SuReplicate';
 import { fnPageHasElements } from "../../../../utils";
 import { useStore } from "../../../../hooks/polotno";
 import { useReset } from "../../../../hooks/app";
 import { toast } from "react-toastify";
+import { BgRemover } from "../../sections/bottom-section";
 
 export function SpeedDialX() {
   const store = useStore();
@@ -48,6 +50,13 @@ export function SpeedDialX() {
 
           {/* Content */}
           <SpeedDialContent>
+          <div className="" >
+              <SpeedDialAction className="relative" onClick={""}>
+                <SuReplicate className="h-5 w-5" />
+                <Typography {...labelProps}>{`Remove BG`}</Typography>
+              </SpeedDialAction>
+            </div>
+
             <div className="" onClick={() => store.setSize(1080, 1080)}>
               <SpeedDialAction className="relative">
                 <SuCapture className="h-5 w-5" />

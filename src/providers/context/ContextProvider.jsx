@@ -121,6 +121,92 @@ const ContextProvider = ({ children }) => {
     tokenGateErrorMessage: "",
   });
 
+  const [zoraEnabled, setZoraEnabled] = useState({
+    isChargeForMint: false,
+    chargeForMintPrice: "",
+    chargeForMintCurrency: "",
+
+    isLimitedEdition: false,
+    limitedEditionNumber: "",
+
+    isMintLimitPerAddress: false,
+    mintLimitPerAddress: "",
+
+    isScheduleMint: false,
+    scheduleMintTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    isRoyaltySplits: true,
+    royaltySplitRecipients: [
+      {
+        address: "",
+        share: null,
+      },
+    ],
+
+    isRoyaltyPercent: false,
+    royaltyPercent: "",
+
+    isMaxSupply: false,
+    maxSupply: "",
+
+    isPresaleSchedule: false,
+    presaleStartTimeStamp: {
+      date: "",
+      time: "",
+    },
+    presaleEndTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    isPublicsaleSchedule: false,
+    publicsaleStartTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    publicsaleEndTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    isContractDetails: false,
+    contractName: "",
+    contractSymbol: "",
+  });
+
+  const [zoraStatesError, setZoraStatesError] = useState({
+    isChargeForMintError: false,
+    chargeForMintErrorMessage: "",
+
+    isLimitedEditionError: false,
+    limitedEditionErrorMessage: "",
+
+    isMintLimitPerAddressError: false,
+    mintLimitPerAddressMessage: "",
+
+    isScheduleMintError: false,
+    scheduleMintErrorMessage: "",
+
+    isRoyaltySplitError: false,
+    royaltySplitErrorMessage: "",
+
+    isRoyaltyPercentError: false,
+    royaltyPercentErrorMessage: "",
+
+    isMaxSupplyError: false,
+    maxSupplyErrorMessage: "",
+
+    isPresaleScheduleError: false,
+    presaleScheduleErrorMessage: "",
+
+    isPublicsaleScheduleError: false,
+    publicsaleScheduleErrorMessage: "",
+  });
+
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -161,6 +247,9 @@ const ContextProvider = ({ children }) => {
   // It hass all the recipients list (kind of final recipient list but some address/)
   const parentRecipientListRef = useRef([]);
 
+  // It has all the recipients list for Zora Royalty (kind of final recipient list but some address/)
+  const parentZoraRoyaltyListRef = useRef([]);
+
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
 
@@ -194,6 +283,7 @@ const ContextProvider = ({ children }) => {
 
   const handleOpen = () => setDialogOpen((cur) => !cur);
 
+  // console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
   // states for lens data
   const [lensAuthState, setLensAuthState] = useState({
     lensProfileData: [],
@@ -275,6 +365,9 @@ const ContextProvider = ({ children }) => {
         // It hass all the recipients list (kind of final recipient list but some address/)
         parentRecipientListRef,
 
+        // It hass all the recipients list (kind of final recipient list but some address/)
+        parentZoraRoyaltyListRef,
+
         // for lens monetization price error
         priceError,
         setPriceError,
@@ -312,6 +405,13 @@ const ContextProvider = ({ children }) => {
         // states for lens data
         lensAuthState,
         setLensAuthState,
+        // For zora mint Switches
+        zoraEnabled,
+        setZoraEnabled,
+
+        // For Zora Mint Error
+        zoraStatesError,
+        setZoraStatesError,
       }}
     >
       {children}
