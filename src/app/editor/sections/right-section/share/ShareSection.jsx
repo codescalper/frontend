@@ -213,14 +213,14 @@ const ShareSection = () => {
               />{" "}
             </div>
 
-            <div onClick={() => setMenu("zoraMint")}>
+            {/* <div onClick={() => setMenu("zoraMint")}>
               {" "}
               <img
                 className="w-10 cursor-pointer"
                 src={logoZora}
                 alt="Zora"
               />{" "}
-            </div>
+            </div> */}
           </div>
         </div>
         <hr />

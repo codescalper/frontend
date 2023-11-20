@@ -121,7 +121,67 @@ const ContextProvider = ({ children }) => {
     tokenGateErrorMessage: "",
   });
 
-  const [zoraEnabled, setZoraEnabled] = useState({
+  const [zoraTab, setZoraTab] = useState("ERC721");
+
+  const [zoraErc721Enabled, setZoraErc721Enabled] = useState({
+    isContractDetails: false,
+    contractName: "",
+    contractSymbol: "",
+
+    isChargeForMint: false,
+    chargeForMintPrice: "",
+    chargeForMintCurrency: "",
+
+    isMintLimitPerAddress: false,
+    mintLimitPerAddress: "",
+
+    isRoyaltySplits: true,
+    royaltySplitRecipients: [
+      {
+        address: "",
+        share: null,
+      },
+    ],
+
+    isRoyaltyPercent: false,
+    royaltyPercent: "",
+
+    isMaxSupply: false,
+    maxSupply: "",
+
+    isAllowlist: false,
+    allowlistAddresses: [""],
+
+    isPresaleSchedule: false,
+    presaleStartTimeStamp: {
+      date: "",
+      time: "",
+    },
+    presaleEndTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    isPublicsaleSchedule: false,
+    publicsaleStartTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    publicsaleEndTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    // split contract address
+    fundRecipientAddress: "",
+  });
+
+  const [zoraErc1155Enabled, setZoraErc1155Enabled] = useState({
+    isContractDetails: false,
+    contractName: "",
+    contractSymbol: "",
+
     isChargeForMint: false,
     chargeForMintPrice: "",
     chargeForMintCurrency: "",
@@ -172,13 +232,41 @@ const ContextProvider = ({ children }) => {
       date: "",
       time: "",
     },
-
-    isContractDetails: false,
-    contractName: "",
-    contractSymbol: "",
   });
 
-  const [zoraStatesError, setZoraStatesError] = useState({
+  const [zoraErc721StatesError, setZoraErc721StatesError] = useState({
+    isChargeForMintError: false,
+    chargeForMintErrorMessage: "",
+
+    isLimitedEditionError: false,
+    limitedEditionErrorMessage: "",
+
+    isMintLimitPerAddressError: false,
+    mintLimitPerAddressMessage: "",
+
+    isScheduleMintError: false,
+    scheduleMintErrorMessage: "",
+
+    isRoyaltySplitError: false,
+    royaltySplitErrorMessage: "",
+
+    isRoyaltyPercentError: false,
+    royaltyPercentErrorMessage: "",
+
+    isMaxSupplyError: false,
+    maxSupplyErrorMessage: "",
+
+    isAllowlistError: false,
+    allowlistErrorMessage: "",
+
+    isPresaleScheduleError: false,
+    presaleScheduleErrorMessage: "",
+
+    isPublicsaleScheduleError: false,
+    publicsaleScheduleErrorMessage: "",
+  });
+
+  const [zoraErc1155StatesError, setZoraErc1155StatesError] = useState({
     isChargeForMintError: false,
     chargeForMintErrorMessage: "",
 
@@ -246,9 +334,6 @@ const ContextProvider = ({ children }) => {
 
   // It hass all the recipients list (kind of final recipient list but some address/)
   const parentRecipientListRef = useRef([]);
-
-  // It has all the recipients list for Zora Royalty (kind of final recipient list but some address/)
-  const parentZoraRoyaltyListRef = useRef([]);
 
   // Right Sidebar
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -365,9 +450,6 @@ const ContextProvider = ({ children }) => {
         // It hass all the recipients list (kind of final recipient list but some address/)
         parentRecipientListRef,
 
-        // It hass all the recipients list (kind of final recipient list but some address/)
-        parentZoraRoyaltyListRef,
-
         // for lens monetization price error
         priceError,
         setPriceError,
@@ -405,13 +487,26 @@ const ContextProvider = ({ children }) => {
         // states for lens data
         lensAuthState,
         setLensAuthState,
-        // For zora mint Switches
-        zoraEnabled,
-        setZoraEnabled,
 
-        // For Zora Mint Error
-        zoraStatesError,
-        setZoraStatesError,
+        // for zora mint tab
+        zoraTab,
+        setZoraTab,
+
+        // for zora erc721 edition tab
+        zoraErc721Enabled,
+        setZoraErc721Enabled,
+
+        // for zora erc1155 edition mint
+        zoraErc1155Enabled,
+        setZoraErc1155Enabled,
+
+        // for zora mint error
+        zoraErc721StatesError,
+        setZoraErc721StatesError,
+
+        // for zora mint error
+        zoraErc1155StatesError,
+        setZoraErc1155StatesError,
       }}
     >
       {children}

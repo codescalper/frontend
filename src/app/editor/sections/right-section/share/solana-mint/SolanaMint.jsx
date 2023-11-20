@@ -640,7 +640,7 @@ const SolanaMint = () => {
 
             <div className="mb-4 m-4">
               <div className="flex justify-between">
-                <h2 className="text-lg mb-2"> On Chain Splits </h2>
+                <h2 className="text-lg mb-2"> Split Pecipients </h2>
               </div>
               <div className="w-4/5 opacity-75">
                 {" "}
@@ -1273,7 +1273,7 @@ const SolanaMint = () => {
                 </Button>
 
                 <Button
-                  disabled={sharing}
+                  disabled={true}
                   onClick={() => sharePost("solana-master")}
                   color="teal"
                   className="mx-4"

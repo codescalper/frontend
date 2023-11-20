@@ -798,10 +798,10 @@ const LensShare = () => {
                 <div
                   className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}
                 >
-                  <h2 className="text-lg mb-2">Split Revenue</h2>
+                  <h2 className="text-lg mb-2">Split Pecipients</h2>
                   <div className="flex justify-between">
                     <Switch.Label className="w-4/5 opacity-60">
-                      Set multiple recipients for the collect fee
+                    Split revenue between multiple recipients
                     </Switch.Label>
                   </div>
                   <div className="relative">
