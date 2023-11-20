@@ -1273,7 +1273,7 @@ const SolanaMint = () => {
                 </Button>
 
                 <Button
-                  disabled={sharing}
+                  disabled={true}
                   onClick={() => sharePost("solana-master")}
                   color="teal"
                   className="mx-4"
