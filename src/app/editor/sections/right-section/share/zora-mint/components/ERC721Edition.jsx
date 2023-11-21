@@ -15,14 +15,191 @@ import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsPlus from "@meronex/icons/bs/BsPlus";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { Context } from "../../../../../../../providers/context";
+import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
 
 const ERC721Edition = () => {
+  const { address } = useAccount();
   const {
     zoraErc721Enabled,
     setZoraErc721Enabled,
     zoraErc721StatesError,
     setZoraErc721StatesError,
+    contextCanvasIdRef,
+    postDescription,
+    parentRecipientListRef,
   } = useContext(Context);
+
+  // funtions adding data for multi addresses
+  const handleArrlistChange = (index, value, key) => {
+    setZoraErc721Enabled((prevEnabled) => ({
+      ...prevEnabled,
+      [key]: prevEnabled[key].map((item, i) => (i === index ? value : item)),
+    }));
+  };
+
+  // funtions for adding new input box for multi addresses
+  const addArrlistInputBox = (key) => {
+    if (key === "royaltySplitRecipients") {
+      setZoraErc721Enabled({
+        ...zoraErc721Enabled,
+        [key]: [
+          ...zoraErc721Enabled[key],
+          { address: "", percentAllocation: "" },
+        ],
+      });
+      return;
+    }
+
+    setZoraErc721Enabled({
+      ...zoraErc721Enabled,
+      [key]: [...zoraErc721Enabled[key], ""],
+    });
+  };
+
+  // funtions for removing input box for multi addresses
+  const removeArrlistInputBox = (index, key) => {
+    setZoraErc721Enabled({
+      ...zoraErc721Enabled,
+      [key]: zoraErc721Enabled[key].filter((_, i) => i !== index),
+    });
+  };
+
+  // restrict the input box if the recipient is in the parent list
+  const restrictRecipientInput = (e, index, recipient) => {
+    const isRecipient = parentRecipientListRef.current.includes(recipient);
+    const isUserAddress = recipient === address;
+    if (index === 0 || isRecipient) {
+      if (isUserAddress) {
+        handleRecipientChange(index, "address", e.target.value);
+      }
+    } else {
+      handleRecipientChange(index, "address", e.target.value);
+    }
+  };
+
+  // restrict ther delete button if recipient is in the parent list
+  const restrictRemoveRecipientInputBox = (index, recipient) => {
+    const isRecipient = parentRecipientListRef.current.includes(recipient);
+    if (index === 0 || isRecipient) {
+      return true;
+    }
+  };
+
+  // handle for input fields
+  const handleChange = (e) => {
+    console.log("e", e);
+    const { name, value } = e.target;
+
+    // check if collection name and symbol are provided
+    if (name === "contractName") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isContractNameError: true,
+          contractNameErrorMessage: "Collection Name is required",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isContractNameError: false,
+          contractNameErrorMessage: "",
+        });
+      }
+    } else if (name === "contractSymbol") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isContractSymbolError: true,
+          contractSymbolErrorMessage: "Collection Symbol is required",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isContractSymbolError: false,
+          contractSymbolErrorMessage: "",
+        });
+      }
+    }
+
+    // check if price is provided
+    if (name === "chargeForMintPrice") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isChargeForMintError: true,
+          chargeForMintErrorMessage: "Price is required",
+        });
+      } else if (value < 0.001) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isChargeForMintError: true,
+          chargeForMintErrorMessage: "Price must be greater than 0.001",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isChargeForMintError: false,
+          chargeForMintErrorMessage: "",
+        });
+      }
+    }
+
+    setZoraErc721Enabled((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  // mint on Zora
+  const handleSubmit = () => {
+    // TODO:  enables some checks here
+
+    // check if canvasId is provided
+    // if (contextCanvasIdRef.current === null) {
+    //   toast.error("Please select a design");
+    //   return;
+    // }
+
+    // // check if description is provided
+    // if (!postDescription) {
+    //   toast.error("Please provide a description");
+    //   return;
+    // }
+
+    // check if collection name is provided
+    if (!zoraErc721Enabled.contractName) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isContractNameError: true,
+        contractNameErrorMessage: "Collection Name is required",
+      });
+      return;
+    }
+
+    // check if collection symbol is provided
+    if (!zoraErc721Enabled.contractSymbol) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isContractSymbolError: true,
+        contractSymbolErrorMessage: "Collection Symbol is required",
+      });
+      return;
+    }
+
+    // check if price is provided
+    if (zoraErc721Enabled.isChargeForMint) {
+      if (!zoraErc721Enabled.chargeForMintPrice) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isChargeForMintError: true,
+          chargeForMintErrorMessage: "Price is required",
+        });
+        return;
+      } else if (zoraErc721StatesError.isChargeForMintError) return;
+    }
+  };
+
   return (
     <>
       {/* Switch Number 1 Start */}
@@ -38,22 +215,30 @@ const ERC721Edition = () => {
 
       <div className={` ml-4 mr-4`}>
         <div className="flex flex-col w-full py-2">
-          {/* <label htmlFor="price">Collect limit</label> */}
           <InputBox
             label="Collection Name"
             name="contractName"
+            onChange={(e) => handleChange(e)}
+            onFocus={(e) => handleChange(e)}
             value={zoraErc721Enabled.contractName}
           />
+          {zoraErc721StatesError.isContractNameError && (
+            <InputErrorMsg
+              message={zoraErc721StatesError.contractNameErrorMessage}
+            />
+          )}
           <div className="mt-2">
             <InputBox
               label="Collection Symbol"
               name="contractSymbol"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.contractSymbol}
             />
           </div>
-          {zoraErc721StatesError.isSellerFeeError && (
+          {zoraErc721StatesError.isContractSymbolError && (
             <InputErrorMsg
-              message={zoraErc721StatesError.sellerFeeErrorMessage}
+              message={zoraErc721StatesError.contractSymbolErrorMessage}
             />
           )}
         </div>
@@ -93,10 +278,12 @@ const ERC721Edition = () => {
         <div className="flex">
           <div className="flex flex-col py-2">
             <NumberInputBox
-              min={"1"}
+              min={"0.001"}
               step={"0.01"}
               label="Price"
-              name="chargeForMintPriceZora"
+              name="chargeForMintPrice"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.chargeForMintPrice}
             />
           </div>
@@ -104,13 +291,27 @@ const ERC721Edition = () => {
           <div className="flex flex-col py-2 mx-2">
             {/* <label htmlFor="price"></label> */}
             <Select
+              animate={{
+                mount: { y: 0 },
+                unmount: { y: 25 },
+              }}
               label="Currency"
-              name="chargeForMintCurrencyZora"
+              name="chargeForMintCurrency"
               id="chargeForMintCurrency"
-              // className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
-              value={zoraErc721Enabled.chargeForMintCurrency}
             >
-              <Option>ETH</Option>
+              {["eth"].map((currency) => (
+                <Option
+                  key={currency}
+                  onClick={() => {
+                    setZoraErc721Enabled({
+                      ...zoraErc721Enabled,
+                      chargeForMintCurrency: currency,
+                    });
+                  }}
+                >
+                  {currency.toUpperCase()}
+                </Option>
+              ))}
             </Select>
           </div>
         </div>
@@ -171,16 +372,18 @@ const ERC721Edition = () => {
                       //   );
                       // }}
                     />
-                    {/* {!restrictRemoveRecipientInputBox(
+                    {!restrictRemoveRecipientInputBox(
                       index,
                       recipient.address
                     ) && (
                       <XCircleIcon
                         className="h-6 w-6 cursor-pointer"
                         color="red"
-                        onClick={() => removeRecipientInputBox(index)}
+                        onClick={() =>
+                          removeArrlistInputBox(index, "royaltySplitRecipients")
+                        }
                       />
-                    )} */}
+                    )}
                   </div>
                 </div>
               </>
@@ -198,6 +401,7 @@ const ERC721Edition = () => {
             size="sm"
             variant="filled"
             className="flex items-center gap-3 mt-2 ml-0 mr-4 "
+            onClick={() => addArrlistInputBox("royaltySplitRecipients")}
           >
             <BsPlus />
             Add Recipient
@@ -397,7 +601,9 @@ const ERC721Edition = () => {
           >
             <span
               className={`${
-                zoraErc721Enabled.isAllowlist ? "translate-x-6" : "translate-x-1"
+                zoraErc721Enabled.isAllowlist
+                  ? "translate-x-6"
+                  : "translate-x-1"
               } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />{" "}
           </Switch>
@@ -408,7 +614,9 @@ const ERC721Edition = () => {
         </div>
       </div>
 
-      <div className={`ml-4 mr-4 ${!zoraErc721Enabled.isAllowlist && "hidden"} `}>
+      <div
+        className={`ml-4 mr-4 ${!zoraErc721Enabled.isAllowlist && "hidden"} `}
+      >
         {zoraErc721Enabled.allowlistAddresses.map((recipient, index) => {
           return (
             <>
@@ -419,23 +627,23 @@ const ERC721Edition = () => {
                 <InputBox
                   label="Wallet Address"
                   value={recipient}
-                  // onChange={(e) =>
-                  //   handleArrlistChange(
-                  //     index,
-                  //     e.target.value,
-                  //     "allowlistAddresses"
-                  //   )
-                  // }
+                  onChange={(e) =>
+                    handleArrlistChange(
+                      index,
+                      e.target.value,
+                      "allowlistAddresses"
+                    )
+                  }
                 />
 
                 <div className="flex justify-between items-center">
                   {index != 0 && (
-                    <TiDelete
+                    <XCircleIcon
                       className="h-6 w-6 cursor-pointer"
                       color="red"
-                      // onClick={() =>
-                      //   removeArrlistInputBox(index, "allowlistAddresses")
-                      // }
+                      onClick={() =>
+                        removeArrlistInputBox(index, "allowlistAddresses")
+                      }
                     />
                   )}
                 </div>
@@ -444,14 +652,16 @@ const ERC721Edition = () => {
           );
         })}
         {zoraErc721StatesError.isAllowlistError && (
-          <InputErrorMsg message={zoraErc721StatesError.allowlistErrorMessage} />
+          <InputErrorMsg
+            message={zoraErc721StatesError.allowlistErrorMessage}
+          />
         )}
         <Button
           color="cyan"
           size="sm"
           variant="filled"
           className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-          // onClick={() => addArrlistInputBox("allowlistAddresses")}
+          onClick={() => addArrlistInputBox("allowlistAddresses")}
         >
           <BsPlus />
           Add Recipient
@@ -583,7 +793,7 @@ const ERC721Edition = () => {
       {/* Switch Number 8 End */}
 
       <div className="mx-2 my-4">
-        <Button fullWidth color="cyan">
+        <Button fullWidth color="cyan" onClick={handleSubmit}>
           {" "}
           Mint{" "}
         </Button>

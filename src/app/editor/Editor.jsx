@@ -11,6 +11,7 @@ import {
 import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
 import {
+  ENVIRONMENT,
   checkDispatcher,
   createCanvas,
   getProfileData,
@@ -110,9 +111,9 @@ const Editor = () => {
     parentRecipientListRef,
   } = useContext(Context);
 
-  console.log(address)
+  console.log(address);
 
-  console.log(address)
+  console.log(address);
 
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
@@ -266,10 +267,12 @@ const Editor = () => {
         // update the parentRecipientRef to the uniq values (final list for split revenue)
         parentRecipientListRef.current = [...new Set(parentArray)];
 
-        console.log("parentRecipientObj", recipientDataFilter());
-        console.log("parentRecipientRef", parentRecipientListRef.current);
+        // if (ENVIRONMENT === "localhost") {
+        //   console.log("parentRecipientObj", recipientDataFilter());
+        //   console.log("parentRecipientRef", parentRecipientListRef.current);
 
-        return;
+        //   return;
+        // }
 
         // create new canvas
         if (!canvasIdRef.current) {

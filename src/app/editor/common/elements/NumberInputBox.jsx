@@ -11,6 +11,7 @@ const NumberInputBox = ({
   max,
   step,
   name,
+  onFocus,
 }) => {
   return (
     <Input
@@ -23,6 +24,7 @@ const NumberInputBox = ({
       label={label}
       placeholder={placeholder}
       onChange={onChange}
+      onFocus={onFocus}
       value={value}
       containerProps={{ className: "min-w-[56px]" }} // To override min width from material
     />

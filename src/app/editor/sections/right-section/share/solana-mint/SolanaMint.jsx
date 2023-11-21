@@ -212,7 +212,7 @@ const SolanaMint = () => {
     setSolanaEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
   };
 
-  // funtions adding data for allowlist
+  // funtions adding data for multi addresses
   const handleArrlistChange = (index, value, key) => {
     setSolanaEnabled((prevEnabled) => ({
       ...prevEnabled,
@@ -220,7 +220,7 @@ const SolanaMint = () => {
     }));
   };
 
-  // funtions for adding new input box for allowlist
+  // funtions for adding new input box for multi addresses
   const addArrlistInputBox = (key) => {
     setSolanaEnabled({
       ...solanaEnabled,
@@ -228,7 +228,7 @@ const SolanaMint = () => {
     });
   };
 
-  // funtions for removing input box for allowlist
+  // funtions for removing input box for multi addresses
   const removeArrlistInputBox = (index, key) => {
     setSolanaEnabled({
       ...solanaEnabled,
@@ -392,7 +392,7 @@ const SolanaMint = () => {
     }
   };
 
-  // share on solana
+  // mint on solana
   const sharePost = (platform) => {
     // TODO:  enables some checks here
 
@@ -603,11 +603,11 @@ const SolanaMint = () => {
               </div>
             </div>
 
-            <div className={`${!solanaEnabled.isChargeForMint && "hidden"}`}>
-              <div className="flex gap-5 mx-4">
+            <div className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}>
+              <div className="flex gap-5">
                 <div className="flex flex-col py-2">
                   <NumberInputBox
-                    min={"1"}
+                    min={"0.1"}
                     step={"0.01"}
                     // className={"W-3/4"}
                     label="Price"

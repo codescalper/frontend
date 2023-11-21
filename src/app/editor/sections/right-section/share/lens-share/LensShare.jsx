@@ -722,7 +722,7 @@ const LensShare = () => {
                           {tokenList().map((token, index) => {
                             return (
                               <Option key={index} value={token.symbol}>
-                                {token.name}
+                                {token.symbol}
                               </Option>
                             );
                           })}

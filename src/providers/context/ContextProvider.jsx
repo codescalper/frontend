@@ -139,7 +139,7 @@ const ContextProvider = ({ children }) => {
     royaltySplitRecipients: [
       {
         address: "",
-        share: null,
+        percentAllocation: null,
       },
     ],
 
@@ -235,6 +235,12 @@ const ContextProvider = ({ children }) => {
   });
 
   const [zoraErc721StatesError, setZoraErc721StatesError] = useState({
+    isContractNameError: false,
+    contractNameErrorMessage: "",
+
+    isContractSymbolError: false,
+    contractSymbolErrorMessage: "",
+    
     isChargeForMintError: false,
     chargeForMintErrorMessage: "",
 
@@ -383,7 +389,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", lensState.lensProfileData);
+  // console.log("ContextProvider", zoraErc721Enabled);
 
   return (
     <Context.Provider
