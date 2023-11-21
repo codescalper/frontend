@@ -17,9 +17,12 @@ import { XCircleIcon } from "@heroicons/react/24/outline";
 import { Context } from "../../../../../../../providers/context";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
+import { useAppAuth } from "../../../../../../../hooks/app";
+import { APP_ETH_ADDRESS } from "../../../../../../../data";
 
 const ERC721Edition = () => {
   const { address } = useAccount();
+  const { isAuthenticated } = useAppAuth();
   const {
     zoraErc721Enabled,
     setZoraErc721Enabled,
@@ -30,15 +33,47 @@ const ERC721Edition = () => {
     parentRecipientListRef,
   } = useContext(Context);
 
-  // funtions adding data for multi addresses
-  const handleArrlistChange = (index, value, key) => {
-    setZoraErc721Enabled((prevEnabled) => ({
-      ...prevEnabled,
-      [key]: prevEnabled[key].map((item, i) => (i === index ? value : item)),
-    }));
+  // formate date and time in ISO 8601 format for monatizationn settings
+  const formatDateTimeISO8601 = (date, time) => {
+    if (!date || !time) return;
+    const dateTime = new Date(`${date} ${time}`);
+    return dateTime.toISOString();
   };
 
-  // funtions for adding new input box for multi addresses
+  // Calendar Functions:
+  const onCalChange = (value, key) => {
+    const dateTime = new Date(value);
+
+    // Format the date
+    const dateOptions = { year: "numeric", month: "long", day: "numeric" };
+
+    // Format the time
+    const timeOptions = {
+      hour: "numeric",
+      minute: "numeric",
+      timeZoneName: "short",
+    };
+
+    if (key.startsWith("pre")) {
+      setZoraErc721Enabled({
+        ...zoraErc721Enabled,
+        [key]: {
+          date: dateTime.toLocaleDateString(undefined, dateOptions),
+          time: dateTime.toLocaleTimeString(undefined, timeOptions),
+        },
+      });
+    } else if (key.startsWith("pub")) {
+      setZoraErc721Enabled({
+        ...zoraErc721Enabled,
+        [key]: {
+          date: dateTime.toLocaleDateString(undefined, dateOptions),
+          time: dateTime.toLocaleTimeString(undefined, timeOptions),
+        },
+      });
+    }
+  };
+
+  // funtion to add new input box for multi addresses
   const addArrlistInputBox = (key) => {
     if (key === "royaltySplitRecipients") {
       setZoraErc721Enabled({
@@ -57,12 +92,67 @@ const ERC721Edition = () => {
     });
   };
 
-  // funtions for removing input box for multi addresses
-  const removeArrlistInputBox = (index, key) => {
+  // funtion to remove input box for multi addresses
+  const removeArrlistInputBox = (index, key, isErrKey, errKeyMsg) => {
     setZoraErc721Enabled({
       ...zoraErc721Enabled,
       [key]: zoraErc721Enabled[key].filter((_, i) => i !== index),
     });
+
+    if (isErrKey) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        [isErrKey]: false,
+        [errKeyMsg]: "",
+      });
+    }
+  };
+
+  // funtion adding data for split revenues recipients
+  const handleRecipientChange = (index, key, value) => {
+    // check index 0 price should min 10
+    if (key === "percentAllocation" && index === 0) {
+      if (value < 10 || value > 100 || isNaN(value)) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: true,
+          royaltySplitErrorMessage:
+            "Platform fee should be between 10% to 100%",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: false,
+          royaltySplitErrorMessage: "",
+        });
+      }
+    }
+
+    // any index price should be greater min 1 and max 100
+    if (key === "percentAllocation" && index !== 0) {
+      if (value < 1 || value > 100 || isNaN(value)) {
+        setZoraErc721StatesError({
+          zoraErc721StatesError,
+          isRoyaltySplitError: true,
+          royaltySplitErrorMessage: "Split should be between 1% to 100%",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: false,
+          royaltySplitErrorMessage: "",
+        });
+      }
+    }
+
+    // check if the address is not same
+
+    const updatedRecipients = [...zoraErc721Enabled.royaltySplitRecipients];
+    updatedRecipients[index][key] = value;
+    setZoraErc721Enabled((prevEnabled) => ({
+      ...prevEnabled,
+      royaltySplitRecipients: updatedRecipients,
+    }));
   };
 
   // restrict the input box if the recipient is in the parent list
@@ -78,7 +168,7 @@ const ERC721Edition = () => {
     }
   };
 
-  // restrict ther delete button if recipient is in the parent list
+  // restrict the delete button if recipient is in the parent list
   const restrictRemoveRecipientInputBox = (index, recipient) => {
     const isRecipient = parentRecipientListRef.current.includes(recipient);
     if (index === 0 || isRecipient) {
@@ -87,8 +177,7 @@ const ERC721Edition = () => {
   };
 
   // handle for input fields
-  const handleChange = (e) => {
-    console.log("e", e);
+  const handleChange = (e, index, key) => {
     const { name, value } = e.target;
 
     // check if collection name and symbol are provided
@@ -145,10 +234,113 @@ const ERC721Edition = () => {
       }
     }
 
-    setZoraErc721Enabled((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    // check if mint limit is provided
+    if (name === "mintLimitPerAddress") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMintLimitPerAddressError: true,
+          limitedEditionErrorMessage: "Mint limit is required",
+        });
+      } else if (value < 1) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMintLimitPerAddressError: true,
+          limitedEditionErrorMessage: "Mint limit must be greater than 0",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMintLimitPerAddressError: false,
+          limitedEditionErrorMessage: "",
+        });
+      }
+    }
+
+    // check if royalty percent is provided
+    if (name === "royaltyPercent") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltyPercentError: true,
+          royaltyPercentErrorMessage: "Royalty percent is required",
+        });
+      } else if (value < 1 || value > 100) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltyPercentError: true,
+          royaltyPercentErrorMessage: "Royalty must be between 1% to 100%",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltyPercentError: false,
+          royaltyPercentErrorMessage: "",
+        });
+      }
+    }
+
+    // check if max supply is provided
+    if (name === "maxSupply") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMaxSupplyError: true,
+          maxSupplyErrorMessage: "Max supply is required",
+        });
+      } else if (value < 1) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMaxSupplyError: true,
+          maxSupplyErrorMessage: "Max supply must be greater than 0",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMaxSupplyError: false,
+          maxSupplyErrorMessage: "",
+        });
+      }
+    }
+
+    // check if allowlist is provided
+    if (name === "allowlistAddresses") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isAllowlistError: true,
+          allowlistErrorMessage: "Allowlist address is required",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isAllowlistError: false,
+          allowlistErrorMessage: "",
+        });
+      }
+    }
+
+    // add data
+    if (name === "allowlistAddresses") {
+      setZoraErc721Enabled((prevEnabled) => ({
+        ...prevEnabled,
+        [name]: prevEnabled[name].map((item, i) =>
+          i === index ? value : item
+        ),
+      }));
+    } else {
+      setZoraErc721Enabled((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+  // mint settings
+  const handleMintSettings = () => {
+    let arr = [];
+
+    return { args: arr };
   };
 
   // mint on Zora
@@ -200,6 +392,29 @@ const ERC721Edition = () => {
     }
   };
 
+  // add recipient to the split list
+  useEffect(() => {
+    if (isAuthenticated) {
+      const updatedRecipients = parentRecipientListRef.current.map((item) => ({
+        address: item,
+        percentAllocation: 1.0,
+      }));
+
+      setZoraErc721Enabled((prevEnabled) => ({
+        ...prevEnabled,
+        royaltySplitRecipients: [
+          {
+            address: APP_ETH_ADDRESS,
+            percentAllocation:
+              zoraErc721Enabled.royaltySplitRecipients[0].percentAllocation ||
+              10.0,
+          },
+          ...updatedRecipients,
+        ],
+      }));
+    }
+  }, [isAuthenticated]);
+
   return (
     <>
       {/* Switch Number 1 Start */}
@@ -232,7 +447,7 @@ const ERC721Edition = () => {
               label="Collection Symbol"
               name="contractSymbol"
               onChange={(e) => handleChange(e)}
-              onFocus={(e) => handleChange(e)}
+              // onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.contractSymbol}
             />
           </div>
@@ -341,52 +556,59 @@ const ERC721Edition = () => {
         <div className="mx-4">
           {zoraErc721Enabled.royaltySplitRecipients.map((recipient, index) => {
             return (
-              <>
-                <div
-                  key={index}
-                  className="flex justify-between gap-2 items-center w-full py-2"
-                >
-                  {/* <div className="flex justify-between items-center w-1/3"> */}
+              <div
+                key={index}
+                className="flex justify-between gap-2 items-center w-full py-2"
+              >
+                <div className="flex-1">
                   <InputBox
-                    className="w-full"
                     label="Wallet Address"
                     value={recipient.address}
-                    // onChange={(e) =>
-                    //   restrictRecipientInput(e, index, recipient.address)
-                    // }
+                    onChange={(e) =>
+                      restrictRecipientInput(e, index, recipient.address)
+                    }
                   />
-                  {/* </div> */}
-                  <div className="flex justify-between items-center w-1/3">
-                    <NumberInputBox
-                      className="w-4"
-                      min={0}
-                      max={100}
-                      step={0.01}
-                      label="%"
-                      value={recipient.share}
-                      // onChange={(e) => {
-                      //   handleRecipientChange(
-                      //     index,
-                      //     "share",
-                      //     Number(parseFloat(e.target.value).toFixed(2))
-                      //   );
-                      // }}
-                    />
-                    {!restrictRemoveRecipientInputBox(
-                      index,
-                      recipient.address
-                    ) && (
-                      <XCircleIcon
-                        className="h-6 w-6 cursor-pointer"
-                        color="red"
-                        onClick={() =>
-                          removeArrlistInputBox(index, "royaltySplitRecipients")
-                        }
-                      />
-                    )}
-                  </div>
                 </div>
-              </>
+                <div className="">
+                  <NumberInputBox
+                    min={0}
+                    max={100}
+                    step={0.01}
+                    label="%"
+                    value={recipient.percentAllocation}
+                    onFocus={(e) => {
+                      handleRecipientChange(
+                        index,
+                        "percentAllocation",
+                        Number(parseFloat(e.target.value).toFixed(2))
+                      );
+                    }}
+                    onChange={(e) => {
+                      handleRecipientChange(
+                        index,
+                        "percentAllocation",
+                        Number(parseFloat(e.target.value).toFixed(2))
+                      );
+                    }}
+                  />
+                </div>
+                {!restrictRemoveRecipientInputBox(index, recipient.address) && (
+                  <span>
+                    <XCircleIcon
+                      className="h-6 w-6 cursor-pointer"
+                      color="red"
+                      onClick={() =>
+                        removeArrlistInputBox(
+                          index,
+                          "royaltySplitRecipients",
+                          "isRoyaltySplitError",
+                          "royaltySplitErrorMessage"
+                        )
+                      }
+                    />
+                  </span>
+                )}
+              </div>
             );
           })}
 
@@ -458,6 +680,8 @@ const ERC721Edition = () => {
             step={"1"}
             label="Mint limit"
             name="mintLimitPerAddress"
+            onChange={(e) => handleChange(e)}
+            onFocus={(e) => handleChange(e)}
             value={zoraErc721Enabled.mintLimitPerAddress}
           />
           {zoraErc721StatesError.isMintLimitPerAddressError && (
@@ -511,9 +735,10 @@ const ERC721Edition = () => {
             <NumberInputBox
               min={"1"}
               step={"0.01"}
-              // className={"W-3/4"}
               label="Royalty % "
-              name="setRoyaltyPercentZora"
+              name="royaltyPercent"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.royaltyPercent}
             />
           </div>
@@ -568,7 +793,9 @@ const ERC721Edition = () => {
               step={"0.01"}
               // className={"W-3/4"}
               label="Max Supply "
-              name="maxSupplyZora"
+              name="maxSupply"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.maxSupply}
             />
           </div>
@@ -626,14 +853,10 @@ const ERC721Edition = () => {
               >
                 <InputBox
                   label="Wallet Address"
+                  name="allowlistAddresses"
                   value={recipient}
-                  onChange={(e) =>
-                    handleArrlistChange(
-                      index,
-                      e.target.value,
-                      "allowlistAddresses"
-                    )
-                  }
+                  onChange={(e) => handleChange(e, index)}
+                  onFocus={(e) => handleChange(e, index)}
                 />
 
                 <div className="flex justify-between items-center">
@@ -670,6 +893,7 @@ const ERC721Edition = () => {
         <div className="text-center mt-2"> OR </div>
 
         <Button
+          disabled={true}
           color="cyan"
           className="mt-2"
           size="sm"
@@ -722,10 +946,16 @@ const ERC721Edition = () => {
           } `}
         >
           <div className="ml-4 mr-4 flex justify-between text-center align-middle">
-            <div>Start</div> <DateTimePicker />
+            <div>Start</div>{" "}
+            <DateTimePicker
+              onChange={(e) => onCalChange(e, "preSaleStartTimeStamp")}
+            />
           </div>
           <div className="m-4 flex justify-between text-center align-middle">
-            <div>End</div> <DateTimePicker />
+            <div>End</div>{" "}
+            <DateTimePicker
+              onChange={(e) => onCalChange(e, "preSaleEndTimeStamp")}
+            />
           </div>
 
           {zoraErc721StatesError.isPresaleScheduleError && (
@@ -743,22 +973,22 @@ const ERC721Edition = () => {
           <div className="flex justify-between">
             <h2 className="text-lg mb-2"> Public - Sale Schedule </h2>
             <Switch
-              checked={zoraErc721Enabled.isPublicsaleSchedule}
+              checked={zoraErc721Enabled.isPublicSaleSchedule}
               onChange={() =>
                 setZoraErc721Enabled({
                   ...zoraErc721Enabled,
-                  isPublicsaleSchedule: !zoraErc721Enabled.isPublicsaleSchedule,
+                  isPublicSaleSchedule: !zoraErc721Enabled.isPublicSaleSchedule,
                 })
               }
               className={`${
-                zoraErc721Enabled.isPublicsaleSchedule
+                zoraErc721Enabled.isPublicSaleSchedule
                   ? "bg-[#00bcd4]"
                   : "bg-gray-200"
               } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
             >
               <span
                 className={`${
-                  zoraErc721Enabled.isPublicsaleSchedule
+                  zoraErc721Enabled.isPublicSaleSchedule
                     ? "translate-x-6"
                     : "translate-x-1"
                 } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
@@ -773,17 +1003,23 @@ const ERC721Edition = () => {
 
         <div
           className={`flex flex-col ${
-            !zoraErc721Enabled.isPublicsaleSchedule && "hidden"
+            !zoraErc721Enabled.isPublicSaleSchedule && "hidden"
           } `}
         >
           <div className="ml-4 mr-4 flex justify-between text-center align-middle">
-            <div>Start</div> <DateTimePicker />
+            <div>Start</div>{" "}
+            <DateTimePicker
+              onChange={(e) => onCalChange(e, "publicSaleStartTimeStamp")}
+            />
           </div>
           <div className="m-4 flex justify-between text-center align-middle">
-            <div>End</div> <DateTimePicker />
+            <div>End</div>{" "}
+            <DateTimePicker
+              onChange={(e) => onCalChange(e, "publicSaleEndTimeStamp")}
+            />
           </div>
 
-          {zoraErc721StatesError.isPublicsaleScheduleError && (
+          {zoraErc721StatesError.isPublicSaleScheduleError && (
             <InputErrorMsg
               message={zoraErc721StatesError.publicsaleScheduleErrorMessage}
             />

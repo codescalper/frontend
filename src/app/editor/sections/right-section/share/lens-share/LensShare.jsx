@@ -45,7 +45,7 @@ import { useStore } from "../../../../../../hooks/polotno";
 import BsX from "@meronex/icons/bs/BsX";
 import { LensAuth, LensDispatcher, SplitPolicyCard } from "./components";
 import { useAppAuth, useReset } from "../../../../../../hooks/app";
-import { LOCAL_STORAGE } from "../../../../../../data";
+import { APP_LENS_HANDLE, LOCAL_STORAGE } from "../../../../../../data";
 import { Button, Select, Option } from "@material-tailwind/react";
 import { EVMWallets } from "../../../top-section/auth/wallets";
 
@@ -82,13 +82,6 @@ const LensShare = () => {
 
     lensAuthState,
   } = useContext(Context);
-  const {
-    data: signature,
-    isError,
-    isSuccess,
-    error,
-    signMessage,
-  } = useSignMessage();
 
   const [sharing, setSharing] = useState(false);
 
@@ -97,101 +90,8 @@ const LensShare = () => {
     mutationFn: shareOnSocials,
   });
 
-  const { mutateAsync: mutateLensAuth } = useMutation({
-    mutationKey: "lensAuth",
-    mutationFn: lensAuthenticate,
-  });
-
-  const { isLoading: checkingDispatcher } = useQuery({
-    queryKey: ["checkDispatcher"],
-    queryFn: checkDispatcher,
-    onSuccess: (data) => {
-      console.log("checkDispatcher data: ", data);
-      saveToLocalStorage("dispatcher", data?.message);
-    },
-    onError: (err) => {
-      console.log("checkDispatcher error: ", err);
-    },
-    enabled: getDispatcherStatus === true ? false : true,
-  });
-
-  // generating signature
-  const generateSignature = async () => {
-    const message = await lensChallenge(address);
-    setIsLoading(true);
-    setSharing(true);
-    signMessage({
-      message,
-    });
-    setText("Sign the message to authenticate");
-  };
-
-  // authenticating signature on lens
-  const lensAuth = async () => {
-    setSharing(true);
-    setText("Authenticating...");
-    mutateLensAuth(signature)
-      .then((res) => {
-        if (res?.status === "success") {
-          saveToLocalStorage("lensAuth", res?.message);
-          toast.success("Successfully authenticated");
-          setIsLoading(false);
-          setText("");
-          setTimeout(() => {
-            // check the dispatcher
-            // if true => sharePost
-            if (getDispatcherStatus === true) {
-              sharePost("lens");
-              // console.log("share on lens");
-            } else {
-              // else => set the dispatcher
-              setDispatcherFn();
-            }
-          }, 4000);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(errorMessage(err));
-        setSharing(false);
-        setIsLoading(false);
-        setText("");
-      });
-  };
-
-  // set the dispatcher true or false
-  const setDispatcherFn = async () => {
-    try {
-      setSharing(true);
-      setIsLoading(true);
-      setText("Sign the message to enable signless transactions");
-
-      const { id, typedData } = await getBroadcastData();
-
-      const { signature } = await signSetDispatcherTypedData(typedData);
-
-      const boadcastResult = await setBroadcastOnChainTx(id, signature);
-
-      if (boadcastResult.txHash) {
-        saveToLocalStorage("dispatcher", true);
-        setIsLoading(false);
-        setText("");
-        toast.success("Signless transactions enebled");
-        setTimeout(() => {
-          sharePost("lens");
-        }, 4000);
-      }
-    } catch (err) {
-      console.log("error setting signless transactions: ", err);
-      toast.error("Error setting signless transactions");
-      setSharing(false);
-      setIsLoading(false);
-      setText("");
-    }
-  };
-
   // Calendar Functions:
-  const onCalChange = (value, dateString) => {
+  const onCalChange = (value) => {
     const dateTime = new Date(value);
 
     // Format the date
@@ -619,7 +519,7 @@ const LensShare = () => {
         ...prevEnabled,
         splitRevenueRecipients: [
           {
-            recipient: "@lenspostxyz",
+            recipient: APP_LENS_HANDLE,
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
           ...updatedRecipients,
@@ -627,20 +527,6 @@ const LensShare = () => {
       }));
     }
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (isError && error?.name === "UserRejectedRequestError") {
-      setSharing(false);
-      setIsLoading(false);
-      toast.error("User rejected the signature request");
-    }
-  }, [isError]);
-
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     lensAuth();
-  //   }
-  // }, [isSuccess]);
 
   return (
     <>

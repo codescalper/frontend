@@ -153,22 +153,22 @@ const ContextProvider = ({ children }) => {
     allowlistAddresses: [""],
 
     isPresaleSchedule: false,
-    presaleStartTimeStamp: {
+    preSaleStartTimeStamp: {
       date: "",
       time: "",
     },
-    presaleEndTimeStamp: {
-      date: "",
-      time: "",
-    },
-
-    isPublicsaleSchedule: false,
-    publicsaleStartTimeStamp: {
+    preSaleEndTimeStamp: {
       date: "",
       time: "",
     },
 
-    publicsaleEndTimeStamp: {
+    isPublicSaleSchedule: false,
+    publicSaleStartTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    publicSaleEndTimeStamp: {
       date: "",
       time: "",
     },
@@ -213,22 +213,22 @@ const ContextProvider = ({ children }) => {
     maxSupply: "",
 
     isPresaleSchedule: false,
-    presaleStartTimeStamp: {
+    preSaleStartTimeStamp: {
       date: "",
       time: "",
     },
-    presaleEndTimeStamp: {
-      date: "",
-      time: "",
-    },
-
-    isPublicsaleSchedule: false,
-    publicsaleStartTimeStamp: {
+    preSaleEndTimeStamp: {
       date: "",
       time: "",
     },
 
-    publicsaleEndTimeStamp: {
+    isPublicSaleSchedule: false,
+    publicSaleStartTimeStamp: {
+      date: "",
+      time: "",
+    },
+
+    publicSaleEndTimeStamp: {
       date: "",
       time: "",
     },
@@ -240,7 +240,7 @@ const ContextProvider = ({ children }) => {
 
     isContractSymbolError: false,
     contractSymbolErrorMessage: "",
-    
+
     isChargeForMintError: false,
     chargeForMintErrorMessage: "",
 
@@ -389,7 +389,8 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", zoraErc721Enabled);
+  console.log("ContextProvider", zoraErc721Enabled);
+  // console.log("ContextProvider", zoraErc721StatesError);
 
   return (
     <Context.Provider

@@ -9,7 +9,7 @@ import { useContext } from "react";
 import { useEffect } from "react";
 import { Switch } from "@headlessui/react";
 import { Context } from "../../../../../../providers/context";
-import { LOCAL_STORAGE } from "../../../../../../data";
+import { APP_SOLANA_ADDRESS, LOCAL_STORAGE } from "../../../../../../data";
 import { SolanaWallets } from "../../../top-section/auth/wallets";
 import { errorMessage, getFromLocalStorage } from "../../../../../../utils";
 import { toast } from "react-toastify";
@@ -259,6 +259,7 @@ const SolanaMint = () => {
     if (key === "share" && index !== 0) {
       if (value < 1 || value > 100 || isNaN(value)) {
         setSolanaStatesError({
+          ...solanaStatesError,
           isSplitError: true,
           splitErrorMessage: "Split should be between 1% to 100%",
         });
@@ -335,7 +336,7 @@ const SolanaMint = () => {
   };
 
   // Calendar Functions:
-  const onCalChange = (value, dateString) => {
+  const onCalChange = (value) => {
     const dateTime = new Date(value);
 
     // Format the date
@@ -348,6 +349,7 @@ const SolanaMint = () => {
       timeZoneName: "short",
     };
 
+    // TODO-FIX: both start and end time is same
     setSolanaEnabled({
       ...solanaEnabled,
       startTimeStamp: {
@@ -555,7 +557,7 @@ const SolanaMint = () => {
         ...prevEnabled,
         onChainSplitRecipients: [
           {
-            address: "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa",
+            address: APP_SOLANA_ADDRESS,
             share: solanaEnabled.onChainSplitRecipients[0].share || 10.0,
           },
           ...updatedRecipients,
@@ -971,6 +973,7 @@ const SolanaMint = () => {
               <div className="text-center mt-2"> OR </div>
 
               <Button
+              disabled={true}
                 color="teal"
                 className="mt-2"
                 size="sm"
