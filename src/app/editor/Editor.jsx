@@ -252,20 +252,7 @@ const Editor = () => {
 
       // save it to the backend
       if (canvasChildren?.length > 0) {
-        // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
-        // console.log(
-        //   "parentRecipientRef",
-        //   recipientDataCombiner().recipients,
-        // );
-        // create an array of all the recipients then make it uniq
-        const parentArray = [
-          currentUserAddress,
-          ...recipientDataFilter().recipientHandles,
-        ];
-
-        // update the parentRecipientRef to the uniq values (final list for split revenue)
-        parentRecipientListRef.current = [...new Set(parentArray)];
-
+        
         // console.log("parentRecipientObj", recipientDataFilter());
         // console.log("parentRecipientRef", parentRecipientListRef.current);
 
