@@ -46,8 +46,9 @@ import BsX from "@meronex/icons/bs/BsX";
 import { LensAuth, LensDispatcher, SplitPolicyCard } from "./components";
 import { useAppAuth, useReset } from "../../../../../../hooks/app";
 import { LOCAL_STORAGE } from "../../../../../../data";
-import { Button, Select, Option } from "@material-tailwind/react";
+import { Button, Select, Option, Tabs, Tab, TabsHeader, Alert } from "@material-tailwind/react";
 import { EVMWallets } from "../../../top-section/auth/wallets";
+import { SharePanelHeaders } from "../components";
 
 const LensShare = () => {
   const store = useStore();
@@ -91,6 +92,7 @@ const LensShare = () => {
   } = useSignMessage();
 
   const [sharing, setSharing] = useState(false);
+  const [currentTab, setCurrentTab] = useState("smartPost");
 
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnLens",
@@ -645,26 +647,34 @@ const LensShare = () => {
   return (
     <>
       <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl rounded-lg rounded-r-none ">
-        <div className="">
-          {/* <Dialog.Title className="w-full flex items-center gap-2 text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10"> */}
-          <div className="w-full flex justify-between items-center gap-2 text-white text-xl leading-6 p-4 bg-gray-900 rounded-lg rounded-r-none">
-            <BsArrowLeft
-              onClick={() => setMenu("share")}
-              className="cursor-pointer"
-            />
-            Monetization Settings
-            {/* </Dialog.Title> */}
-            <div
-              className="z-100 cursor-pointer"
-              onClick={() => setIsShareOpen(!isShareOpen)}
-            >
-              <BsX size="24" />
-            </div>
-          </div>
-        </div>
+
+      <SharePanelHeaders
+        menuName={"share"}
+        panelHeader={"Monetization Settings"}
+        panelContent={ <>
+
+      {/* Tabs for Smart Post / Normal */}
+
+        <Tabs className="overflow-y-auto m-2" value={currentTab}>
+            <TabsHeader className="relative top-0 ">
+              <Tab value={"smartPost"} className="appFont" onClick={() => setCurrentTab("smartPost")}>
+                {" "}
+                Smart Post{" "}
+              </Tab>
+              <Tab value={"normalPost"} className="appFont" onClick={() => setCurrentTab("normalPost")}>
+                {" "}
+                Normal{" "}
+              </Tab>
+              </TabsHeader>
+
         <div className="relative px-4 mt-1 pt-2 pb-4 sm:px-6 ">
           <div className="">
-            <div className="flex flex-col justify-between">
+          { currentTab === "smartPost" && 
+                <Alert className="mt-1 mb-4 text-sm rounded-md border-l-4 border-[#E1F26C] bg-[#E1F26C]/10  text-[#96a535]">
+                  This Post will be shared through Open Actions on Lens
+                </Alert>
+          }
+          <div className="flex flex-col justify-between">
               <Switch.Group>
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Charge for collecting</h2>
@@ -702,7 +712,7 @@ const LensShare = () => {
                         <NumberInputBox
                           min={"1"}
                           step={"0.01"}
-                          label="Price (%)"
+                          label="Price"
                           // placeholder="1"
                           name="chargeForCollectPrice"
                           onChange={(e) => handleChange(e)}
@@ -733,7 +743,10 @@ const LensShare = () => {
                       <InputErrorMsg message={priceError.message} />
                     )}
                   </div>
-                </div>
+                </div>  
+              
+               { currentTab === "normalPost" && ( <>
+               
                 <div
                   className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}
                 >
@@ -880,6 +893,8 @@ const LensShare = () => {
                     )}
                   </div>
                 </div>
+                </>)}
+
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Limited Edition</h2>
                   <div className="flex justify-between">
@@ -915,7 +930,7 @@ const LensShare = () => {
                       <NumberInputBox
                         min={"1"}
                         step={"1"}
-                        label={"Collect limit (%)"}
+                        label={"Collect limit"}
                         // placeholder="1"
                         name="limitedEditionNumber"
                         onChange={(e) => handleChange(e)}
@@ -927,6 +942,9 @@ const LensShare = () => {
                     </div>
                   </div>
                 </div>
+
+                { currentTab === "normalPost" && ( <>
+
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Time Limit</h2>
                   <div className="flex justify-between">
@@ -983,6 +1001,10 @@ const LensShare = () => {
                     </div>
                   </div>
                 </div>
+                </> )}
+
+                { currentTab === "normalPost" && ( <>
+
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Who can collect</h2>
                   <div className="flex justify-between">
@@ -1011,10 +1033,11 @@ const LensShare = () => {
                     </Switch>
                   </div>
                 </div>
+                </> )}
               </Switch.Group>
             </div>
           </div>
-        </div>
+        </div>   
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
         ) : !getLensAuth?.profileHandle ? (
@@ -1032,6 +1055,8 @@ const LensShare = () => {
             </Button>
           </div>
         )}
+      </Tabs>
+     </> } />
       </div>
     </>
   );
