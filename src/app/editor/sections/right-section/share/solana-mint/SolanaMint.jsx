@@ -1283,7 +1283,9 @@ const SolanaMint = () => {
                 </Button>
               </div>
             ) : (
-              <SolanaWallets title="Login with Solana" className="mx-2" />
+              <div className="mx-2">
+                <SolanaWallets title="Login with Solana" />
+              </div>
             )}
           </>
         }

@@ -131,7 +131,7 @@ const CompSearch = () => {
 			<button className="bg-[#E1F26C] w-full px-4 p-1  mb-4 rounded-md hover:bg-[#e0f26cce]" onClick={fnGenerateImages}>Generate</button>
 			*/}
         </div>
-        <div className="flex flex-row overflow-x-scroll">
+        <div className="hidden md:flex flex-row overflow-x-scroll">
           {RANDOM_QUERIES3.map((val, key) => {
             return (
               <div
@@ -450,11 +450,7 @@ const AIImagePanel = () => {
   const tabsArray = ["prompt", "instruct"];
 
   return (
-    <div
-      style={{
-        height: "100dvh",
-      }}
-    >
+    <div className="h-full">
       <Tabs
         id="custom-animation"
         className="overflow-y-auto h-full"

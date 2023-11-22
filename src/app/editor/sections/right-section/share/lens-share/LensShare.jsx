@@ -1022,14 +1022,15 @@ const LensShare = () => {
         ) : !getDispatcherStatus ? (
           <LensDispatcher title="Enable signless transactions" />
         ) : (
-          <Button
-            disabled={sharing}
-            onClick={() => sharePost("lens")}
-            color="teal"
-            className="mx-2 outline-none"
-          >
-            Share Now
-          </Button>
+          <div className="mx-2 outline-none">
+            <Button
+              disabled={sharing}
+              onClick={() => sharePost("lens")}
+              color="teal"
+            >
+              Share Now
+            </Button>
+          </div>
         )}
       </div>
     </>

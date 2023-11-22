@@ -28,9 +28,13 @@ const ZoraMint = () => {
         panelHeader={"Mint Options"}
         panelContent={
           <>
-            <Tabs className="overflow-y-auto my-2" value={zoraTab}>
-              <TabsHeader className="relative top-0">
-                <Tab value={"ERC721"} onClick={() => setZoraTab("ERC721")}>
+            <Tabs className="overflow-y-auto m-2" value={currentTab}>
+              <TabsHeader className="relative top-0 ">
+                <Tab value={"ERC1155"} className="appFont" onClick={() => setCurrentTab("ERC1155")}>
+                  {" "}
+                  ERC1155{" "}
+                </Tab>
+                <Tab value={"ERC721"} className="appFont" onClick={() => setCurrentTab("ERC721")}>
                   {" "}
                   ERC721{" "}
                 </Tab>

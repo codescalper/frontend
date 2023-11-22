@@ -1,8 +1,8 @@
 /* -------- */
-/* This is the Whole CSS component for CustomHorizontalScroller */
+/* This is the Whole CSS component for TabsWithArrows */
 /* -------- */
 
-.sectionWrapperImg{
+.sectionWrapperTabs{
   position: relative;
   height: fit-content;
   width: 100%;
@@ -13,15 +13,15 @@
 
 }
 
-.btnsWrapperImg{ 
+.btnsWrapperTabs{
   display:flex;
   justify-content:center;
   align-items:center;
   scrollbar-width: 0;
 }
 
-#outsiderImg {
-    height: 96px; /* For Halloween Campaign */
+#outsiderTabs {
+    height: 48px; /* For Halloween Campaign */
     /* max-height: 1000px; */
     width: 100%;
     /* overflow: scroll; */
@@ -40,10 +40,10 @@
       right: 1000px;
     }
   }
-  #outsiderImg:hover {
+  #outsiderTabs:hover {
     animation-play-state: paused;
   }
-  #insiderImg {
+  #insiderTabs {
     position: absolute;
     display: inline-block;
     /* height: 100%; */
@@ -85,11 +85,11 @@
   /* height: 100%; */
   /* max-height: 1000px; */
   width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  height:40px;
+  border-radius: 4px;
   padding: 8px;
-  background-color: rgb(244, 244, 244);
-  opacity: 0.8;
+  background-color: #ECEFF199;
+  /* opacity: 0.8; */
 }
 #button-left {
   left: 0;

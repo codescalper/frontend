@@ -401,8 +401,7 @@ const Editor = () => {
           <div className="">
             <TopbarSection />
           </div>
-          {/* <PolotnoContainer className="min-h-screen md:min-h-full"> */}
-          <PolotnoContainer>
+          <PolotnoContainer className="min-h-400 md:min-h-full">
             <div id="second-step" className="mx-2">
               <SidePanelWrap>
                 <SidePanel store={store} sections={sections} />

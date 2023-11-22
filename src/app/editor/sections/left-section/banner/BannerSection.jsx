@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@blueprintjs/core";
 import { SectionTab } from "polotno/side-panel";
-import { Tabs as TabsCustom, } from "../../../common"; // Since Material already has builtin component `Tab`
+import { Tabs as TabsCustom, TabsWithArrows } from "../../../common"; // Since Material already has builtin component `Tab`
 import { firstLetterCapital } from "../../../../../utils";
 import CgImage from "@meronex/icons/cg/CgImage";
 import FeaturedTabs from "../../../common/core/FeaturedTabs";
@@ -18,7 +18,7 @@ import {
 export const BannerPanel = () => {
   // const [currentTab, setCurrentTab] = useState("supducks");
   const [currentTab, setCurrentTab] = useState("halloween");
-  const tabArray = ["halloween","lensjump", "supducks", "moonrunners"];
+  const tabArray = ["halloween", "lensjump", "supducks", "moonrunners"];
   // const [isFeatured, setIsFeatured] = useState(false);
 
   // const fnGetBGAssets = () => {
@@ -57,27 +57,30 @@ export const BannerPanel = () => {
       {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
 
       <Tabs id="custom-animation" value={currentTab}>
-        <div className="w-100 overflow-scroll m-2">
-          <TabsHeader
-          // className="bg-transparent"
-          // indicatorProps={{
-          //   className: "bg-gray-900/10 shadow-none !text-gray-900",
-          // }}
-          >
-            {tabArray.map((tab, index) => (
-              <Tab
-                value={tab}
-                onClick={() => {
-                  setCurrentTab(tab);
-                }}
-              >
-                <div className="appFont">
-                  {" "}
-                  {firstLetterCapital(tab)}{" "}
-                </div>
-              </Tab>
-            ))}
-          </TabsHeader>
+        <div className="w-100 overflow-scroll">
+          <TabsWithArrows
+            tabsHeaders={
+              <>
+                <TabsHeader
+                // className="bg-transparent"
+                // indicatorProps={{
+                //   className: "bg-gray-900/10 shadow-none !text-gray-900",
+                // }}
+                >
+                  {tabArray.map((tab, index) => (
+                    <Tab
+                      value={tab}
+                      onClick={() => {
+                        setCurrentTab(tab);
+                      }}
+                    >
+                      <div className="appFont"> {firstLetterCapital(tab)} </div>
+                    </Tab>
+                  ))}
+                </TabsHeader>
+              </>
+            }
+          />
         </div>
         {/* <div className="h-full overflow-y-scroll"> */}
         <div className="hCustom overflow-y-scroll">
@@ -91,10 +94,10 @@ export const BannerPanel = () => {
             {/* <TabPanel key={currentTab} value={currentTab}> */}
 
             <TabsCustom
-             defaultQuery={currentTab === "halloween" ? "" : currentTab}
-             campaignName={currentTab === "halloween"? "halloween" : ""}
-             getAssetsFn={
-               currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
+              defaultQuery={currentTab === "halloween" ? "" : currentTab}
+              campaignName={currentTab === "halloween" ? "halloween" : ""}
+              getAssetsFn={
+                currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
               }
               queryKey="backgrounds"
               changeCanvasDimension={true}
