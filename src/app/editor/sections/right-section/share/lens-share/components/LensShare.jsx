@@ -4,7 +4,7 @@ import TiDelete from "@meronex/icons/ti/TiDelete";
 import BsArrowLeft from "@meronex/icons/bs/BsArrowLeft";
 import { Switch } from "@headlessui/react";
 
-import animationData from "../../../../../../assets/lottie/alertAnimation2.json";
+import animationData from "../../../../../../../assets/lottie/alertAnimation2.json";
 
 // Working Yet - change from headlessui/react to blueprintjs/core
 // import { Switch } from "@blueprintjs/core";
@@ -18,37 +18,37 @@ import {
   signSetDispatcherTypedData,
   ENVIRONMENT,
   setBroadcastOnChainTx,
-} from "../../../../../../services";
+} from "../../../../../../../services";
 import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Context } from "../../../../../../providers/context/ContextProvider";
+import { Context } from "../../../../../../../providers/context/ContextProvider";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   errorMessage,
   isEthAddress,
   isLensHandle,
-} from "../../../../../../utils";
-import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
-import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
+} from "../../../../../../../utils";
+import testnetTokenAddress from "../../../../../../../data/json/testnet-token-list.json";
+import mainnetTokenAddress from "../../../../../../../data/json/mainnet-token-list.json";
 import {
   CustomPopover,
   InputBox,
   InputErrorMsg,
   NumberInputBox,
-} from "../../../../common";
-import { useStore } from "../../../../../../hooks/polotno";
+} from "../../../../../common";
+import { useStore } from "../../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
-import { LensAuth, LensDispatcher, SplitPolicyCard } from "./components";
-import { useAppAuth, useReset } from "../../../../../../hooks/app";
-import { LOCAL_STORAGE } from "../../../../../../data";
+import { LensAuth, LensDispatcher, SplitPolicyCard } from ".";
+import { useAppAuth, useReset } from "../../../../../../../hooks/app";
+import { LOCAL_STORAGE } from "../../../../../../../data";
 import { Button, Select, Option, Tabs, Tab, TabsHeader, Alert } from "@material-tailwind/react";
-import { EVMWallets } from "../../../top-section/auth/wallets";
-import { SharePanelHeaders } from "../components";
+import { EVMWallets } from "../../../../top-section/auth/wallets";
+import { SharePanelHeaders } from "../../components";
 
 const LensShare = () => {
   const store = useStore();
@@ -646,34 +646,11 @@ const LensShare = () => {
 
   return (
     <>
-      <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl rounded-lg rounded-r-none ">
-
-      <SharePanelHeaders
-        menuName={"share"}
-        panelHeader={"Monetization Settings"}
-        panelContent={ <>
-
-      {/* Tabs for Smart Post / Normal */}
-
-        <Tabs className="overflow-y-auto m-2" value={currentTab}>
-            <TabsHeader className="relative top-0 ">
-              <Tab value={"smartPost"} className="appFont" onClick={() => setCurrentTab("smartPost")}>
-                {" "}
-                Smart Post{" "}
-              </Tab>
-              <Tab value={"normalPost"} className="appFont" onClick={() => setCurrentTab("normalPost")}>
-                {" "}
-                Normal{" "}
-              </Tab>
-              </TabsHeader>
+      <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none ">
 
         <div className="relative px-4 mt-1 pt-2 pb-4 sm:px-6 ">
           <div className="">
-          { currentTab === "smartPost" && 
-                <Alert className="mt-1 mb-4 text-sm rounded-md border-l-4 border-[#E1F26C] bg-[#E1F26C]/10  text-[#96a535]">
-                  This Post will be shared through Open Actions on Lens
-                </Alert>
-          }
+
           <div className="flex flex-col justify-between">
               <Switch.Group>
                 <div className="mb-4">
@@ -744,8 +721,6 @@ const LensShare = () => {
                     )}
                   </div>
                 </div>  
-              
-               { currentTab === "normalPost" && ( <>
                
                 <div
                   className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}
@@ -893,7 +868,7 @@ const LensShare = () => {
                     )}
                   </div>
                 </div>
-                </>)}
+
 
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Limited Edition</h2>
@@ -943,7 +918,6 @@ const LensShare = () => {
                   </div>
                 </div>
 
-                { currentTab === "normalPost" && ( <>
 
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Time Limit</h2>
@@ -1001,9 +975,6 @@ const LensShare = () => {
                     </div>
                   </div>
                 </div>
-                </> )}
-
-                { currentTab === "normalPost" && ( <>
 
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Who can collect</h2>
@@ -1033,11 +1004,12 @@ const LensShare = () => {
                     </Switch>
                   </div>
                 </div>
-                </> )}
+
               </Switch.Group>
             </div>
           </div>
         </div>   
+
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
         ) : !getLensAuth?.profileHandle ? (
@@ -1055,8 +1027,6 @@ const LensShare = () => {
             </Button>
           </div>
         )}
-      </Tabs>
-     </> } />
       </div>
     </>
   );
