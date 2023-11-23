@@ -549,6 +549,14 @@ export const uploadUserAssets = async (image) => {
   return result?.data;
 };
 
+export const uploadUserAssetToIPFS = async (image) => {
+  const result = await api.post(`${API}/util/upload-image-ipfs`, {
+    image: image,
+  });
+
+  return result?.data;
+};
+
 // get user assets endpoint
 export const getUserAssets = async (page) => {
   const result = await api.get(`${API}/user/upload`, {

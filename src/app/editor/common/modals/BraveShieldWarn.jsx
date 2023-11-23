@@ -11,6 +11,7 @@ import {
   Checkbox,
 } from "@material-tailwind/react";
 import { LOCAL_STORAGE } from "../../../../data";
+import { BraveLogo } from "../../../../assets";
 
 const BraveShieldWarn = () => {
   const [open, setOpen] = useState(true);
@@ -30,7 +31,7 @@ const BraveShieldWarn = () => {
   return (
     <>
       <Dialog
-        size="xs"
+        size="sm"
         open={open}
         animate={{
           mount: { scale: 1, y: 0 },
@@ -38,7 +39,8 @@ const BraveShieldWarn = () => {
         }}
         className="outline-none"
       >
-        <DialogHeader className="justify-between border-b border-gray-300">
+        <DialogHeader className="gap-2 border-b border-gray-300">
+          <img src={BraveLogo} alt="brave logo" className="h-10 w-10" />
           <Typography variant="h5" color="blue-gray">
             Brave Shield Warning
           </Typography>

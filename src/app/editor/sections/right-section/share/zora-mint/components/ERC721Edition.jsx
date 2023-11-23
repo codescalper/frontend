@@ -10,21 +10,785 @@ import {
   TabsBody,
   Tab,
   TabPanel,
+  Spinner,
 } from "@material-tailwind/react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsPlus from "@meronex/icons/bs/BsPlus";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { Context } from "../../../../../../../providers/context";
+import { toast } from "react-toastify";
+import {
+  useAccount,
+  useChainId,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useSwitchNetwork,
+  useWaitForTransaction,
+} from "wagmi";
+import { useAppAuth } from "../../../../../../../hooks/app";
+import { APP_ETH_ADDRESS, LOCAL_STORAGE } from "../../../../../../../data";
+import {
+  ENVIRONMENT,
+  uploadUserAssetToIPFS,
+} from "../../../../../../../services";
+import { zoraNftCreatorV1Config } from "@zoralabs/zora-721-contracts";
+import {
+  base64Stripper,
+  errorMessage,
+  getFromLocalStorage,
+} from "../../../../../../../utils";
+import ZoraDialog from "./ZoraDialog";
+import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
+import { useMutation } from "@tanstack/react-query";
+import { EVMWallets } from "../../../../top-section/auth/wallets";
 
 const ERC721Edition = () => {
+  const { address } = useAccount();
+  const { isAuthenticated } = useAppAuth();
+  const chainId = useChainId();
+  const { chains, chain } = useNetwork();
+  const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const {
+    createSplit,
+    createSplitData,
+    createSplitError,
+    isCreateSplitError,
+    isCreateSplitLoading,
+    isCreateSplitSuccess,
+  } = useCreateSplit();
+  const {
+    error: errorSwitchNetwork,
+    isError: isErrorSwitchNetwork,
+    isLoading: isLoadingSwitchNetwork,
+    isSuccess: isSuccessSwitchNetwork,
+    switchNetwork,
+  } = useSwitchNetwork();
   const {
     zoraErc721Enabled,
     setZoraErc721Enabled,
     zoraErc721StatesError,
     setZoraErc721StatesError,
+    contextCanvasIdRef,
+    postDescription,
+    parentRecipientListRef,
+    canvasBase64Ref,
   } = useContext(Context);
+
+  // upload to IPFS
+  const {
+    mutate,
+    data: uploadData,
+    isError: isUploadError,
+    error: uploadError,
+    isSuccess: isUploadSuccess,
+    isLoading: isUploading,
+  } = useMutation({
+    mutationKey: "uploadToIPFS",
+    mutationFn: uploadUserAssetToIPFS,
+  });
+
+  const isSupportedChain = () => {
+    return chainId === chains[1].id;
+  };
+
+  const switchNetworkHandler = () => {
+    switchNetwork(chains[1].id);
+  };
+
+  // formate date and time in uxin timestamp
+  const formatDateTimeUnix = (date, time) => {
+    const dateTime = new Date(`${date} ${time}`);
+    return Math.floor(dateTime.getTime() / 1000);
+  };
+
+  // Calendar Functions:
+  const onCalChange = (value, key) => {
+    const dateTime = new Date(value);
+
+    // Format the date
+    const dateOptions = { year: "numeric", month: "long", day: "numeric" };
+
+    // Format the time
+    const timeOptions = {
+      hour: "numeric",
+      minute: "numeric",
+      timeZoneName: "short",
+    };
+
+    if (key.startsWith("pre")) {
+      setZoraErc721Enabled({
+        ...zoraErc721Enabled,
+        [key]: {
+          date: dateTime.toLocaleDateString(undefined, dateOptions),
+          time: dateTime.toLocaleTimeString(undefined, timeOptions),
+        },
+      });
+    } else if (key.startsWith("pub")) {
+      setZoraErc721Enabled({
+        ...zoraErc721Enabled,
+        [key]: {
+          date: dateTime.toLocaleDateString(undefined, dateOptions),
+          time: dateTime.toLocaleTimeString(undefined, timeOptions),
+        },
+      });
+    }
+  };
+
+  // funtion to add new input box for multi addresses
+  const addArrlistInputBox = (key) => {
+    if (key === "royaltySplitRecipients") {
+      setZoraErc721Enabled({
+        ...zoraErc721Enabled,
+        [key]: [
+          ...zoraErc721Enabled[key],
+          { address: "", percentAllocation: "" },
+        ],
+      });
+      return;
+    }
+
+    setZoraErc721Enabled({
+      ...zoraErc721Enabled,
+      [key]: [...zoraErc721Enabled[key], ""],
+    });
+  };
+
+  // funtion to remove input box for multi addresses
+  const removeArrlistInputBox = (index, key, isErrKey, errKeyMsg) => {
+    setZoraErc721Enabled({
+      ...zoraErc721Enabled,
+      [key]: zoraErc721Enabled[key].filter((_, i) => i !== index),
+    });
+
+    if (isErrKey) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        [isErrKey]: false,
+        [errKeyMsg]: "",
+      });
+    }
+  };
+
+  // funtion adding data for split revenues recipients
+  const handleRecipientChange = (index, key, value) => {
+    // check index 0 price should min 10
+    if (key === "percentAllocation" && index === 0) {
+      if (value < 10 || value > 100 || isNaN(value)) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: true,
+          royaltySplitErrorMessage:
+            "Platform fee should be between 10% to 100%",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: false,
+          royaltySplitErrorMessage: "",
+        });
+      }
+    } else if (key === "percentAllocation" && index !== 0) {
+      // any index price should be greater min 1 and max 100
+      if (value < 1 || value > 100 || isNaN(value)) {
+        setZoraErc721StatesError({
+          zoraErc721StatesError,
+          isRoyaltySplitError: true,
+          royaltySplitErrorMessage: "Split should be between 1% to 100%",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: false,
+          royaltySplitErrorMessage: "",
+        });
+      }
+    }
+    // check if recipient address is not provided
+    if (key === "address") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: true,
+          royaltySplitErrorMessage: "Recipient address is required",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: false,
+          royaltySplitErrorMessage: "",
+        });
+      }
+    }
+
+    const updatedRecipients = [...zoraErc721Enabled.royaltySplitRecipients];
+    updatedRecipients[index][key] = value;
+    setZoraErc721Enabled((prevEnabled) => ({
+      ...prevEnabled,
+      royaltySplitRecipients: updatedRecipients,
+    }));
+  };
+
+  // restrict the input box if the recipient is in the parent list
+  const restrictRecipientInput = (e, index, recipient) => {
+    const isRecipient = parentRecipientListRef.current.includes(recipient);
+    const isUserAddress = recipient === address;
+    if (index === 0 || isRecipient) {
+      if (isUserAddress) {
+        handleRecipientChange(index, "address", e.target.value);
+      }
+    } else {
+      handleRecipientChange(index, "address", e.target.value);
+    }
+  };
+
+  // restrict the delete button if recipient is in the parent list
+  const restrictRemoveRecipientInputBox = (index, recipient) => {
+    const isRecipient = parentRecipientListRef.current.includes(recipient);
+    if (index === 0 || isRecipient) {
+      return true;
+    }
+  };
+
+  // handle for input fields
+  const handleChange = (e, index, key) => {
+    const { name, value } = e.target;
+
+    // check if collection name and symbol are provided
+    if (name === "contractName") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isContractNameError: true,
+          contractNameErrorMessage: "Collection Name is required",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isContractNameError: false,
+          contractNameErrorMessage: "",
+        });
+      }
+    } else if (name === "contractSymbol") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isContractSymbolError: true,
+          contractSymbolErrorMessage: "Collection Symbol is required",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isContractSymbolError: false,
+          contractSymbolErrorMessage: "",
+        });
+      }
+    }
+
+    // check if price is provided
+    if (name === "chargeForMintPrice") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isChargeForMintError: true,
+          chargeForMintErrorMessage: "Price is required",
+        });
+      } else if (value < 0.001) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isChargeForMintError: true,
+          chargeForMintErrorMessage: "Price must be greater than 0.001",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isChargeForMintError: false,
+          chargeForMintErrorMessage: "",
+        });
+      }
+    }
+
+    // check if mint limit is provided
+    if (name === "mintLimitPerAddress") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMintLimitPerAddressError: true,
+          limitedEditionErrorMessage: "Mint limit is required",
+        });
+      } else if (value < 1) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMintLimitPerAddressError: true,
+          limitedEditionErrorMessage: "Mint limit must be greater than 0",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMintLimitPerAddressError: false,
+          limitedEditionErrorMessage: "",
+        });
+      }
+    }
+
+    // check if royalty percent is provided
+    if (name === "royaltyPercent") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltyPercentError: true,
+          royaltyPercentErrorMessage: "Royalty percent is required",
+        });
+      } else if (value < 1 || value > 100) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltyPercentError: true,
+          royaltyPercentErrorMessage: "Royalty must be between 1% to 100%",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltyPercentError: false,
+          royaltyPercentErrorMessage: "",
+        });
+      }
+    }
+
+    // check if max supply is provided
+    if (name === "maxSupply") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMaxSupplyError: true,
+          maxSupplyErrorMessage: "Max supply is required",
+        });
+      } else if (value < 1) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMaxSupplyError: true,
+          maxSupplyErrorMessage: "Max supply must be greater than 0",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isMaxSupplyError: false,
+          maxSupplyErrorMessage: "",
+        });
+      }
+    }
+
+    // check if allowlist is provided
+    if (name === "allowlistAddresses") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isAllowlistError: true,
+          allowlistErrorMessage: "Allowlist address is required",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isAllowlistError: false,
+          allowlistErrorMessage: "",
+        });
+      }
+    }
+
+    // add data
+    if (name === "allowlistAddresses") {
+      setZoraErc721Enabled((prevEnabled) => ({
+        ...prevEnabled,
+        [name]: prevEnabled[name].map((item, i) =>
+          i === index ? value : item
+        ),
+      }));
+    } else {
+      setZoraErc721Enabled((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+  // check if recipient address is same
+  const isRecipientAddDuplicate = () => {
+    const result = zoraErc721Enabled.royaltySplitRecipients.filter(
+      (item, index) => {
+        return (
+          zoraErc721Enabled.royaltySplitRecipients.findIndex(
+            (item2) => item2.address === item.address
+          ) !== index
+        );
+      }
+    );
+
+    if (result.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // check if recipient percentage is more than 100
+  const isPercentage100 = () => {
+    const result = zoraErc721Enabled.royaltySplitRecipients.reduce(
+      (acc, item) => {
+        return acc + item.percentAllocation;
+      },
+      0
+    );
+
+    if (result === 100) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // split contract settings
+  const handleCreateSplitSettings = () => {
+    const args = {
+      recipients: zoraErc721Enabled.royaltySplitRecipients,
+      distributorFeePercent: 0.0,
+      controller: APP_ETH_ADDRESS, // controller is the owner of the split contract
+    };
+    return args;
+  };
+
+  // mint settings
+  const handleMintSettings = () => {
+    const createReferral = APP_ETH_ADDRESS;
+    const defaultAdmin = address;
+
+    let contractName = "My Lenspost Collection";
+    let symbol = "MLC";
+    let description = "This is my Lenspost Collection";
+    let allowList = [];
+    let editionSize = "0xfffffffffff"; // default open edition
+    let royaltyBps = "0"; // 1% = 100 bps
+    let animationUri = "0x0";
+    let imageUri = "0x0";
+    let fundsRecipient = address;
+    // max value for maxSalePurchasePerAddress, results in no mint limit
+    let maxSalePurchasePerAddress = "4294967295";
+    let publicSalePrice = "0";
+    let presaleStart = "0";
+    let presaleEnd = "0";
+    let publicSaleStart = "0";
+    // max value for end date, results in no end date for mint
+    let publicSaleEnd = "18446744073709551615";
+
+    if (zoraErc721Enabled.contractName !== "") {
+      contractName = zoraErc721Enabled.contractName;
+    }
+
+    if (zoraErc721Enabled.contractSymbol !== "") {
+      symbol = zoraErc721Enabled.contractSymbol;
+    }
+
+    if (postDescription !== "") {
+      description = postDescription;
+    }
+
+    if (uploadData?.message) {
+      imageUri = `ipfs://${uploadData?.message}`;
+    }
+
+    if (createSplitData?.splitAddress) {
+      fundsRecipient = createSplitData?.splitAddress;
+    }
+
+    if (zoraErc721Enabled.isChargeForMint) {
+      publicSalePrice = (
+        Number(zoraErc721Enabled.chargeForMintPrice) * 1e18
+      ).toString();
+    }
+
+    if (zoraErc721Enabled.isMintLimitPerAddress) {
+      maxSalePurchasePerAddress = zoraErc721Enabled.mintLimitPerAddress;
+    }
+
+    if (zoraErc721Enabled.isRoyaltyPercent) {
+      royaltyBps = (Number(zoraErc721Enabled.royaltyPercent) * 100).toString();
+    }
+
+    if (zoraErc721Enabled.isMaxSupply) {
+      editionSize = zoraErc721Enabled.maxSupply;
+    }
+
+    if (zoraErc721Enabled.isAllowlist) {
+      allowList = zoraErc721Enabled.allowlistAddresses;
+    }
+
+    if (zoraErc721Enabled.isPreSaleSchedule) {
+      presaleStart = formatDateTimeUnix(
+        zoraErc721Enabled.preSaleStartTimeStamp.date,
+        zoraErc721Enabled.preSaleStartTimeStamp.time
+      );
+      presaleEnd = formatDateTimeUnix(
+        zoraErc721Enabled.preSaleEndTimeStamp.date,
+        zoraErc721Enabled.preSaleEndTimeStamp.time
+      );
+    }
+
+    if (zoraErc721Enabled.isPublicSaleSchedule) {
+      publicSaleStart = formatDateTimeUnix(
+        zoraErc721Enabled.publicSaleStartTimeStamp.date,
+        zoraErc721Enabled.publicSaleStartTimeStamp.time
+      );
+      publicSaleEnd = formatDateTimeUnix(
+        zoraErc721Enabled.publicSaleEndTimeStamp.date,
+        zoraErc721Enabled.publicSaleEndTimeStamp.time
+      );
+    }
+
+    const arr = [
+      contractName,
+      symbol,
+      editionSize,
+      royaltyBps,
+      fundsRecipient,
+      defaultAdmin,
+      {
+        publicSalePrice,
+        maxSalePurchasePerAddress,
+        publicSaleStart,
+        publicSaleEnd,
+        presaleStart,
+        presaleEnd,
+        presaleMerkleRoot:
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      description,
+      animationUri,
+      imageUri,
+      createReferral,
+    ];
+
+    return { args: arr };
+  };
+
+  // create edition configs
+  const {
+    config,
+    error: prepareError,
+    isError: isPrepareError,
+  } = usePrepareContractWrite({
+    abi: zoraNftCreatorV1Config.abi,
+    address: zoraNftCreatorV1Config.address[chainId],
+    functionName: "createEditionWithReferral",
+    args: handleMintSettings().args,
+  });
+  const { write, data, error, isLoading, isError } = useContractWrite(config);
+  const {
+    data: receipt,
+    isLoading: isPending,
+    isSuccess,
+  } = useWaitForTransaction({ hash: data?.hash });
+
+  // mint on Zora
+  const handleSubmit = () => {
+    // check if canvasId is provided
+    if (contextCanvasIdRef.current === null) {
+      toast.error("Please select a design");
+      return;
+    }
+
+    // check if description is provided
+    if (!postDescription) {
+      toast.error("Please provide a description");
+      return;
+    }
+
+    // check if collection name is provided
+    if (!zoraErc721Enabled.contractName) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isContractNameError: true,
+        contractNameErrorMessage: "Collection Name is required",
+      });
+      return;
+    }
+
+    // check if collection symbol is provided
+    if (!zoraErc721Enabled.contractSymbol) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isContractSymbolError: true,
+        contractSymbolErrorMessage: "Collection Symbol is required",
+      });
+      return;
+    }
+
+    // check if price is provided
+    if (zoraErc721Enabled.isChargeForMint) {
+      if (!zoraErc721Enabled.chargeForMintPrice) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isChargeForMintError: true,
+          chargeForMintErrorMessage: "Price is required",
+        });
+        return;
+      } else if (zoraErc721StatesError.isChargeForMintError) return;
+    }
+
+    // check if mint limit is provided
+    if (zoraErc721Enabled.isMintLimitPerAddress) {
+      if (zoraErc721StatesError.isMintLimitPerAddressError) return;
+    }
+
+    // check if royalty percent is provided
+    if (zoraErc721Enabled.isRoyaltyPercent) {
+      if (zoraErc721StatesError.isRoyaltyPercentError) return;
+    }
+
+    // check if max supply is provided
+    if (zoraErc721Enabled.isMaxSupply) {
+      if (zoraErc721StatesError.isMaxSupplyError) return;
+    }
+
+    // check if allowlist is provided
+    if (zoraErc721Enabled.isAllowlist) {
+      if (zoraErc721StatesError.isAllowlistError) return;
+    }
+
+    // check if pre sale schedule is provided
+    if (zoraErc721Enabled.isPreSaleSchedule) {
+      if (zoraErc721StatesError.isPreSaleScheduleError) return;
+    }
+
+    // check if public sale schedule is provided
+    if (zoraErc721Enabled.isPublicSaleSchedule) {
+      if (zoraErc721StatesError.isPublicSaleScheduleError) return;
+    }
+
+    // check if split revenue is provided
+    if (zoraErc721Enabled.isRoyaltySplits) {
+      if (zoraErc721StatesError.isRoyaltySplitError) return;
+    }
+
+    // check if mint limit is provided
+    if (zoraErc721Enabled.isMintLimitPerAddress) {
+      if (zoraErc721StatesError.isMintLimitPerAddressError) return;
+    }
+
+    // check if recipient address is same
+    if (isRecipientAddDuplicate()) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isRoyaltySplitError: true,
+        royaltySplitErrorMessage: "Recipient address is duplicate",
+      });
+      return;
+    } else if (!isPercentage100()) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isRoyaltySplitError: true,
+        royaltySplitErrorMessage: "Recipient percentage should be 100%",
+      });
+      return;
+    } else {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isRoyaltySplitError: false,
+        royaltySplitErrorMessage: "",
+      });
+    }
+
+    // upload to IPFS
+    mutate(canvasBase64Ref.current[0]);
+  };
+
+  // add recipient to the split list
+  useEffect(() => {
+    if (isAuthenticated) {
+      const updatedRecipients = parentRecipientListRef.current.map((item) => ({
+        address: item,
+        percentAllocation: 1.0,
+      }));
+
+      setZoraErc721Enabled((prevEnabled) => ({
+        ...prevEnabled,
+        royaltySplitRecipients: [
+          {
+            address: APP_ETH_ADDRESS,
+            percentAllocation:
+              zoraErc721Enabled.royaltySplitRecipients[0].percentAllocation ||
+              10.0,
+          },
+          ...updatedRecipients,
+        ],
+      }));
+    }
+  }, [isAuthenticated]);
+
+  // create split contract
+  useEffect(() => {
+    if (uploadData?.message) {
+      createSplit(handleCreateSplitSettings());
+    }
+  }, [isUploadSuccess]);
+
+  // mint on Zora
+  useEffect(() => {
+    if (createSplitData?.splitAddress) {
+      setTimeout(() => {
+        write?.();
+      }, 1000);
+    }
+  }, [isCreateSplitSuccess, write]);
+
+  // error handling for network switch
+  useEffect(() => {
+    if (isErrorSwitchNetwork) {
+      toast.error(errorSwitchNetwork?.message.split("\n")[0]);
+    }
+
+    if (isSuccessSwitchNetwork) {
+      toast.success("Network switched successfully");
+    }
+  }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
+
+  // error handling for mint
+  useEffect(() => {
+    if (isError) {
+      console.log("mint error", error);
+      toast.error(error.message.split("\n")[0]);
+    }
+
+    if (isPrepareError) {
+      console.log("prepare error", prepareError);
+      // toast.error(prepareError.message);
+    }
+  }, [isError, isPrepareError]);
+
+  // error handling for create split
+  useEffect(() => {
+    if (isCreateSplitError) {
+      console.log("create split error", createSplitError);
+      toast.error(createSplitError.message.split("\n")[0]);
+    }
+  }, [isCreateSplitError]);
+
+  // error handling for upload to IPFS
+  useEffect(() => {
+    if (isUploadError) {
+      console.log("upload IPFS error", uploadError);
+      toast.error(errorMessage(uploadError));
+    }
+  }, [isUploadError]);
+
   return (
     <>
+      <ZoraDialog
+        isError={isUploadError || isCreateSplitError || isError}
+        isLoading={isLoading}
+        isCreatingSplit={isCreateSplitLoading}
+        isUploadingToIPFS={isUploading}
+        isPending={isPending}
+        data={receipt}
+        isSuccess={isSuccess}
+      />
       {/* Switch Number 1 Start */}
       <div className="mb-4 m-4">
         <div className="flex justify-between">
@@ -38,22 +802,30 @@ const ERC721Edition = () => {
 
       <div className={` ml-4 mr-4`}>
         <div className="flex flex-col w-full py-2">
-          {/* <label htmlFor="price">Collect limit</label> */}
           <InputBox
             label="Collection Name"
             name="contractName"
+            onChange={(e) => handleChange(e)}
+            onFocus={(e) => handleChange(e)}
             value={zoraErc721Enabled.contractName}
           />
+          {zoraErc721StatesError.isContractNameError && (
+            <InputErrorMsg
+              message={zoraErc721StatesError.contractNameErrorMessage}
+            />
+          )}
           <div className="mt-2">
             <InputBox
               label="Collection Symbol"
               name="contractSymbol"
+              onChange={(e) => handleChange(e)}
+              // onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.contractSymbol}
             />
           </div>
-          {zoraErc721StatesError.isSellerFeeError && (
+          {zoraErc721StatesError.isContractSymbolError && (
             <InputErrorMsg
-              message={zoraErc721StatesError.sellerFeeErrorMessage}
+              message={zoraErc721StatesError.contractSymbolErrorMessage}
             />
           )}
         </div>
@@ -93,10 +865,12 @@ const ERC721Edition = () => {
         <div className="flex">
           <div className="flex flex-col py-2">
             <NumberInputBox
-              min={"1"}
+              min={"0.001"}
               step={"0.01"}
               label="Price"
-              name="chargeForMintPriceZora"
+              name="chargeForMintPrice"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.chargeForMintPrice}
             />
           </div>
@@ -104,13 +878,27 @@ const ERC721Edition = () => {
           <div className="flex flex-col py-2 mx-2">
             {/* <label htmlFor="price"></label> */}
             <Select
+              animate={{
+                mount: { y: 0 },
+                unmount: { y: 25 },
+              }}
               label="Currency"
-              name="chargeForMintCurrencyZora"
+              name="chargeForMintCurrency"
               id="chargeForMintCurrency"
-              // className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
-              value={zoraErc721Enabled.chargeForMintCurrency}
             >
-              <Option>ETH</Option>
+              {["eth"].map((currency) => (
+                <Option
+                  key={currency}
+                  onClick={() => {
+                    setZoraErc721Enabled({
+                      ...zoraErc721Enabled,
+                      chargeForMintCurrency: currency,
+                    });
+                  }}
+                >
+                  {currency.toUpperCase()}
+                </Option>
+              ))}
             </Select>
           </div>
         </div>
@@ -140,50 +928,62 @@ const ERC721Edition = () => {
         <div className="mx-4">
           {zoraErc721Enabled.royaltySplitRecipients.map((recipient, index) => {
             return (
-              <>
-                <div
-                  key={index}
-                  className="flex justify-between gap-2 items-center w-full py-2"
-                >
-                  {/* <div className="flex justify-between items-center w-1/3"> */}
+              <div
+                key={index}
+                className="flex justify-between gap-2 items-center w-full py-2"
+              >
+                <div className="flex-1">
                   <InputBox
-                    className="w-full"
                     label="Wallet Address"
                     value={recipient.address}
-                    // onChange={(e) =>
-                    //   restrictRecipientInput(e, index, recipient.address)
-                    // }
+                    onFocus={(e) =>
+                      restrictRecipientInput(e, index, recipient.address)
+                    }
+                    onChange={(e) =>
+                      restrictRecipientInput(e, index, recipient.address)
+                    }
                   />
-                  {/* </div> */}
-                  <div className="flex justify-between items-center w-1/3">
-                    <NumberInputBox
-                      className="w-4"
-                      min={0}
-                      max={100}
-                      step={0.01}
-                      label="%"
-                      value={recipient.share}
-                      // onChange={(e) => {
-                      //   handleRecipientChange(
-                      //     index,
-                      //     "share",
-                      //     Number(parseFloat(e.target.value).toFixed(2))
-                      //   );
-                      // }}
-                    />
-                    {/* {!restrictRemoveRecipientInputBox(
-                      index,
-                      recipient.address
-                    ) && (
-                      <XCircleIcon
-                        className="h-6 w-6 cursor-pointer"
-                        color="red"
-                        onClick={() => removeRecipientInputBox(index)}
-                      />
-                    )} */}
-                  </div>
                 </div>
-              </>
+                <div className="">
+                  <NumberInputBox
+                    min={0}
+                    max={100}
+                    step={0.01}
+                    label="%"
+                    value={recipient.percentAllocation}
+                    onFocus={(e) => {
+                      handleRecipientChange(
+                        index,
+                        "percentAllocation",
+                        Number(parseFloat(e.target.value).toFixed(4))
+                      );
+                    }}
+                    onChange={(e) => {
+                      handleRecipientChange(
+                        index,
+                        "percentAllocation",
+                        Number(parseFloat(e.target.value).toFixed(4))
+                      );
+                    }}
+                  />
+                </div>
+                {!restrictRemoveRecipientInputBox(index, recipient.address) && (
+                  <span>
+                    <XCircleIcon
+                      className="h-6 w-6 cursor-pointer"
+                      color="red"
+                      onClick={() =>
+                        removeArrlistInputBox(
+                          index,
+                          "royaltySplitRecipients",
+                          "isRoyaltySplitError",
+                          "royaltySplitErrorMessage"
+                        )
+                      }
+                    />
+                  </span>
+                )}
+              </div>
             );
           })}
 
@@ -198,6 +998,7 @@ const ERC721Edition = () => {
             size="sm"
             variant="filled"
             className="flex items-center gap-3 mt-2 ml-0 mr-4 "
+            onClick={() => addArrlistInputBox("royaltySplitRecipients")}
           >
             <BsPlus />
             Add Recipient
@@ -254,6 +1055,8 @@ const ERC721Edition = () => {
             step={"1"}
             label="Mint limit"
             name="mintLimitPerAddress"
+            onChange={(e) => handleChange(e)}
+            onFocus={(e) => handleChange(e)}
             value={zoraErc721Enabled.mintLimitPerAddress}
           />
           {zoraErc721StatesError.isMintLimitPerAddressError && (
@@ -306,10 +1109,11 @@ const ERC721Edition = () => {
           <div className="flex flex-col py-2">
             <NumberInputBox
               min={"1"}
-              step={"0.01"}
-              // className={"W-3/4"}
+              step={"1"}
               label="Royalty % "
-              name="setRoyaltyPercentZora"
+              name="royaltyPercent"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.royaltyPercent}
             />
           </div>
@@ -361,10 +1165,12 @@ const ERC721Edition = () => {
           <div className="flex flex-col py-2">
             <NumberInputBox
               min={"1"}
-              step={"0.01"}
+              step={"1"}
               // className={"W-3/4"}
               label="Max Supply "
-              name="maxSupplyZora"
+              name="maxSupply"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
               value={zoraErc721Enabled.maxSupply}
             />
           </div>
@@ -397,7 +1203,9 @@ const ERC721Edition = () => {
           >
             <span
               className={`${
-                zoraErc721Enabled.isAllowlist ? "translate-x-6" : "translate-x-1"
+                zoraErc721Enabled.isAllowlist
+                  ? "translate-x-6"
+                  : "translate-x-1"
               } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />{" "}
           </Switch>
@@ -408,7 +1216,9 @@ const ERC721Edition = () => {
         </div>
       </div>
 
-      <div className={`ml-4 mr-4 ${!zoraErc721Enabled.isAllowlist && "hidden"} `}>
+      <div
+        className={`ml-4 mr-4 ${!zoraErc721Enabled.isAllowlist && "hidden"} `}
+      >
         {zoraErc721Enabled.allowlistAddresses.map((recipient, index) => {
           return (
             <>
@@ -418,24 +1228,20 @@ const ERC721Edition = () => {
               >
                 <InputBox
                   label="Wallet Address"
+                  name="allowlistAddresses"
                   value={recipient}
-                  // onChange={(e) =>
-                  //   handleArrlistChange(
-                  //     index,
-                  //     e.target.value,
-                  //     "allowlistAddresses"
-                  //   )
-                  // }
+                  onChange={(e) => handleChange(e, index)}
+                  onFocus={(e) => handleChange(e, index)}
                 />
 
                 <div className="flex justify-between items-center">
                   {index != 0 && (
-                    <TiDelete
+                    <XCircleIcon
                       className="h-6 w-6 cursor-pointer"
                       color="red"
-                      // onClick={() =>
-                      //   removeArrlistInputBox(index, "allowlistAddresses")
-                      // }
+                      onClick={() =>
+                        removeArrlistInputBox(index, "allowlistAddresses")
+                      }
                     />
                   )}
                 </div>
@@ -444,14 +1250,16 @@ const ERC721Edition = () => {
           );
         })}
         {zoraErc721StatesError.isAllowlistError && (
-          <InputErrorMsg message={zoraErc721StatesError.allowlistErrorMessage} />
+          <InputErrorMsg
+            message={zoraErc721StatesError.allowlistErrorMessage}
+          />
         )}
         <Button
           color="cyan"
           size="sm"
           variant="filled"
           className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-          // onClick={() => addArrlistInputBox("allowlistAddresses")}
+          onClick={() => addArrlistInputBox("allowlistAddresses")}
         >
           <BsPlus />
           Add Recipient
@@ -460,6 +1268,7 @@ const ERC721Edition = () => {
         <div className="text-center mt-2"> OR </div>
 
         <Button
+          disabled={true}
           color="cyan"
           className="mt-2"
           size="sm"
@@ -478,22 +1287,22 @@ const ERC721Edition = () => {
           <div className="flex justify-between">
             <h2 className="text-lg mb-2"> Pre - Sale Schedule </h2>
             <Switch
-              checked={zoraErc721Enabled.isPresaleSchedule}
+              checked={zoraErc721Enabled.isPreSaleSchedule}
               onChange={() =>
                 setZoraErc721Enabled({
                   ...zoraErc721Enabled,
-                  isPresaleSchedule: !zoraErc721Enabled.isPresaleSchedule,
+                  isPreSaleSchedule: !zoraErc721Enabled.isPreSaleSchedule,
                 })
               }
               className={`${
-                zoraErc721Enabled.isPresaleSchedule
+                zoraErc721Enabled.isPreSaleSchedule
                   ? "bg-[#00bcd4]"
                   : "bg-gray-200"
               } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
             >
               <span
                 className={`${
-                  zoraErc721Enabled.isPresaleSchedule
+                  zoraErc721Enabled.isPreSaleSchedule
                     ? "translate-x-6"
                     : "translate-x-1"
                 } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
@@ -508,17 +1317,23 @@ const ERC721Edition = () => {
 
         <div
           className={`flex flex-col ${
-            !zoraErc721Enabled.isPresaleSchedule && "hidden"
+            !zoraErc721Enabled.isPreSaleSchedule && "hidden"
           } `}
         >
           <div className="ml-4 mr-4 flex justify-between text-center align-middle">
-            <div>Start</div> <DateTimePicker />
+            <div>Start</div>{" "}
+            <DateTimePicker
+              onChange={(e) => onCalChange(e, "preSaleStartTimeStamp")}
+            />
           </div>
           <div className="m-4 flex justify-between text-center align-middle">
-            <div>End</div> <DateTimePicker />
+            <div>End</div>{" "}
+            <DateTimePicker
+              onChange={(e) => onCalChange(e, "preSaleEndTimeStamp")}
+            />
           </div>
 
-          {zoraErc721StatesError.isPresaleScheduleError && (
+          {zoraErc721StatesError.isPreSaleScheduleError && (
             <InputErrorMsg
               message={zoraErc721StatesError.presaleScheduleErrorMessage}
             />
@@ -533,22 +1348,22 @@ const ERC721Edition = () => {
           <div className="flex justify-between">
             <h2 className="text-lg mb-2"> Public - Sale Schedule </h2>
             <Switch
-              checked={zoraErc721Enabled.isPublicsaleSchedule}
+              checked={zoraErc721Enabled.isPublicSaleSchedule}
               onChange={() =>
                 setZoraErc721Enabled({
                   ...zoraErc721Enabled,
-                  isPublicsaleSchedule: !zoraErc721Enabled.isPublicsaleSchedule,
+                  isPublicSaleSchedule: !zoraErc721Enabled.isPublicSaleSchedule,
                 })
               }
               className={`${
-                zoraErc721Enabled.isPublicsaleSchedule
+                zoraErc721Enabled.isPublicSaleSchedule
                   ? "bg-[#00bcd4]"
                   : "bg-gray-200"
               } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
             >
               <span
                 className={`${
-                  zoraErc721Enabled.isPublicsaleSchedule
+                  zoraErc721Enabled.isPublicSaleSchedule
                     ? "translate-x-6"
                     : "translate-x-1"
                 } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
@@ -563,17 +1378,23 @@ const ERC721Edition = () => {
 
         <div
           className={`flex flex-col ${
-            !zoraErc721Enabled.isPublicsaleSchedule && "hidden"
+            !zoraErc721Enabled.isPublicSaleSchedule && "hidden"
           } `}
         >
           <div className="ml-4 mr-4 flex justify-between text-center align-middle">
-            <div>Start</div> <DateTimePicker />
+            <div>Start</div>{" "}
+            <DateTimePicker
+              onChange={(e) => onCalChange(e, "publicSaleStartTimeStamp")}
+            />
           </div>
           <div className="m-4 flex justify-between text-center align-middle">
-            <div>End</div> <DateTimePicker />
+            <div>End</div>{" "}
+            <DateTimePicker
+              onChange={(e) => onCalChange(e, "publicSaleEndTimeStamp")}
+            />
           </div>
 
-          {zoraErc721StatesError.isPublicsaleScheduleError && (
+          {zoraErc721StatesError.isPublicSaleScheduleError && (
             <InputErrorMsg
               message={zoraErc721StatesError.publicsaleScheduleErrorMessage}
             />
@@ -582,12 +1403,34 @@ const ERC721Edition = () => {
       </>
       {/* Switch Number 8 End */}
 
-      <div className="mx-2 my-4">
-        <Button fullWidth color="cyan">
-          {" "}
-          Mint{" "}
-        </Button>
-      </div>
+      {!getEVMAuth ? (
+        <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
+      ) : isSupportedChain() ? (
+        <div className="mx-2 my-4">
+          <Button
+            disabled={!write}
+            fullWidth
+            color="cyan"
+            onClick={handleSubmit}
+          >
+            {" "}
+            Create Edition{" "}
+          </Button>
+        </div>
+      ) : (
+        <div className="mx-2 my-4">
+          <Button
+            disabled={isLoadingSwitchNetwork}
+            fullWidth
+            color="red"
+            onClick={switchNetworkHandler}
+            className="flex justify-center gap-2 items-center"
+          >
+            {" "}
+            Switch Network {isLoadingSwitchNetwork && <Spinner />}
+          </Button>
+        </div>
+      )}
     </>
   );
 };

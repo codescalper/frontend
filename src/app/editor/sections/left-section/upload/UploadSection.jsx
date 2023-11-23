@@ -20,7 +20,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { UploadIcon } from "../../../../../assets";
+import { UploadIcon } from "../../../../../assets/assets";
 import { toast } from "react-toastify";
 import { deleteUserAsset, getUserAssets } from "../../../../../services";
 import { fnLoadMore } from "../../../../../utils";

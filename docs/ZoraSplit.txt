@@ -1,0 +1,9 @@
+Zora protocol reward:-
+1. Its for primary sale (on Mint)
+
+Zora Royalty reward:-
+1. Its for secondary sale (on Marketplace)
+
+0xSPlit protocol reward:-
+1. The contract address is attached to the Royalty recipient
+2. Its for secondary sale (on Marketplace)

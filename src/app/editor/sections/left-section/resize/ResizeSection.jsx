@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { SectionTab } from "polotno/side-panel";
 import { Button } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
-import { ResizeIcon } from "../../../../../assets";
+import { ResizeIcon } from "../../../../../assets/assets";
 import { useStore } from "../../../../../hooks/polotno";
 
 const AVAILABLE_SIZES = [

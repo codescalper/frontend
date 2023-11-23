@@ -9,7 +9,7 @@ import { useContext } from "react";
 import { useEffect } from "react";
 import { Switch } from "@headlessui/react";
 import { Context } from "../../../../../../providers/context";
-import { LOCAL_STORAGE } from "../../../../../../data";
+import { APP_SOLANA_ADDRESS, LOCAL_STORAGE } from "../../../../../../data";
 import { SolanaWallets } from "../../../top-section/auth/wallets";
 import { errorMessage, getFromLocalStorage } from "../../../../../../utils";
 import { toast } from "react-toastify";
@@ -212,7 +212,7 @@ const SolanaMint = () => {
     setSolanaEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
   };
 
-  // funtions adding data for allowlist
+  // funtions adding data for multi addresses
   const handleArrlistChange = (index, value, key) => {
     setSolanaEnabled((prevEnabled) => ({
       ...prevEnabled,
@@ -220,7 +220,7 @@ const SolanaMint = () => {
     }));
   };
 
-  // funtions for adding new input box for allowlist
+  // funtions for adding new input box for multi addresses
   const addArrlistInputBox = (key) => {
     setSolanaEnabled({
       ...solanaEnabled,
@@ -228,7 +228,7 @@ const SolanaMint = () => {
     });
   };
 
-  // funtions for removing input box for allowlist
+  // funtions for removing input box for multi addresses
   const removeArrlistInputBox = (index, key) => {
     setSolanaEnabled({
       ...solanaEnabled,
@@ -259,6 +259,7 @@ const SolanaMint = () => {
     if (key === "share" && index !== 0) {
       if (value < 1 || value > 100 || isNaN(value)) {
         setSolanaStatesError({
+          ...solanaStatesError,
           isSplitError: true,
           splitErrorMessage: "Split should be between 1% to 100%",
         });
@@ -335,7 +336,7 @@ const SolanaMint = () => {
   };
 
   // Calendar Functions:
-  const onCalChange = (value, dateString) => {
+  const onCalChange = (value) => {
     const dateTime = new Date(value);
 
     // Format the date
@@ -348,6 +349,7 @@ const SolanaMint = () => {
       timeZoneName: "short",
     };
 
+    // TODO-FIX: both start and end time is same
     setSolanaEnabled({
       ...solanaEnabled,
       startTimeStamp: {
@@ -392,7 +394,7 @@ const SolanaMint = () => {
     }
   };
 
-  // share on solana
+  // mint on solana
   const sharePost = (platform) => {
     // TODO:  enables some checks here
 
@@ -483,7 +485,7 @@ const SolanaMint = () => {
           });
 
           toast.update(id, {
-            render: `Shared on ${platform}`,
+            render: `Successfully created the edition`,
             type: "success",
             isLoading: false,
             autoClose: 3000,
@@ -555,7 +557,7 @@ const SolanaMint = () => {
         ...prevEnabled,
         onChainSplitRecipients: [
           {
-            address: "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa",
+            address: APP_SOLANA_ADDRESS,
             share: solanaEnabled.onChainSplitRecipients[0].share || 10.0,
           },
           ...updatedRecipients,
@@ -603,11 +605,11 @@ const SolanaMint = () => {
               </div>
             </div>
 
-            <div className={`${!solanaEnabled.isChargeForMint && "hidden"}`}>
-              <div className="flex gap-5 mx-4">
+            <div className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}>
+              <div className="flex gap-5">
                 <div className="flex flex-col py-2">
                   <NumberInputBox
-                    min={"1"}
+                    min={"0.1"}
                     step={"0.01"}
                     // className={"W-3/4"}
                     label="Price"
@@ -971,6 +973,7 @@ const SolanaMint = () => {
               <div className="text-center mt-2"> OR </div>
 
               <Button
+              disabled={true}
                 color="teal"
                 className="mt-2"
                 size="sm"
