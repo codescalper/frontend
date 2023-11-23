@@ -14,7 +14,7 @@ import { t } from "polotno/utils/l10n";
 import { ImagesGrid } from "polotno/side-panel/images-grid";
 import { useInfiniteAPI } from "polotno/utils/use-api";
 import { getCrop } from "polotno/utils/image";
-import { AIIcon } from "../../../../../assets";
+import { AIIcon } from "../../../../../assets/assets";
 import axios from "axios";
 import FormData from "form-data";
 import { CustomImageComponent, MessageComponent } from "../../../common";

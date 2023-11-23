@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Position, Menu, HTMLSelect, Slider } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import * as unit from "polotno/utils/unit";
-import { ExportIcon } from "../../../../../assets";
+import { ExportIcon } from "../../../../../assets/assets";
 import { useStore } from "../../../../../hooks/polotno";
 
 const DownloadBtn = () => {

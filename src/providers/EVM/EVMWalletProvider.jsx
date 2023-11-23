@@ -5,7 +5,13 @@ import {
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { polygon, polygonMumbai, zora, zoraTestnet } from "wagmi/chains";
+import {
+  polygon,
+  polygonMumbai,
+  zora,
+  zoraTestnet,
+  goerli,
+} from "wagmi/chains";
 import {
   coinbaseWallet,
   ledgerWallet,
@@ -20,7 +26,7 @@ import { ENVIRONMENT, WALLETCONNECT_PROJECT_ID } from "../../services";
 
 const { chains, publicClient } = configureChains(
   // [polygon],
-  ENVIRONMENT === "production" ? [polygon] : [polygonMumbai],
+  ENVIRONMENT === "production" ? [polygon, zora] : [polygonMumbai, goerli],
   [
     // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
     publicProvider(),

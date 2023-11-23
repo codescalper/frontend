@@ -1,6 +1,7 @@
 import { Button } from "@material-tailwind/react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import React from "react";
+import { EVMLogo } from "../../../../../../assets";
 
 const EVMWallets = ({title, className}) => {
   const { openConnectModal } = useConnectModal();
@@ -13,7 +14,7 @@ const EVMWallets = ({title, className}) => {
       onClick={openConnectModal}
     >
       <img
-        src="https://ethereum.org/static/eth-diamond-rainbow.svg"
+        src={EVMLogo}
         alt="evm"
         className="h-6 w-6"
       />

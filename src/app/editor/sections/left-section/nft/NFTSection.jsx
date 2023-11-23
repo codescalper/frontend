@@ -1,5 +1,5 @@
 import { ImagesGrid, SectionTab } from "polotno/side-panel";
-import { NFTIcon } from "../../../../../assets";
+import { NFTIcon } from "../../../../../assets/assets";
 import { observer } from "mobx-react-lite";
 import { useState, useEffect, useRef } from "react";
 import { Button, Spinner } from "@blueprintjs/core";

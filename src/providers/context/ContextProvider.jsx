@@ -11,6 +11,9 @@ const ContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
   const contextCanvasIdRef = useRef(null);
+  const canvasBase64Ref = useRef([]);
+  const [postDescription, setPostDescription] = useState("");
+  const [open, setOpen] = useState(false);
 
   // for twitter auth
   const [queryParams, setQueryParams] = useState({
@@ -152,7 +155,7 @@ const ContextProvider = ({ children }) => {
     isAllowlist: false,
     allowlistAddresses: [""],
 
-    isPresaleSchedule: false,
+    isPreSaleSchedule: false,
     preSaleStartTimeStamp: {
       date: "",
       time: "",
@@ -301,9 +304,6 @@ const ContextProvider = ({ children }) => {
     publicsaleScheduleErrorMessage: "",
   });
 
-  const [postDescription, setPostDescription] = useState("");
-  const [open, setOpen] = useState(false);
-
   // for calendar
   const [stFormattedDate, setStFormattedDate] = useState("");
   const [stFormattedTime, setStFormattedTime] = useState("");
@@ -389,7 +389,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  console.log("ContextProvider", zoraErc721Enabled);
+  // console.log("ContextProvider", zoraErc721Enabled);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (
@@ -400,6 +400,7 @@ const ContextProvider = ({ children }) => {
         text,
         setText,
         contextCanvasIdRef,
+        canvasBase64Ref,
 
         // for twitter auth
         queryParams,

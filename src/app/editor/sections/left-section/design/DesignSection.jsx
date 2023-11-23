@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { SectionTab } from "polotno/side-panel";
-import { MyDesignIcon } from "../../../../../assets";
+import { MyDesignIcon } from "../../../../../assets/assets";
 
 import { Button, Card, Menu, MenuItem, Position } from "@blueprintjs/core";
 

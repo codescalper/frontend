@@ -94,7 +94,6 @@ const Editor = () => {
   const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
   const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const canvasIdRef = useRef(null);
-  const canvasBase64Ref = useRef([]);
   const timeoutRef = useRef(null);
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const {
@@ -109,11 +108,10 @@ const Editor = () => {
     preStoredRecipientDataRef,
     parentRecipientDataRef,
     parentRecipientListRef,
+    canvasBase64Ref,
   } = useContext(Context);
 
-  console.log(address);
-
-  console.log(address);
+  console.log(address, solanaAddress);
 
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
@@ -253,11 +251,10 @@ const Editor = () => {
 
       // save it to the backend
       if (canvasChildren?.length > 0) {
-        
-        console.log("parentRecipientObj", recipientDataFilter().recipientsData);
-        console.log("parentRecipientRef", recipientDataCombiner().recipients);
+        // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
+        // console.log("parentRecipientRef", recipientDataCombiner().recipients);
 
-        return;
+        // return;
 
         // create new canvas
         if (!canvasIdRef.current) {

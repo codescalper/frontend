@@ -17,3 +17,5 @@ export * from "./resetAllVariables";
 export * from "./getAvatar";
 export * from "./addressCrop";
 export * from "./clearLocalStorage";
+export * from "./jsConfettiFn";
+export * from "./stringify";

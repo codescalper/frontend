@@ -485,7 +485,7 @@ const SolanaMint = () => {
           });
 
           toast.update(id, {
-            render: `Shared on ${platform}`,
+            render: `Successfully created the edition`,
             type: "success",
             isLoading: false,
             autoClose: 3000,

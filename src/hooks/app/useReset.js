@@ -8,6 +8,7 @@ const useReset = () => {
     setIsLoading,
     setText,
     contextCanvasIdRef,
+    canvasBase64Ref,
 
     // for twitter auth
     setQueryParams,
@@ -72,6 +73,15 @@ const useReset = () => {
 
     // for solana mint error
     setSolanaStatesError,
+
+    // for zora mint tab
+    setZoraTab,
+
+    // for zora erc721 edition tab
+    setZoraErc721Enabled,
+
+    // for zora mint error
+    setZoraErc721StatesError,
   } = useContext(Context);
 
   const resetState = () => {
@@ -84,11 +94,14 @@ const useReset = () => {
     setIsLoading(false);
     setText("");
     contextCanvasIdRef.current = null;
+    canvasBase64Ref.current = null;
     setQueryParams({
       oauth_token: "",
       oauth_verifier: "",
     });
     setMenu("share");
+
+    // reset all the states for lens monetization
     setEnabled({
       chargeForCollect: false,
       chargeForCollectPrice: "1",
@@ -146,6 +159,8 @@ const useReset = () => {
       isError: false,
       message: "",
     });
+
+    // reset all the states for solana mint
     setSolanaEnabled({
       isChargeForMint: false,
       chargeForMintPrice: "",
@@ -188,6 +203,8 @@ const useReset = () => {
       isTokenGate: false,
       tokenGateContractAddresses: [""],
     });
+
+    // reset all the states for solana mint error
     setSolanaStatesError({
       isChargeForMintError: false,
       chargeForMintErrorMessage: "",
@@ -215,6 +232,101 @@ const useReset = () => {
 
       isTokenGateError: false,
       tokenGateErrorMessage: "",
+    });
+
+    // reset all the states for zora mint
+    setZoraTab("ERC721");
+    setZoraErc721Enabled({
+      isContractDetails: false,
+      contractName: "",
+      contractSymbol: "",
+
+      isChargeForMint: false,
+      chargeForMintPrice: "",
+      chargeForMintCurrency: "",
+
+      isMintLimitPerAddress: false,
+      mintLimitPerAddress: "",
+
+      isRoyaltySplits: true,
+      royaltySplitRecipients: [
+        {
+          address: "",
+          percentAllocation: null,
+        },
+      ],
+
+      isRoyaltyPercent: false,
+      royaltyPercent: "",
+
+      isMaxSupply: false,
+      maxSupply: "",
+
+      isAllowlist: false,
+      allowlistAddresses: [""],
+
+      isPreSaleSchedule: false,
+      preSaleStartTimeStamp: {
+        date: "",
+        time: "",
+      },
+      preSaleEndTimeStamp: {
+        date: "",
+        time: "",
+      },
+
+      isPublicSaleSchedule: false,
+      publicSaleStartTimeStamp: {
+        date: "",
+        time: "",
+      },
+
+      publicSaleEndTimeStamp: {
+        date: "",
+        time: "",
+      },
+
+      // split contract address
+      fundRecipientAddress: "",
+    });
+
+    // reset all the states for zora mint error
+    setZoraErc721StatesError({
+      isContractNameError: false,
+      contractNameErrorMessage: "",
+
+      isContractSymbolError: false,
+      contractSymbolErrorMessage: "",
+
+      isChargeForMintError: false,
+      chargeForMintErrorMessage: "",
+
+      isLimitedEditionError: false,
+      limitedEditionErrorMessage: "",
+
+      isMintLimitPerAddressError: false,
+      mintLimitPerAddressMessage: "",
+
+      isScheduleMintError: false,
+      scheduleMintErrorMessage: "",
+
+      isRoyaltySplitError: false,
+      royaltySplitErrorMessage: "",
+
+      isRoyaltyPercentError: false,
+      royaltyPercentErrorMessage: "",
+
+      isMaxSupplyError: false,
+      maxSupplyErrorMessage: "",
+
+      isAllowlistError: false,
+      allowlistErrorMessage: "",
+
+      isPresaleScheduleError: false,
+      presaleScheduleErrorMessage: "",
+
+      isPublicsaleScheduleError: false,
+      publicsaleScheduleErrorMessage: "",
     });
   };
 

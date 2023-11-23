@@ -1,7 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { SectionTab } from "polotno/side-panel";
-import { TemplatesIcon } from "../../../../../assets";
 import {
   getAllTemplates,
   getUserPublicTemplates,

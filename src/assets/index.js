@@ -1,0 +1,8 @@
+import SolanaLogo from "./svgs/solanaLogoMark.svg";
+import ZoraLogo from "./logos/logoZora.png"
+import BraveLogo from "./logos/logoBrave.png"
+
+const EVMLogo = "https://ethereum.org/static/eth-diamond-rainbow.svg"
+// const zoraLogo = "https://avatars.githubusercontent.com/u/60056322?s=280&v=4"
+
+export { SolanaLogo, EVMLogo, ZoraLogo, BraveLogo };

@@ -1,5 +1,5 @@
 import { Fragment, useContext, useState } from "react";
-import { ShareIcon } from "../../../../../assets";
+import { ShareIcon } from "../../../../../assets/assets";
 import {
   LensShare,
   ShareSection,

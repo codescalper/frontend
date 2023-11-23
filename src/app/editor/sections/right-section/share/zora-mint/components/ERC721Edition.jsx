@@ -10,19 +10,60 @@ import {
   TabsBody,
   Tab,
   TabPanel,
+  Spinner,
 } from "@material-tailwind/react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsPlus from "@meronex/icons/bs/BsPlus";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { Context } from "../../../../../../../providers/context";
 import { toast } from "react-toastify";
-import { useAccount } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useSwitchNetwork,
+  useWaitForTransaction,
+} from "wagmi";
 import { useAppAuth } from "../../../../../../../hooks/app";
-import { APP_ETH_ADDRESS } from "../../../../../../../data";
+import { APP_ETH_ADDRESS, LOCAL_STORAGE } from "../../../../../../../data";
+import {
+  ENVIRONMENT,
+  uploadUserAssetToIPFS,
+} from "../../../../../../../services";
+import { zoraNftCreatorV1Config } from "@zoralabs/zora-721-contracts";
+import {
+  base64Stripper,
+  errorMessage,
+  getFromLocalStorage,
+} from "../../../../../../../utils";
+import ZoraDialog from "./ZoraDialog";
+import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
+import { useMutation } from "@tanstack/react-query";
+import { EVMWallets } from "../../../../top-section/auth/wallets";
 
 const ERC721Edition = () => {
   const { address } = useAccount();
   const { isAuthenticated } = useAppAuth();
+  const chainId = useChainId();
+  const { chains, chain } = useNetwork();
+  const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const {
+    createSplit,
+    createSplitData,
+    createSplitError,
+    isCreateSplitError,
+    isCreateSplitLoading,
+    isCreateSplitSuccess,
+  } = useCreateSplit();
+  const {
+    error: errorSwitchNetwork,
+    isError: isErrorSwitchNetwork,
+    isLoading: isLoadingSwitchNetwork,
+    isSuccess: isSuccessSwitchNetwork,
+    switchNetwork,
+  } = useSwitchNetwork();
   const {
     zoraErc721Enabled,
     setZoraErc721Enabled,
@@ -31,13 +72,34 @@ const ERC721Edition = () => {
     contextCanvasIdRef,
     postDescription,
     parentRecipientListRef,
+    canvasBase64Ref,
   } = useContext(Context);
 
-  // formate date and time in ISO 8601 format for monatizationn settings
-  const formatDateTimeISO8601 = (date, time) => {
-    if (!date || !time) return;
+  // upload to IPFS
+  const {
+    mutate,
+    data: uploadData,
+    isError: isUploadError,
+    error: uploadError,
+    isSuccess: isUploadSuccess,
+    isLoading: isUploading,
+  } = useMutation({
+    mutationKey: "uploadToIPFS",
+    mutationFn: uploadUserAssetToIPFS,
+  });
+
+  const isSupportedChain = () => {
+    return chainId === chains[1].id;
+  };
+
+  const switchNetworkHandler = () => {
+    switchNetwork(chains[1].id);
+  };
+
+  // formate date and time in uxin timestamp
+  const formatDateTimeUnix = (date, time) => {
     const dateTime = new Date(`${date} ${time}`);
-    return dateTime.toISOString();
+    return Math.floor(dateTime.getTime() / 1000);
   };
 
   // Calendar Functions:
@@ -126,10 +188,8 @@ const ERC721Edition = () => {
           royaltySplitErrorMessage: "",
         });
       }
-    }
-
-    // any index price should be greater min 1 and max 100
-    if (key === "percentAllocation" && index !== 0) {
+    } else if (key === "percentAllocation" && index !== 0) {
+      // any index price should be greater min 1 and max 100
       if (value < 1 || value > 100 || isNaN(value)) {
         setZoraErc721StatesError({
           zoraErc721StatesError,
@@ -144,8 +204,22 @@ const ERC721Edition = () => {
         });
       }
     }
-
-    // check if the address is not same
+    // check if recipient address is not provided
+    if (key === "address") {
+      if (!value) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: true,
+          royaltySplitErrorMessage: "Recipient address is required",
+        });
+      } else {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltySplitError: false,
+          royaltySplitErrorMessage: "",
+        });
+      }
+    }
 
     const updatedRecipients = [...zoraErc721Enabled.royaltySplitRecipients];
     updatedRecipients[index][key] = value;
@@ -336,28 +410,195 @@ const ERC721Edition = () => {
     }
   };
 
+  // check if recipient address is same
+  const isRecipientAddDuplicate = () => {
+    const result = zoraErc721Enabled.royaltySplitRecipients.filter(
+      (item, index) => {
+        return (
+          zoraErc721Enabled.royaltySplitRecipients.findIndex(
+            (item2) => item2.address === item.address
+          ) !== index
+        );
+      }
+    );
+
+    if (result.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // check if recipient percentage is more than 100
+  const isPercentage100 = () => {
+    const result = zoraErc721Enabled.royaltySplitRecipients.reduce(
+      (acc, item) => {
+        return acc + item.percentAllocation;
+      },
+      0
+    );
+
+    if (result === 100) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // split contract settings
+  const handleCreateSplitSettings = () => {
+    const args = {
+      recipients: zoraErc721Enabled.royaltySplitRecipients,
+      distributorFeePercent: 0.0,
+      controller: APP_ETH_ADDRESS, // controller is the owner of the split contract
+    };
+    return args;
+  };
+
   // mint settings
   const handleMintSettings = () => {
-    let arr = [];
+    const createReferral = APP_ETH_ADDRESS;
+    const defaultAdmin = address;
+
+    let contractName = "My Lenspost Collection";
+    let symbol = "MLC";
+    let description = "This is my Lenspost Collection";
+    let allowList = [];
+    let editionSize = "0xfffffffffff"; // default open edition
+    let royaltyBps = "0"; // 1% = 100 bps
+    let animationUri = "0x0";
+    let imageUri = "0x0";
+    let fundsRecipient = address;
+    // max value for maxSalePurchasePerAddress, results in no mint limit
+    let maxSalePurchasePerAddress = "4294967295";
+    let publicSalePrice = "0";
+    let presaleStart = "0";
+    let presaleEnd = "0";
+    let publicSaleStart = "0";
+    // max value for end date, results in no end date for mint
+    let publicSaleEnd = "18446744073709551615";
+
+    if (zoraErc721Enabled.contractName !== "") {
+      contractName = zoraErc721Enabled.contractName;
+    }
+
+    if (zoraErc721Enabled.contractSymbol !== "") {
+      symbol = zoraErc721Enabled.contractSymbol;
+    }
+
+    if (postDescription !== "") {
+      description = postDescription;
+    }
+
+    if (uploadData?.message) {
+      imageUri = `ipfs://${uploadData?.message}`;
+    }
+
+    if (createSplitData?.splitAddress) {
+      fundsRecipient = createSplitData?.splitAddress;
+    }
+
+    if (zoraErc721Enabled.isChargeForMint) {
+      publicSalePrice = (
+        Number(zoraErc721Enabled.chargeForMintPrice) * 1e18
+      ).toString();
+    }
+
+    if (zoraErc721Enabled.isMintLimitPerAddress) {
+      maxSalePurchasePerAddress = zoraErc721Enabled.mintLimitPerAddress;
+    }
+
+    if (zoraErc721Enabled.isRoyaltyPercent) {
+      royaltyBps = (Number(zoraErc721Enabled.royaltyPercent) * 100).toString();
+    }
+
+    if (zoraErc721Enabled.isMaxSupply) {
+      editionSize = zoraErc721Enabled.maxSupply;
+    }
+
+    if (zoraErc721Enabled.isAllowlist) {
+      allowList = zoraErc721Enabled.allowlistAddresses;
+    }
+
+    if (zoraErc721Enabled.isPreSaleSchedule) {
+      presaleStart = formatDateTimeUnix(
+        zoraErc721Enabled.preSaleStartTimeStamp.date,
+        zoraErc721Enabled.preSaleStartTimeStamp.time
+      );
+      presaleEnd = formatDateTimeUnix(
+        zoraErc721Enabled.preSaleEndTimeStamp.date,
+        zoraErc721Enabled.preSaleEndTimeStamp.time
+      );
+    }
+
+    if (zoraErc721Enabled.isPublicSaleSchedule) {
+      publicSaleStart = formatDateTimeUnix(
+        zoraErc721Enabled.publicSaleStartTimeStamp.date,
+        zoraErc721Enabled.publicSaleStartTimeStamp.time
+      );
+      publicSaleEnd = formatDateTimeUnix(
+        zoraErc721Enabled.publicSaleEndTimeStamp.date,
+        zoraErc721Enabled.publicSaleEndTimeStamp.time
+      );
+    }
+
+    const arr = [
+      contractName,
+      symbol,
+      editionSize,
+      royaltyBps,
+      fundsRecipient,
+      defaultAdmin,
+      {
+        publicSalePrice,
+        maxSalePurchasePerAddress,
+        publicSaleStart,
+        publicSaleEnd,
+        presaleStart,
+        presaleEnd,
+        presaleMerkleRoot:
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      description,
+      animationUri,
+      imageUri,
+      createReferral,
+    ];
 
     return { args: arr };
   };
 
+  // create edition configs
+  const {
+    config,
+    error: prepareError,
+    isError: isPrepareError,
+  } = usePrepareContractWrite({
+    abi: zoraNftCreatorV1Config.abi,
+    address: zoraNftCreatorV1Config.address[chainId],
+    functionName: "createEditionWithReferral",
+    args: handleMintSettings().args,
+  });
+  const { write, data, error, isLoading, isError } = useContractWrite(config);
+  const {
+    data: receipt,
+    isLoading: isPending,
+    isSuccess,
+  } = useWaitForTransaction({ hash: data?.hash });
+
   // mint on Zora
   const handleSubmit = () => {
-    // TODO:  enables some checks here
-
     // check if canvasId is provided
-    // if (contextCanvasIdRef.current === null) {
-    //   toast.error("Please select a design");
-    //   return;
-    // }
+    if (contextCanvasIdRef.current === null) {
+      toast.error("Please select a design");
+      return;
+    }
 
-    // // check if description is provided
-    // if (!postDescription) {
-    //   toast.error("Please provide a description");
-    //   return;
-    // }
+    // check if description is provided
+    if (!postDescription) {
+      toast.error("Please provide a description");
+      return;
+    }
 
     // check if collection name is provided
     if (!zoraErc721Enabled.contractName) {
@@ -390,6 +631,72 @@ const ERC721Edition = () => {
         return;
       } else if (zoraErc721StatesError.isChargeForMintError) return;
     }
+
+    // check if mint limit is provided
+    if (zoraErc721Enabled.isMintLimitPerAddress) {
+      if (zoraErc721StatesError.isMintLimitPerAddressError) return;
+    }
+
+    // check if royalty percent is provided
+    if (zoraErc721Enabled.isRoyaltyPercent) {
+      if (zoraErc721StatesError.isRoyaltyPercentError) return;
+    }
+
+    // check if max supply is provided
+    if (zoraErc721Enabled.isMaxSupply) {
+      if (zoraErc721StatesError.isMaxSupplyError) return;
+    }
+
+    // check if allowlist is provided
+    if (zoraErc721Enabled.isAllowlist) {
+      if (zoraErc721StatesError.isAllowlistError) return;
+    }
+
+    // check if pre sale schedule is provided
+    if (zoraErc721Enabled.isPreSaleSchedule) {
+      if (zoraErc721StatesError.isPreSaleScheduleError) return;
+    }
+
+    // check if public sale schedule is provided
+    if (zoraErc721Enabled.isPublicSaleSchedule) {
+      if (zoraErc721StatesError.isPublicSaleScheduleError) return;
+    }
+
+    // check if split revenue is provided
+    if (zoraErc721Enabled.isRoyaltySplits) {
+      if (zoraErc721StatesError.isRoyaltySplitError) return;
+    }
+
+    // check if mint limit is provided
+    if (zoraErc721Enabled.isMintLimitPerAddress) {
+      if (zoraErc721StatesError.isMintLimitPerAddressError) return;
+    }
+
+    // check if recipient address is same
+    if (isRecipientAddDuplicate()) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isRoyaltySplitError: true,
+        royaltySplitErrorMessage: "Recipient address is duplicate",
+      });
+      return;
+    } else if (!isPercentage100()) {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isRoyaltySplitError: true,
+        royaltySplitErrorMessage: "Recipient percentage should be 100%",
+      });
+      return;
+    } else {
+      setZoraErc721StatesError({
+        ...zoraErc721StatesError,
+        isRoyaltySplitError: false,
+        royaltySplitErrorMessage: "",
+      });
+    }
+
+    // upload to IPFS
+    mutate(canvasBase64Ref.current[0]);
   };
 
   // add recipient to the split list
@@ -415,8 +722,73 @@ const ERC721Edition = () => {
     }
   }, [isAuthenticated]);
 
+  // create split contract
+  useEffect(() => {
+    if (uploadData?.message) {
+      createSplit(handleCreateSplitSettings());
+    }
+  }, [isUploadSuccess]);
+
+  // mint on Zora
+  useEffect(() => {
+    if (createSplitData?.splitAddress) {
+      setTimeout(() => {
+        write?.();
+      }, 1000);
+    }
+  }, [isCreateSplitSuccess, write]);
+
+  // error handling for network switch
+  useEffect(() => {
+    if (isErrorSwitchNetwork) {
+      toast.error(errorSwitchNetwork?.message.split("\n")[0]);
+    }
+
+    if (isSuccessSwitchNetwork) {
+      toast.success("Network switched successfully");
+    }
+  }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
+
+  // error handling for mint
+  useEffect(() => {
+    if (isError) {
+      console.log("mint error", error);
+      toast.error(error.message.split("\n")[0]);
+    }
+
+    if (isPrepareError) {
+      console.log("prepare error", prepareError);
+      // toast.error(prepareError.message);
+    }
+  }, [isError, isPrepareError]);
+
+  // error handling for create split
+  useEffect(() => {
+    if (isCreateSplitError) {
+      console.log("create split error", createSplitError);
+      toast.error(createSplitError.message.split("\n")[0]);
+    }
+  }, [isCreateSplitError]);
+
+  // error handling for upload to IPFS
+  useEffect(() => {
+    if (isUploadError) {
+      console.log("upload IPFS error", uploadError);
+      toast.error(errorMessage(uploadError));
+    }
+  }, [isUploadError]);
+
   return (
     <>
+      <ZoraDialog
+        isError={isUploadError || isCreateSplitError || isError}
+        isLoading={isLoading}
+        isCreatingSplit={isCreateSplitLoading}
+        isUploadingToIPFS={isUploading}
+        isPending={isPending}
+        data={receipt}
+        isSuccess={isSuccess}
+      />
       {/* Switch Number 1 Start */}
       <div className="mb-4 m-4">
         <div className="flex justify-between">
@@ -564,6 +936,9 @@ const ERC721Edition = () => {
                   <InputBox
                     label="Wallet Address"
                     value={recipient.address}
+                    onFocus={(e) =>
+                      restrictRecipientInput(e, index, recipient.address)
+                    }
                     onChange={(e) =>
                       restrictRecipientInput(e, index, recipient.address)
                     }
@@ -580,14 +955,14 @@ const ERC721Edition = () => {
                       handleRecipientChange(
                         index,
                         "percentAllocation",
-                        Number(parseFloat(e.target.value).toFixed(2))
+                        Number(parseFloat(e.target.value).toFixed(4))
                       );
                     }}
                     onChange={(e) => {
                       handleRecipientChange(
                         index,
                         "percentAllocation",
-                        Number(parseFloat(e.target.value).toFixed(2))
+                        Number(parseFloat(e.target.value).toFixed(4))
                       );
                     }}
                   />
@@ -734,7 +1109,7 @@ const ERC721Edition = () => {
           <div className="flex flex-col py-2">
             <NumberInputBox
               min={"1"}
-              step={"0.01"}
+              step={"1"}
               label="Royalty % "
               name="royaltyPercent"
               onChange={(e) => handleChange(e)}
@@ -790,7 +1165,7 @@ const ERC721Edition = () => {
           <div className="flex flex-col py-2">
             <NumberInputBox
               min={"1"}
-              step={"0.01"}
+              step={"1"}
               // className={"W-3/4"}
               label="Max Supply "
               name="maxSupply"
@@ -912,22 +1287,22 @@ const ERC721Edition = () => {
           <div className="flex justify-between">
             <h2 className="text-lg mb-2"> Pre - Sale Schedule </h2>
             <Switch
-              checked={zoraErc721Enabled.isPresaleSchedule}
+              checked={zoraErc721Enabled.isPreSaleSchedule}
               onChange={() =>
                 setZoraErc721Enabled({
                   ...zoraErc721Enabled,
-                  isPresaleSchedule: !zoraErc721Enabled.isPresaleSchedule,
+                  isPreSaleSchedule: !zoraErc721Enabled.isPreSaleSchedule,
                 })
               }
               className={`${
-                zoraErc721Enabled.isPresaleSchedule
+                zoraErc721Enabled.isPreSaleSchedule
                   ? "bg-[#00bcd4]"
                   : "bg-gray-200"
               } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
             >
               <span
                 className={`${
-                  zoraErc721Enabled.isPresaleSchedule
+                  zoraErc721Enabled.isPreSaleSchedule
                     ? "translate-x-6"
                     : "translate-x-1"
                 } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
@@ -942,7 +1317,7 @@ const ERC721Edition = () => {
 
         <div
           className={`flex flex-col ${
-            !zoraErc721Enabled.isPresaleSchedule && "hidden"
+            !zoraErc721Enabled.isPreSaleSchedule && "hidden"
           } `}
         >
           <div className="ml-4 mr-4 flex justify-between text-center align-middle">
@@ -958,7 +1333,7 @@ const ERC721Edition = () => {
             />
           </div>
 
-          {zoraErc721StatesError.isPresaleScheduleError && (
+          {zoraErc721StatesError.isPreSaleScheduleError && (
             <InputErrorMsg
               message={zoraErc721StatesError.presaleScheduleErrorMessage}
             />
@@ -1028,12 +1403,34 @@ const ERC721Edition = () => {
       </>
       {/* Switch Number 8 End */}
 
-      <div className="mx-2 my-4">
-        <Button fullWidth color="cyan" onClick={handleSubmit}>
-          {" "}
-          Mint{" "}
-        </Button>
-      </div>
+      {!getEVMAuth ? (
+        <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
+      ) : isSupportedChain() ? (
+        <div className="mx-2 my-4">
+          <Button
+            disabled={!write}
+            fullWidth
+            color="cyan"
+            onClick={handleSubmit}
+          >
+            {" "}
+            Create Edition{" "}
+          </Button>
+        </div>
+      ) : (
+        <div className="mx-2 my-4">
+          <Button
+            disabled={isLoadingSwitchNetwork}
+            fullWidth
+            color="red"
+            onClick={switchNetworkHandler}
+            className="flex justify-center gap-2 items-center"
+          >
+            {" "}
+            Switch Network {isLoadingSwitchNetwork && <Spinner />}
+          </Button>
+        </div>
+      )}
     </>
   );
 };
