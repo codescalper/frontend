@@ -28,9 +28,9 @@ const TabsWithArrows = ({ tabsHeaders }) => {
   };
 
   useEffect(() => {
-    console.log("scrollWrapperRef.current", scrollWrapperRef.current.scrollBy);
+    // console.log("scrollWrapperRef.current", scrollWrapperRef.current.scrollBy);
 
-    console.log("disableLeftBtn", disableLeftBtn);
+    // console.log("disableLeftBtn", disableLeftBtn);
 
   }, []);
 

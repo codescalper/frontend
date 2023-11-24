@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { SharePanelHeaders } from "../components";
 import { Tabs, Tab, TabsHeader } from "@material-tailwind/react";
 import { SmartPost, LensShare } from "./components";
+import { Context } from "../../../../../../providers/context";
 
 const LensShareWrapper = () => {
-  const [currentTab, setCurrentTab] = useState("smartPost");
+  const { lensTab, setLensTab } = useContext(Context);
 
   return (
     <>
@@ -14,27 +15,31 @@ const LensShareWrapper = () => {
         panelContent={
           <>
             {/* Tabs for Smart Post / Normal */}
-            <Tabs className="overflow-scroll m-2" value={currentTab}>
+            <Tabs className="overflow-scroll m-2" value={lensTab}>
               <TabsHeader className="relative top-0 ">
-                <Tab
-                  value={"smartPost"}
-                  className="appFont"
-                  onClick={() => setCurrentTab("smartPost")}
-                >
-                  {" "}
-                  Smart Post{" "}
-                </Tab>
                 <Tab
                   value={"normalPost"}
                   className="appFont"
-                  onClick={() => setCurrentTab("normalPost")}
+                  onClick={() => setLensTab("normalPost")}
                 >
                   {" "}
                   Normal{" "}
                 </Tab>
+                <Tab
+                  value={"smartPost"}
+                  className="appFont"
+                  onClick={() => setLensTab("smartPost")}
+                >
+                  {" "}
+                  Smart Post{" "}
+                </Tab>
               </TabsHeader>
 
-              {currentTab === "smartPost" ? <SmartPost /> : <LensShare />}
+              {/* add components */}
+              {lensTab === "normalPost" && <LensShare />}
+              {lensTab === "smartPost" && (
+                <h1 className="text-center text-xl mt-10">Coming soon</h1>
+              )}
             </Tabs>
           </>
         }
