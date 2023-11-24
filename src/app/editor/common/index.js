@@ -26,6 +26,7 @@ import CustomPopover from "./elements/CustomPopover";
 import CustomHorizontalScroller from "./core/CustomHorizontalScroller/CustomHorizontalScroller";
 import CompCarousel from "../sections/left-section/template/components/Carousel";
 import BraveShieldWarn from "./modals/BraveShieldWarn";
+import TabsWithArrows from "./core/CustomsTabsWArrows/TabsWithArrows";
 
 export {
   CustomImageComponent,
@@ -51,4 +52,5 @@ export {
   CustomHorizontalScroller,
   CompCarousel,
   BraveShieldWarn,
+  TabsWithArrows,
 };

@@ -22,6 +22,7 @@ import {
   MessageComponent,
   SearchComponent,
   NFTReacTour,
+  TabsWithArrows,
 } from "../../../common";
 import {
   useInfiniteQuery,
@@ -158,7 +159,9 @@ const RenderCategories = ({ contractAddressRef, setActiveCat, searchId }) => {
                     alt={item.name}
                     className="h-24 w-24 rounded-md"
                   />
-                  <p className="text-lg font-normal">{firstLetterCapital(item.name)}</p>
+                  <p className="text-lg font-normal">
+                    {firstLetterCapital(item.name)}
+                  </p>
                 </div>
               </div>
             ))}
@@ -244,7 +247,9 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
               goBack();
             }}
           ></Button>
-          <h1 className="ml-4 align-middle text-lg font-bold">{firstLetterCapital(activeCat)}</h1>
+          <h1 className="ml-4 align-middle text-lg font-bold">
+            {firstLetterCapital(activeCat)}
+          </h1>
         </div>
         {isError ? (
           <ErrorComponent error={error} />
@@ -310,7 +315,9 @@ const RenderSearchedNFTs = ({
               goBack();
             }}
           ></Button>
-          <h1 className="ml-4 align-middle text-lg font-bold">{firstLetterCapital(activeCat)}</h1>
+          <h1 className="ml-4 align-middle text-lg font-bold">
+            {firstLetterCapital(activeCat)}
+          </h1>
         </div>
         {isError ? (
           <ErrorComponent error={error} />
@@ -523,14 +530,23 @@ const WalletNFT = () => {
         id="custom-animation"
         value={currentTab}
       >
-        <TabsHeader className="overflow-x-auto gap-3">
-          {tabsArray.map((tab, index) => (
-            <Tab key={index} value={tab} onClick={() => setCurrentTab(tab)}>
-              <div className="appFont">{firstLetterCapital(tab)}</div>
-            </Tab>
-          ))}
-        </TabsHeader>
-
+        <TabsWithArrows
+          tabsHeaders={
+            <>
+              <TabsHeader className="overflow-x-auto gap-3">
+                {tabsArray.map((tab, index) => (
+                  <Tab
+                    key={index}
+                    value={tab}
+                    onClick={() => setCurrentTab(tab)}
+                  >
+                    <div className="appFont">{firstLetterCapital(tab)}</div>
+                  </Tab>
+                ))}
+              </TabsHeader>
+            </>
+          }
+        />
         {/* Render Tabs body in Here or in TabPanel */}
         <TabsBody>
           <div className="">

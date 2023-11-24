@@ -12,6 +12,7 @@ import {
   SearchComponent,
   StickerReacTour,
   Tabs as TabsCustom,
+  TabsWithArrows,
 } from "../../../common"; // Since Material already has builtin component `Tab`
 import { useStore } from "../../../../../hooks/polotno";
 import { LoadingAnimatedComponent } from "../../../common";
@@ -192,24 +193,27 @@ export const StickerPanel = () => {
         {/* New Material Tailwind Buttons / Tabs : */}
         {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
         <Tabs id="custom-animation" value={currentTab}>
-          <TabsHeader
-          className="overflow-x-auto"
-          >
-            {tabArray.map((tab, index) => (
-              <Tab
-                value={tab}
-                onClick={() => {
-                  setCurrentTab(tab);
-                }}
-              >
-                <div className="appFont"> {firstLetterCapital(tab)} </div>
-               </Tab>
-            ))}
-          </TabsHeader>
-        {/* </div> */}
-        <div className="hCustom overflow-y-scroll">
-
-        {/* <TabsBody
+          <TabsWithArrows
+            tabsHeaders={
+              <>
+                <TabsHeader className="overflow-x-auto">
+                  {tabArray.map((tab, index) => (
+                    <Tab
+                      value={tab}
+                      onClick={() => {
+                        setCurrentTab(tab);
+                      }}
+                    >
+                      <div className="appFont"> {firstLetterCapital(tab)} </div>
+                    </Tab>
+                  ))}
+                </TabsHeader>
+              </>
+            }
+          />
+          {/* </div> */}
+          <div className="hCustom overflow-y-scroll">
+            {/* <TabsBody
             animate={{
               initial: { y: 250 },
               mount: { y: 0 },
@@ -217,23 +221,25 @@ export const StickerPanel = () => {
             }}
           > */}
 
-        {/* <div className="h-96 overflow-y-scroll"> */}
-          {/* <TabPanel key={currentTab} value={currentTab}> */}
-          {currentTab === "icons" ? (
-            <CompIcons />
-          ) : (
-            <TabsCustom
-              defaultQuery={currentTab === "halloween" ? "" : currentTab}
-              campaignName={currentTab === "halloween"? "halloween" : ""}
-              getAssetsFn={
-                currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
-              }
-              queryKey="stickers"
-            />
-          )}
-        </div>
-        {/* </TabPanel> */}
-        {/* </TabsBody> */}
+            {/* <div className="h-96 overflow-y-scroll"> */}
+            {/* <TabPanel key={currentTab} value={currentTab}> */}
+            {currentTab === "icons" ? (
+              <CompIcons />
+            ) : (
+              <TabsCustom
+                defaultQuery={currentTab === "halloween" ? "" : currentTab}
+                campaignName={currentTab === "halloween" ? "halloween" : ""}
+                getAssetsFn={
+                  currentTab === "lensjump"
+                    ? getFeaturedAssets
+                    : getAssetByQuery
+                }
+                queryKey="stickers"
+              />
+            )}
+          </div>
+          {/* </TabPanel> */}
+          {/* </TabsBody> */}
         </Tabs>
 
         {/* <StickerReacTour /> */}

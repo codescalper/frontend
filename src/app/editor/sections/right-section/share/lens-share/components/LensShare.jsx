@@ -4,7 +4,7 @@ import TiDelete from "@meronex/icons/ti/TiDelete";
 import BsArrowLeft from "@meronex/icons/bs/BsArrowLeft";
 import { Switch } from "@headlessui/react";
 
-import animationData from "../../../../../../assets/lottie/alertAnimation2.json";
+import animationData from "../../../../../../../assets/lottie/alertAnimation2.json";
 
 // Working Yet - change from headlessui/react to blueprintjs/core
 // import { Switch } from "@blueprintjs/core";
@@ -18,36 +18,37 @@ import {
   signSetDispatcherTypedData,
   ENVIRONMENT,
   setBroadcastOnChainTx,
-} from "../../../../../../services";
+} from "../../../../../../../services";
 import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
 import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Context } from "../../../../../../providers/context/ContextProvider";
+import { Context } from "../../../../../../../providers/context/ContextProvider";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
   errorMessage,
   isEthAddress,
   isLensHandle,
-} from "../../../../../../utils";
-import testnetTokenAddress from "../../../../../../data/json/testnet-token-list.json";
-import mainnetTokenAddress from "../../../../../../data/json/mainnet-token-list.json";
+} from "../../../../../../../utils";
+import testnetTokenAddress from "../../../../../../../data/json/testnet-token-list.json";
+import mainnetTokenAddress from "../../../../../../../data/json/mainnet-token-list.json";
 import {
   CustomPopover,
   InputBox,
   InputErrorMsg,
   NumberInputBox,
-} from "../../../../common";
-import { useStore } from "../../../../../../hooks/polotno";
+} from "../../../../../common";
+import { useStore } from "../../../../../../../hooks/polotno";
 // import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
 import BsX from "@meronex/icons/bs/BsX";
-import { LensAuth, LensDispatcher, SplitPolicyCard } from "./components";
-import { useAppAuth, useReset } from "../../../../../../hooks/app";
-import { APP_LENS_HANDLE, LOCAL_STORAGE } from "../../../../../../data";
-import { Button, Select, Option } from "@material-tailwind/react";
-import { EVMWallets } from "../../../top-section/auth/wallets";
+import { LensAuth, LensDispatcher, SplitPolicyCard } from ".";
+import { useAppAuth, useReset } from "../../../../../../../hooks/app";
+import { APP_LENS_HANDLE, LOCAL_STORAGE } from "../../../../../../../data";
+import { Button, Select, Option, Tabs, Tab, TabsHeader, Alert } from "@material-tailwind/react";
+import { EVMWallets } from "../../../../top-section/auth/wallets";
+import { SharePanelHeaders } from "../../components";
 
 const LensShare = () => {
   const store = useStore();
@@ -84,6 +85,7 @@ const LensShare = () => {
   } = useContext(Context);
 
   const [sharing, setSharing] = useState(false);
+  const [currentTab, setCurrentTab] = useState("smartPost");
 
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnLens",
@@ -530,27 +532,12 @@ const LensShare = () => {
 
   return (
     <>
-      <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl rounded-lg rounded-r-none ">
-        <div className="">
-          {/* <Dialog.Title className="w-full flex items-center gap-2 text-white text-xl leading-6 p-6 fixed bg-gray-900 z-10"> */}
-          <div className="w-full flex justify-between items-center gap-2 text-white text-xl leading-6 p-4 bg-gray-900 rounded-lg rounded-r-none">
-            <BsArrowLeft
-              onClick={() => setMenu("share")}
-              className="cursor-pointer"
-            />
-            Monetization Settings
-            {/* </Dialog.Title> */}
-            <div
-              className="z-100 cursor-pointer"
-              onClick={() => setIsShareOpen(!isShareOpen)}
-            >
-              <BsX size="24" />
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none ">
+
         <div className="relative px-4 mt-1 pt-2 pb-4 sm:px-6 ">
           <div className="">
-            <div className="flex flex-col justify-between">
+
+          <div className="flex flex-col justify-between">
               <Switch.Group>
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Charge for collecting</h2>
@@ -588,7 +575,7 @@ const LensShare = () => {
                         <NumberInputBox
                           min={"1"}
                           step={"0.01"}
-                          label="Price (%)"
+                          label="Price"
                           // placeholder="1"
                           name="chargeForCollectPrice"
                           onChange={(e) => handleChange(e)}
@@ -619,7 +606,8 @@ const LensShare = () => {
                       <InputErrorMsg message={priceError.message} />
                     )}
                   </div>
-                </div>
+                </div>  
+               
                 <div
                   className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}
                 >
@@ -766,6 +754,8 @@ const LensShare = () => {
                     )}
                   </div>
                 </div>
+
+
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Limited Edition</h2>
                   <div className="flex justify-between">
@@ -801,7 +791,7 @@ const LensShare = () => {
                       <NumberInputBox
                         min={"1"}
                         step={"1"}
-                        label={"Collect limit (%)"}
+                        label={"Collect limit"}
                         // placeholder="1"
                         name="limitedEditionNumber"
                         onChange={(e) => handleChange(e)}
@@ -813,6 +803,8 @@ const LensShare = () => {
                     </div>
                   </div>
                 </div>
+
+
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Time Limit</h2>
                   <div className="flex justify-between">
@@ -869,6 +861,7 @@ const LensShare = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Who can collect</h2>
                   <div className="flex justify-between">
@@ -897,10 +890,12 @@ const LensShare = () => {
                     </Switch>
                   </div>
                 </div>
+
               </Switch.Group>
             </div>
           </div>
-        </div>
+        </div>   
+
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
         ) : !getLensAuth?.profileHandle ? (
@@ -908,14 +903,15 @@ const LensShare = () => {
         ) : !getDispatcherStatus ? (
           <LensDispatcher title="Enable signless transactions" />
         ) : (
-          <Button
-            disabled={sharing}
-            onClick={() => sharePost("lens")}
-            color="teal"
-            className="mx-2 outline-none"
-          >
-            Share Now
-          </Button>
+          <div className="mx-2 outline-none">
+            <Button
+              disabled={sharing}
+              onClick={() => sharePost("lens")}
+              color="teal"
+            >
+              Share Now
+            </Button>
+          </div>
         )}
       </div>
     </>

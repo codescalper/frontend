@@ -55,9 +55,9 @@ const CustomHorizontalScroller = ({ type }) => {
 
   return (
     <>
-      <div className="sectionWrapper">
+      <div className="sectionWrapperImg">
         {/* Left and Right Buttons */}
-        <div className="btnsWrapper" id="new">
+        <div className="btnsWrapperImg" id="new">
           <div onClick={fnScrollLeft} id="button-left">
             {" "}
             <BsChevronLeft />{" "}
@@ -69,8 +69,8 @@ const CustomHorizontalScroller = ({ type }) => {
         </div>
 
         {/* Images Inside the Horizontal scroller */}
-        <div id="outsider" ref={scrollWrapperRef}>
-          <div className="divsWrapper" id="insider">
+        <div id="outsiderImg" ref={scrollWrapperRef}>
+          <div className="divsWrapper" id="insiderImg">
             {data?.pages[0]?.data.length > 0 &&
               data?.pages
                 .flatMap((item) => item?.data).slice(0, 6)

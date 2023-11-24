@@ -7,8 +7,10 @@ import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import { useAppAuth } from "../../../../../hooks/app";
 import { Context } from "../../../../../providers/context";
+import SuReplicate from "@meronex/icons/su/SuReplicate";
+import { Typography } from "@material-tailwind/react";
 
-const BgRemover = () => {
+const BgRemover = ({ inSpeedDial }) => {
   const store = useStore();
   const { isAuthenticated } = useAppAuth();
   const [stActivePageNo, setStActivePageNo] = useState(0);
@@ -128,16 +130,25 @@ const BgRemover = () => {
 
   return (
     <div className="">
-      <Button
-        id="fourth-step"
-        icon="clean"
-        onClick={fnCallToast}
-        title={!isAuthenticated ? "" : "Please connect your wallet"}
-        disabled={!isAuthenticated}
-        className="mt-2 mb-2 ml-3 py-1 px-4"
-      >
-        {`Remove background`}
-      </Button>
+      {!inSpeedDial && (
+        <Button
+          id="fourth-step"
+          icon="clean"
+          onClick={fnCallToast}
+          title={!isAuthenticated ? "" : "Please connect your wallet"}
+          disabled={!isAuthenticated}
+          className="mt-2 mb-2 ml-3 py-1 px-4"
+        >
+          {`Remove background`}
+        </Button>
+      )}
+
+      {/* For Speed dial display */}
+      {inSpeedDial && (
+        <div className="" onClick={fnCallToast}>
+          <SuReplicate className="h-5 w-5" />
+        </div>
+      )}
     </div>
   );
 };

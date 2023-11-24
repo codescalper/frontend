@@ -52,6 +52,15 @@ const ContextProvider = ({ children }) => {
     whoCanCollect: false,
   });
 
+  const [enabledSmartPost, setEnabledSmartPost] = useState({
+    chargeForCollect: false,
+    chargeForCollectPrice: "1",
+    chargeForCollectCurrency: "WMATIC",
+
+    limitedEdition: false,
+    limitedEditionNumber: "1",
+  });
+
   const [solanaEnabled, setSolanaEnabled] = useState({
     isChargeForMint: false,
     chargeForMintPrice: "",
@@ -515,6 +524,10 @@ const ContextProvider = ({ children }) => {
         // for zora mint error
         zoraErc1155StatesError,
         setZoraErc1155StatesError,
+
+        // For Lens Share - Smart Post
+        enabledSmartPost,
+        setEnabledSmartPost,
       }}
     >
       {children}

@@ -14,7 +14,7 @@ import {
 import SuCreate from "@meronex/icons/su/SuCreate";
 import SuChevronUp from "@meronex/icons/su/SuChevronUp";
 import SuCapture from "@meronex/icons/su/SuCapture";
-import SuReplicate from '@meronex/icons/su/SuReplicate';
+import SuReplicate from "@meronex/icons/su/SuReplicate";
 import { fnPageHasElements } from "../../../../utils";
 import { useStore } from "../../../../hooks/polotno";
 import { useReset } from "../../../../hooks/app";
@@ -29,13 +29,13 @@ export function SpeedDialX() {
     variant: "small",
     color: "blue-gray",
     className:
-      "text-sm absolute top-2/4 -left-2/4 -translate-y-2/4 -translate-x-3/4",
+      "text-sm absolute top-2/4 -left-2/4 -translate-y-2/4 -translate-x-3/4 appFont font-weight-500",
   };
 
   const clearAllData = () => {
-      // clear all the variables
-      resetState();
-      toast.success("Cleared successfully");
+    // clear all the variables
+    resetState();
+    toast.success("Cleared successfully");
   };
 
   return (
@@ -50,9 +50,9 @@ export function SpeedDialX() {
 
           {/* Content */}
           <SpeedDialContent>
-          <div className="" >
-              <SpeedDialAction className="relative" onClick={""}>
-                <SuReplicate className="h-5 w-5" />
+            <div className="">
+              <SpeedDialAction className="relative">
+                <BgRemover inSpeedDial={true} />
                 <Typography {...labelProps}>{`Remove BG`}</Typography>
               </SpeedDialAction>
             </div>
