@@ -164,13 +164,15 @@ const LensAuth = ({ title, className }) => {
 
   return (
     <>
-      <Button
-        onClick={handleOpen}
-        color="teal"
-        className={` mx-2 outline-none ${className}`}
-      >
-        {title}
-      </Button>
+    <div className=" mb-4 outline-none">
+        <Button
+          onClick={handleOpen}
+          color="teal"
+          className={`w-full ${className}`}
+        >
+          {title}
+        </Button>
+      </div>
       <Dialog
         size="sm"
         open={open}

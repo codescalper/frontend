@@ -1,21 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { SharePanelHeaders } from "../components";
-import { Switch } from "@headlessui/react";
 import { Context } from "../../../../../../providers/context";
-import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../common";
 import {
-  Button,
-  Option,
-  Select,
   Tabs,
   TabsHeader,
   TabsBody,
   Tab,
-  TabPanel,
 } from "@material-tailwind/react";
-import { DateTimePicker } from "@atlaskit/datetime-picker";
-import BsPlus from "@meronex/icons/bs/BsPlus";
-import { XCircleIcon } from "@heroicons/react/24/outline";
 import { ERC1155Edition, ERC721Edition } from "./components";
 
 const ZoraMint = () => {
@@ -29,8 +20,8 @@ const ZoraMint = () => {
         panelContent={
           <>
             <Tabs className="overflow-y-auto my-2" value={zoraTab}>
-              <TabsHeader className="relative top-0">
-                <Tab value={"ERC721"} onClick={() => setZoraTab("ERC721")}>
+              <TabsHeader className="relative top-0 ">
+                <Tab value={"ERC721"} className="appFont" onClick={() => setZoraTab("ERC721")}>
                   {" "}
                   ERC721{" "}
                 </Tab>
