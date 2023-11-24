@@ -20,10 +20,8 @@ const BraveShieldWarn = () => {
 
   const handleCheckbox = (e) => {
     if (e.target.checked) {
-        console.log("checked");
       localStorage.setItem(LOCAL_STORAGE.braveShieldWarn, true);
     } else {
-        console.log("unchecked");
       localStorage.removeItem(LOCAL_STORAGE.braveShieldWarn, false);
     }
   };

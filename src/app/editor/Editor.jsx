@@ -50,7 +50,7 @@ import { Tooltip } from "polotno/canvas/tooltip";
 import { useSolanaWallet } from "../../hooks/solana";
 import { LOCAL_STORAGE } from "../../data";
 import { Button } from "@material-tailwind/react";
-import { useAppAuth } from "../../hooks/app";
+import { useAppAuth, useLocalStorage } from "../../hooks/app";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -88,13 +88,9 @@ const Editor = () => {
   const { address, isConnected } = useAccount();
   const { solanaAddress } = useSolanaWallet();
   const { isAuthenticated } = useAppAuth();
-  const isEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
-  const isSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
-  const currentUserAddress = getFromLocalStorage(LOCAL_STORAGE.userAddress);
-  const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
-  const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const canvasIdRef = useRef(null);
   const timeoutRef = useRef(null);
+  const {} = useLocalStorage();
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
   const {
     contextCanvasIdRef,
@@ -110,8 +106,6 @@ const Editor = () => {
     parentRecipientListRef,
     canvasBase64Ref,
   } = useContext(Context);
-
-  console.log(address, solanaAddress);
 
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
@@ -187,7 +181,9 @@ const Editor = () => {
     parentRecipientDataRef.current = newDataRef;
 
     // get the handles and address from the newArray
-    const newArrayRecipients = newDataRef.map((item) => item.recipient);
+    const newArrayRecipients = newDataRef.map(
+      (item) => item.recipient || item?.handle
+    );
 
     return {
       recipientsData: parentRecipientDataRef.current,
@@ -197,20 +193,22 @@ const Editor = () => {
 
   // function to add the all recipient handles / address
   const recipientDataCombiner = () => {
-    // create an array of all the recipients then make it uniq
+    const { loggedInUserAddress } = useLocalStorage();
+    // NOTE: I don't know why loggedInUserAddress is not getting from the outside of this function
 
+    // create an array of all the recipients then make it unique
     let parentArray = [];
 
     // if the canvas is owned by other user
     if (referredFromRef.current.length > 0) {
       parentArray = [
-        address || solanaAddress, // current recipient address
+        loggedInUserAddress, // current recipient address
         referredFromRef.current[0], // owner address of other created canvas
         ...recipientDataFilter().recipients, // handles of all the dataRefs recipients
       ];
     } else {
       parentArray = [
-        address || solanaAddress, // current recipient address
+        loggedInUserAddress, // current recipient address
         ...recipientDataFilter().recipients, // handles of all the dataRefs recipients
       ];
     }
@@ -252,9 +250,9 @@ const Editor = () => {
       // save it to the backend
       if (canvasChildren?.length > 0) {
         // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
-        // console.log("parentRecipientRef", recipientDataCombiner().recipients);
+        console.log("parentRecipientRef", recipientDataCombiner().recipients);
 
-        // return;
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {
