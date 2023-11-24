@@ -23,6 +23,9 @@ const ContextProvider = ({ children }) => {
 
   // for open different menu in share
   const [menu, setMenu] = useState("share");
+  
+  // Lens Share tab
+  const [lensTab, setLensTab] = useState("normalPost");
 
   // for lens monetization
   const [enabled, setEnabled] = useState({
@@ -133,6 +136,7 @@ const ContextProvider = ({ children }) => {
     tokenGateErrorMessage: "",
   });
 
+  // Zora Mint Tab
   const [zoraTab, setZoraTab] = useState("ERC721");
 
   const [zoraErc721Enabled, setZoraErc721Enabled] = useState({
@@ -418,6 +422,10 @@ const ContextProvider = ({ children }) => {
         // for open different menu in share
         menu,
         setMenu,
+
+        // Lens Share tab
+        lensTab,
+        setLensTab,
 
         // for lens monetization
         enabled,
