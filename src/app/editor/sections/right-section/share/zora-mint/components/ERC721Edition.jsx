@@ -450,7 +450,8 @@ const ERC721Edition = () => {
     const args = {
       recipients: zoraErc721Enabled.royaltySplitRecipients,
       distributorFeePercent: 0.0,
-      controller: APP_ETH_ADDRESS, // controller is the owner of the split contract
+      // controller: APP_ETH_ADDRESS,
+      // controller is the owner of the split contract that will make it mutable contract
     };
     return args;
   };

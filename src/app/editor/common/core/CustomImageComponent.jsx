@@ -72,6 +72,8 @@ const CustomImageComponent = ({
       y: changeCanvasDimension ? 0 : store.height / 4,
     });
 
+
+    // NOTE: NO NEED OF THIS NOW
     // if nft is a lens collect, add it to the lensCollectNftRecipientDataRef
     // if (isLensCollect?.isLensCollect) {
     //   // if it is a the handle is @lenspostxyz.len, then don't add
