@@ -402,7 +402,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", zoraErc721Enabled);
+  // console.log("ContextProvider", nftRecipientDataRef.current);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (

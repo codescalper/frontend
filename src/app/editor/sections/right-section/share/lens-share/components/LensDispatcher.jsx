@@ -61,7 +61,7 @@ const LensDispatcher = ({ title, className }) => {
       <Button
         onClick={handleOpen}
         color="teal"
-        className={` mx-2 outline-none ${className}`}
+        className={`${className}`}
       >
         {title}
       </Button>

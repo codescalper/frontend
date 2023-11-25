@@ -72,16 +72,18 @@ const CustomImageComponent = ({
       y: changeCanvasDimension ? 0 : store.height / 4,
     });
 
-    // if nft is a lens collect, add it to the lensCollectNftRecipientDataRef
-    if (isLensCollect?.isLensCollect) {
-      // if it is a the handle is @lenspostxyz.len, then don't add
-      if (isLensCollect?.lensHandle?.startsWith("@lenspostxyz")) return;
 
-      lensCollectNftRecipientDataRef.current.push({
-        elementId: store.selectedElements[0]?.id,
-        recipient: isLensCollect?.lensHandle,
-      });
-    }
+    // NOTE: NO NEED OF THIS NOW
+    // if nft is a lens collect, add it to the lensCollectNftRecipientDataRef
+    // if (isLensCollect?.isLensCollect) {
+    //   // if it is a the handle is @lenspostxyz.len, then don't add
+    //   if (isLensCollect?.lensHandle?.startsWith("@lenspostxyz")) return;
+
+    //   lensCollectNftRecipientDataRef.current.push({
+    //     elementId: store.selectedElements[0]?.id,
+    //     recipient: isLensCollect?.lensHandle,
+    //   });
+    // }
 
     // if nft is a featured bg, and has recipientWallet / wallet address/handle is present, add it to the assetsRecipientDataRef
     if (recipientWallet && recipientWallet.startsWith("@")) {

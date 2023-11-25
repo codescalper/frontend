@@ -605,7 +605,9 @@ const SolanaMint = () => {
               </div>
             </div>
 
-            <div className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}>
+            <div
+              className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}
+            >
               <div className="flex gap-5">
                 <div className="flex flex-col py-2">
                   <NumberInputBox
@@ -973,7 +975,7 @@ const SolanaMint = () => {
               <div className="text-center mt-2"> OR </div>
 
               <Button
-              disabled={true}
+                disabled={true}
                 color="teal"
                 className="mt-2"
                 size="sm"
@@ -1286,9 +1288,7 @@ const SolanaMint = () => {
                 </Button>
               </div>
             ) : (
-              <div className="mx-2">
-                <SolanaWallets title="Login with Solana" />
-              </div>
+              <SolanaWallets title="Login with Solana" className="mx-2" />
             )}
           </>
         }

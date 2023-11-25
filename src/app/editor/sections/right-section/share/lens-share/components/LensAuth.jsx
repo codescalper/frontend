@@ -168,7 +168,7 @@ const LensAuth = ({ title, className }) => {
         <Button
           onClick={handleOpen}
           color="teal"
-          className={`w-full ${className}`}
+          className={`${className}`}
         >
           {title}
         </Button>
