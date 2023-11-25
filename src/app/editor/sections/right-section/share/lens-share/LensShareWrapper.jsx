@@ -15,7 +15,7 @@ const LensShareWrapper = () => {
         panelContent={
           <>
             {/* Tabs for Smart Post / Normal */}
-            <Tabs className="overflow-scroll m-2" value={lensTab}>
+            <Tabs className="overflow-scroll my-2" value={lensTab}>
               <TabsHeader className="relative top-0 ">
                 <Tab
                   value={"normalPost"}

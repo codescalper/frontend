@@ -899,12 +899,13 @@ const LensShare = () => {
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
         ) : !getLensAuth?.profileHandle ? (
-          <LensAuth title="Login with Lens" />
+          <LensAuth title="Login with Lens" className="mx-2 w-[95%] outline-none" />
         ) : !getDispatcherStatus ? (
-          <LensDispatcher title="Enable signless transactions" />
+          <LensDispatcher title="Enable signless transactions" className="mx-2 w-[95%] outline-none" />
         ) : (
           <div className="mx-2 outline-none">
             <Button
+            className="w-full outline-none"
               disabled={sharing}
               onClick={() => sharePost("lens")}
               color="teal"
