@@ -920,3 +920,6 @@ const LensShare = () => {
 };
 
 export default LensShare;
+
+
+// TODO - add netwotk check before share

@@ -11,8 +11,8 @@ import { ENVIRONMENT } from "../../../../../../../services";
  */
 
 export const zoraURLErc721 = (contractAddress) => {
-  return `https://${ENVIRONMENT != "production" && "testnet."}zora.co/collect/${
-    ENVIRONMENT != "production" ? "gor" : "zora"
+  return `https://${ENVIRONMENT === "production" ? "" : "testnet."}zora.co/collect/${
+    ENVIRONMENT === "production" ? "zora" : "gor"
   }:${contractAddress}`;
 };
 
