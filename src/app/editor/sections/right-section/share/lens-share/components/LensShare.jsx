@@ -1,5 +1,11 @@
 import { useContext, useState, useEffect } from "react";
-import { useAccount, useSignMessage } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useNetwork,
+  useSignMessage,
+  useSwitchNetwork,
+} from "wagmi";
 import TiDelete from "@meronex/icons/ti/TiDelete";
 import BsArrowLeft from "@meronex/icons/bs/BsArrowLeft";
 import { Switch } from "@headlessui/react";
@@ -46,7 +52,16 @@ import BsX from "@meronex/icons/bs/BsX";
 import { LensAuth, LensDispatcher, SplitPolicyCard } from ".";
 import { useAppAuth, useReset } from "../../../../../../../hooks/app";
 import { APP_LENS_HANDLE, LOCAL_STORAGE } from "../../../../../../../data";
-import { Button, Select, Option, Tabs, Tab, TabsHeader, Alert } from "@material-tailwind/react";
+import {
+  Button,
+  Select,
+  Option,
+  Tabs,
+  Tab,
+  TabsHeader,
+  Alert,
+  Spinner,
+} from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { SharePanelHeaders } from "../../components";
 
@@ -58,6 +73,15 @@ const LensShare = () => {
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const { isAuthenticated } = useAppAuth();
+  const chainId = useChainId();
+  const { chains } = useNetwork();
+  const {
+    error: errorSwitchNetwork,
+    isError: isErrorSwitchNetwork,
+    isLoading: isLoadingSwitchNetwork,
+    isSuccess: isSuccessSwitchNetwork,
+    switchNetwork,
+  } = useSwitchNetwork();
 
   const {
     setIsLoading,
@@ -86,6 +110,24 @@ const LensShare = () => {
 
   const [sharing, setSharing] = useState(false);
   const [currentTab, setCurrentTab] = useState("smartPost");
+
+  const isSupportedChain = () => {
+    if (chainId === chains[0]?.id) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  console.log(isSupportedChain(), chains[0]?.id, chainId);
+
+  const switchNetworkHandler = () => {
+    if (ENVIRONMENT === "production") {
+      switchNetwork(chains[0].id);
+    } else {
+      switchNetwork(chains[0].id);
+    }
+  };
 
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnLens",
@@ -530,14 +572,23 @@ const LensShare = () => {
     }
   }, [isAuthenticated]);
 
+  // error handling for network switch
+  useEffect(() => {
+    if (isErrorSwitchNetwork) {
+      toast.error(errorSwitchNetwork?.message.split("\n")[0]);
+    }
+
+    if (isSuccessSwitchNetwork) {
+      toast.success("Network switched successfully");
+    }
+  }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
+
   return (
     <>
       <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none ">
-
         <div className="relative px-4 mt-1 pt-2 pb-4 sm:px-6 ">
           <div className="">
-
-          <div className="flex flex-col justify-between">
+            <div className="flex flex-col justify-between">
               <Switch.Group>
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Charge for collecting</h2>
@@ -606,8 +657,8 @@ const LensShare = () => {
                       <InputErrorMsg message={priceError.message} />
                     )}
                   </div>
-                </div>  
-               
+                </div>
+
                 <div
                   className={`mb-4 ${!enabled.chargeForCollect && "hidden"}`}
                 >
@@ -675,7 +726,7 @@ const LensShare = () => {
                   <h2 className="text-lg mb-2">Split Pecipients</h2>
                   <div className="flex justify-between">
                     <Switch.Label className="w-4/5 opacity-60">
-                    Split revenue between multiple recipients
+                      Split revenue between multiple recipients
                     </Switch.Label>
                   </div>
                   <div className="relative">
@@ -755,7 +806,6 @@ const LensShare = () => {
                   </div>
                 </div>
 
-
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Limited Edition</h2>
                   <div className="flex justify-between">
@@ -803,7 +853,6 @@ const LensShare = () => {
                     </div>
                   </div>
                 </div>
-
 
                 <div className="mb-4">
                   <h2 className="text-lg mb-2">Time Limit</h2>
@@ -890,22 +939,38 @@ const LensShare = () => {
                     </Switch>
                   </div>
                 </div>
-
               </Switch.Group>
             </div>
           </div>
-        </div>   
+        </div>
 
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
+        ) : !isSupportedChain() ? (
+          <div className="mx-2 outline-none">
+            <Button
+              className="w-full outline-none"
+              disabled={isLoadingSwitchNetwork}
+              onClick={switchNetworkHandler}
+              color="red"
+            >
+              Switch Network {isLoadingSwitchNetwork && <Spinner />}
+            </Button>
+          </div>
         ) : !getLensAuth?.profileHandle ? (
-          <LensAuth title="Login with Lens" className="mx-2 w-[95%] outline-none" />
+          <LensAuth
+            title="Login with Lens"
+            className="mx-2 w-[95%] outline-none"
+          />
         ) : !getDispatcherStatus ? (
-          <LensDispatcher title="Enable signless transactions" className="mx-2 w-[95%] outline-none" />
+          <LensDispatcher
+            title="Enable signless transactions"
+            className="mx-2 w-[95%] outline-none"
+          />
         ) : (
           <div className="mx-2 outline-none">
             <Button
-            className="w-full outline-none"
+              className="w-full outline-none"
               disabled={sharing}
               onClick={() => sharePost("lens")}
               color="teal"
@@ -920,6 +985,5 @@ const LensShare = () => {
 };
 
 export default LensShare;
-
 
 // TODO - add netwotk check before share

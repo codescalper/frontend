@@ -24,7 +24,7 @@ export const lensHub = new ethers.Contract(
 const API_URL =
   ENVIRONMENT === "production"
     ? "https://api-v2.lens.dev" // mainnet
-    : "https://api-v2-mumbai.lens.dev"; // mumbai
+    : "https://api-v2-mumbai-live.lens.dev"; // mumbai
 
 
 export const challenge = gql`

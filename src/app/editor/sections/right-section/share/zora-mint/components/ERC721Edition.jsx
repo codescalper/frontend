@@ -23,7 +23,6 @@ import {
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
-  useSwitchNetwork,
   useWaitForTransaction,
 } from "wagmi";
 import { useAppAuth } from "../../../../../../../hooks/app";
@@ -42,6 +41,8 @@ import ZoraDialog from "./ZoraDialog";
 import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
 import { useMutation } from "@tanstack/react-query";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
+import { useChainModal } from "@rainbow-me/rainbowkit";
+import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 const ERC721Edition = () => {
   const { address } = useAccount();
@@ -49,6 +50,7 @@ const ERC721Edition = () => {
   const chainId = useChainId();
   const { chains, chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const { openChainModal } = useChainModal();
   const {
     createSplit,
     createSplitData,
@@ -57,13 +59,7 @@ const ERC721Edition = () => {
     isCreateSplitLoading,
     isCreateSplitSuccess,
   } = useCreateSplit();
-  const {
-    error: errorSwitchNetwork,
-    isError: isErrorSwitchNetwork,
-    isLoading: isLoadingSwitchNetwork,
-    isSuccess: isSuccessSwitchNetwork,
-    switchNetwork,
-  } = useSwitchNetwork();
+
   const {
     zoraErc721Enabled,
     setZoraErc721Enabled,
@@ -88,12 +84,9 @@ const ERC721Edition = () => {
     mutationFn: uploadUserAssetToIPFS,
   });
 
-  const isSupportedChain = () => {
-    return chainId === chains[1].id;
-  };
-
-  const switchNetworkHandler = () => {
-    switchNetwork(chains[1].id);
+  const isUnsupportedChain = () => {
+    // chains[0] is the polygon network
+    if (chainId === chains[0]?.id || chain?.unsupported) return true;
   };
 
   // formate date and time in uxin timestamp
@@ -738,17 +731,6 @@ const ERC721Edition = () => {
       }, 1000);
     }
   }, [isCreateSplitSuccess, write]);
-
-  // error handling for network switch
-  useEffect(() => {
-    if (isErrorSwitchNetwork) {
-      toast.error(errorSwitchNetwork?.message.split("\n")[0]);
-    }
-
-    if (isSuccessSwitchNetwork) {
-      toast.success("Network switched successfully");
-    }
-  }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
 
   // error handling for mint
   useEffect(() => {
@@ -1404,31 +1386,51 @@ const ERC721Edition = () => {
       </>
       {/* Switch Number 8 End */}
 
+      {/* networks */}
+      {openChainModal && (
+        <div className="mx-2 my-4">
+          <h2 className="text-lg mb-2"> Change Networks </h2>
+          <Button
+            fullWidth
+            color={chain?.unsupported ? "red" : "gray"}
+            onClick={openChainModal}
+            className="flex justify-center gap-2 items-center"
+          >
+            {" "}
+            {chain?.iconUrl && (
+              <img
+                src={chain?.iconUrl}
+                alt={chain?.name}
+                width={12}
+                height={12}
+              />
+            )}
+            {chain?.unsupported ? "Unsupported Network" : chain?.name}
+            <ChevronDownIcon className="h-4 w-4" />
+          </Button>
+          {chain?.id === chains[0]?.id ? (
+            <InputErrorMsg
+              message={`Zora Editions are not supported on ${chain?.name}`}
+              className="text-md mt-2"
+            />
+          ) : (
+            <></>
+          )}
+        </div>
+      )}
+
       {!getEVMAuth ? (
         <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
-      ) : isSupportedChain() ? (
+      ) : (
         <div className="mx-2 my-4">
           <Button
-            disabled={!write}
+            disabled={isUnsupportedChain() || !write}
             fullWidth
             color="cyan"
             onClick={handleSubmit}
           >
             {" "}
             Create Edition{" "}
-          </Button>
-        </div>
-      ) : (
-        <div className="mx-2 my-4">
-          <Button
-            disabled={isLoadingSwitchNetwork}
-            fullWidth
-            color="red"
-            onClick={switchNetworkHandler}
-            className="flex justify-center gap-2 items-center"
-          >
-            {" "}
-            Switch Network {isLoadingSwitchNetwork && <Spinner />}
           </Button>
         </div>
       )}
