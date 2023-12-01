@@ -74,7 +74,7 @@ const LensShare = () => {
   const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const { isAuthenticated } = useAppAuth();
   const chainId = useChainId();
-  const { chains } = useNetwork();
+  const { chains, chain } = useNetwork();
   const {
     error: errorSwitchNetwork,
     isError: isErrorSwitchNetwork,
@@ -111,22 +111,8 @@ const LensShare = () => {
   const [sharing, setSharing] = useState(false);
   const [currentTab, setCurrentTab] = useState("smartPost");
 
-  const isSupportedChain = () => {
-    if (chainId === chains[0]?.id) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  console.log(isSupportedChain(), chains[0]?.id, chainId);
-
-  const switchNetworkHandler = () => {
-    if (ENVIRONMENT === "production") {
-      switchNetwork(chains[0].id);
-    } else {
-      switchNetwork(chains[0].id);
-    }
+  const isUnsupportedChain = () => {
+    if (chain?.unsupported || chain?.id != chains[0]?.id) return true;
   };
 
   const { mutateAsync: shareOnLens } = useMutation({
@@ -946,15 +932,15 @@ const LensShare = () => {
 
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
-        ) : !isSupportedChain() ? (
+        ) : isUnsupportedChain() ? (
           <div className="mx-2 outline-none">
             <Button
-              className="w-full outline-none"
+              className="w-full outline-none flex justify-center items-center gap-2"
               disabled={isLoadingSwitchNetwork}
-              onClick={switchNetworkHandler}
+              onClick={() => switchNetwork(chains[0]?.id)}
               color="red"
             >
-              Switch Network {isLoadingSwitchNetwork && <Spinner />}
+              Wrong Network {isLoadingSwitchNetwork && <Spinner />}
             </Button>
           </div>
         ) : !getLensAuth?.profileHandle ? (

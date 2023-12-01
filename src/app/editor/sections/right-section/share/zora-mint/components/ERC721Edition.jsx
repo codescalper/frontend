@@ -1405,7 +1405,7 @@ const ERC721Edition = () => {
                 height={12}
               />
             )}
-            {chain?.unsupported ? "Unsupported Network" : chain?.name}
+            {chain?.unsupported ? "Wrong Network" : chain?.name}
             <ChevronDownIcon className="h-4 w-4" />
           </Button>
           {chain?.id === chains[0]?.id ? (

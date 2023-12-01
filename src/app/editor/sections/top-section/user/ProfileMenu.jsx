@@ -21,6 +21,7 @@ import {
 import { ClipboardIcon, PowerIcon } from "@heroicons/react/24/outline";
 import { useSolanaWallet } from "../../../../../hooks/solana";
 import { useLogout } from "../../../../../hooks/app";
+import { useAccountModal } from "@rainbow-me/rainbowkit";
 
 const ProfileMenu = () => {
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
@@ -28,6 +29,7 @@ const ProfileMenu = () => {
   const { disconnect } = useDisconnect();
   const { posthog } = useContext(Context);
   const { logout } = useLogout();
+  const { openAccountModal } = useAccountModal();
 
   const handleEVMAddressCopy = () => {
     navigator.clipboard.writeText(address);
@@ -51,7 +53,7 @@ const ProfileMenu = () => {
     {
       label: address && addressCrop(address),
       icon: ClipboardIcon,
-      onClick: handleEVMAddressCopy,
+      onClick: openAccountModal && openAccountModal,
       shouldRender: address ? true : false,
     },
     {
