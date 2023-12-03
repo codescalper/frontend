@@ -7,8 +7,11 @@ import {
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
   polygon,
-  polygonMumbai,
+  mainnet,
   zora,
+  optimism,
+  base,
+  polygonMumbai,
   zoraTestnet,
   goerli,
 } from "wagmi/chains";
@@ -22,15 +25,18 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { publicProvider } from "wagmi/providers/public";
-import { ENVIRONMENT, WALLETCONNECT_PROJECT_ID } from "../../services";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import {
+  ALCHEMY_API_KEY,
+  ENVIRONMENT,
+  WALLETCONNECT_PROJECT_ID,
+} from "../../services";
 
 const { chains, publicClient } = configureChains(
-  // [polygon],
-  ENVIRONMENT === "production" ? [polygon, zora] : [polygonMumbai, goerli],
-  [
-    // alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID }),
-    publicProvider(),
-  ]
+  ENVIRONMENT === "production"
+    ? [polygon, mainnet, zora, optimism, base]
+    : [polygonMumbai, zoraTestnet, goerli],
+  [alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()]
 );
 
 const connectors = connectorsForWallets([

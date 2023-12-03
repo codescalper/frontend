@@ -4,7 +4,6 @@ import {
   BACKEND_PROD_URL,
   BACKEND_LOCAL_URL,
   ENVIRONMENT,
-  ALCHEMY_API,
 } from "../../env/env";
 import { getFromLocalStorage } from "../../../utils/localStorage";
 import { LOCAL_STORAGE } from "../../../data";

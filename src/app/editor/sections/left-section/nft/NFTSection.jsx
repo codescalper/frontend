@@ -413,8 +413,8 @@ const WalletNFT = () => {
   const [query, setQuery] = useState("");
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
-  const [currentTab, setCurrentTab] = useState("solana");
-  const tabsArray = ["solana", "ethereum", "polygon", "zora", "base"];
+  const [currentTab, setCurrentTab] = useState("ethereum");
+  const tabsArray = ["ethereum", "polygon", "zora", "base", "solana"];
   const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
 
