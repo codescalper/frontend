@@ -4,7 +4,7 @@ import React from 'react'
 // const randomNumber = Math.floor(Math.random() * 3) + 1;
 // const animationData = import(`../../../../assets/lottie/emptystates/EmptyState${randomNumber}.json`);
 
-import animationData from '../../../../assets/lottie/emptystates/emptyState3.json';
+// import animationData from '../../../../assets/lottie/emptystates/emptyState3.json';
 
 const MessageComponent = ({message}) => {
   return (

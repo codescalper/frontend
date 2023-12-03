@@ -1,7 +1,7 @@
 import React from "react";
 import { errorMessage } from "../../../../utils/errorMessage";
 import Lottie from "lottie-react";
-import animationData from "../../../../assets/lottie/emptystates/emptyState2.json";
+// import animationData from "../../../../assets/lottie/emptystates/emptyState2.json";
 
 const ErrorComponent = ({ error }) => {
   return (
