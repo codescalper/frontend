@@ -5,7 +5,7 @@ import { AIRSTACK_API_KEY } from "../../env/env";
 export const AIRSTACK_API = "https://api.airstack.xyz/gql";
 
 const getENSDomainQuery = gql`
-  query MyQuery($owner: Identity!) {
+  query MyQuery($owners: [Identity!]) {
     Domains(
       input: { filter: { owner: { _in: $owners } }, blockchain: ethereum }
     ) {
@@ -24,15 +24,27 @@ export const getENSDomain = async (address) => {
   };
 
   try {
-    const result = await request(AIRSTACK_API, getENSDomainQuery, variables);
+    const result = await request(AIRSTACK_API, getENSDomainQuery, variables, 
+    //   {
+    //   Authorization: AIRSTACK_API_KEY,
+    // }
+    );
 
-    const domain = result?.Domains?.Domain.find((d) => d?.isPrimary);
+    let arr = [];
 
-    if (domain) {
-      return domain?.name;
-    } else {
-      return address;
-    }
+    // check which address has ens
+    address.map((addr) => {
+      const ens = result?.Domains?.Domain.find(
+        (d) => (d?.owner).toLowerCase() === addr.toLowerCase() && d?.isPrimary
+      );
+      if (ens) {
+        arr.push(ens?.name);
+      } else {
+        arr.push(addr);
+      }
+    });
+
+    return arr;
   } catch (error) {
     // console.log(error);
     return address;
