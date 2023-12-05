@@ -60,35 +60,47 @@ const getSocialDetailsQuery = gql`
       }
     ) {
       Social {
-        id
         isDefault
-        blockchain
-        dappName
         profileHandle
+        userAddress
       }
     }
   }
 `;
 
-
 export const getSocialDetails = async (address, dappName) => {
   const variables = {
-    identities: [address],
+    identities: address, // array of addresses
     dappName,
   };
 
   try {
-    const result = await request(AIRSTACK_API, getSocialDetailsQuery, variables);
-    
-    const social = result?.Socials?.Social.find((s) => s?.profileHandle);
+    const result = await request(
+      AIRSTACK_API,
+      getSocialDetailsQuery,
+      variables
+      // {
+      //   Authorization: AIRSTACK_API_KEY,
+      // }
+    );
 
-    if (social) {
-      return social?.profileHandle;
-    } else {
-      return address;
-    }
+    let arr = [];
+
+    // check which address has a social profile
+    address.map((addr) => {
+      const social = result?.Socials?.Social.find(
+        (s) => (s?.userAddress).toLowerCase() === addr.toLowerCase()
+      );
+      if (social) {
+        arr.push(social?.profileHandle);
+      } else {
+        arr.push(addr);
+      }
+    });
+
+    return arr;
   } catch (error) {
     // console.log(error);
     return address;
   }
-}
+};
