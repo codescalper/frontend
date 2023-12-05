@@ -571,18 +571,20 @@ const LensShare = () => {
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
 
-  // get the Lens Handle of the recipient
-  useEffect(() => {
-    const recipients = enabled.splitRevenueRecipients.map(
-      (item) => item.recipient
-    );
-    (async () => {
-      // get the only the recipients from the list
-        const lensHandles = await getSocialDetails(recipients, "lens");
-        setRecipientsLensHandle(lensHandles);
-    })()
-
-  }, [enabled.splitRevenueRecipients]);
+    // get the Lens Handle of the recipient
+    useEffect(() => {
+      let promises = enabled.splitRevenueRecipients.map(async (item) => {
+        return await getSocialDetails(item?.recipient, "lens");
+      });
+    
+      Promise.all(promises)
+        .then((arr) => {
+          setRecipientsLensHandle(arr);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }, [enabled.splitRevenueRecipients]);
 
   return (
     <>
