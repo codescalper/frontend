@@ -52,11 +52,7 @@ import { useStore } from "../../../../../../../hooks/polotno";
 import BsX from "@meronex/icons/bs/BsX";
 import { LensAuth, LensDispatcher, SplitPolicyCard } from ".";
 import { useAppAuth, useReset } from "../../../../../../../hooks/app";
-import {
-  APP_ETH_ADDRESS,
-  APP_LENS_HANDLE,
-  LOCAL_STORAGE,
-} from "../../../../../../../data";
+import { APP_ETH_ADDRESS, APP_LENS_HANDLE, LOCAL_STORAGE } from "../../../../../../../data";
 import {
   Button,
   Select,
@@ -575,18 +571,20 @@ const LensShare = () => {
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
 
-  // get the Lens Handle of the recipient
-  useEffect(() => {
-    if (!enabled.splitRevenueRecipients.length) return;
-    const recipients = enabled.splitRevenueRecipients.map(
-      (item) => item.recipient
-    );
-    (async () => {
-      // get the only the recipients from the list
-      const lensHandles = await getSocialDetails(recipients, "lens");
-      setRecipientsLensHandle(lensHandles);
-    })();
-  }, [enabled.splitRevenueRecipients]);
+    // get the Lens Handle of the recipient
+    useEffect(() => {
+      let promises = enabled.splitRevenueRecipients.map(async (item) => {
+        return await getSocialDetails(item?.recipient, "lens");
+      });
+    
+      Promise.all(promises)
+        .then((arr) => {
+          setRecipientsLensHandle(arr);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }, [enabled.splitRevenueRecipients]);
 
   return (
     <>
@@ -745,10 +743,7 @@ const LensShare = () => {
                             <InputBox
                               label={"ERC20 Address / Lens handle"}
                               // placeholder="erc20 address or @xyz.lens"
-                              value={
-                                recipientsLensHandle[index] ||
-                                recipient.recipient
-                              }
+                              value={recipientsLensHandle[index] || recipient.recipient}
                               onChange={(e) =>
                                 restrictRecipientInput(e, index, recipient)
                               }
