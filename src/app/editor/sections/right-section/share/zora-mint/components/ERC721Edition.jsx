@@ -765,10 +765,12 @@ const ERC721Edition = () => {
 
   // get the ENS domain of the recipient
   useEffect(() => {
-    let promises = zoraErc721Enabled.royaltySplitRecipients.map(async (item) => {
-      return await getENSDomain(item?.address);
-    });
-  
+    let promises = zoraErc721Enabled.royaltySplitRecipients.map(
+      async (item) => {
+        return await getENSDomain(item?.address);
+      }
+    );
+
     Promise.all(promises)
       .then((arr) => {
         setRecipientsEns(arr);
