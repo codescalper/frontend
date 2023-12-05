@@ -37,6 +37,7 @@ import {
   base64Stripper,
   errorMessage,
   getFromLocalStorage,
+  isEthAddress,
 } from "../../../../../../../utils";
 import ZoraDialog from "./ZoraDialog";
 import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
@@ -765,19 +766,15 @@ const ERC721Edition = () => {
 
   // get the ENS domain of the recipient
   useEffect(() => {
-    let promises = zoraErc721Enabled.royaltySplitRecipients.map(
-      async (item) => {
-        return await getENSDomain(item?.address);
-      }
+    const recipients = zoraErc721Enabled.royaltySplitRecipients.map(
+      (recipient) => recipient.address
     );
 
-    Promise.all(promises)
-      .then((arr) => {
-        setRecipientsEns(arr);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    (async () => {
+      // get the only the recipients from the list
+        const domains = await getENSDomain(recipients);
+        setRecipientsEns(domains);
+    })()
   }, [zoraErc721Enabled.royaltySplitRecipients]);
 
   return (

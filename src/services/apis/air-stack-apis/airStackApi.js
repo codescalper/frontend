@@ -5,13 +5,14 @@ import { AIRSTACK_API_KEY } from "../../env/env";
 export const AIRSTACK_API = "https://api.airstack.xyz/gql";
 
 const getENSDomainQuery = gql`
-  query MyQuery($owner: Identity!) {
+  query MyQuery($owners: [Identity!]) {
     Domains(
-      input: { filter: { owner: { _eq: $owner } }, blockchain: ethereum }
+      input: { filter: { owner: { _in: $owners } }, blockchain: ethereum }
     ) {
       Domain {
         isPrimary
         name
+        owner
       }
     }
   }
@@ -19,19 +20,31 @@ const getENSDomainQuery = gql`
 
 export const getENSDomain = async (address) => {
   const variables = {
-    owner: address,
+    owners: address, // array of addresses
   };
 
   try {
-    const result = await request(AIRSTACK_API, getENSDomainQuery, variables);
+    const result = await request(AIRSTACK_API, getENSDomainQuery, variables, 
+    //   {
+    //   Authorization: AIRSTACK_API_KEY,
+    // }
+    );
 
-    const domain = result?.Domains?.Domain.find((d) => d?.isPrimary);
+    let arr = [];
 
-    if (domain) {
-      return domain?.name;
-    } else {
-      return address;
-    }
+    // check which address has ens
+    address.map((addr) => {
+      const ens = result?.Domains?.Domain.find(
+        (d) => (d?.owner).toLowerCase() === addr.toLowerCase() && d?.isPrimary
+      );
+      if (ens) {
+        arr.push(ens?.name);
+      } else {
+        arr.push(addr);
+      }
+    });
+
+    return arr;
   } catch (error) {
     // console.log(error);
     return address;
@@ -47,35 +60,47 @@ const getSocialDetailsQuery = gql`
       }
     ) {
       Social {
-        id
         isDefault
-        blockchain
-        dappName
         profileHandle
+        userAddress
       }
     }
   }
 `;
 
-
 export const getSocialDetails = async (address, dappName) => {
   const variables = {
-    identities: [address],
+    identities: address, // array of addresses
     dappName,
   };
 
   try {
-    const result = await request(AIRSTACK_API, getSocialDetailsQuery, variables);
-    
-    const social = result?.Socials?.Social.find((s) => s?.profileHandle);
+    const result = await request(
+      AIRSTACK_API,
+      getSocialDetailsQuery,
+      variables
+      // {
+      //   Authorization: AIRSTACK_API_KEY,
+      // }
+    );
 
-    if (social) {
-      return social?.profileHandle;
-    } else {
-      return address;
-    }
+    let arr = [];
+
+    // check which address has a social profile
+    address.map((addr) => {
+      const social = result?.Socials?.Social.find(
+        (s) => (s?.userAddress).toLowerCase() === addr.toLowerCase()
+      );
+      if (social) {
+        arr.push(social?.profileHandle);
+      } else {
+        arr.push(addr);
+      }
+    });
+
+    return arr;
   } catch (error) {
     // console.log(error);
     return address;
   }
-}
+};
