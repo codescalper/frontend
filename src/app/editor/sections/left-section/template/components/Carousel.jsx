@@ -9,7 +9,7 @@ import { getAssetByQuery, getFeaturedAssets } from "../../../../../../services";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-const CompCarousel = ({ type }) => {
+const CompCarousel = ({ type, author, campaign }) => {
   const {
     data,
     isLoading,
@@ -19,13 +19,13 @@ const CompCarousel = ({ type }) => {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: [type === "background" && "background", "lensjump"],
+    queryKey: [type, author || campaign],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
       getAssetByQuery(
-        type === "background" && "background",
-        "",
-        "halloween",
+        type,
+        author,
+        campaign,
         pageParam
       ),
   });
@@ -62,9 +62,9 @@ const CompCarousel = ({ type }) => {
                 dimensions={item?.dimensions != null && item.dimensions}
                 recipientWallet={item?.wallet}
                 changeCanvasDimension={true}
-                className="h-fit w-full object-contain overflow-hidden"
+                // className="h-fit w-full object-contain overflow-hidden"
                 author={item?.author}
-                tab="halloween"
+                showAuthor={true}
               />
             );
           })}

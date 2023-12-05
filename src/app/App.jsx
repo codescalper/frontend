@@ -177,8 +177,9 @@ const App = () => {
             profileId: res?.profileId,
             profileHandle: res?.profileHandle,
           });
+          saveToLocalStorage(LOCAL_STORAGE.userId, res?.userId);
           setSession(res.jwt);
-          posthog.identify(address);
+          posthog.identify(res?.userId);
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
@@ -218,8 +219,9 @@ const App = () => {
             profileId: res?.profileId,
             profileHandle: res?.profileHandle,
           });
+          saveToLocalStorage(LOCAL_STORAGE.userId, res?.userId);
           setSession(res.jwt);
-          posthog.identify(solanaAddress);
+          posthog.identify(res?.userId);
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
