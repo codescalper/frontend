@@ -24,6 +24,7 @@ import {
   signSetDispatcherTypedData,
   ENVIRONMENT,
   setBroadcastOnChainTx,
+  getSocialDetails,
 } from "../../../../../../../services";
 import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
@@ -51,7 +52,7 @@ import { useStore } from "../../../../../../../hooks/polotno";
 import BsX from "@meronex/icons/bs/BsX";
 import { LensAuth, LensDispatcher, SplitPolicyCard } from ".";
 import { useAppAuth, useReset } from "../../../../../../../hooks/app";
-import { APP_LENS_HANDLE, LOCAL_STORAGE } from "../../../../../../../data";
+import { APP_ETH_ADDRESS, APP_LENS_HANDLE, LOCAL_STORAGE } from "../../../../../../../data";
 import {
   Button,
   Select,
@@ -66,6 +67,7 @@ import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { SharePanelHeaders } from "../../components";
 
 const LensShare = () => {
+  const [recipientsLensHandle, setRecipientsLensHandle] = useState([]);
   const store = useStore();
   const { address, isConnected } = useAccount();
   const { resetState } = useReset();
@@ -549,7 +551,7 @@ const LensShare = () => {
         ...prevEnabled,
         splitRevenueRecipients: [
           {
-            recipient: APP_LENS_HANDLE,
+            recipient: APP_ETH_ADDRESS,
             split: enabled.splitRevenueRecipients[0]?.split || 10.0,
           },
           ...updatedRecipients,
@@ -568,6 +570,21 @@ const LensShare = () => {
       toast.success("Network switched successfully");
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
+
+    // get the Lens Handle of the recipient
+    useEffect(() => {
+      let promises = enabled.splitRevenueRecipients.map(async (item) => {
+        return await getSocialDetails(item?.recipient, "lens");
+      });
+    
+      Promise.all(promises)
+        .then((arr) => {
+          setRecipientsLensHandle(arr);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }, [enabled.splitRevenueRecipients]);
 
   return (
     <>
@@ -726,7 +743,7 @@ const LensShare = () => {
                             <InputBox
                               label={"ERC20 Address / Lens handle"}
                               // placeholder="erc20 address or @xyz.lens"
-                              value={recipient.recipient}
+                              value={recipientsLensHandle[index] || recipient.recipient}
                               onChange={(e) =>
                                 restrictRecipientInput(e, index, recipient)
                               }

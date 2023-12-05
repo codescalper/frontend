@@ -29,6 +29,7 @@ import { useAppAuth } from "../../../../../../../hooks/app";
 import { APP_ETH_ADDRESS, LOCAL_STORAGE } from "../../../../../../../data";
 import {
   ENVIRONMENT,
+  getENSDomain,
   uploadUserAssetToIPFS,
 } from "../../../../../../../services";
 import { zoraNftCreatorV1Config } from "@zoralabs/zora-721-contracts";
@@ -51,6 +52,7 @@ const ERC721Edition = () => {
   const { chains, chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const { openChainModal } = useChainModal();
+  const [recipientsEns, setRecipientsEns] = useState([]);
   const {
     createSplit,
     createSplitData,
@@ -761,6 +763,21 @@ const ERC721Edition = () => {
     }
   }, [isUploadError]);
 
+  // get the ENS domain of the recipient
+  useEffect(() => {
+    let promises = zoraErc721Enabled.royaltySplitRecipients.map(async (item) => {
+      return await getENSDomain(item?.address);
+    });
+  
+    Promise.all(promises)
+      .then((arr) => {
+        setRecipientsEns(arr);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [zoraErc721Enabled.royaltySplitRecipients]);
+
   return (
     <>
       <ZoraDialog
@@ -918,7 +935,7 @@ const ERC721Edition = () => {
                 <div className="flex-1">
                   <InputBox
                     label="Wallet Address"
-                    value={recipient.address}
+                    value={recipientsEns[index] || recipient.address}
                     onFocus={(e) =>
                       restrictRecipientInput(e, index, recipient.address)
                     }
