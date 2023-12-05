@@ -17,41 +17,17 @@ import {
 
 export const BannerPanel = () => {
   // const [currentTab, setCurrentTab] = useState("supducks");
-  const [currentTab, setCurrentTab] = useState("halloween");
-  const tabArray = ["halloween", "lensjump", "supducks", "moonrunners"];
-  // const [isFeatured, setIsFeatured] = useState(false);
-
-  // const fnGetBGAssets = () => {
-  //   if(isFeatured){
-  //     return getFeaturedBGAssets();
-  //   }
-  //   else{
-  //     return getBGAssetByQuery(currentTab);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fnGetBGAssets;
-  // }, [currentTab, isFeatured]);
+  const tabArray = [
+    "firefly",
+    "halloween",
+    "lensjump",
+    "supducks",
+    "moonrunners",
+  ];
+  const [currentTab, setCurrentTab] = useState(tabArray[0]);
 
   return (
     <div className="h-full flex flex-col">
-      {/* <div className="flex flex-row h-fit">
-
-        {tabArray.map((tab, index) => (
-          <Button
-            key={index}
-            className="m-2 rounded-md border-2 px-2"
-            onClick={() => {
-              setCurrentTab(tab);
-            }}
-            active={currentTab === tab}
-            // icon="build"
-          >
-            {firstLetterCapital(tab)}
-          </Button>
-        ))}
-      </div> */}
 
       {/* New Material Tailwind Buttons / Tabs : */}
       {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
@@ -62,10 +38,6 @@ export const BannerPanel = () => {
             tabsHeaders={
               <>
                 <TabsHeader
-                // className="bg-transparent"
-                // indicatorProps={{
-                //   className: "bg-gray-900/10 shadow-none !text-gray-900",
-                // }}
                 >
                   {tabArray.map((tab, index) => (
                     <Tab
@@ -82,7 +54,6 @@ export const BannerPanel = () => {
             }
           />
         </div>
-        {/* <div className="h-full overflow-y-scroll"> */}
         <div className="hCustom overflow-y-scroll">
           <TabsBody
             animate={{
@@ -91,15 +62,14 @@ export const BannerPanel = () => {
               unmount: { y: 250 },
             }}
           >
-            {/* <TabPanel key={currentTab} value={currentTab}> */}
 
             <TabsCustom
-              defaultQuery={currentTab === "halloween" ? "" : currentTab}
-              campaignName={currentTab === "halloween" ? "halloween" : ""}
+              defaultQuery={currentTab}
+              campaignName={currentTab}
               getAssetsFn={
                 currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
               }
-              queryKey="backgrounds"
+              queryKey="background"
               changeCanvasDimension={true}
             />
           </TabsBody>

@@ -404,7 +404,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  console.log("ContextProvider", zoraErc721Enabled.royaltySplitRecipients);
+  // console.log("ContextProvider", zoraErc721Enabled.royaltySplitRecipients);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (

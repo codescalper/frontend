@@ -28,7 +28,7 @@ const Tabs = ({
   const requestTimeout = useRef();
   const { isDisconnected, address } = useAccount();
 
-  const getType = queryKey === "stickers" ? "props" : "background";
+  const getType = queryKey;
 
   const {
     data,
@@ -39,15 +39,20 @@ const Tabs = ({
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: [queryKey, delayedQuery || defaultQuery],
+    queryKey: [queryKey, delayedQuery || defaultQuery || campaignName],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
       defaultQuery === "lensjump"
         ? getAssetsFn(getType, pageParam)
-        : getAssetsFn(getType, delayedQuery || defaultQuery, campaignName, pageParam),
+        : getAssetsFn(
+            getType,
+            delayedQuery || defaultQuery,
+            campaignName,
+            pageParam
+          ),
     enabled: isAuthenticated ? true : false,
   });
- 
+
   useEffect(() => {
     requestTimeout.current = setTimeout(() => {
       setDelayedQuery(query);
@@ -86,22 +91,28 @@ const Tabs = ({
         // <div className="h-full overflow-y-auto">
         // <div className="overflow-y-auto">
         // To Fix Lenspost Banner Preview size issue
-          <div className={`grid ${ defaultQuery === "lensjump" && getType === "background" ? "grid-cols-1" : "grid-cols-2" } overflow-y-auto`}>
-            {data?.pages
-              .flatMap((item) => item?.data)
-              .map((item, index) => {
-                return (
-                  <CustomImageComponent
-                    key={index}
-                    preview={item?.image}
-                    dimensions={item?.dimensions != null && item.dimensions}
-                    changeCanvasDimension={changeCanvasDimension}
-                    recipientWallet={item?.wallet}
-                    author={item?.author}
-                    tab={campaignName}
-                  />
-                );
-              })}
+        <div
+          className={`grid ${
+            defaultQuery === "lensjump" && getType === "background"
+              ? "grid-cols-1"
+              : "grid-cols-2"
+          } overflow-y-auto`}
+        >
+          {data?.pages
+            .flatMap((item) => item?.data)
+            .map((item, index) => {
+              return (
+                <CustomImageComponent
+                  key={index}
+                  preview={item?.image}
+                  dimensions={item?.dimensions != null && item.dimensions}
+                  changeCanvasDimension={changeCanvasDimension}
+                  recipientWallet={item?.wallet}
+                  author={item?.author}
+                  showAuthor={campaignName === "halloween" ? true : false}
+                />
+              );
+            })}
           {/* </div> */}
           <LoadMoreComponent
             hasNextPage={hasNextPage}

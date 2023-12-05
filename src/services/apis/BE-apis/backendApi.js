@@ -451,7 +451,6 @@ export const getAssetByQuery = async (type, author, campaign, page) => {
       page: page,
     },
   });
-
   return {
     data: result?.data?.assets,
     nextPage: result?.data?.nextPage,

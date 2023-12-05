@@ -58,7 +58,7 @@ const DesignCard = ({
   modal,
   setModal,
   ownerAddress,
-  assetsRecipientElementData
+  assetsRecipientElementData,
 }) => {
   const store = useStore();
   const { referredFromRef, preStoredRecipientDataRef } = useContext(Context);
@@ -86,14 +86,14 @@ const DesignCard = ({
           isNewDesign: true,
           json: json,
           referredFrom: referredFrom,
-          preStoredRecipientObj: assetsRecipientElementData
+          preStoredRecipientObj: assetsRecipientElementData,
         });
       } else {
         // If not load the clicked JSON
         fnLoadJsonOnPage(store, json);
         if (tab === "user") {
           referredFromRef.current = referredFrom;
-          preStoredRecipientDataRef.current = assetsRecipientElementData
+          preStoredRecipientDataRef.current = assetsRecipientElementData;
         }
       }
     }
@@ -292,7 +292,7 @@ const LenspostTemplates = () => {
             hasSeeMore
             seeMoreFn={() => store.openSidePanel("Backgrounds2")}
           />
-          <CompCarousel type="background" />
+          <CompCarousel type="background" author="" campaign="firefly" />
 
           {/*  Featured Panels : Stickers */}
           <SecNameHeading
@@ -301,7 +301,11 @@ const LenspostTemplates = () => {
             hasSeeMore
             seeMoreFn={() => store.openSidePanel("Elements")}
           />
-          <CustomHorizontalScroller type="stickers" />
+          <CustomHorizontalScroller
+            type="props"
+            author="halloween"
+            campaign=""
+          />
 
           <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
 
@@ -505,7 +509,7 @@ const UserTemplates = () => {
           onClickFunction={() => {
             fnLoadJsonOnPage(store, modal?.json);
             referredFromRef.current = modal?.referredFrom;
-            preStoredRecipientDataRef.current = modal?.preStoredRecipientObj
+            preStoredRecipientDataRef.current = modal?.preStoredRecipientObj;
             setModal({
               ...modal,
               isOpen: false,
@@ -538,7 +542,9 @@ const UserTemplates = () => {
                     gatedWith={item?.gatedWith}
                     json={item?.data}
                     ownerAddress={item?.ownerAddress}
-                    assetsRecipientElementData={item?.assetsRecipientElementData}
+                    assetsRecipientElementData={
+                      item?.assetsRecipientElementData
+                    }
                     preview={
                       item?.imageLink != null &&
                       item?.imageLink.length > 0 &&

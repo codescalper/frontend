@@ -146,8 +146,8 @@ export const CompIcons = () => {
 
 export const StickerPanel = () => {
   // Halloween use 'H' and not 'h' - BE Response
-  const [currentTab, setCurrentTab] = useState("halloween");
   const tabArray = [
+    "firefly",
     "halloween",
     "lensjump",
     "icons",
@@ -156,39 +156,14 @@ export const StickerPanel = () => {
     "nouns",
     "fls",
     "assorted",
+    "explore",
   ];
+  const [currentTab, setCurrentTab] = useState(tabArray[0]);
   const store = useStore();
 
   return (
     <>
       <div className="flex flex-col h-full">
-        {/* <div className="mx-2 mt-1" id="stickerCategories">
-        {tabArray.map((tab, index) => (
-          <Button
-            small
-            key={index}
-            className="m-2 rounded-md px-1/2 py-0"
-            onClick={() => {
-              setCurrentTab(tab);
-            }}
-            active={currentTab === tab}
-            // icon=""
-          >
-            {firstLetterCapital(tab)}
-          </Button>
-        ))}
-
-        <Button
-          small
-          className="m-2 rounded-md px-1/2"
-          onClick={() => {
-            setCurrentTab("tabIcons");
-          }}
-          active={currentTab === "tabIcons"}
-        >
-          Icons
-        </Button>
-      </div> */}
 
         {/* New Material Tailwind Buttons / Tabs : */}
         {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
@@ -213,48 +188,23 @@ export const StickerPanel = () => {
           />
           {/* </div> */}
           <div className="hCustom overflow-y-scroll">
-            {/* <TabsBody
-            animate={{
-              initial: { y: 250 },
-              mount: { y: 0 },
-              unmount: { y: 250 },
-            }}
-          > */}
 
-            {/* <div className="h-96 overflow-y-scroll"> */}
-            {/* <TabPanel key={currentTab} value={currentTab}> */}
             {currentTab === "icons" ? (
               <CompIcons />
             ) : (
               <TabsCustom
-                defaultQuery={currentTab === "halloween" ? "" : currentTab}
-                campaignName={currentTab === "halloween" ? "halloween" : ""}
+                defaultQuery={currentTab}
+                campaignName={currentTab}
                 getAssetsFn={
                   currentTab === "lensjump"
                     ? getFeaturedAssets
                     : getAssetByQuery
                 }
-                queryKey="stickers"
+                queryKey="props"
               />
             )}
           </div>
-          {/* </TabPanel> */}
-          {/* </TabsBody> */}
         </Tabs>
-
-        {/* <StickerReacTour /> */}
-
-        {/* {currentTab === "tabIcons" ? (
-        <CompIcons />
-      ) : (
-        <Tabs
-          defaultQuery={currentTab}
-          getAssetsFn={
-            currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
-          }
-          queryKey="stickers"
-        />
-      )} */}
       </div>
     </>
   );
