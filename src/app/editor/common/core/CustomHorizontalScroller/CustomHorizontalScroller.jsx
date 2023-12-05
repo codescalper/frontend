@@ -13,7 +13,7 @@ import BsChevronRight from "@meronex/icons/bs/BsChevronRight";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getAssetByQuery, getFeaturedAssets } from "../../../../../services";
 
-const CustomHorizontalScroller = ({ type }) => {
+const CustomHorizontalScroller = ({ type, author, campaign }) => {
   const [arrImages, setArrImages] = useState();
 
   const {
@@ -25,13 +25,13 @@ const CustomHorizontalScroller = ({ type }) => {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: [type === "stickers" && "stickers", "lensjump"],
+    queryKey: [type, author || campaign],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
       getAssetByQuery(
-        type === "stickers" && "props",
-        "",
-        "halloween",
+        type,
+        author,
+        campaign,
         pageParam
       ),
   });

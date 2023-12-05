@@ -10,4 +10,5 @@ export const LOCAL_STORAGE = {
   dispatcher: "dispatcher",
   userGuideTour: "user.guide.tour",
   braveShieldWarn: "brave.shield.warn",
+  userId: "user.id",
 };

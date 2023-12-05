@@ -250,9 +250,9 @@ const Editor = () => {
       // save it to the backend
       if (canvasChildren?.length > 0) {
         // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
-        // console.log("parentRecipientRef", recipientDataCombiner().recipients);
+        console.log("parentRecipientRef", recipientDataCombiner().recipients);
 
-        // return;
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {
@@ -369,7 +369,7 @@ const Editor = () => {
       try {
         const res = await checkDispatcher();
         if (res?.status === "success") {
-          saveToLocalStorage(LOCAL_STORAGE.dispatcher, res?.message);
+          saveToLocalStorage(LOCAL_STORAGE.dispatcher, true);
         } else {
           saveToLocalStorage(LOCAL_STORAGE.dispatcher, false);
         }

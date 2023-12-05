@@ -21,7 +21,7 @@ const CustomImageComponent = ({
   isLensCollect,
   changeCanvasDimension,
   recipientWallet,
-  tab,
+  showAuthor,
   author,
 }) => {
   const store = useStore();
@@ -169,7 +169,7 @@ const CustomImageComponent = ({
 
         {/* If the BE sends Wallet address - recipientWallet */}
         {/* Shorten it and Show on the FrontEnd */}
-        {tab === "halloween" && (
+        {showAuthor && (
           <div className="text-white appFont text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96">
             {" "}
             {author}{" "}
