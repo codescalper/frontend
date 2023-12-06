@@ -766,6 +766,7 @@ const ERC721Edition = () => {
 
   // get the ENS domain of the recipient
   useEffect(() => {
+    if(!zoraErc721Enabled.royaltySplitRecipients.length) return;
     const recipients = zoraErc721Enabled.royaltySplitRecipients.map(
       (recipient) => recipient.address
     );
