@@ -24,10 +24,13 @@ export const getENSDomain = async (address) => {
   };
 
   try {
-    const result = await request(AIRSTACK_API, getENSDomainQuery, variables, 
-    //   {
-    //   Authorization: AIRSTACK_API_KEY,
-    // }
+    const result = await request(
+      AIRSTACK_API,
+      getENSDomainQuery,
+      variables
+      //   {
+      //   Authorization: AIRSTACK_API_KEY,
+      // }
     );
 
     let arr = [];
