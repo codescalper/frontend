@@ -577,15 +577,15 @@ const LensShare = () => {
 
   // get the Lens Handle of the recipient
   useEffect(() => {
+    if (!enabled.splitRevenueRecipients.length) return;
     const recipients = enabled.splitRevenueRecipients.map(
       (item) => item.recipient
     );
     (async () => {
       // get the only the recipients from the list
-        const lensHandles = await getSocialDetails(recipients, "lens");
-        setRecipientsLensHandle(lensHandles);
-    })()
-
+      const lensHandles = await getSocialDetails(recipients, "lens");
+      setRecipientsLensHandle(lensHandles);
+    })();
   }, [enabled.splitRevenueRecipients]);
 
   return (
