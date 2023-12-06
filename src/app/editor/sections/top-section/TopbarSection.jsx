@@ -8,6 +8,7 @@ import { useAppAuth } from "../../../../hooks/app";
 import { Typography } from "@material-tailwind/react";
 import { EVMWallets, SolanaWallets } from "./auth/wallets";
 import Logo from "./logo/Logo";
+import PointsBtn from "./PointsBtn/PointsBtn";
 
 const TopbarSection = () => {
   const { isAuthenticated } = useAppAuth();
@@ -53,6 +54,7 @@ const TopbarSection = () => {
               <ShareButton />
             </div>
             <DownloadBtn />
+            <PointsBtn />
             <div className="" id="first-step">
               {/* user profile circular */}
               <ProfileMenu />
