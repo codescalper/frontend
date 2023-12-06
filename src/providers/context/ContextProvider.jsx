@@ -14,6 +14,8 @@ const ContextProvider = ({ children }) => {
   const canvasBase64Ref = useRef([]);
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [openedProfilePanel, setOpenedProfilePanel] = useState(false);
 
   // for twitter auth
   const [queryParams, setQueryParams] = useState({
@@ -435,6 +437,12 @@ const ContextProvider = ({ children }) => {
         open,
         setOpen,
 
+        // For Profile Panel
+        isProfileOpen,
+        setIsProfileOpen,
+        openedProfilePanel,
+        setOpenedProfilePanel,
+        
         // for calendar
         stFormattedDate,
         setStFormattedDate,
