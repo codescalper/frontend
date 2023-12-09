@@ -65,11 +65,11 @@ const ERC721Edition = ({ isOpenAction }) => {
   const [OAerror, setOAerror] = useState("");
   const {
     createSplit,
-    createSplitData,
-    createSplitError,
-    isCreateSplitError,
-    isCreateSplitLoading,
-    isCreateSplitSuccess,
+    data: createSplitData,
+    error: createSplitError,
+    isError: isCreateSplitError,
+    isLoading: isCreateSplitLoading,
+    isSuccess: isCreateSplitSuccess,
   } = useCreateSplit();
 
   const {
