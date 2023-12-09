@@ -23,6 +23,7 @@ import {
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
+  useSwitchNetwork,
   useWaitForTransaction,
 } from "wagmi";
 import { useAppAuth } from "../../../../../../../hooks/app";
@@ -51,7 +52,7 @@ import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { useChainModal } from "@rainbow-me/rainbowkit";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
-const ERC721Edition = ({ isOpenAction }) => {
+const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
   const { address } = useAccount();
   const { isAuthenticated } = useAppAuth();
   const chainId = useChainId();
@@ -71,6 +72,14 @@ const ERC721Edition = ({ isOpenAction }) => {
     isLoading: isCreateSplitLoading,
     isSuccess: isCreateSplitSuccess,
   } = useCreateSplit();
+
+  const {
+    error: errorSwitchNetwork,
+    isError: isErrorSwitchNetwork,
+    isLoading: isLoadingSwitchNetwork,
+    isSuccess: isSuccessSwitchNetwork,
+    switchNetwork,
+  } = useSwitchNetwork();
 
   const {
     zoraErc721Enabled,
@@ -127,8 +136,8 @@ const ERC721Edition = ({ isOpenAction }) => {
           setOAisLoading(false);
           setOAisSuccess(true);
         } else {
-          setOAisError(res?.error || ERROR.SOMETHING_WENT_WRONG);
-          setOAerror(true);
+          setOAerror(res?.error || ERROR.SOMETHING_WENT_WRONG);
+          setOAisError(true);
           setOAisLoading(false);
           setOAisSuccess(false);
         }
@@ -143,7 +152,12 @@ const ERC721Edition = ({ isOpenAction }) => {
 
   const isUnsupportedChain = () => {
     // chains[0] is the polygon network
-    if (chainId === chains[0]?.id || chain?.unsupported) return true;
+    if (
+      chainId === chains[0]?.id ||
+      chain?.unsupported ||
+      chain?.id != selectedChainId
+    )
+      return true;
   };
 
   // formate date and time in uxin timestamp
@@ -789,7 +803,7 @@ const ERC721Edition = ({ isOpenAction }) => {
     }
   }, [isCreateSplitSuccess, write]);
 
-  // create open adictio
+  // create open adiction
   useEffect(() => {
     if (isOpenAction && receipt?.logs[0]?.address) {
       createOpenAction(receipt?.logs[0]?.address);
@@ -830,6 +844,17 @@ const ERC721Edition = ({ isOpenAction }) => {
       toast.error(OAerror);
     }
   }, [OAisError]);
+
+  // error/success handling for network switch
+  useEffect(() => {
+    if (isErrorSwitchNetwork) {
+      toast.error(errorSwitchNetwork?.message.split("\n")[0]);
+    }
+
+    if (isSuccessSwitchNetwork) {
+      toast.success(`Network switched to ${chain?.name}`);
+    }
+  }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
 
   // get the ENS domain of the recipient
   useEffect(() => {
@@ -1473,43 +1498,23 @@ const ERC721Edition = ({ isOpenAction }) => {
       </>
       {/* Switch Number 8 End */}
 
-      {/* networks */}
-      {openChainModal && (
-        <div className="mx-2 my-4">
-          <h2 className="text-lg mb-2"> Change Networks </h2>
-          <Button
-            fullWidth
-            color={chain?.unsupported ? "red" : "gray"}
-            onClick={openChainModal}
-            className="flex justify-center gap-2 items-center"
-          >
-            {" "}
-            {chain?.iconUrl && (
-              <img
-                src={chain?.iconUrl}
-                alt={chain?.name}
-                width={12}
-                height={12}
-              />
-            )}
-            {chain?.unsupported ? "Wrong Network" : chain?.name}
-            <ChevronDownIcon className="h-4 w-4" />
-          </Button>
-          {chain?.id === chains[0]?.id ? (
-            <InputErrorMsg
-              message={`${
-                isOpenAction ? "Open action" : "Zora Edition"
-              } is not supported on ${chain?.name}`}
-              className="text-md mt-2"
-            />
-          ) : (
-            <></>
-          )}
-        </div>
-      )}
-
       {!getEVMAuth ? (
         <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
+      ) : isUnsupportedChain() ? (
+        <div className="mx-2 outline-none">
+          <Button
+            className="w-full outline-none flex justify-center items-center gap-2"
+            disabled={isLoadingSwitchNetwork}
+            onClick={() => switchNetwork(selectedChainId)}
+            color="red"
+          >
+            {isLoadingSwitchNetwork ? "Switching" : "Switch"} to{" "}
+            {chains.find((i) => i.id === selectedChainId)?.name
+              ? chains.find((i) => i.id === selectedChainId)?.name
+              : "a suported"}{" "}
+            Network {isLoadingSwitchNetwork && <Spinner />}
+          </Button>
+        </div>
       ) : (
         <div className="mx-2 my-4">
           <Button
