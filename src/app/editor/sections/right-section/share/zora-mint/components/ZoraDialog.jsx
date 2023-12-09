@@ -22,6 +22,9 @@ const ZoraDialog = ({
   isSuccess,
   isCreatingSplit,
   isUploadingToIPFS,
+  OAisLoading,
+  OAisSuccess,
+  isOpenAction,
 }) => {
   const [open, setOpen] = useState(false);
   const { resetState } = useReset();
@@ -67,34 +70,46 @@ const ZoraDialog = ({
                 "Confirm the transaction to create the split..."}
               {isLoading && "Confirm the transaction to create the Edition..."}
               {isPending && "Transaction is pending..."}
-              {isSuccess && (
-                <>
-                  Transaction is successful. <br />
-                  <span className="text-md">
-                    Check your edition on{" "}
-                    <a
-                      href={zoraURLErc721(data?.logs[0]?.address)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-500"
-                    >
-                      Zora
-                    </a>
-                  </span>
-                </>
-              )}
+              {OAisLoading && "Creating Lens open action..."}
+              {isOpenAction
+                ? OAisSuccess && (
+                    <>
+                      Open Action is created successfully.
+                    </>
+                  )
+                : isSuccess && (
+                    <>
+                      Transaction is successful. <br />
+                      <span className="text-md">
+                        Check your edition on{" "}
+                        <a
+                          href={zoraURLErc721(data?.logs[0]?.address)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-500"
+                        >
+                          Zora
+                        </a>
+                      </span>
+                    </>
+                  )}
             </Typography>
             {(isUploadingToIPFS ||
               isCreatingSplit ||
               isLoading ||
-              isPending) && <Spinner color="blue" />}
+              isPending ||
+              OAisLoading) && <Spinner color="blue" />}
           </div>
         </DialogBody>
 
         <DialogFooter>
           <Button
             disabled={
-              isUploadingToIPFS || isCreatingSplit || isLoading || isPending
+              isUploadingToIPFS ||
+              isCreatingSplit ||
+              isLoading ||
+              isPending ||
+              OAisLoading
             }
             color="teal"
             onClick={() => {

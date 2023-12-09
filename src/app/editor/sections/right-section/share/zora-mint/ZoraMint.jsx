@@ -32,7 +32,7 @@ const ZoraMint = () => {
               </TabsHeader>
 
               {/* add components */}
-              {zoraTab === "ERC721" && <ERC721Edition />}
+              {zoraTab === "ERC721" && <ERC721Edition isOpenAction={false} />}
 
               {zoraTab === "ERC1155" && (
                 <h1 className="text-center text-xl mt-10">Coming soon</h1>

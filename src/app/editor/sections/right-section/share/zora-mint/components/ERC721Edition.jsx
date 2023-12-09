@@ -26,10 +26,15 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { useAppAuth } from "../../../../../../../hooks/app";
-import { APP_ETH_ADDRESS, LOCAL_STORAGE } from "../../../../../../../data";
+import {
+  APP_ETH_ADDRESS,
+  ERROR,
+  LOCAL_STORAGE,
+} from "../../../../../../../data";
 import {
   ENVIRONMENT,
   getENSDomain,
+  shareOnSocials,
   uploadUserAssetToIPFS,
 } from "../../../../../../../services";
 import { zoraNftCreatorV1Config } from "@zoralabs/zora-721-contracts";
@@ -46,7 +51,7 @@ import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { useChainModal } from "@rainbow-me/rainbowkit";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
-const ERC721Edition = () => {
+const ERC721Edition = ({ isOpenAction }) => {
   const { address } = useAccount();
   const { isAuthenticated } = useAppAuth();
   const chainId = useChainId();
@@ -54,6 +59,10 @@ const ERC721Edition = () => {
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const { openChainModal } = useChainModal();
   const [recipientsEns, setRecipientsEns] = useState([]);
+  const [OAisLoading, setOAisLoading] = useState(false);
+  const [OAisSuccess, setOAisSuccess] = useState(false);
+  const [OAisError, setOAisError] = useState(false);
+  const [OAerror, setOAerror] = useState("");
   const {
     createSplit,
     createSplitData,
@@ -74,7 +83,7 @@ const ERC721Edition = () => {
     canvasBase64Ref,
   } = useContext(Context);
 
-  // upload to IPFS
+  // upload to IPFS Mutation
   const {
     mutate,
     data: uploadData,
@@ -86,6 +95,51 @@ const ERC721Edition = () => {
     mutationKey: "uploadToIPFS",
     mutationFn: uploadUserAssetToIPFS,
   });
+
+  // share open action edition on LENS Mutation
+  const { mutateAsync: createOpenActionMutation } = useMutation({
+    mutationKey: "openAction",
+    mutationFn: shareOnSocials,
+  });
+
+  const createOpenAction = (zoraMintAddress) => {
+    setOAisLoading(true);
+
+    const canvasData = {
+      id: contextCanvasIdRef.current,
+      name: "Lens open action",
+      content: postDescription,
+    };
+    const canvasParams = {
+      openAction: "mintToZora",
+      zoraMintAddress: zoraMintAddress,
+    };
+
+    createOpenActionMutation({
+      canvasData: canvasData,
+      canvasParams: canvasParams,
+      platform: "lens",
+    })
+      .then((res) => {
+        if (res?.txHash) {
+          setOAerror("tes");
+          setOAisError(false);
+          setOAisLoading(false);
+          setOAisSuccess(true);
+        } else {
+          setOAisError(res?.error || ERROR.SOMETHING_WENT_WRONG);
+          setOAerror(true);
+          setOAisLoading(false);
+          setOAisSuccess(false);
+        }
+      })
+      .catch((error) => {
+        setOAisError(errorMessage(error));
+        setOAerror(true);
+        setOAisLoading(false);
+        setOAisSuccess(false);
+      });
+  };
 
   const isUnsupportedChain = () => {
     // chains[0] is the polygon network
@@ -446,7 +500,7 @@ const ERC721Edition = () => {
     const args = {
       recipients: zoraErc721Enabled.royaltySplitRecipients,
       distributorFeePercent: 0.0,
-      // controller: APP_ETH_ADDRESS,
+      controller: APP_ETH_ADDRESS,
       // controller is the owner of the split contract that will make it mutable contract
     };
     return args;
@@ -696,6 +750,8 @@ const ERC721Edition = () => {
     mutate(canvasBase64Ref.current[0]);
   };
 
+  // share open action edition on LENS
+
   // add recipient to the split list
   useEffect(() => {
     if (isAuthenticated) {
@@ -709,9 +765,7 @@ const ERC721Edition = () => {
         royaltySplitRecipients: [
           {
             address: APP_ETH_ADDRESS,
-            percentAllocation:
-              zoraErc721Enabled.royaltySplitRecipients[0].percentAllocation ||
-              10.0,
+            percentAllocation: 10.0,
           },
           ...updatedRecipients,
         ],
@@ -734,6 +788,13 @@ const ERC721Edition = () => {
       }, 1000);
     }
   }, [isCreateSplitSuccess, write]);
+
+  // create open adictio
+  useEffect(() => {
+    if (isOpenAction && receipt?.logs[0]?.address) {
+      createOpenAction(receipt?.logs[0]?.address);
+    }
+  }, [isSuccess]);
 
   // error handling for mint
   useEffect(() => {
@@ -759,33 +820,42 @@ const ERC721Edition = () => {
   // error handling for upload to IPFS
   useEffect(() => {
     if (isUploadError) {
-      console.log("upload IPFS error", uploadError);
       toast.error(errorMessage(uploadError));
     }
   }, [isUploadError]);
 
+  // error handling for open action
+  useEffect(() => {
+    if (OAisError) {
+      toast.error(OAerror);
+    }
+  }, [OAisError]);
+
   // get the ENS domain of the recipient
   useEffect(() => {
-    if(!zoraErc721Enabled.royaltySplitRecipients.length) return;
+    if (!zoraErc721Enabled.royaltySplitRecipients.length) return;
     const recipients = zoraErc721Enabled.royaltySplitRecipients.map(
       (recipient) => recipient.address
     );
 
     (async () => {
       // get the only the recipients from the list
-        const domains = await getENSDomain(recipients);
-        setRecipientsEns(domains);
-    })()
+      const domains = await getENSDomain(recipients);
+      setRecipientsEns(domains);
+    })();
   }, [zoraErc721Enabled.royaltySplitRecipients]);
 
   return (
     <>
       <ZoraDialog
-        isError={isUploadError || isCreateSplitError || isError}
+        isError={isUploadError || isCreateSplitError || isError || OAisError}
         isLoading={isLoading}
         isCreatingSplit={isCreateSplitLoading}
         isUploadingToIPFS={isUploading}
         isPending={isPending}
+        OAisLoading={OAisLoading}
+        OAisSuccess={OAisSuccess}
+        isOpenAction={isOpenAction}
         data={receipt}
         isSuccess={isSuccess}
       />
@@ -1427,7 +1497,9 @@ const ERC721Edition = () => {
           </Button>
           {chain?.id === chains[0]?.id ? (
             <InputErrorMsg
-              message={`Zora Editions are not supported on ${chain?.name}`}
+              message={`${
+                isOpenAction ? "Open action" : "Zora Edition"
+              } is not supported on ${chain?.name}`}
               className="text-md mt-2"
             />
           ) : (
