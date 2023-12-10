@@ -784,6 +784,16 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
           ...updatedRecipients,
         ],
       }));
+
+      const recipients = updatedRecipients.map((item) => {
+        return item.address;
+      });
+
+      (async () => {
+        // get the only the recipients from the list
+        const domains = await getENSDomain([APP_ETH_ADDRESS, ...recipients]);
+        setRecipientsEns(domains);
+      })();
     }
   }, [isAuthenticated]);
 
@@ -855,22 +865,6 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
       toast.success(`Network switched to ${chain?.name}`);
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
-
-  // get the ENS domain of the recipient
-  useEffect(() => {
-
-    if (!zoraErc721Enabled.royaltySplitRecipients.length) return;
-    const recipients = zoraErc721Enabled.royaltySplitRecipients.map(
-      (recipient) => recipient.address
-    );
-
-    (async () => {
-      // get the only the recipients from the list
-      const domains = await getENSDomain(recipients);
-      setRecipientsEns(domains);
-    })();
-
-  }, [zoraErc721Enabled.royaltySplitRecipients]);
 
   return (
     <>

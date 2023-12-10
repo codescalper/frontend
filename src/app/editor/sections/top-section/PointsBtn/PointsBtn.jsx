@@ -8,14 +8,24 @@ import { getAvatar } from "../../../../../utils";
 import { useSolanaWallet } from "../../../../../hooks/solana";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { getUserProfileDetails } from "../../../../../services";
+import {
+  getProfileImage,
+  getUserProfileDetails,
+} from "../../../../../services";
 
 const PointsBtn = () => {
-  const { menu, setMenu, isProfileOpen, setIsProfileOpen, userProfileDetails, setUserProfileDetails } =
-    useContext(Context);
+  const {
+    menu,
+    setMenu,
+    isProfileOpen,
+    setIsProfileOpen,
+    userProfileDetails,
+    setUserProfileDetails,
+  } = useContext(Context);
 
   const { solanaAddress } = useSolanaWallet();
   const { address } = useAccount();
+  const [profilePic, setProfilePic] = useState(null);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["getUserProfileDetails"],
@@ -24,25 +34,32 @@ const PointsBtn = () => {
 
   const fnGetUserProfileDetails = async () => {
     const res = await data?.data?.message;
-    console.log(res);
     setUserProfileDetails({
       email: res?.mail,
       username: res?.username,
       points: res?.points,
       lens_handle: res?.lens_handle,
     });
-  }
+  };
+
+  const getProfilePic = async () => {
+    const res = await getProfileImage({
+      address: [address],
+    });
+
+    setProfilePic(res);
+  };
 
   useEffect(() => {
     fnGetUserProfileDetails();
-  }
-  , [data]);
+    getProfilePic();
+  }, [data]);
 
   return (
     <>
       <div
-      // className="flex align-middle justify-between rounded-full cursor-pointer w-16"
-      className="flex" 
+        // className="flex align-middle justify-between rounded-full cursor-pointer w-16"
+        className="flex"
       >
         {/* <div className="m-1 cursor-pointer">
           <img className="h-6" src={Coin} alt="Coin" />
@@ -53,7 +70,9 @@ const PointsBtn = () => {
           <div className="m-1">
             <img className="h-6" src={Coin} alt="Coin" />
           </div>
-          <div className="m-1 text-lg mr-2 ml-2">{userProfileDetails?.points}</div>
+          <div className="m-1 text-lg mr-2 ml-2">
+            {userProfileDetails?.points}
+          </div>
         </div>
 
         <div
@@ -67,7 +86,7 @@ const PointsBtn = () => {
             variant="circular"
             alt="profile picture"
             className="cursor-pointer outline outline-black"
-            src={getAvatar(address || solanaAddress)}
+            src={profilePic || getAvatar(address || solanaAddress)}
           />
         </div>
       </div>

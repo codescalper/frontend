@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Context } from "../../../../../../../providers/context";
 import { useAccount } from "wagmi";
 import BiCopy from '@meronex/icons/bi/BiCopy';
+import { toast } from "react-toastify";
 
 const UserCard = () => {
   // useState for Object
@@ -27,6 +28,7 @@ const UserCard = () => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
+    toast.success("Address copied");
   }
 
   return (

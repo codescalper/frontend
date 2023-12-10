@@ -21,8 +21,6 @@ const TasksCard = ({
 
   const { setOpenedProfileModal, openedModalName, setOpenedModalName } = useContext(Context);
 
-  console.log(modalName);
-
   const handleClick = () => {
     if (!isCompleted) {
       setOpenedModalName(modalName);
