@@ -626,3 +626,16 @@ export const updateUserProfile = async (data) => {
     data: result?.data,
   };
 }
+
+// Claim Reward
+
+export const claimReward = async (data) => {
+
+  const result = await api.post(`${API}/user/loyalty/claim-reward`, data);
+
+  return {
+    data: result?.data,
+  };
+}
+
+

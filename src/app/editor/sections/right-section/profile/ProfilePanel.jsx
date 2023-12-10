@@ -72,7 +72,6 @@ const ProfilePanel = () => {
 
             <CardsHeading name="Trending" iconImg={iconTrending} />
             <LensCard />
-            <XMTP />
 
             <Tabs className="overflow-scroll my-2" value={selectedTab}>
               <TabsHeader className="relative top-0 mx-2 mb-4">
@@ -108,7 +107,6 @@ const ProfilePanel = () => {
                         <div
                           onClick={() => {
                             setOpenedModal(task?.tag);
-                            console.log("openedModal", openedModal);
                           }}
                         >
                           <TasksCard

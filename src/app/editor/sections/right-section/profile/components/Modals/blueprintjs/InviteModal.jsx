@@ -9,7 +9,7 @@ import {
   getProfileImage,
   getTop5SocialDetails,
 } from "../../../../../../../../services";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { Top5ProfileCard } from "../../Cards";
 
 // XMTP
@@ -22,8 +22,9 @@ const InviteModal = () => {
   const [formData, setFormData] = useState({});
   const [top5Users, setTop5Users] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const { data: walletClient, isError, isLoading } = useWalletClient();
+  const { data: walletClient, isError, isLoading } = useWalletClient();
   const [xmtpSendAddr, setXmtpSendAddr] = useState("");
+
   // const { data: signer, isError, isLoading } = useSigner()
 
   const userAddresses = [];
@@ -31,35 +32,68 @@ const InviteModal = () => {
   const userProfileImages = [];
 
   // XMPT - START
+  // Create a client
+  let xmtp = null;
+  //Fabri wallet
+  let WALLET_TO = "0x3F11b27F323b62B159D2642964fa27C46C841897";
+  let conversation = null;
 
-  // const fnCreateXMTPClient = async () => {
-  //   const xmtp = await Client.create(signer, { env: "dev" });
-  //   console.log(xmtp);
+  // 0xE3811DeFd98AF92712e54b0b3E1735c1051C86D6
 
-  //   return xmtp;
-  // };
+  async function create_a_client() {
+    if (!walletClient) {
+      console.log("Wallet is not initialized");
+      return;
+    }
 
-  // // Start a conversation with XMTP
-  // // const [conversation, setConversation] = useState(null);
+    xmtp = await Client.create(walletClient, { env: "dev" });
+    console.log("Client created", xmtp.address);
+  }
 
-  // const fnNewConversation = async () => {
-  //   const conversation = await fnCreateXMTPClient().conversations.newConversation(xmtpSendAddr);
-  //   console.log(conversation);
+  //Check if an address is on the network
+  async function check_if_an_address_is_on_the_network() {
+    //Message this XMTP message bot to get an immediate automated reply:
+    // gm.xmtp.eth (0x937C0d4a6294cdfa575de17382c7076b579DC176) 
+    //
 
-  //   const res = await conversation.send("Test");
-  //   console.log(res);
+    if (xmtp) {
+      const isOnDevNetwork = await xmtp.canMessage(WALLET_TO);
+      console.log(`Can message: ${isOnDevNetwork}`);
+      return isOnDevNetwork;
+    }
+    return false;
+  }
 
-  //   // return conversation;
-  // };
+  //Start a new conversation
+  async function start_a_new_conversation() {
+    const canMessage = await check_if_an_address_is_on_the_network();
+    if (!canMessage) {
+      console.log("Address is not on the network");
+      return;
+    }
+
+    if (xmtp) {
+      conversation = await xmtp.conversations.newConversation(WALLET_TO);
+      console.log(conversation)
+      console.log(`Conversation created with ${conversation.peerAddress}`);
+    }
+  }
+
+  //Send a message
+  async function send_a_message() {
+    if (conversation) {
+      const message = await conversation.send("GM Builders");
+      console.log(`Message sent: "${message.content}"`);
+      return message;
+    }
+  }
 
   // Send a message to XMTP
-  // const fnSendXmtpMessage = async () => {
-  //   const messageRes = await fnNewConversation().send("Test");
-
-  //   console.log("Send message response:");
-  //   console.log(messageRes);
-  //   gm.xmtp.eth("0x937C0d4a6294cdfa575de17382c7076b579DC176")
-  // };
+  const fnSendXmtpMessage = async () => {
+    await start_a_new_conversation()
+    const res = await send_a_message();
+    console.log(res);
+  };
 
   // XMPT - END
 
@@ -113,6 +147,7 @@ const InviteModal = () => {
 
   useEffect(() => {
     fnGetTop5Interactions();
+    create_a_client();
 
     // fnCreateXMTPClient();
     // fnNewConversation();
@@ -176,10 +211,9 @@ const InviteModal = () => {
 
           <div className="mt-4 text-right">
             <Button
-              onClick={() => {  }}
+              onClick={() => fnSendXmtpMessage()}
               color="indigo"
               // size="sm"
-              
             >
               {" "}
               Confirm{" "}
