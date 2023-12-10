@@ -30,11 +30,11 @@ const useCreateSplit = () => {
 
   return {
     createSplit,
-    createSplitData: data,
-    isCreateSplitSuccess: isSuccess,
-    isCreateSplitError: isError,
-    createSplitError: error,
-    isCreateSplitLoading: isLoading,
+    data,
+    isSuccess,
+    isError,
+    error,
+    isLoading,
   };
 };
 

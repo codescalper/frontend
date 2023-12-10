@@ -1,15 +1,10 @@
 import React, { useContext } from "react";
 import { SharePanelHeaders } from "../components";
 import { Context } from "../../../../../../providers/context";
-import {
-  Tabs,
-  TabsHeader,
-  TabsBody,
-  Tab,
-} from "@material-tailwind/react";
+import { Tabs, TabsHeader, TabsBody, Tab } from "@material-tailwind/react";
 import { ERC1155Edition, ERC721Edition } from "./components";
 
-const ZoraMint = () => {
+const ZoraMint = ({ selectedChainId }) => {
   const { zoraTab, setZoraTab } = useContext(Context);
 
   return (
@@ -21,7 +16,11 @@ const ZoraMint = () => {
           <>
             <Tabs className="overflow-y-auto my-2" value={zoraTab}>
               <TabsHeader className="relative top-0 ">
-                <Tab value={"ERC721"} className="appFont" onClick={() => setZoraTab("ERC721")}>
+                <Tab
+                  value={"ERC721"}
+                  className="appFont"
+                  onClick={() => setZoraTab("ERC721")}
+                >
                   {" "}
                   ERC721{" "}
                 </Tab>
@@ -32,7 +31,9 @@ const ZoraMint = () => {
               </TabsHeader>
 
               {/* add components */}
-              {zoraTab === "ERC721" && <ERC721Edition />}
+              {zoraTab === "ERC721" && (
+                <ERC721Edition isOpenAction={false} selectedChainId={selectedChainId} />
+              )}
 
               {zoraTab === "ERC1155" && (
                 <h1 className="text-center text-xl mt-10">Coming soon</h1>

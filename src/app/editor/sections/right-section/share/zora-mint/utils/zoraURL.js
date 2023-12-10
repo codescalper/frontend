@@ -10,22 +10,36 @@ import { ENVIRONMENT } from "../../../../../../../services";
  * ERC721 Testnet Goerli
  */
 
-export const zoraURLErc721 = (contractAddress) => {
-  return `https://${ENVIRONMENT === "production" ? "" : "testnet."}zora.co/collect/${
-    ENVIRONMENT === "production" ? "zora" : "gor"
+export const zoraURLErc721 = (contractAddress, chainId) => {
+  const mainnetPrefix = () => {
+    if (chainId === 8453) {
+      return "base";
+    } else if (chainId === 1) {
+      return "eth";
+    } else if (chainId === 7777777) {
+      return "zora";
+    } else if (chainId === 10) {
+      return "oeth";
+    }
+  };
+
+  return `https://${
+    ENVIRONMENT === "production" ? "" : "testnet."
+  }zora.co/collect/${
+    ENVIRONMENT === "production" ? mainnetPrefix() : "gor"
   }:${contractAddress}`;
 };
 
 /**
  * https://testnet.zora.co/collect/zgor:0x40583f3414f276fee55c126151e6a28dcafe4df8/premint-2 erc1155
  * ERC1155 Testnet Goerli
- * 
+ *
  * https://zora.co/collect/zora:0x40583f3414f276fee55c126151e6a28dcafe4df8/premint-1
  * ERC1155 Mainnet Zora
  */
 
-export const zoraURLErc1155 = (contractAddress, tokenId) => {
-    return `https://${ENVIRONMENT != "production" && "testnet."}zora.co/collect/${
-        ENVIRONMENT != "production" ? "zgor" : "zora"
-    }:${contractAddress}/premint-${tokenId}`;
-}
+export const zoraURLErc1155 = (contractAddress, tokenId, chainId) => {
+  return `https://${ENVIRONMENT != "production" && "testnet."}zora.co/collect/${
+    ENVIRONMENT != "production" ? "zgor" : "zora"
+  }:${contractAddress}/premint-${tokenId}`;
+};

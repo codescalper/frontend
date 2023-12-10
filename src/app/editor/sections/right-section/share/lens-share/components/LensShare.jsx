@@ -560,14 +560,14 @@ const LensShare = () => {
     }
   }, [isAuthenticated]);
 
-  // error handling for network switch
+  // error/success handling for network switch
   useEffect(() => {
     if (isErrorSwitchNetwork) {
       toast.error(errorSwitchNetwork?.message.split("\n")[0]);
     }
 
     if (isSuccessSwitchNetwork) {
-      toast.success("Network switched successfully");
+      toast.success(`Network switched to ${chain?.name}`);
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
 
@@ -957,7 +957,8 @@ const LensShare = () => {
               onClick={() => switchNetwork(chains[0]?.id)}
               color="red"
             >
-              Wrong Network {isLoadingSwitchNetwork && <Spinner />}
+              {isLoadingSwitchNetwork ? "Switching" : "Switch"} to{" "}
+              {chains[0]?.name} Network {isLoadingSwitchNetwork && <Spinner />}
             </Button>
           </div>
         ) : !getLensAuth?.profileHandle ? (
