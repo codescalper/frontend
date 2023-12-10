@@ -1,17 +1,18 @@
 import { useContext, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 // import { Dialog } from "@headlessui/react";
 import EmojiPicker, { EmojiStyle, Emoji } from "emoji-picker-react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
-import { getFromLocalStorage } from "../../../../../utils";
+import { chainLogo, getFromLocalStorage } from "../../../../../utils";
 import { Context } from "../../../../../providers/context/ContextProvider";
 import BsX from "@meronex/icons/bs/BsX";
-import { Textarea } from "@material-tailwind/react";
+import { Textarea, Typography } from "@material-tailwind/react";
 import logoSolana from "../../../../../assets/logos/logoSolana.png";
 import logoZora from "../../../../../assets/logos/logoZora.png";
 
 const ShareSection = () => {
   const { address, isConnected } = useAccount();
+  const { chains, chain } = useNetwork();
   const {
     setMenu,
     postDescription,
@@ -100,6 +101,7 @@ const ShareSection = () => {
                 label="Description"
                 onChange={(e) => setPostDescription(e.target.value)}
                 value={postDescription}
+                autoFocus={true}
                 // placeholder="Write a description..."
                 // className="border border-b-4 w-full h-40 mb-2 text-lg outline-none p-2 ring-0 focus:ring-2 rounded-lg"
               />
@@ -203,24 +205,35 @@ const ShareSection = () => {
         <hr />
         <div className={`relative mt-6 px-4 sm:px-6`}>
           <p className="text-lg">Mint as an NFT</p>
-          <div className="flex items-center space-x-12 py-5">
-            <div onClick={() => setMenu("solanaMint")}>
+          <div className="flex flex-wrap items-center gap-10 my-3">
+            <div
+              className="cursor-pointer flex flex-col items-center"
+              onClick={() => setMenu("solanaMint")}
+            >
               {" "}
-              <img
-                className="w-10 cursor-pointer"
-                src={logoSolana}
-                alt="Solana"
-              />{" "}
+              <img className="w-10" src={logoSolana} alt="Solana" />{" "}
+              <Typography className="text-md font-semibold">Solana</Typography>
             </div>
 
-            <div onClick={() => setMenu("zoraMint")}>
-              {" "}
-              <img
-                className="w-10 cursor-pointer"
-                src={logoZora}
-                alt="Zora"
-              />{" "}
-            </div>
+            {chains.slice(1).map((item) => {
+              return (
+                <div
+                  key={item?.id}
+                  className="cursor-pointer flex flex-col items-center"
+                  onClick={() => setMenu(item?.id)}
+                >
+                  {" "}
+                  <img
+                    className="w-10"
+                    src={chainLogo(item?.id)}
+                    alt={item?.name}
+                  />{" "}
+                  <Typography className="text-md font-semibold">
+                    {item?.name}
+                  </Typography>
+                </div>
+              );
+            })}
           </div>
         </div>
         <hr />

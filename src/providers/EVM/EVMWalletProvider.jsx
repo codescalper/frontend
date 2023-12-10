@@ -14,6 +14,8 @@ import {
   polygonMumbai,
   zoraTestnet,
   goerli,
+  baseGoerli,
+  optimismGoerli,
 } from "wagmi/chains";
 import {
   coinbaseWallet,
@@ -34,8 +36,8 @@ import {
 
 const { chains, publicClient } = configureChains(
   ENVIRONMENT === "production"
-    ? [polygon, mainnet, zora, optimism, base]
-    : [polygonMumbai, zoraTestnet, goerli],
+    ? [polygon, base, zora]
+    : [polygonMumbai, goerli],
   [alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()]
 );
 

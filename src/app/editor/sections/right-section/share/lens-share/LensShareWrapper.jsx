@@ -37,9 +37,7 @@ const LensShareWrapper = () => {
 
               {/* add components */}
               {lensTab === "normalPost" && <LensShare />}
-              {lensTab === "smartPost" && (
-                <h1 className="text-center text-xl mt-10">Coming soon</h1>
-              )}
+              {lensTab === "smartPost" && <SmartPost />}
             </Tabs>
           </>
         }
