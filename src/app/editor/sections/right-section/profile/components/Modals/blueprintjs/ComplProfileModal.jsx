@@ -47,7 +47,7 @@ const ComplProfileModal = ({ modalHead, modalSubHead }) => {
             {/* Please provide your Username and Email to complete your profile */}
             {modalSubHead}{" "}
           </div>
-          <div className="mt-6">
+          <div className="mt-4">
             <Input
               label="Username"
               name="username"
@@ -55,7 +55,7 @@ const ComplProfileModal = ({ modalHead, modalSubHead }) => {
             />
           </div>
 
-          <div className="mt-2">
+          <div className="mt-4">
             <Input
               label="Email"
               name="mailId"
@@ -63,7 +63,7 @@ const ComplProfileModal = ({ modalHead, modalSubHead }) => {
             />
           </div>
 
-          <div className="mt-2">
+          <div className="mt-6">
             <Button fullWidth color="" onClick={updateProfile} size="sm">
               {" "}
               Confirm{" "}
