@@ -54,10 +54,13 @@ const TopbarSection = () => {
               <ShareButton />
             </div>
             <DownloadBtn />
+
+            {/* Profile Avatar */}
             <PointsBtn />
+            
             <div className="" id="first-step">
               {/* user profile circular */}
-              <ProfileMenu />
+              {/* <ProfileMenu /> */}
               {/* {isSupportedChain() ? (
                 <></>
               ) : (

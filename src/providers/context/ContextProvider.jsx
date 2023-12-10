@@ -14,8 +14,19 @@ const ContextProvider = ({ children }) => {
   const canvasBase64Ref = useRef([]);
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);
+
+  // Profile Panel
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [openedProfilePanel, setOpenedProfilePanel] = useState(false);
+  const [openedProfileModal, setOpenedProfileModal] = useState(false);
+  const [openedModalName, setOpenedModalName] = useState("");
+
+  // User data from Profile panel
+  const [userProfileDetails, setUserProfileDetails] = useState({
+    email: "",
+    username: "",
+    points: "",
+    lens_handle: "",
+  });
 
   // for twitter auth
   const [queryParams, setQueryParams] = useState({
@@ -417,6 +428,14 @@ const ContextProvider = ({ children }) => {
         contextCanvasIdRef,
         canvasBase64Ref,
 
+        // User Profile Details
+        userProfileDetails,
+        setUserProfileDetails,
+
+        // for modal in profile panel
+        openedModalName,
+        setOpenedModalName,
+
         // for twitter auth
         queryParams,
         setQueryParams,
@@ -440,8 +459,8 @@ const ContextProvider = ({ children }) => {
         // For Profile Panel
         isProfileOpen,
         setIsProfileOpen,
-        openedProfilePanel,
-        setOpenedProfilePanel,
+        openedProfileModal,
+        setOpenedProfileModal,
         
         // for calendar
         stFormattedDate,

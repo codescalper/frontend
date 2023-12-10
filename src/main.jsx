@@ -1,8 +1,9 @@
+import "../polyfills";
+// https://github.com/xmtp/xmtp-js/issues/487
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Wrapper } from "./wrapper";
 import "./styles/index.css";
-import "../polyfills";
 import "react-toastify/dist/ReactToastify.css";
 import "react-lazy-load-image-component/src/effects/blur.css";
 

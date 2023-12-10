@@ -32,6 +32,13 @@ const useReset = () => {
     // Right Sidebar
     setIsShareOpen,
 
+    // For Profile Panel
+    setIsProfileOpen,
+    setOpenedProfileModal,
+    setDialogOpen,
+    setExplorerLink,
+    setUserProfileDetails,
+
     // user public templates states
     referredFromRef,
 

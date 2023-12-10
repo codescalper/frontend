@@ -8,7 +8,7 @@ import BsX from "@meronex/icons/bs/BsX";
 import { Context } from "../../../../../../providers/context";
 
 const ProfilePanelHeaders = ({ panelHeader, prevMenu, panelContent }) => {
-  const { setMenu, setIsProfileOpen } = useContext(Context);
+  const { setMenu, setIsProfileOpen, } = useContext(Context);
 
   return (
     <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl rounded-lg rounded-r-none ">
