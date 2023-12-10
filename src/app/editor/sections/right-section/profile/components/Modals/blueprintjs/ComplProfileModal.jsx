@@ -13,14 +13,12 @@ const ComplProfileModal = ({ modalHead, modalSubHead }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
 
     setFormData({ ...formData, [name]: value });
   };
 
   const updateProfile = async () => {
     const res = await updateUserProfile(formData);
-    console.log(res);
   };
 
   return (

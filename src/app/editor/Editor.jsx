@@ -368,7 +368,7 @@ const Editor = () => {
     const checkDispatcherFn = async () => {
       try {
         const res = await checkDispatcher();
-        if (res?.status === "success") {
+        if (res?.message) {
           saveToLocalStorage(LOCAL_STORAGE.dispatcher, true);
         } else {
           saveToLocalStorage(LOCAL_STORAGE.dispatcher, false);

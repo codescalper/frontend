@@ -24,7 +24,11 @@ export const getENSDomain = async (address) => {
   };
 
   try {
-    const result = await request(AIRSTACK_API, getENSDomainQuery, variables);
+    const result = await request(AIRSTACK_API, getENSDomainQuery, variables, {
+      headers: {
+        "x-api-key": AIRSTACK_API_KEY,
+      },
+    });
 
     const domain = result?.Domains?.Domain.find((d) => d?.isPrimary);
 
@@ -68,7 +72,12 @@ export const getSocialDetails = async (address, dappName) => {
     const result = await request(
       AIRSTACK_API,
       getSocialDetailsQuery,
-      variables
+      variables,
+      {
+        headers: {
+          "x-api-key": AIRSTACK_API_KEY,
+        },
+      }
     );
 
     const social = result?.Socials?.Social.find((s) => s?.profileHandle);
@@ -129,7 +138,12 @@ export const getTop5SocialDetails = async ({ address }) => {
     const result = await request(
       AIRSTACK_API,
       getTop5SocialDetailsQuery,
-      variables
+      variables,
+      {
+        headers: {
+          "x-api-key": AIRSTACK_API_KEY,
+        },
+      }
     );
 
     const socialDetails = result;
@@ -169,16 +183,24 @@ const getProfileImageQuery = gql`
 `;
 
 export const getProfileImage = async ({ address }) => {
-  console.log("getProfileImage");
-
   const variables = {
     identities: address,
   };
 
   try {
-    const result = await request(AIRSTACK_API, getProfileImageQuery, variables);
+    const result = await request(
+      AIRSTACK_API,
+      getProfileImageQuery,
+      variables,
+      {
+        headers: {
+          "x-api-key": AIRSTACK_API_KEY,
+        },
+      }
+    );
 
-    const profileImage = result;
+    const profileImage =
+      result?.Socials?.Social[0]?.profileImageContentValue?.image?.small;
 
     if (profileImage) {
       return profileImage;

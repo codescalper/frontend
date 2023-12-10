@@ -72,9 +72,9 @@ const InviteModal = () => {
 
   const fnGetTop5Interactions = async () => {
     setLoading(true);
-    const res = await getTop5SocialDetails({ address: [address] });
+    const res = await getTop5SocialDetails({ address: ["0x983d6466FAC5B2aFe57e070283a4932A1bd0508F"] });
 
-    console.log(res);
+    // console.log(res);
     // res?.SocialFollowers?.Follower[0].followerAddress.socials[0].userAssociatedAddresses[0]
 
     if (res && res.SocialFollowers && res.SocialFollowers.Follower) {
