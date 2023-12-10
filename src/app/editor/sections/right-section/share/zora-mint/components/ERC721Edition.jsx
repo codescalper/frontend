@@ -858,6 +858,7 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
 
   // get the ENS domain of the recipient
   useEffect(() => {
+
     if (!zoraErc721Enabled.royaltySplitRecipients.length) return;
     const recipients = zoraErc721Enabled.royaltySplitRecipients.map(
       (recipient) => recipient.address
@@ -868,6 +869,7 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
       const domains = await getENSDomain(recipients);
       setRecipientsEns(domains);
     })();
+
   }, [zoraErc721Enabled.royaltySplitRecipients]);
 
   return (

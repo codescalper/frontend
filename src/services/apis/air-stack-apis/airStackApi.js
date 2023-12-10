@@ -5,7 +5,7 @@ import { AIRSTACK_API_KEY } from "../../env/env";
 export const AIRSTACK_API = "https://api.airstack.xyz/gql";
 
 const getENSDomainQuery = gql`
-  query MyQuery($owners: [Identity!]) {
+  query MyQuery($owner: Identity!) {
     Domains(
       input: { filter: { owner: { _in: $owners } }, blockchain: ethereum }
     ) {
@@ -24,30 +24,15 @@ export const getENSDomain = async (address) => {
   };
 
   try {
-    const result = await request(
-      AIRSTACK_API,
-      getENSDomainQuery,
-      variables
-      //   {
-      //   Authorization: AIRSTACK_API_KEY,
-      // }
-    );
+    const result = await request(AIRSTACK_API, getENSDomainQuery, variables);
 
-    let arr = [];
+    const domain = result?.Domains?.Domain.find((d) => d?.isPrimary);
 
-    // check which address has ens
-    address.map((addr) => {
-      const ens = result?.Domains?.Domain.find(
-        (d) => (d?.owner).toLowerCase() === addr.toLowerCase() && d?.isPrimary
-      );
-      if (ens) {
-        arr.push(ens?.name);
-      } else {
-        arr.push(addr);
-      }
-    });
-
-    return arr;
+    if (domain) {
+      return domain?.name;
+    } else {
+      return address;
+    }
   } catch (error) {
     // console.log(error);
     return address;
@@ -63,9 +48,11 @@ const getSocialDetailsQuery = gql`
       }
     ) {
       Social {
+        id
         isDefault
+        blockchain
+        dappName
         profileHandle
-        userAddress
       }
     }
   }
@@ -73,7 +60,7 @@ const getSocialDetailsQuery = gql`
 
 export const getSocialDetails = async (address, dappName) => {
   const variables = {
-    identities: address, // array of addresses
+    identities: [address],
     dappName,
   };
 
@@ -82,28 +69,121 @@ export const getSocialDetails = async (address, dappName) => {
       AIRSTACK_API,
       getSocialDetailsQuery,
       variables
-      // {
-      //   Authorization: AIRSTACK_API_KEY,
-      // }
     );
 
-    let arr = [];
+    const social = result?.Socials?.Social.find((s) => s?.profileHandle);
 
-    // check which address has a social profile
-    address.map((addr) => {
-      const social = result?.Socials?.Social.find(
-        (s) => (s?.userAddress).toLowerCase() === addr.toLowerCase()
-      );
-      if (social) {
-        arr.push(social?.profileHandle);
-      } else {
-        arr.push(addr);
-      }
-    });
-
-    return arr;
+    if (social) {
+      return social?.profileHandle;
+    } else {
+      return address;
+    }
   } catch (error) {
     // console.log(error);
     return address;
+  }
+};
+
+// Top 5 Social Details
+
+const getTop5SocialDetailsQuery = gql`
+  query MyQuery($identities: [Identity!]) {
+    SocialFollowers(
+      input: {
+        filter: {
+          identity: { _in: $identities }
+          dappName: { _eq: lens }
+          dappSlug: { _eq: lens_v2_polygon }
+          followerSince: { _lte: "2023-10-21T19:23:03Z" }
+        }
+        blockchain: ALL
+        limit: 5
+      }
+    ) {
+      Follower {
+        followerAddress {
+          socials {
+            dappName
+            profileName
+            userAssociatedAddresses
+            profileImageContentValue {
+              image {
+                small
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const getTop5SocialDetails = async ({ address }) => {
+  console.log("getTop5SocialDetails");
+
+  const variables = {
+    identities: address,
+  };
+
+  try {
+    const result = await request(
+      AIRSTACK_API,
+      getTop5SocialDetailsQuery,
+      variables
+    );
+
+    const socialDetails = result;
+
+    if (socialDetails) {
+      return socialDetails;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Profile Image Query
+
+const getProfileImageQuery = gql`
+  query MyQuery($identities: [Identity!]) {
+    Socials(
+      input: {
+        filter: { dappName: { _eq: lens }, identity: { _in: $identities } }
+        blockchain: ethereum
+      }
+    ) {
+      Social {
+        profileImage
+        profileImageContentValue {
+          image {
+            extraSmall
+            large
+            medium
+            original
+            small
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const getProfileImage = async ({ address }) => {
+  console.log("getProfileImage");
+
+  const variables = {
+    identities: address,
+  };
+
+  try {
+    const result = await request(AIRSTACK_API, getProfileImageQuery, variables);
+
+    const profileImage = result;
+
+    if (profileImage) {
+      return profileImage;
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
