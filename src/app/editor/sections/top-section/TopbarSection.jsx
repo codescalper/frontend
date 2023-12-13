@@ -56,25 +56,10 @@ const TopbarSection = () => {
             <DownloadBtn />
 
             {/* Profile Avatar */}
-            <PointsBtn />
-            
+            {/* <PointsBtn /> */}
+
             <div className="" id="first-step">
-              {/* user profile circular */}
-              {/* <ProfileMenu /> */}
-              {/* {isSupportedChain() ? (
-                <></>
-              ) : (
-                <div className="flex items-center justify-center space-x-6">
-                  <button
-                    className="bg-red-500 text-white px-4 py-2 rounded-md outline-none"
-                    onClick={() =>
-                      switchNetwork(ENVIRONMENT === "production" ? 137 : 80001)
-                    }
-                  >
-                    Wrong Network
-                  </button>
-                </div>
-              )} */}
+              <ProfileMenu />
             </div>
           </div>
         ) : null}
