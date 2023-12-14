@@ -25,6 +25,7 @@ import {
   ENVIRONMENT,
   setBroadcastOnChainTx,
   getSocialDetails,
+  getTop5SocialDetails,
 } from "../../../../../../../services";
 import { toast } from "react-toastify";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
@@ -562,21 +563,20 @@ const LensShare = () => {
         ],
       }));
 
-      const addresses = updatedRecipients.map((item) => {
+      const recipients = updatedRecipients.map((item) => {
         return item?.recipient;
       });
 
-      let promises = [APP_ETH_ADDRESS, ...addresses].map(async (item) => {
-        return await getSocialDetails(item, "lens");
-      });
+      const addresses = [APP_ETH_ADDRESS, ...recipients];
 
-      Promise.all(promises)
-        .then((arr) => {
-          setRecipientsLensHandle(arr);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+      (async () => {
+        const lensHandles = await getSocialDetails(addresses, "lens");
+
+        // console.log("lensHandles", lensHandles);
+
+        setRecipientsLensHandle(lensHandles)
+      })()
+      
     }
   }, [isAuthenticated]);
 
@@ -590,22 +590,6 @@ const LensShare = () => {
       toast.success(`Network switched to ${chain?.name}`);
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
-
-  // get the Lens Handle of the recipient
-  useEffect(() => {
-    setTimeout(() => {
-      // let promises = enabled.splitRevenueRecipients.map(async (item) => {
-      //   return await getSocialDetails(item?.recipient, "lens");
-      // });
-      // Promise.all(promises)
-      //   .then((arr) => {
-      //     setRecipientsLensHandle(arr);
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error:", error);
-      //   });
-    }, [1000]);
-  }, []);
 
   return (
     <>

@@ -1,26 +1,30 @@
 import { gql } from "@apollo/client";
 import request from "graphql-request";
 import { AIRSTACK_API_KEY } from "../../env/env";
+import { id } from "ethers/lib/utils";
 
 export const AIRSTACK_API = "https://api.airstack.xyz/gql";
 
 const getENSDomainQuery = gql`
-  query MyQuery($owner: Identity!) {
+  query MyQuery($owners: [Address!]) {
     Domains(
-      input: { filter: { owner: { _in: $owners } }, blockchain: ethereum }
+      input: {
+        filter: { resolvedAddress: { _in: $owners }, isPrimary: { _eq: true } }
+        blockchain: ethereum
+      }
     ) {
       Domain {
-        isPrimary
         name
         owner
+        resolvedAddress
       }
     }
   }
 `;
 
-export const getENSDomain = async (address) => {
+export const getENSDomain = async (addresses) => {
   const variables = {
-    owners: address, // array of addresses
+    owners: addresses, // array of addresses
   };
 
   try {
@@ -30,16 +34,26 @@ export const getENSDomain = async (address) => {
       },
     });
 
-    const domain = result?.Domains?.Domain.find((d) => d?.isPrimary);
+    let arr = [];
 
-    if (domain) {
-      return domain?.name;
-    } else {
-      return address;
-    }
+    // console.log("result", result?.Domains?.Domain);
+
+    addresses.map((item, index) => {
+      // check on wich index the resolvedAddress is equal to the address
+      const indexFound = result?.Domains?.Domain.findIndex(
+        (domain) => domain?.resolvedAddress === item
+      );
+
+      // console.log("indexFound", indexFound);
+      // if indexFound is not -1, it means that the address has a ENS domain
+    });
+
+    // console.log("arr", arr);
+
+    return arr;
   } catch (error) {
     // console.log(error);
-    return address;
+    return addresses;
   }
 };
 
@@ -64,7 +78,7 @@ const getSocialDetailsQuery = gql`
 
 export const getSocialDetails = async (address, dappName) => {
   const variables = {
-    identities: [address],
+    identities: address,
     dappName,
   };
 

@@ -123,7 +123,6 @@ const BgRemover = ({ inSpeedDial }) => {
           elementId: newElementId,
           recipient: arr[i].recipient,
         });
-        console.log(newElementId, arr[i].handle)
         break;
       }
     }
