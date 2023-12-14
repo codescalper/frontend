@@ -121,8 +121,9 @@ const BgRemover = ({ inSpeedDial }) => {
       if (arr[i].elementId == preElementId) {
         bgRemoverRecipientDataRef.current.push({
           elementId: newElementId,
-          handle: arr[i].handle,
+          recipient: arr[i].recipient,
         });
+        console.log(newElementId, arr[i].handle)
         break;
       }
     }

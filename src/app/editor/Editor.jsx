@@ -171,10 +171,11 @@ const Editor = () => {
         notFoundIndexes.push(i);
       }
     }
+    // console.log("notFoundIndexes", recipientDataRefArr)
 
     // Generate a new array by removing elements at notFoundIndexes
     const newDataRef = recipientDataRefArr.filter(
-      (_, index) => !notFoundIndexes.includes(index)
+      (_, index) => !notFoundIndexes.includes(index) 
     );
 
     // update the parentRecipientDataRef with the new array
@@ -249,7 +250,7 @@ const Editor = () => {
 
       // save it to the backend
       if (canvasChildren?.length > 0) {
-        // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
+        console.log("parentRecipientObj", recipientDataFilter().recipientsData);
         console.log("parentRecipientRef", recipientDataCombiner().recipients);
 
         return;
