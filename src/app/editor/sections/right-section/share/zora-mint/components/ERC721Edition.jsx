@@ -5,11 +5,6 @@ import {
   Button,
   Option,
   Select,
-  Tabs,
-  TabsHeader,
-  TabsBody,
-  Tab,
-  TabPanel,
   Spinner,
 } from "@material-tailwind/react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
@@ -33,24 +28,20 @@ import {
   LOCAL_STORAGE,
 } from "../../../../../../../data";
 import {
-  ENVIRONMENT,
   getENSDomain,
   shareOnSocials,
   uploadUserAssetToIPFS,
 } from "../../../../../../../services";
 import { zoraNftCreatorV1Config } from "@zoralabs/zora-721-contracts";
 import {
-  base64Stripper,
   errorMessage,
   getFromLocalStorage,
-  isEthAddress,
 } from "../../../../../../../utils";
 import ZoraDialog from "./ZoraDialog";
 import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
 import { useMutation } from "@tanstack/react-query";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { useChainModal } from "@rainbow-me/rainbowkit";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
   const { address } = useAccount();
@@ -1099,10 +1090,6 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
         </div>
       </div>
       {/* Splits Switch End */}
-
-      {/* Switch Number 2 Start */}
-
-      {/* Switch Number 2 End */}
 
       {/* Switch Number 3 Start */}
       <div className="mb-4 m-4">

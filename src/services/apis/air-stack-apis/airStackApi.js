@@ -1,7 +1,6 @@
 import { gql } from "@apollo/client";
 import request from "graphql-request";
 import { AIRSTACK_API_KEY } from "../../env/env";
-import { id } from "ethers/lib/utils";
 
 export const AIRSTACK_API = "https://api.airstack.xyz/gql";
 
