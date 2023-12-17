@@ -969,8 +969,9 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
               label="Currency"
               name="chargeForMintCurrency"
               id="chargeForMintCurrency"
+              value={zoraErc721Enabled.chargeForMintCurrency}
             >
-              {["eth"].map((currency) => (
+              {["ETH"].map((currency) => (
                 <Option
                   key={currency}
                   onClick={() => {
