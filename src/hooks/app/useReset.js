@@ -171,7 +171,7 @@ const useReset = () => {
     setSolanaEnabled({
       isChargeForMint: false,
       chargeForMintPrice: "",
-      chargeForMintCurrency: "",
+      chargeForMintCurrency: "SOL",
 
       // Array of List of Contract Addresses / Input Boxes
       isOnChainSplits: true,
@@ -250,7 +250,7 @@ const useReset = () => {
 
       isChargeForMint: false,
       chargeForMintPrice: "",
-      chargeForMintCurrency: "",
+      chargeForMintCurrency: "ETH",
 
       isMintLimitPerAddress: false,
       mintLimitPerAddress: "",
@@ -263,7 +263,7 @@ const useReset = () => {
         },
       ],
 
-      isRoyaltyPercent: false,
+      isRoyaltyPercent: true,
       royaltyPercent: "",
 
       isMaxSupply: false,
