@@ -588,8 +588,6 @@ const LensShare = () => {
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
 
-  console.log("lensAuthState", monetizationSettings());
-
   return (
     <>
       <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none ">

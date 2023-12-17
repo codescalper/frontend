@@ -1,12 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
-import {
-  Button,
-  Option,
-  Select,
-  Spinner,
-} from "@material-tailwind/react";
+import { Button, Option, Select, Spinner } from "@material-tailwind/react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsPlus from "@meronex/icons/bs/BsPlus";
 import { XCircleIcon } from "@heroicons/react/24/outline";
@@ -33,10 +28,7 @@ import {
   uploadUserAssetToIPFS,
 } from "../../../../../../../services";
 import { zoraNftCreatorV1Config } from "@zoralabs/zora-721-contracts";
-import {
-  errorMessage,
-  getFromLocalStorage,
-} from "../../../../../../../utils";
+import { errorMessage, getFromLocalStorage } from "../../../../../../../utils";
 import ZoraDialog from "./ZoraDialog";
 import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
 import { useMutation } from "@tanstack/react-query";
@@ -1092,6 +1084,66 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
       </div>
       {/* Splits Switch End */}
 
+      {/* Switch Number 5 Start */}
+      <>
+        <div className="mb-4 m-4">
+          <div className="flex justify-between">
+            <h2 className="text-lg mb-2"> Royalty </h2>
+            {/* <Switch
+              checked={zoraErc721Enabled.isRoyaltyPercent}
+              onChange={() =>
+                setZoraErc721Enabled({
+                  ...zoraErc721Enabled,
+                  isRoyaltyPercent: !zoraErc721Enabled.isRoyaltyPercent,
+                })
+              }
+              className={`${
+                zoraErc721Enabled.isRoyaltyPercent
+                  ? "bg-[#00bcd4]"
+                  : "bg-gray-200"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+            >
+              <span
+                className={`${
+                  zoraErc721Enabled.isRoyaltyPercent
+                    ? "translate-x-6"
+                    : "translate-x-1"
+                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              />{" "}
+            </Switch> */}
+          </div>
+          <div className="w-4/5 opacity-75">
+            {" "}
+            Set Royalty percentage for minting{" "}
+          </div>
+        </div>
+
+        <div
+          className={`${!zoraErc721Enabled.isRoyaltyPercent && "hidden"} mx-4`}
+        >
+          {/* <div className="flex"> */}
+          <div className="flex flex-col py-2">
+            <NumberInputBox
+              min={"1"}
+              step={"1"}
+              label="Royalty % "
+              name="royaltyPercent"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
+              value={zoraErc721Enabled.royaltyPercent}
+            />
+          </div>
+          {/* </div> */}
+
+          {zoraErc721StatesError.isRoyaltyPercentError && (
+            <InputErrorMsg
+              message={zoraErc721StatesError.royaltyPercentErrorMessage}
+            />
+          )}
+        </div>
+      </>
+      {/* Switch Number 5 End */}
+
       {/* Switch Number 3 Start */}
       <div className="mb-4 m-4">
         <div className="flex justify-between">
@@ -1148,66 +1200,6 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
         </div>
       </div>
       {/* Switch Number 3 End */}
-
-      {/* Switch Number 5 Start */}
-      <>
-        <div className="mb-4 m-4">
-          <div className="flex justify-between">
-            <h2 className="text-lg mb-2"> Royalty </h2>
-            <Switch
-              checked={zoraErc721Enabled.isRoyaltyPercent}
-              onChange={() =>
-                setZoraErc721Enabled({
-                  ...zoraErc721Enabled,
-                  isRoyaltyPercent: !zoraErc721Enabled.isRoyaltyPercent,
-                })
-              }
-              className={`${
-                zoraErc721Enabled.isRoyaltyPercent
-                  ? "bg-[#00bcd4]"
-                  : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
-            >
-              <span
-                className={`${
-                  zoraErc721Enabled.isRoyaltyPercent
-                    ? "translate-x-6"
-                    : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />{" "}
-            </Switch>
-          </div>
-          <div className="w-4/5 opacity-75">
-            {" "}
-            Set Royalty percentage for minting{" "}
-          </div>
-        </div>
-
-        <div
-          className={`${!zoraErc721Enabled.isRoyaltyPercent && "hidden"} mx-4`}
-        >
-          {/* <div className="flex"> */}
-          <div className="flex flex-col py-2">
-            <NumberInputBox
-              min={"1"}
-              step={"1"}
-              label="Royalty % "
-              name="royaltyPercent"
-              onChange={(e) => handleChange(e)}
-              onFocus={(e) => handleChange(e)}
-              value={zoraErc721Enabled.royaltyPercent}
-            />
-          </div>
-          {/* </div> */}
-
-          {zoraErc721StatesError.isRoyaltyPercentError && (
-            <InputErrorMsg
-              message={zoraErc721StatesError.royaltyPercentErrorMessage}
-            />
-          )}
-        </div>
-      </>
-      {/* Switch Number 5 End */}
 
       {/* Switch Number 6 Start */}
       <>
