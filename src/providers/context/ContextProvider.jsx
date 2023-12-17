@@ -80,7 +80,7 @@ const ContextProvider = ({ children }) => {
   const [solanaEnabled, setSolanaEnabled] = useState({
     isChargeForMint: false,
     chargeForMintPrice: "",
-    chargeForMintCurrency: "",
+    chargeForMintCurrency: "SOL",
 
     // Array of List of Contract Addresses / Input Boxes
     isOnChainSplits: true,
@@ -172,7 +172,7 @@ const ContextProvider = ({ children }) => {
       },
     ],
 
-    isRoyaltyPercent: false,
+    isRoyaltyPercent: true,
     royaltyPercent: "",
 
     isMaxSupply: false,
