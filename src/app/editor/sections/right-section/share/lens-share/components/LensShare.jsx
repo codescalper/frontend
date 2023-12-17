@@ -569,14 +569,11 @@ const LensShare = () => {
 
       const addresses = [APP_ETH_ADDRESS, ...recipients];
 
+      // getting lens handles
       (async () => {
         const lensHandles = await getSocialDetails(addresses, "lens");
-
-        // console.log("lensHandles", lensHandles);
-
-        setRecipientsLensHandle(lensHandles)
-      })()
-      
+        setRecipientsLensHandle(lensHandles);
+      })();
     }
   }, [isAuthenticated]);
 

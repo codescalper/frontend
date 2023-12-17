@@ -791,8 +791,8 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
 
       const addresses = [APP_ETH_ADDRESS, ...recipients];
 
+      // getting ENS domain
       (async () => {
-        // get the only the recipients from the list
         const domains = await getENSDomain(addresses);
         setRecipientsEns(domains);
       })();

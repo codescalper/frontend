@@ -34,21 +34,12 @@ export const getENSDomain = async (addresses) => {
       },
     });
 
-    let arr = [];
-
-    // console.log("result", result?.Domains?.Domain);
-
-    addresses.map((item, index) => {
-      // check on wich index the resolvedAddress is equal to the address
-      const indexFound = result?.Domains?.Domain.findIndex(
-        (domain) => domain?.resolvedAddress === item
+    let arr = addresses.map((address) => {
+      const matchedAddress = result?.Domains?.Domain.find(
+        (d) => d.resolvedAddress.toLowerCase() === address.toLowerCase()
       );
-
-      // console.log("indexFound", indexFound);
-      // if indexFound is not -1, it means that the address has a ENS domain
+      return matchedAddress ? matchedAddress.name : address;
     });
-
-    // console.log("arr", arr);
 
     return arr;
   } catch (error) {
@@ -66,19 +57,17 @@ const getSocialDetailsQuery = gql`
       }
     ) {
       Social {
-        id
-        isDefault
-        blockchain
         dappName
         profileHandle
+        userAddress
       }
     }
   }
 `;
 
-export const getSocialDetails = async (address, dappName) => {
+export const getSocialDetails = async (addresses, dappName) => {
   const variables = {
-    identities: address,
+    identities: addresses, // array of addresses
     dappName,
   };
 
@@ -94,16 +83,17 @@ export const getSocialDetails = async (address, dappName) => {
       }
     );
 
-    const social = result?.Socials?.Social.find((s) => s?.profileHandle);
+    let arr = addresses.map((address) => {
+      const matchedAddress = result?.Socials?.Social.find(
+        (d) => d.userAddress.toLowerCase() === address.toLowerCase()
+      );
+      return matchedAddress ? matchedAddress.profileHandle : address;
+    });
 
-    if (social) {
-      return social?.profileHandle;
-    } else {
-      return address;
-    }
+    return arr;
   } catch (error) {
     // console.log(error);
-    return address;
+    return addresses;
   }
 };
 
