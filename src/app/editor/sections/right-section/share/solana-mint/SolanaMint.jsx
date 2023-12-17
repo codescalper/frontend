@@ -621,7 +621,6 @@ const SolanaMint = () => {
                   />
                 </div>
                 <div className="flex flex-col py-2">
-                  {/* <label htmlFor="price"></label> */}
                   <Select
                     label="Currency"
                     name="chargeForMintCurrency"
