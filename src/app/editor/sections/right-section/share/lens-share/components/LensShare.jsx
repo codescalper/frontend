@@ -588,6 +588,8 @@ const LensShare = () => {
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
 
+  console.log("lensAuthState", monetizationSettings());
+
   return (
     <>
       <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none ">
@@ -643,14 +645,20 @@ const LensShare = () => {
                         <Select
                           name="chargeForCollectCurrency"
                           id="chargeForCollectCurrency"
-                          // className="border rounded-md py-[10px] outline-none focus:ring-1 focus:ring-blue-500"
-                          onChange={handleChange}
                           label="Currency"
                           value={enabled.chargeForCollectCurrency}
                         >
                           {tokenList().map((token, index) => {
                             return (
-                              <Option key={index} value={token.symbol}>
+                              <Option
+                                key={index}
+                                onClick={() => {
+                                  setEnabled({
+                                    ...enabled,
+                                    chargeForCollectCurrency: token.symbol,
+                                  });
+                                }}
+                              >
                                 {token.symbol}
                               </Option>
                             );

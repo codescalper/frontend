@@ -626,12 +626,21 @@ const SolanaMint = () => {
                     label="Currency"
                     name="chargeForMintCurrency"
                     id="chargeForMintCurrency"
-                    // className=" ml-4 p-2 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
-                    onChange={handleChange}
                     value={solanaEnabled.chargeForMintCurrency}
                   >
-                    <Option>SOL</Option>
-                    <Option>ETH</Option>
+                    {["SOL"].map((currency, index) => (
+                      <Option
+                        key={currency}
+                        onClick={() => {
+                          setSolanaEnabled({
+                            ...solanaEnabled,
+                            chargeForMintCurrency: currency,
+                          });
+                        }}
+                      >
+                        {currency}
+                      </Option>
+                    ))}
                   </Select>
                 </div>
               </div>

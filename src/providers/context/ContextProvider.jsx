@@ -159,7 +159,7 @@ const ContextProvider = ({ children }) => {
 
     isChargeForMint: false,
     chargeForMintPrice: "",
-    chargeForMintCurrency: "",
+    chargeForMintCurrency: "ETH",
 
     isMintLimitPerAddress: false,
     mintLimitPerAddress: "",
@@ -415,7 +415,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", zoraErc721Enabled.royaltySplitRecipients);
+  // console.log("ContextProvider", enabled.chargeForCollectPrice);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (

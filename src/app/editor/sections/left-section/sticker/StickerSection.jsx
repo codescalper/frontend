@@ -147,6 +147,7 @@ export const CompIcons = () => {
 export const StickerPanel = () => {
   // Halloween use 'H' and not 'h' - BE Response
   const tabArray = [
+    "christmas",
     "firefly",
     "halloween",
     "lensjump",

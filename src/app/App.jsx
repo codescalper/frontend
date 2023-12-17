@@ -332,21 +332,6 @@ const App = () => {
     }
   }, [solanaConnected]);
 
-  // useEffect(() => {
-  //   if (isUserEligible) {
-  //     if (!getFromLocalStorage("hasTakenTour")) {
-  //       if (isConnected) {
-  //         setIsOpen(true);
-  //         setSteps(OnboardingStepsWithShare);
-  //       } else {
-  //         setIsOpen(true);
-  //         setSteps(OnboardingSteps);
-  //       }
-  //       setTimeout(() => saveToLocalStorage("hasTakenTour", true), 20000);
-  //     }
-  //   }
-  // }, []);
-
   return (
     <>
       <Editor />
