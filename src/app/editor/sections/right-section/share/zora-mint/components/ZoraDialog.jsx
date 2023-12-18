@@ -13,6 +13,7 @@ import {
 import { ZoraLogo } from "../../../../../../../assets";
 import { zoraURLErc721 } from "../utils/zoraURL";
 import { useReset } from "../../../../../../../hooks/app";
+import { useNetwork } from "wagmi";
 
 const ZoraDialog = ({
   isError,
@@ -28,6 +29,7 @@ const ZoraDialog = ({
 }) => {
   const [open, setOpen] = useState(false);
   const { resetState } = useReset();
+  const { chain } = useNetwork();
 
   const handleOpen = () => setOpen(!open);
 
@@ -72,18 +74,17 @@ const ZoraDialog = ({
               {isPending && "Transaction is pending..."}
               {OAisLoading && "Creating Lens open action..."}
               {isOpenAction
-                ? OAisSuccess && (
-                    <>
-                      Open Action is created successfully.
-                    </>
-                  )
+                ? OAisSuccess && <>Open Action is created successfully.</>
                 : isSuccess && (
                     <>
                       Transaction is successful. <br />
                       <span className="text-md">
                         Check your edition on{" "}
                         <a
-                          href={zoraURLErc721(data?.logs[0]?.address)}
+                          href={zoraURLErc721(
+                            data?.logs[0]?.address,
+                            chain?.id
+                          )}
                           target="_blank"
                           rel="noreferrer"
                           className="text-blue-500"

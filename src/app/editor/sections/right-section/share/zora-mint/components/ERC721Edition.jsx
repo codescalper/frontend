@@ -687,7 +687,16 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
 
     // check if royalty percent is provided
     if (zoraErc721Enabled.isRoyaltyPercent) {
-      if (zoraErc721StatesError.isRoyaltyPercentError) return;
+      if (zoraErc721StatesError.isRoyaltyPercentError) {
+        return;
+      } else if (!zoraErc721Enabled.royaltyPercent) {
+        setZoraErc721StatesError({
+          ...zoraErc721StatesError,
+          isRoyaltyPercentError: true,
+          royaltyPercentErrorMessage: "Royalty percent is required",
+        });
+        return;
+      }
     }
 
     // check if max supply is provided
