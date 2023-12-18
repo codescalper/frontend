@@ -147,18 +147,61 @@ export const CompIcons = () => {
 export const StickerPanel = () => {
   // Halloween use 'H' and not 'h' - BE Response
   const tabArray = [
-    "$simp",
-    "christmas",
-    "firefly",
-    "halloween",
-    "lensjump",
-    "icons",
-    "supducks",
-    "lens",
-    "nouns",
-    "fls",
-    "assorted",
-    "explore",
+    {
+      name: "Simp",
+      author: "$simp",
+      campaign: "christmas",
+    },
+    {
+      name: "Firefly",
+      author: "Firefly",
+      campaign: "firefly",
+    },
+    {
+      name: "Halloween",
+      author: null,
+      campaign: "halloween",
+    },
+    {
+      name: "Lensjump",
+      author: "lensjump",
+      campaign: "lensjump",
+    },
+    {
+      name: "Supducks",
+      author: "supducks",
+      campaign: null,
+    },
+    {
+      name: "Lens",
+      author: "lens",
+      campaign: null,
+    },
+    {
+      name: "Nouns",
+      author: "nouns",
+      campaign: null,
+    },
+    {
+      name: "FLS",
+      author: "fls",
+      campaign: null,
+    },
+    {
+      name: "Assorted",
+      author: "assorted",
+      campaign: null,
+    },
+    {
+      name: "Explore",
+      author: null,
+      campaign: "explore",
+    },
+    {
+      name: "Icons",
+      author: null,
+      campaign: null,
+    },
   ];
   const [currentTab, setCurrentTab] = useState(tabArray[0]);
   const store = useStore();
@@ -166,22 +209,22 @@ export const StickerPanel = () => {
   return (
     <>
       <div className="flex flex-col h-full">
-
         {/* New Material Tailwind Buttons / Tabs : */}
         {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
-        <Tabs id="custom-animation" value={currentTab}>
+        <Tabs id="custom-animation" value={currentTab?.name}>
           <TabsWithArrows
             tabsHeaders={
               <>
                 <TabsHeader className="overflow-x-auto">
                   {tabArray.map((tab, index) => (
                     <Tab
-                      value={tab}
+                    key={index}
+                      value={tab?.name}
                       onClick={() => {
                         setCurrentTab(tab);
                       }}
                     >
-                      <div className="appFont"> {firstLetterCapital(tab)} </div>
+                      <div className="appFont"> {tab?.name} </div>
                     </Tab>
                   ))}
                 </TabsHeader>
@@ -190,19 +233,19 @@ export const StickerPanel = () => {
           />
           {/* </div> */}
           <div className="hCustom overflow-y-scroll">
-
-            {currentTab === "icons" ? (
+            {currentTab?.name === "Icons" ? (
               <CompIcons />
             ) : (
               <TabsCustom
-                defaultQuery={currentTab}
-                campaignName={currentTab}
+                defaultQuery={currentTab?.name}
+                author={currentTab?.author}
+                campaignName={currentTab?.campaign}
                 getAssetsFn={
-                  currentTab === "lensjump"
+                  currentTab?.author === "lensjump"
                     ? getFeaturedAssets
                     : getAssetByQuery
                 }
-                queryKey="props"
+                type="props"
               />
             )}
           </div>

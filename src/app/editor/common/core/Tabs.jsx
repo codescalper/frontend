@@ -18,8 +18,9 @@ import { useAppAuth } from "../../../../hooks/app";
 const Tabs = ({
   defaultQuery,
   campaignName,
+  author,
   getAssetsFn,
-  queryKey,
+  type,
   changeCanvasDimension,
 }) => {
   const { isAuthenticated } = useAppAuth();
@@ -27,8 +28,6 @@ const Tabs = ({
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
   const { isDisconnected, address } = useAccount();
-
-  const getType = queryKey;
 
   const {
     data,
@@ -39,17 +38,12 @@ const Tabs = ({
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: [queryKey, delayedQuery || defaultQuery || campaignName],
+    queryKey: [type, author, campaignName],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
-      defaultQuery === "lensjump"
-        ? getAssetsFn(getType, pageParam)
-        : getAssetsFn(
-            getType,
-            delayedQuery || defaultQuery,
-            campaignName,
-            pageParam
-          ),
+      author === "lensjump"
+        ? getAssetsFn(type, pageParam)
+        : getAssetsFn(type, author, campaignName, pageParam),
     enabled: isAuthenticated ? true : false,
   });
 
