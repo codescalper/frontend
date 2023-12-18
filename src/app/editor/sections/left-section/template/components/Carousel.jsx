@@ -19,15 +19,10 @@ const CompCarousel = ({ type, author, campaign }) => {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: [type, author || campaign],
+    queryKey: [type, author, campaign],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
-      getAssetByQuery(
-        type,
-        author,
-        campaign,
-        pageParam
-      ),
+      getAssetByQuery(type, author, campaign, pageParam),
   });
 
   return (

@@ -16,37 +16,56 @@ import {
 } from "@material-tailwind/react";
 
 export const BannerPanel = () => {
-  // const [currentTab, setCurrentTab] = useState("supducks");
   const tabArray = [
-    "firefly",
-    "halloween",
-    "lensjump",
-    "supducks",
-    "moonrunners",
+    {
+      name: "Firefly",
+      author: "Firefly",
+      campaign: "firefly",
+    },
+    {
+      name: "Halloween",
+      author: null,
+      campaign: "halloween",
+    },
+    {
+      name: "Lensjump",
+      author: "lensjump",
+      campaign: "lensjump",
+    },
+    {
+      name: "Supducks",
+      author: "supducks",
+      campaign: null,
+    },
+    {
+      name: "Moonrunners",
+      author: "moonrunners",
+      campaign: null,
+    },
   ];
+
   const [currentTab, setCurrentTab] = useState(tabArray[0]);
 
   return (
     <div className="h-full flex flex-col">
-
       {/* New Material Tailwind Buttons / Tabs : */}
       {/* Reference Link: https://www.material-tailwind.com/docs/react/tabs */}
 
-      <Tabs id="custom-animation" value={currentTab}>
+      <Tabs id="custom-animation" value={currentTab?.name}>
         <div className="w-100 overflow-scroll">
           <TabsWithArrows
             tabsHeaders={
               <>
-                <TabsHeader
-                >
+                <TabsHeader>
                   {tabArray.map((tab, index) => (
                     <Tab
-                      value={tab}
+                      key={index}
+                      value={tab?.name}
                       onClick={() => {
                         setCurrentTab(tab);
                       }}
                     >
-                      <div className="appFont"> {firstLetterCapital(tab)} </div>
+                      <div className="appFont"> {tab?.name} </div>
                     </Tab>
                   ))}
                 </TabsHeader>
@@ -62,14 +81,14 @@ export const BannerPanel = () => {
               unmount: { y: 250 },
             }}
           >
-
             <TabsCustom
-              defaultQuery={currentTab}
-              campaignName={currentTab}
+              defaultQuery={currentTab?.name}
+              author={currentTab?.author}
+              campaignName={currentTab?.campaign}
               getAssetsFn={
-                currentTab === "lensjump" ? getFeaturedAssets : getAssetByQuery
+                currentTab?.author === "lensjump" ? getFeaturedAssets : getAssetByQuery
               }
-              queryKey="background"
+              type="background"
               changeCanvasDimension={true}
             />
           </TabsBody>

@@ -25,15 +25,10 @@ const CustomHorizontalScroller = ({ type, author, campaign }) => {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: [type, author || campaign],
+    queryKey: [type, author, campaign],
     getNextPageParam: (prevData) => prevData.nextPage,
     queryFn: ({ pageParam = 1 }) =>
-      getAssetByQuery(
-        type,
-        author,
-        campaign,
-        pageParam
-      ),
+      getAssetByQuery(type, author, campaign, pageParam),
   });
 
   const scrollWrapperRef = useRef(null);
@@ -73,7 +68,8 @@ const CustomHorizontalScroller = ({ type, author, campaign }) => {
           <div className="divsWrapper" id="insiderImg">
             {data?.pages[0]?.data.length > 0 &&
               data?.pages
-                .flatMap((item) => item?.data).slice(0, 6)
+                .flatMap((item) => item?.data)
+                .slice(0, 10)
                 .map((item, index) => {
                   return (
                     <div id={index} className="eachDiv">
