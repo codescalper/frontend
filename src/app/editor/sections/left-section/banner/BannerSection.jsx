@@ -18,6 +18,11 @@ import {
 export const BannerPanel = () => {
   const tabArray = [
     {
+      name: "Simp",
+      author: null,
+      campaign: "christmas",
+    },
+    {
       name: "Firefly",
       author: "Firefly",
       campaign: "firefly",
@@ -86,7 +91,9 @@ export const BannerPanel = () => {
               author={currentTab?.author}
               campaignName={currentTab?.campaign}
               getAssetsFn={
-                currentTab?.author === "lensjump" ? getFeaturedAssets : getAssetByQuery
+                currentTab?.author === "lensjump"
+                  ? getFeaturedAssets
+                  : getAssetByQuery
               }
               type="background"
               changeCanvasDimension={true}
