@@ -190,7 +190,16 @@ const ShareSection = () => {
         <div className={`relative mt-6 px-4 sm:px-6`}>
           <p className="text-lg">Share on socials</p>
           <div className="flex items-center space-x-12 py-5">
-            <div onClick={() => setMenu("lensmonetization")}>
+            <div onClick={() => setMenu("lens")}>
+              {" "}
+              <img
+                className="w-10 cursor-pointer"
+                src="/other-icons/share-section/iconLens.png"
+                alt="Lens"
+              />{" "}
+            </div>
+
+            <div onClick={() => setMenu("farcaster")}>
               {" "}
               <img
                 className="w-10 cursor-pointer"
@@ -208,7 +217,7 @@ const ShareSection = () => {
           <div className="flex flex-wrap items-center gap-10 my-3">
             <div
               className="cursor-pointer flex flex-col items-center"
-              onClick={() => setMenu("solanaMint")}
+              onClick={() => setMenu("solana")}
             >
               {" "}
               <img className="w-10" src={logoSolana} alt="Solana" />{" "}

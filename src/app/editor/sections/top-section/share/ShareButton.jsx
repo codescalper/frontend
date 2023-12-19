@@ -44,8 +44,8 @@ const ShareButton = () => {
                 {menu === "share" && <ShareSection />}
 
                 {/* {menu === "lensmonetization" && <LensShare />} */}
-                {menu === "lensmonetization" && <LensShareWrapper />}
-                {menu === "solanaMint" && <SolanaMint />}
+                {menu === "lens" && <LensShareWrapper />}
+                {menu === "solana" && <SolanaMint />}
                 {typeof(menu) === "number" && <ZoraMint selectedChainId={menu} />}
               </div>
             </div>
