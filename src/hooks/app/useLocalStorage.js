@@ -26,6 +26,7 @@ const useLocalStorage = () => {
   const dispatcher = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
   const userGuideTour = getFromLocalStorage(LOCAL_STORAGE.userGuideTour);
   const braveShieldWarn = getFromLocalStorage(LOCAL_STORAGE.braveShieldWarn);
+  const userId = getFromLocalStorage(LOCAL_STORAGE.userId);
 
   return {
     authToken,
@@ -39,6 +40,7 @@ const useLocalStorage = () => {
     dispatcher,
     userGuideTour,
     braveShieldWarn,
+    userId,
   };
 };
 

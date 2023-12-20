@@ -1,13 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LogoutBtn, ProfilePanelHeaders } from "./components";
 import iconTrending from "./assets/svgs/iconTrending.svg";
 import { Tabs, Tab, TabsHeader } from "@material-tailwind/react";
-import { getAllTasks, getInviteCode } from "../../../../../services";
 import { useQuery } from "@tanstack/react-query";
-import { PowerIcon } from "@heroicons/react/24/outline";
-import { useLogout } from "../../../../../hooks/app";
-import { toast } from "react-toastify";
-import { Context } from "../../../../../providers/context";
 import BsGift from "@meronex/icons/bs/BsGift";
 import MdcStarFourPointsOutline from "@meronex/icons/mdc/MdcStarFourPointsOutline";
 import {
@@ -16,46 +11,41 @@ import {
   TasksCard,
   UserCard,
 } from "./components/Cards";
+import { useUser } from "../../../../../hooks/user";
 import {
-  ComplProfileModal,
-  InviteModal,
-} from "./components/Modals/blueprintjs";
+  getAllTasks,
+  getInviteCode,
+} from "../../../../../services/apis/BE-apis";
+import { ErrorComponent } from "../../../common";
 
 const ProfilePanel = () => {
+  const { username } = useUser();
   const [tasksArr, setTasksArr] = useState([]);
   const [inviteCodesArr, setInviteCodesArr] = useState([]);
   const [selectedTab, setSelectedTab] = useState("tasks");
   const [openedModal, setOpenedModal] = useState("");
-  const { userProfileDetails, setUserProfileDetails } = useContext(Context);
-  const { logout } = useLogout();
 
-  const { data, isLoading, isError, error } = useQuery({
+  const {
+    data: taskData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["getTasks"],
-    queryFn: () => getAllTasks(),
+    queryFn: getAllTasks,
   });
 
-  const fnGetAllInviteCodes = async () => {
-    const inviteCodes = await getInviteCode();
-    setInviteCodesArr(inviteCodes?.data?.message);
-  };
+  const { data } = useQuery({
+    queryKey: ["getInviteCode"],
+    queryFn: getInviteCode,
+  });
 
-  const fnGetAllTasks = async () => {
-    setTasksArr(data?.data?.message);
-  };
-
-  useEffect(() => {
-    fnGetAllTasks();
-    fnGetAllInviteCodes();
-  }, [data]);
-
-  // useEffect(() => {
-  //   fnGetAllInviteCodes();
-  // });
+  const taskList = taskData?.message;
+  const inviteCodeList = data?.message;
 
   return (
     <ProfilePanelHeaders
-      // menuName={"share"}
-      panelHeader={`Hi @${userProfileDetails?.username || "username"}`}
+      panelHeader={`Hi @${username || "username"}`}
       panelContent={
         <>
           <div className="flex flex-col align-middle justify-between">
@@ -63,7 +53,7 @@ const ProfilePanel = () => {
 
             <div className="flex m-2">
               <div className="ml-2 text-base font-semibold"> Invite Codes </div>
-              <div className="ml-4 mt-0.5">{inviteCodesArr}</div>
+              <div className="ml-4 mt-0.5">{inviteCodeList}</div>
             </div>
 
             <hr className="mb-2" />
@@ -98,53 +88,56 @@ const ProfilePanel = () => {
               )}
               {selectedTab === "tasks" && (
                 <>
-                  {tasksArr?.map(
-                    (task) =>
-                      // display only the tasks that are not completed
-                      !task?.completed && (
-                        <div
-                          onClick={() => {
-                            setOpenedModal(task?.tag);
-                          }}
-                        >
+                  {isError && <ErrorComponent error={error} />}
+                  {taskList &&
+                    taskList?.map(
+                      (task) =>
+                        // display only the tasks that are not completed
+                        !task?.completed && (
+                          <div
+                            onClick={() => {
+                              setOpenedModal(task?.tag);
+                            }}
+                          >
+                            <TasksCard
+                              modalName={task?.tag}
+                              isCompleted={task?.completed}
+                              // CardHead={task?.description.split(/\\n/)[0]}
+                              // CardSubHead={task?.description.split(/\\n/)[1]}
+                              CardHead={task?.name}
+                              CardSubHead={task?.description}
+                              NoOfPoints={task?.amount}
+                            />
+                          </div>
+                        )
+                    )}
+                </>
+              )}
+
+              {selectedTab === "rewards" && (
+                <>
+                  {isError && <ErrorComponent error={error} />}
+                  {taskList &&
+                    taskList?.map(
+                      (task) =>
+                        // display only the tasks that are completed
+                        task?.completed && (
                           <TasksCard
                             modalName={task?.tag}
                             isCompleted={task?.completed}
+                            // onClickFn={}
                             // CardHead={task?.description.split(/\\n/)[0]}
                             // CardSubHead={task?.description.split(/\\n/)[1]}
                             CardHead={task?.name}
                             CardSubHead={task?.description}
                             NoOfPoints={task?.amount}
                           />
-                        </div>
-                      )
-                  )}
-                </>
-              )}
-
-              {selectedTab === "rewards" && (
-                <>
-                  {tasksArr?.map(
-                    (task) =>
-                      // display only the tasks that are completed
-                      task?.completed && (
-                        <TasksCard
-                          modalName={task?.tag}
-                          isCompleted={task?.completed}
-                          // onClickFn={}
-                          // CardHead={task?.description.split(/\\n/)[0]}
-                          // CardSubHead={task?.description.split(/\\n/)[1]}
-                          CardHead={task?.name}
-                          CardSubHead={task?.description}
-                          NoOfPoints={task?.amount}
-                        />
-                      )
-                  )}
+                        )
+                    )}
                 </>
               )}
             </Tabs>
           </div>
-
 
           <LogoutBtn />
         </>

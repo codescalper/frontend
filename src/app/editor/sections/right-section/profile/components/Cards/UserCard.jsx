@@ -7,29 +7,21 @@ import PlebText from "../../assets/svgs/Pleb/PlebText.svg";
 import PlebStar from "../../assets/svgs/Pleb/PlebStar.svg";
 import ChadText from "../../assets/svgs/Chad/ChadText.svg";
 import ChadStar from "../../assets/svgs/Chad/ChadStar.svg";
-import { getUserProfileDetails } from "../../../../../../../services";
-import { useQuery } from "@tanstack/react-query";
 import { Context } from "../../../../../../../providers/context";
 import { useAccount } from "wagmi";
-import BiCopy from '@meronex/icons/bi/BiCopy';
+import BiCopy from "@meronex/icons/bi/BiCopy";
 import { toast } from "react-toastify";
+import { addressCrop } from "../../../../../../../utils";
+import { useUser } from "../../../../../../../hooks/user";
 
 const UserCard = () => {
-  // useState for Object
-  // const [userProfileDetails, setUserProfileDetails] = useState({
-  //   email: "",
-  //   username: "",
-  //   points: "",
-  //   lens_handle: "",
-  // });
-
   const { address } = useAccount();
-  const { userProfileDetails, setUserProfileDetails } = useContext(Context);
+  const {points} = useUser();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
     toast.success("Address copied");
-  }
+  };
 
   return (
     <>
@@ -48,7 +40,7 @@ const UserCard = () => {
               <img className="h-6" src={Coin} alt="Coin" />
             </div>
             <div className="m-1 text-lg mr-2 ml-2">
-              {userProfileDetails.points}
+              {points}
             </div>
           </div>
         </div>
@@ -81,9 +73,12 @@ const UserCard = () => {
         </div>
 
         <div className="mt-3">
-          <div onClick={handleCopy} className="flex mr-4 bg-blue-gray-50 p-1 pl-2 pr-2 rounded-full cursor-pointer">
-            {address.slice(0, 6)}....{address.slice(-4)}
-            <BiCopy className="ml-1 mt-0.5 "/>
+          <div
+            onClick={handleCopy}
+            className="flex mr-4 bg-blue-gray-50 p-1 pl-2 pr-2 rounded-full cursor-pointer"
+          >
+            {addressCrop(address)}
+            <BiCopy className="ml-1 mt-0.5 " />
           </div>
           <div className=""></div>
         </div>
