@@ -286,7 +286,7 @@ const Editor = () => {
             referredFrom: recipientDataCombiner().recipients,
             assetsRecipientElementData: recipientDataFilter().recipientsData,
             preview: canvasBase64Ref.current,
-          })
+          }) 
             .then((res) => {
               if (res?.status === "success") {
                 console.log(res?.message);
