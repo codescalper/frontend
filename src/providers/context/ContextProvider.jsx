@@ -40,6 +40,9 @@ const ContextProvider = ({ children }) => {
   // Lens Share tab
   const [lensTab, setLensTab] = useState("normalPost");
 
+  // Farcaster Share tab
+  const [farcasterTab, setFarcasterTab ] = useState("normalPost");
+
   // for lens monetization
   const [enabled, setEnabled] = useState({
     chargeForCollect: false,
@@ -447,6 +450,10 @@ const ContextProvider = ({ children }) => {
         // Lens Share tab
         lensTab,
         setLensTab,
+
+        // Farcaster Share tab
+        farcasterTab,
+        setFarcasterTab,
 
         // for lens monetization
         enabled,

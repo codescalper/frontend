@@ -8,6 +8,7 @@ import {
 } from "../../right-section";
 import { Drawer } from "@blueprintjs/core";
 import { Context } from "../../../../../providers/context";
+import FarcasterShareWrapper from "../../right-section/share/farcaster-share/FarcasterShareWrapper";
 
 const ShareButton = () => {
   const [transitionRtoL, setTransitionRtoL] = useState(false);
@@ -44,6 +45,7 @@ const ShareButton = () => {
                 {menu === "share" && <ShareSection />}
 
                 {/* {menu === "lensmonetization" && <LensShare />} */}
+                {menu === "farcasterShare" && <FarcasterShareWrapper />}
                 {menu === "lensmonetization" && <LensShareWrapper />}
                 {menu === "solanaMint" && <SolanaMint />}
                 {typeof(menu) === "number" && <ZoraMint selectedChainId={menu} />}
