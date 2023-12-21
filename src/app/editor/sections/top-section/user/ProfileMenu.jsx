@@ -1,72 +1,120 @@
 import React, { useContext, useEffect, useState } from "react";
-import Coin from "../../right-section/profile/assets/pngs/coin.png";
-import { Context } from "../../../../../providers/context";
-import { Drawer } from "@blueprintjs/core";
-import { ProfilePanel } from "../../right-section";
-import { Avatar } from "@material-tailwind/react";
-import { getAvatar } from "../../../../../utils";
+import {
+  addressCrop,
+  clearAllLocalStorageData,
+  getAvatar,
+  getFromLocalStorage,
+} from "../../../../../utils";
+import { useAccount, useDisconnect } from "wagmi";
+import { toast } from "react-toastify";
+import { Context } from "../../../../../providers/context/ContextProvider";
+import {
+  Typography,
+  Button,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  Avatar,
+} from "@material-tailwind/react";
+
+import { ClipboardIcon, PowerIcon } from "@heroicons/react/24/outline";
 import { useSolanaWallet } from "../../../../../hooks/solana";
-import { useAccount } from "wagmi";
-import { useQuery } from "@tanstack/react-query";
-import { getProfileImage } from "../../../../../services";
-import { useUser } from "../../../../../hooks/user";
+import { useLogout } from "../../../../../hooks/app";
+import { useAccountModal } from "@rainbow-me/rainbowkit";
 
-const PointsBtn = () => {
-  const { points, profileImage } = useUser();
-  const { menu, setMenu, isProfileOpen, setIsProfileOpen } =
-    useContext(Context);
-
+const ProfileMenu = () => {
   const { solanaAddress } = useSolanaWallet();
   const { address } = useAccount();
+  const { posthog } = useContext(Context);
+  const { logout } = useLogout();
+
+  const handleEVMAddressCopy = () => {
+    navigator.clipboard.writeText(address);
+    toast.success("address copied");
+  };
+
+  const handleSolanaAddressCopy = () => {
+    navigator.clipboard.writeText(solanaAddress);
+    toast.success("address copied");
+  };
+
+  const fnLogout = () => {
+    logout();
+    toast.success("Logout successful");
+
+    // TODO: clear all local storage data + states
+  };
+
+  // state for profile menu items
+  const profileMenuItems = [
+    {
+      label: address && addressCrop(address),
+      icon: ClipboardIcon,
+      onClick: handleEVMAddressCopy,
+      shouldRender: address ? true : false,
+    },
+    {
+      label: solanaAddress && addressCrop(solanaAddress),
+      icon: ClipboardIcon,
+      onClick: handleSolanaAddressCopy,
+      shouldRender: solanaAddress ? true : false,
+    },
+    {
+      label: "Logout",
+      icon: PowerIcon,
+      onClick: fnLogout,
+      shouldRender: true,
+    },
+  ];
 
   return (
-    <>
-      <div className="flex">
-        <div className="flex items-center justify-between bg-gray-100 rounded-full w-16 p-1">
-          <img className="h-6" src={Coin} alt="Coin" />
+    <Menu placement="bottom-end">
+      <MenuHandler>
+        <Avatar
+          variant="circular"
+          alt="profile picture"
+          className="cursor-pointer outline outline-black"
+          src={getAvatar(address || solanaAddress)}
+        />
+      </MenuHandler>
+      <MenuList className="p-1 mt-2">
+        {profileMenuItems
+          .filter((item) => item.shouldRender === true)
+          .map(({ label, icon, onClick }, key) => {
+            const isLastItem = label === "Logout";
+            return (
+              <div className="outline-none">
+                {isLastItem && <hr className="my-2 border-blue-gray-50" />}
+                <MenuItem
+                  key={label}
+                  onClick={onClick}
+                  className={`flex items-center gap-2 rounded ${
+                    isLastItem
+                      ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                      : ""
+                  }`}
+                >
+                  {React.createElement(icon, {
+                    className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
+                    strokeWidth: 2,
+                  })}
 
-          <span className="text-lg">{points}</span>
-        </div>
-
-        <div
-          className="ml-4"
-          onClick={() => {
-            setIsProfileOpen(true);
-            setMenu("profile");
-          }}
-        >
-          <Avatar
-            variant="circular"
-            alt="profile picture"
-            className="cursor-pointer outline outline-black"
-            src={profileImage || getAvatar(address || solanaAddress)}
-          />
-        </div>
-      </div>
-
-      <Drawer
-        transitionDuration={200}
-        isOpen={isProfileOpen}
-        canOutsideClickClose
-        size={"small"}
-        onClose={() => {
-          setIsProfileOpen(!isProfileOpen);
-          setMenu("share");
-        }}
-        className={`relative z-1000`}
-      >
-        <div className="fixed overflow-hidden">
-          <div className="overflow-scroll">
-            <div className="fixed inset-y-0 right-0 flex max-w-full top-2">
-              <div className="w-screen max-w-sm mb-2">
-                {menu === "profile" && <ProfilePanel />}
+                  <Typography
+                    as="span"
+                    variant="small"
+                    className="font-normal"
+                    color={isLastItem ? "red" : "inherit"}
+                  >
+                    {label}
+                  </Typography>
+                </MenuItem>
               </div>
-            </div>
-          </div>
-        </div>
-      </Drawer>
-    </>
+            );
+          })}
+      </MenuList>
+    </Menu>
   );
 };
 
-export default PointsBtn;
+export default ProfileMenu;

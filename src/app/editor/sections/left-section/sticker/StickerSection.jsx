@@ -153,6 +153,11 @@ export const StickerPanel = () => {
       campaign: "christmas",
     },
     {
+      name: "Christmas",
+      author: "Lil Beans",
+      campaign: "christmas",
+    },
+    {
       name: "Firefly",
       author: "Firefly",
       campaign: "firefly",

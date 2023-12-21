@@ -13,11 +13,13 @@ const AuthComponent = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
   const [isUserEligible, setIsUserEligible] = useState(false); 
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["isHolderOfCollection"],
     queryFn: () => getIsUserWhitelisted(address),
     enabled: address ? true : false,
   });
+
   const isUserEligibleFn = () => {
     if (
       getifUserEligible &&
@@ -197,7 +199,7 @@ const AuthComponent = () => {
               {/* {if wallet is connected but not eligible} */}
               {address && !isUserEligible && (
                 <div className="mb-2 p-2 flex flex-row justify-center">
-                  {<ConnectButton />}
+                  {<ConnectButton showBalance={false} />}
                 </div>
               )}
 
