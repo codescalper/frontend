@@ -162,21 +162,16 @@ export const getTop5SocialDetails = async ({ address }) => {
 // Profile Image Query
 
 const getProfileImageQuery = gql`
-  query MyQuery($identities: [Identity!]) {
+  query MyQuery($identities: Identity!) {
     Socials(
       input: {
-        filter: { dappName: { _eq: lens }, identity: { _in: $identities } }
+        filter: { dappName: { _eq: lens }, identity: { _eq: $identities } }
         blockchain: ethereum
       }
     ) {
       Social {
-        profileImage
         profileImageContentValue {
           image {
-            extraSmall
-            large
-            medium
-            original
             small
           }
         }
@@ -185,7 +180,7 @@ const getProfileImageQuery = gql`
   }
 `;
 
-export const getProfileImage = async ({ address }) => {
+export const getProfileImage = async (address) => {
   const variables = {
     identities: address,
   };

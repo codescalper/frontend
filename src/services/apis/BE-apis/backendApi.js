@@ -577,39 +577,10 @@ export const deleteUserAsset = async (id) => {
   return result?.data;
 };
 
-// Get available Invite code
-
-export const getInviteCode = async () => {
-  const result = await api.get(`${API}/user/loyalty/invite-code`);
-
-  return {
-    data: result?.data,
-  };
-};
-
-// Get all live tasks in the platform
-
-export const getAllTasks = async () => {
-  const result = await api.get(`${API}/user/loyalty/tasks`);
-
-  return {
-    data: result?.data,
-  };
-};
 // Get Reward timeline for a user
 
 export const getRewardTimeline = async () => {
   const result = await api.get(`${API}/user/loyalty/reward-history`);
-
-  return {
-    data: result?.data,
-  };
-};
-
-// Get Details for a User
-
-export const getUserProfileDetails = async () => {
-  const result = await api.get(`${API}/user`);
 
   return {
     data: result?.data,
