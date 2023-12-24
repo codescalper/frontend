@@ -9,6 +9,7 @@ import BsX from "@meronex/icons/bs/BsX";
 import { Textarea, Typography } from "@material-tailwind/react";
 import logoSolana from "../../../../../assets/logos/logoSolana.png";
 import logoZora from "../../../../../assets/logos/logoZora.png";
+import logoFarcaster from "../../../../../assets/logos/logoFarcaster.jpg";
 
 const ShareSection = () => {
   const { address, isConnected } = useAccount();
@@ -189,6 +190,7 @@ const ShareSection = () => {
         <hr />
         <div className={`relative mt-6 px-4 sm:px-6`}>
           <p className="text-lg">Share on socials</p>
+          <div className="flex ">
           <div className="flex items-center space-x-12 py-5">
             <div onClick={() => setMenu("lensmonetization")}>
               {" "}
@@ -199,6 +201,18 @@ const ShareSection = () => {
               />{" "}
             </div>
           </div>
+
+          <div className="flex items-center space-x-12 py-5 ml-8">
+            <div onClick={() => setMenu("farcasterShare")}>
+              {" "}
+              <img
+                className="w-10 cursor-pointer rounded-md"
+                src={logoFarcaster}
+                alt="Farcaster"
+              />{" "}
+            </div>
+          </div>
+        </div>
         </div>
         <hr />
 
