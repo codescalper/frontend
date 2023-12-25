@@ -16,7 +16,7 @@ import {
   useSwitchNetwork,
   useWaitForTransaction,
 } from "wagmi";
-import { useAppAuth } from "../../../../../../../hooks/app";
+import { useAppAuth, useLocalStorage } from "../../../../../../../hooks/app";
 import {
   APP_ETH_ADDRESS,
   ERROR,
@@ -28,16 +28,24 @@ import {
   uploadUserAssetToIPFS,
 } from "../../../../../../../services";
 import { zoraNftCreatorV1Config } from "@zoralabs/zora-721-contracts";
-import { errorMessage, getFromLocalStorage } from "../../../../../../../utils";
+import {
+  errorMessage,
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from "../../../../../../../utils";
 import ZoraDialog from "./ZoraDialog";
 import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { useChainModal } from "@rainbow-me/rainbowkit";
+import { FarcasterAuth } from "../../farcaster-share/components";
+import { LensAuth, LensDispatcher } from "../../lens-share/components";
+import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
 
 const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   const { address } = useAccount();
   const { isAuthenticated } = useAppAuth();
+  const { isFarcasterAuth, lensAuth, dispatcher } = useLocalStorage();
   const chainId = useChainId();
   const { chains, chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
@@ -76,7 +84,29 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     postDescription,
     parentRecipientListRef,
     canvasBase64Ref,
+    farcasterStates,
+    setFarcasterStates,
+
+    lensAuthState, // don't remove this
   } = useContext(Context);
+
+  // checking for farcaster auth
+  const { data: farcasterAuthData } = useQuery({
+    queryKey: ["farUserDetails"],
+    queryFn: getFarUserDetails,
+    onSuccess: (res) => {
+      if (res?.message) {
+        setFarcasterStates({
+          isFarcasterAuth: res?.message,
+        });
+        saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, res?.message);
+      }
+    },
+    onError: (err) => {
+      console.log("err", err);
+    },
+    enabled: isAuthenticated && !isFarcasterAuth ? true : false,
+  });
 
   // upload to IPFS Mutation
   const {
@@ -1479,6 +1509,19 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
 
       {!getEVMAuth ? (
         <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
+      ) : isFarcaster &&
+        (!isFarcasterAuth || !farcasterStates?.isFarcasterAuth) ? (
+        <FarcasterAuth />
+      ) : isOpenAction && !lensAuth?.profileHandle ? (
+        <LensAuth
+          title="Login with Lens"
+          className="mx-2 w-[95%] outline-none"
+        />
+      ) : isOpenAction && !dispatcher ? (
+        <LensDispatcher
+          title="Enable signless transactions"
+          className="mx-2 w-[95%] outline-none"
+        />
       ) : isUnsupportedChain() ? (
         <div className="mx-2 outline-none">
           <Button

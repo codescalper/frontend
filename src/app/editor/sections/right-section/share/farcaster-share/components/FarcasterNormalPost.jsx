@@ -116,22 +116,22 @@ const FarcasterNormalPost = () => {
     referralError,
     setReferralError,
     parentRecipientListRef,
+    farcasterStates,
 
     lensAuthState,
   } = useContext(Context);
 
   const [sharing, setSharing] = useState(false);
-  const { isFarcasterAuth } = useLocalStorage();
-  const [isFarcasterAuthState, setIsFarcasterAuthState] =
-    useState(isFarcasterAuth);
+  const { isFarcasterAuth, setFarcasterStates } = useLocalStorage();
 
   const { data, isError, error, isLoading } = useQuery({
     queryKey: ["farUserDetails"],
     queryFn: getFarUserDetails,
     onSuccess: (res) => {
       if (res?.message) {
-        console.log("res", res?.message);
-        setIsFarcasterAuthState(res?.message);
+        setFarcasterStates({
+          isFarcasterAuth: res?.message,
+        });
         saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, res?.message);
       }
     },
@@ -215,7 +215,7 @@ const FarcasterNormalPost = () => {
       <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none">
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
-        ) : !isFarcasterAuth || !isFarcasterAuthState ? (
+        ) : !isFarcasterAuth || !farcasterStates?.isFarcasterAuth ? (
           <FarcasterAuth />
         ) : (
           <div className="mx-2 my-2 outline-none">

@@ -82,6 +82,7 @@ const useHeight = () => {
 const CustomToolTipWrapper = () => {
   return <div>Test</div>;
 };
+
 const Editor = () => {
   const store = useStore();
   const height = useHeight();
@@ -175,7 +176,7 @@ const Editor = () => {
 
     // Generate a new array by removing elements at notFoundIndexes
     const newDataRef = recipientDataRefArr.filter(
-      (_, index) => !notFoundIndexes.includes(index) 
+      (_, index) => !notFoundIndexes.includes(index)
     );
 
     // update the parentRecipientDataRef with the new array
@@ -251,9 +252,9 @@ const Editor = () => {
       // save it to the backend
       if (canvasChildren?.length > 0) {
         // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
-        // console.log("parentRecipientRef", recipientDataCombiner().recipients);
+        console.log("parentRecipientRef", recipientDataCombiner().recipients);
 
-        // return;
+        return;
 
         // create new canvas
         if (!canvasIdRef.current) {
@@ -286,7 +287,7 @@ const Editor = () => {
             referredFrom: recipientDataCombiner().recipients,
             assetsRecipientElementData: recipientDataFilter().recipientsData,
             preview: canvasBase64Ref.current,
-          }) 
+          })
             .then((res) => {
               if (res?.status === "success") {
                 console.log(res?.message);
@@ -412,7 +413,6 @@ const Editor = () => {
                 store={store}
                 components={{
                   Tooltip,
-                  // Image: CustomToolTipWrapper
                 }}
                 backgroundColor="#e8e8ec"
               />

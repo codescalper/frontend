@@ -333,6 +333,10 @@ const ContextProvider = ({ children }) => {
     publicsaleScheduleErrorMessage: "",
   });
 
+  const [farcasterStates, setFarcasterStates] = useState({
+    isFarcasterAuth: false,
+  });
+
   // for calendar
   const [stFormattedDate, setStFormattedDate] = useState("");
   const [stFormattedTime, setStFormattedTime] = useState("");
@@ -570,6 +574,10 @@ const ContextProvider = ({ children }) => {
         // For Lens Share - Smart Post
         enabledSmartPost,
         setEnabledSmartPost,
+
+        // for farcaster
+        farcasterStates,
+        setFarcasterStates,
       }}
     >
       {children}

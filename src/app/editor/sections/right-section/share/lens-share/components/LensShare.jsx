@@ -112,7 +112,7 @@ const LensShare = () => {
     setReferralError,
     parentRecipientListRef,
 
-    lensAuthState,
+    lensAuthState, // don't remove this
   } = useContext(Context);
 
   const [sharing, setSharing] = useState(false);
