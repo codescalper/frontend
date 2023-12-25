@@ -112,7 +112,7 @@ const LensAuth = ({ title, className }) => {
             profileId: activeProfile.id,
             profileHandle: activeProfile.handle,
           });
-          toast.success("Successfully authenticated");
+          toast.success("Successfully logged in to Lens");
           setLensAuthState((cur) => ({
             ...cur,
             loading: {
@@ -184,7 +184,7 @@ const LensAuth = ({ title, className }) => {
       >
         <DialogHeader className="justify-between border-b border-gray-300">
           <Typography variant="h5" color="blue-gray">
-            Login with Lens
+            Login to Lens
           </Typography>
           <IconButton
             color="blue-gray"

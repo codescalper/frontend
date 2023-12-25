@@ -23,9 +23,10 @@ const ZoraDialog = ({
   isSuccess,
   isCreatingSplit,
   isUploadingToIPFS,
-  OAisLoading,
-  OAisSuccess,
+  isShareLoading,
+  isShareSuccess,
   isOpenAction,
+  isFarcaster,
 }) => {
   const [open, setOpen] = useState(false);
   const { resetState } = useReset();
@@ -72,9 +73,12 @@ const ZoraDialog = ({
                 "Confirm the transaction to create the split..."}
               {isLoading && "Confirm the transaction to create the Edition..."}
               {isPending && "Transaction is pending..."}
-              {OAisLoading && "Creating Lens open action..."}
+              {isOpenAction && isShareLoading && "Creating Lens open action..."}
+              {isFarcaster && isShareLoading && "Sharing on Farcaster..."}
               {isOpenAction
-                ? OAisSuccess && <>Open Action is created successfully.</>
+                ? isShareSuccess && <>Open Action is created successfully.</>
+                : isFarcaster
+                ? isShareSuccess && <>Shared on Farcaster.</>
                 : isSuccess && (
                     <>
                       Transaction is successful. <br />
@@ -99,7 +103,7 @@ const ZoraDialog = ({
               isCreatingSplit ||
               isLoading ||
               isPending ||
-              OAisLoading) && <Spinner color="blue" />}
+              isShareLoading) && <Spinner color="blue" />}
           </div>
         </DialogBody>
 
@@ -110,7 +114,7 @@ const ZoraDialog = ({
               isCreatingSplit ||
               isLoading ||
               isPending ||
-              OAisLoading
+              isShareLoading
             }
             color="teal"
             onClick={() => {

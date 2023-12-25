@@ -84,7 +84,7 @@ const ProfileMenu = () => {
           .map(({ label, icon, onClick }, key) => {
             const isLastItem = label === "Logout";
             return (
-              <div className="outline-none">
+              <div className="outline-none" key={label}>
                 {isLastItem && <hr className="my-2 border-blue-gray-50" />}
                 <MenuItem
                   key={label}
