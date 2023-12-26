@@ -46,7 +46,7 @@ import {
 import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 import { SpeedDialX } from "./common/elements/SpeedDial";
-import { Tooltip } from "polotno/canvas/tooltip";
+// import { Tooltip } from "polotno/canvas/tooltip";
 import { useSolanaWallet } from "../../hooks/solana";
 import { LOCAL_STORAGE } from "../../data";
 import { Button } from "@material-tailwind/react";
@@ -252,9 +252,9 @@ const Editor = () => {
       // save it to the backend
       if (canvasChildren?.length > 0) {
         // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
-        console.log("parentRecipientRef", recipientDataCombiner().recipients);
+        // console.log("parentRecipientRef", recipientDataCombiner().recipients);
 
-        return;
+        // return;
 
         // create new canvas
         if (!canvasIdRef.current) {
@@ -411,9 +411,9 @@ const Editor = () => {
               </div>
               <Workspace
                 store={store}
-                components={{
-                  Tooltip,
-                }}
+                // components={{
+                //   Tooltip,
+                // }}
                 backgroundColor="#e8e8ec"
               />
 

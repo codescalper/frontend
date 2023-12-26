@@ -170,7 +170,9 @@ const FarcasterNormalPost = () => {
     const id = toast.loading(`Sharing on ${platform}...`);
     shareOnLens({
       canvasData: canvasData,
-      canvasParams: false,
+      canvasParams: {
+        zoraMintLink: "",
+      },
       platform: platform,
     })
       .then((res) => {
@@ -215,7 +217,7 @@ const FarcasterNormalPost = () => {
       <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none">
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
-        ) : !isFarcasterAuth || !farcasterStates?.isFarcasterAuth ? (
+        ) : !isFarcasterAuth ? (
           <FarcasterAuth />
         ) : (
           <div className="mx-2 my-2 outline-none">

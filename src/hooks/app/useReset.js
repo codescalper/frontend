@@ -99,7 +99,7 @@ const useReset = () => {
 
   const resetState = () => {
     // clear the page
-    store.clear({ keepHistory: true });
+    // store.clear({ keepHistory: true });
     store.addPage();
     store.setSize(1080, 1080);
 
