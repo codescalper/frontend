@@ -14,6 +14,8 @@ import { ZoraLogo } from "../../../../../../../assets";
 import { zoraURLErc721 } from "../utils/zoraURL";
 import { useReset } from "../../../../../../../hooks/app";
 import { useNetwork } from "wagmi";
+import BiCopy from "@meronex/icons/bi/BiCopy";
+import { toast } from "react-toastify";
 
 const ZoraDialog = ({
   isError,
@@ -31,6 +33,7 @@ const ZoraDialog = ({
   const [open, setOpen] = useState(false);
   const { resetState } = useReset();
   const { chain } = useNetwork();
+  const [isCopy, setIsCopy] = useState(false);
 
   const handleOpen = () => setOpen(!open);
 
@@ -82,7 +85,7 @@ const ZoraDialog = ({
                 : isSuccess && (
                     <>
                       Transaction is successful. <br />
-                      <span className="text-md">
+                      <span className="text-md flex items-center gap-1">
                         Check your edition on{" "}
                         <a
                           href={zoraURLErc721(
@@ -95,6 +98,18 @@ const ZoraDialog = ({
                         >
                           Zora
                         </a>
+                        <BiCopy
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              zoraURLErc721(data?.logs[0]?.address, chain?.id)
+                            );
+                            setIsCopy(true);
+                          }}
+                          className="cursor-pointer"
+                        />
+                        {isCopy && (
+                          <span className="text-green-500">Copied</span>
+                        )}
                       </span>
                     </>
                   )}
