@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { useStore } from "../../../../../hooks/polotno";
-import { Button } from "@blueprintjs/core";
 import { replaceImageURL } from "../../../../../utils";
 import { getRemovedBgS3Link } from "../../../../../services";
 import { toast } from "react-toastify";
@@ -8,7 +7,7 @@ import { useAccount } from "wagmi";
 import { useAppAuth } from "../../../../../hooks/app";
 import { Context } from "../../../../../providers/context";
 import SuReplicate from "@meronex/icons/su/SuReplicate";
-import { Typography } from "@material-tailwind/react";
+import { Button, Typography } from "@material-tailwind/react";
 
 const BgRemover = ({ inSpeedDial }) => {
   const store = useStore();
@@ -132,12 +131,11 @@ const BgRemover = ({ inSpeedDial }) => {
     <div className="">
       {!inSpeedDial && (
         <Button
-          id="fourth-step"
-          icon="clean"
           onClick={fnCallToast}
           title={!isAuthenticated ? "" : "Please connect your wallet"}
           disabled={!isAuthenticated}
-          className="mt-2 mb-2 ml-3 py-1 px-4"
+          className="outline-none"
+          color="white"
         >
           {`Remove background`}
         </Button>

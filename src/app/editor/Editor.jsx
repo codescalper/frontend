@@ -414,21 +414,23 @@ const Editor = () => {
                 components={{
                   Tooltip,
                 }}
-                backgroundColor="#e8e8ec"
+                backgroundColor="#e1e1e3"
               />
 
               {/* Bottom section */}
-              <div className="mt-2 mb-2 mr-2 p-1/2 flex flex-row justify-between align-middle border border-black-300 rounded-lg ">
+              <div className="mt-2 mb-2 mr-2 p-1/2 flex justify-between items-center rounded-lg p-1 ">
                 <BgRemover />
+
+                {/* Zoom Buttons */}
                 <ZoomButtons store={store} />
 
                 {/* Quick Tour on the main page */}
-                <div className="flex flex-row ">
+                <div className="flex justify-between items-center h-full">
                   {/* Speed Dial - Clear Canvas, etc.. Utility Fns */}
                   <SpeedDialX />
 
                   <div
-                    className="m-1 ml-2 flex flex-row justify-end align-middle cursor-pointer"
+                    className="flex justify-between cursor-pointer"
                     onClick={async () => {
                       setCurrentStep(0);
                       if (isConnected) {
@@ -441,7 +443,7 @@ const Editor = () => {
                     }}
                   >
                     <FcIdea className="m-2" size="16" />{" "}
-                    <div className="hidden md:block w-full m-2 ml-0 text-sm text-yellow-600">
+                    <div className="hidden md:block w-full m-2 ml-0 text-sm">
                       Need an intro?
                     </div>
                   </div>
