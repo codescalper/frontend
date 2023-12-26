@@ -5646,7 +5646,7 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-konva@^9.2.0:
+konva@^9.2.1:
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/konva/-/konva-9.3.0.tgz#0fb5f8112eab9cc10a6f42f45e0e0c4def229f85"
   integrity sha512-qLTW06GRwb+WMMUXJcGIb0qP4uO0mZLAwgRI82zuCkRmCH1lFsVPmrPzqqHnjKCMu4Jzw6d/R8JxkPw7gkVnuw==
@@ -5914,20 +5914,22 @@ minimatch@^3.0.4, minimatch@^3.1.1:
   dependencies:
     brace-expansion "^1.1.7"
 
-mobx-react-lite@^3.4.3:
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-3.4.3.tgz#3a4c22c30bfaa8b1b2aa48d12b2ba811c0947ab7"
-  integrity sha512-NkJREyFTSUXR772Qaai51BnE1voWx56LOL80xG7qkZr6vo8vEaLF3sz1JNUVh+rxmUzxYaqOhfuxTfqUh0FXUg==
+mobx-react-lite@^4.0.4:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-4.0.5.tgz#e2cb98f813e118917bcc463638f5bf6ea053a67b"
+  integrity sha512-StfB2wxE8imKj1f6T8WWPf4lVMx3cYH9Iy60bbKXEs21+HQ4tvvfIBZfSmMXgQAefi8xYEwQIz4GN9s0d2h7dg==
+  dependencies:
+    use-sync-external-store "^1.2.0"
 
-mobx-state-tree@5.1.8:
-  version "5.1.8"
-  resolved "https://registry.yarnpkg.com/mobx-state-tree/-/mobx-state-tree-5.1.8.tgz#d42b07db510e8819386e390a7e2ae0c4d6706821"
-  integrity sha512-oe82BNgMr408e6DxMDNat8msXQTuyuqzJ97DPupbhchEfjjHyjsmPSwtXHl+nXiW3tybpb/cr5siUClBqKqv+Q==
+mobx-state-tree@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/mobx-state-tree/-/mobx-state-tree-5.2.0.tgz#784fb22b7d2b1598c6b4fb8987d68d86eaf66d8b"
+  integrity sha512-TAKfMHEF9F59iAcLbD1Y9D8Kand4NoYM1h8Yv3Ol5la9X0I7T4Y/mhVN/oK/bi3g0v7dYy9wsoni2T66zCohGQ==
 
-mobx@6.9.0:
-  version "6.9.0"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-6.9.0.tgz#8a894c26417c05bed2cf7499322e589ee9787397"
-  integrity sha512-HdKewQEREEJgsWnErClfbFoVebze6rGazxFLU/XUyrII8dORfVszN1V0BMRnQSzcgsNNtkX8DHj3nC6cdWE9YQ==
+mobx@6.10.2:
+  version "6.10.2"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-6.10.2.tgz#96e123deef140750360ca9a5b02a8b91fbffd4d9"
+  integrity sha512-B1UGC3ieK3boCjnMEcZSwxqRDMdzX65H/8zOHbuTY8ZhvrIjTUoLRR2TP2bPqIgYRfb3+dUigu8yMZufNjn0LQ==
 
 motion@10.16.2:
   version "10.16.2"
@@ -6326,31 +6328,32 @@ pngjs@^5.0.0:
   resolved "https://registry.yarnpkg.com/pngjs/-/pngjs-5.0.0.tgz#e79dd2b215767fd9c04561c01236df960bce7fbb"
   integrity sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==
 
-polotno@1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/polotno/-/polotno-1.11.1.tgz#5467c3c14a6a6d1673e7bd77dce84b00fff76704"
-  integrity sha512-EUQWANzi8ffrRaoG6+IJXmdgGIxnZyaGhgmWlwOu+Rfmn1miig4Y8WUUjv98LbsL4VfmRC8gU3Imi11auX+5ww==
+polotno@1.14.6:
+  version "1.14.6"
+  resolved "https://registry.yarnpkg.com/polotno/-/polotno-1.14.6.tgz#475d2f3b153bf0c6a456ac95c355ef4d4a4f4db2"
+  integrity sha512-XXTwu4jyKNdDDs0LOPx4QlmejjmeHrDtEju0R1O4jMDx6FLkYyBYj93LIwaZJ/kqtEGBQwUrlhETwMHg0KBGug==
   dependencies:
     "@blueprintjs/core" "^4.20.2"
     "@blueprintjs/popover2" "^1.14.11"
     "@blueprintjs/select" "^4.9.24"
     "@meronex/icons" "^4.0.0"
+    functions-have-names "^1.2.3"
     gradient-parser "^1.0.2"
-    konva "^9.2.0"
-    mobx "6.9.0"
-    mobx-react-lite "^3.4.3"
-    mobx-state-tree "5.1.8"
+    konva "^9.2.1"
+    mobx "6.10.2"
+    mobx-react-lite "^4.0.4"
+    mobx-state-tree "5.2.0"
     nanoid "3.3.4"
     quill "^1.3.7"
     rasterizehtml "^1.3.1"
     react-color "^2.19.3"
     react-konva "18.2.10"
-    react-konva-utils "^1.0.4"
+    react-konva-utils "^1.0.5"
     react-sortablejs "6.1.4"
     react-window "^1.8.9"
     sortablejs "^1.15.0"
     svg-round-corners "^0.4.1"
-    swr "^2.1.5"
+    swr "^2.2.2"
     use-image "^1.1.1"
 
 popmotion@11.0.3:
@@ -6722,7 +6725,7 @@ react-is@^16.13.1, react-is@^16.7.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-konva-utils@^1.0.4:
+react-konva-utils@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/react-konva-utils/-/react-konva-utils-1.0.5.tgz#483f40a5e5c4b998e3a6857f8ca175b04a2e8281"
   integrity sha512-MQco0bre5ohm2lS34wAr/QJgT5PCnKbS3V1/aeYDldc8mq5X1UwcjxZWSL7YxGw3jQSHOm6XyX0YgLXQYUWBuQ==
@@ -7455,7 +7458,7 @@ svg-round-corners@^0.4.1:
   dependencies:
     lodash.clonedeep "^4.5.0"
 
-swr@^2.1.5:
+swr@^2.2.2:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/swr/-/swr-2.2.4.tgz#03ec4c56019902fbdc904d78544bd7a9a6fa3f07"
   integrity sha512-njiZ/4RiIhoOlAaLYDqwz5qH/KZXVilRLvomrx83HjzCWTfa+InyfAjv05PSFxnmLzZkNO9ZfvgoqzAaEI4sGQ==
