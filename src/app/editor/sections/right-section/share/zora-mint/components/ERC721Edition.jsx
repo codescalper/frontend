@@ -84,29 +84,10 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     postDescription,
     parentRecipientListRef,
     canvasBase64Ref,
-    farcasterStates,
-    setFarcasterStates,
-
+    
+    farcasterStates, // don't remove this
     lensAuthState, // don't remove this
   } = useContext(Context);
-
-  // checking for farcaster auth
-  const { data: farcasterAuthData } = useQuery({
-    queryKey: ["farUserDetails"],
-    queryFn: getFarUserDetails,
-    onSuccess: (res) => {
-      if (res?.message) {
-        setFarcasterStates({
-          isFarcasterAuth: res?.message,
-        });
-        saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, res?.message);
-      }
-    },
-    onError: (err) => {
-      console.log("err", err);
-    },
-    enabled: isAuthenticated && !isFarcasterAuth ? true : false,
-  });
 
   // upload to IPFS Mutation
   const {
@@ -1509,8 +1490,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
 
       {!getEVMAuth ? (
         <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
-      ) : isFarcaster &&
-        (!isFarcasterAuth || !farcasterStates?.isFarcasterAuth) ? (
+      ) : isFarcaster && !isFarcasterAuth ? (
         <FarcasterAuth />
       ) : isOpenAction && !lensAuth?.profileHandle ? (
         <LensAuth

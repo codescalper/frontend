@@ -8,7 +8,7 @@ export const LOCAL_STORAGE = {
   userAuthTime: "user.auth.timestamp",
   ifUserEligible: "ifUserEligible",
   hasUserSeenTheApp: "hasUserSeenTheApp",
-  dispatcher: "dispatcher",
+  dispatcher: "lens.dispatcher",
   userGuideTour: "user.guide.tour",
   braveShieldWarn: "brave.shield.warn",
   userId: "user.id",

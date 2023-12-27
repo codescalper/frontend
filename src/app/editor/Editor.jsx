@@ -51,6 +51,7 @@ import { useSolanaWallet } from "../../hooks/solana";
 import { LOCAL_STORAGE } from "../../data";
 import { Button } from "@material-tailwind/react";
 import { useAppAuth, useLocalStorage } from "../../hooks/app";
+import { getFarUserDetails } from "../../services/apis/BE-apis";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -79,9 +80,6 @@ const useHeight = () => {
   }, []);
   return height;
 };
-const CustomToolTipWrapper = () => {
-  return <div>Test</div>;
-};
 
 const Editor = () => {
   const store = useStore();
@@ -106,6 +104,7 @@ const Editor = () => {
     parentRecipientDataRef,
     parentRecipientListRef,
     canvasBase64Ref,
+    setFarcasterStates,
   } = useContext(Context);
 
   const handleDrop = (ev) => {
@@ -131,6 +130,8 @@ const Editor = () => {
   // ------ ai_integration branch
 
   const queryClient = useQueryClient();
+
+  // create canvas mutation
   const { mutateAsync: createCanvasAsync } = useMutation({
     mutationKey: "createCanvas",
     mutationFn: createCanvas,
@@ -139,6 +140,7 @@ const Editor = () => {
     },
   });
 
+  // update canvas mutation
   const { mutateAsync: updateCanvasAsync } = useMutation({
     mutationKey: "createCanvas",
     mutationFn: updateCanvas,
@@ -147,6 +149,41 @@ const Editor = () => {
     },
   });
   // 03June2023
+
+  // check for Farcaster auth
+  const { data } = useQuery({
+    queryKey: ["farUserDetails"],
+    queryFn: getFarUserDetails,
+    onSuccess: (res) => {
+      if (res?.message) {
+        saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, res?.message);
+        setFarcasterStates({
+          isFarcasterAuth: res?.message,
+        });
+      }
+    },
+    onError: (err) => {
+      console.log("err", err);
+    },
+    enabled: isAuthenticated ? true : false,
+    retry: 1,
+  });
+
+  //  check for Lens dispatcher
+  const { data: lensDispatcher } = useQuery({
+    queryKey: ["lensDispatcher"],
+    queryFn: checkDispatcher,
+    onSuccess: (res) => {
+      if (res?.message) {
+        saveToLocalStorage(LOCAL_STORAGE.dispatcher, true);
+      }
+    },
+    onError: (err) => {
+      console.log("err", err);
+    },
+    enabled: isAuthenticated ? true : false,
+    retry: 1,
+  });
 
   // function to filter the recipient data
   const recipientDataFilter = () => {
@@ -362,26 +399,6 @@ const Editor = () => {
       off();
     };
   }, []);
-
-  //  check for dispatcher
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const checkDispatcherFn = async () => {
-      try {
-        const res = await checkDispatcher();
-        if (res?.message) {
-          saveToLocalStorage(LOCAL_STORAGE.dispatcher, true);
-        } else {
-          saveToLocalStorage(LOCAL_STORAGE.dispatcher, false);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    checkDispatcherFn();
-  }, [isAuthenticated]);
 
   return (
     <>

@@ -77,69 +77,19 @@ import FarcasterAuth from "./FarcasterAuth";
 import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
 
 const FarcasterNormalPost = () => {
-  const [recipientsLensHandle, setRecipientsLensHandle] = useState([]);
-  const store = useStore();
-  const { address, isConnected } = useAccount();
   const { resetState } = useReset();
-  const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
-  const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
-  const { isAuthenticated } = useAppAuth();
-  const chainId = useChainId();
-  const { chains, chain } = useNetwork();
-  const {
-    error: errorSwitchNetwork,
-    isError: isErrorSwitchNetwork,
-    isLoading: isLoadingSwitchNetwork,
-    isSuccess: isSuccessSwitchNetwork,
-    switchNetwork,
-  } = useSwitchNetwork();
 
   const {
-    setIsLoading,
-    setText,
-    setMenu,
     postDescription,
-    enabled,
-    setEnabled,
-    stFormattedTime,
-    stFormattedDate,
     contextCanvasIdRef,
-    isShareOpen,
-    setIsShareOpen,
-    priceError,
-    setPriceError,
-    splitError,
-    setSplitError,
-    editionError,
-    setEditionError,
-    referralError,
-    setReferralError,
-    parentRecipientListRef,
-    farcasterStates,
 
-    lensAuthState,
+    farcasterStates, // don't remove this
+    lensAuthState, // don't remove this
   } = useContext(Context);
 
   const [sharing, setSharing] = useState(false);
-  const { isFarcasterAuth, setFarcasterStates } = useLocalStorage();
-
-  const { data, isError, error, isLoading } = useQuery({
-    queryKey: ["farUserDetails"],
-    queryFn: getFarUserDetails,
-    onSuccess: (res) => {
-      if (res?.message) {
-        setFarcasterStates({
-          isFarcasterAuth: res?.message,
-        });
-        saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, res?.message);
-      }
-    },
-    onError: (err) => {
-      console.log("err", err);
-    },
-    enabled: isAuthenticated && !isFarcasterAuth ? true : false,
-  });
+  const { isFarcasterAuth } = useLocalStorage();
 
   const { mutateAsync: shareOnLens } = useMutation({
     mutationKey: "shareOnFarcaster",
