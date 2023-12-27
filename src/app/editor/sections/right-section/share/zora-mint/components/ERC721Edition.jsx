@@ -16,7 +16,7 @@ import {
   useSwitchNetwork,
   useWaitForTransaction,
 } from "wagmi";
-import { useAppAuth } from "../../../../../../../hooks/app";
+import { useAppAuth, useLocalStorage } from "../../../../../../../hooks/app";
 import {
   APP_ETH_ADDRESS,
   ERROR,
@@ -28,25 +28,36 @@ import {
   uploadUserAssetToIPFS,
 } from "../../../../../../../services";
 import { zoraNftCreatorV1Config } from "@zoralabs/zora-721-contracts";
-import { errorMessage, getFromLocalStorage } from "../../../../../../../utils";
+import {
+  errorMessage,
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from "../../../../../../../utils";
 import ZoraDialog from "./ZoraDialog";
 import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { useChainModal } from "@rainbow-me/rainbowkit";
+import { FarcasterAuth } from "../../farcaster-share/components";
+import { LensAuth, LensDispatcher } from "../../lens-share/components";
+import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
 
-const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
+const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   const { address } = useAccount();
   const { isAuthenticated } = useAppAuth();
+  const { isFarcasterAuth, lensAuth, dispatcher } = useLocalStorage();
   const chainId = useChainId();
   const { chains, chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const { openChainModal } = useChainModal();
   const [recipientsEns, setRecipientsEns] = useState([]);
-  const [OAisLoading, setOAisLoading] = useState(false);
-  const [OAisSuccess, setOAisSuccess] = useState(false);
-  const [OAisError, setOAisError] = useState(false);
-  const [OAerror, setOAerror] = useState("");
+
+  // share states
+  const [isShareLoading, setIsShareLoading] = useState(false);
+  const [isShareSuccess, setIsShareSuccess] = useState(false);
+  const [isShareError, setIsShareError] = useState(false);
+  const [shareError, setShareError] = useState("");
+
   const {
     createSplit,
     data: createSplitData,
@@ -73,6 +84,9 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
     postDescription,
     parentRecipientListRef,
     canvasBase64Ref,
+    
+    farcasterStates, // don't remove this
+    lensAuthState, // don't remove this
   } = useContext(Context);
 
   // upload to IPFS Mutation
@@ -89,47 +103,43 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
   });
 
   // share open action edition on LENS Mutation
-  const { mutateAsync: createOpenActionMutation } = useMutation({
-    mutationKey: "openAction",
+  const { mutateAsync: shareOnSocialsMutation } = useMutation({
+    mutationKey: "shareOnSocials",
     mutationFn: shareOnSocials,
   });
 
-  const createOpenAction = (zoraMintAddress) => {
-    setOAisLoading(true);
+  // create lens open action
+  const handleShare = (canvasParams, platform) => {
+    setIsShareLoading(true);
 
     const canvasData = {
       id: contextCanvasIdRef.current,
-      name: "Lens open action",
+      name: `${platform} post`,
       content: postDescription,
     };
-    const canvasParams = {
-      openAction: "mintToZora",
-      zoraMintAddress: zoraMintAddress,
-    };
 
-    createOpenActionMutation({
+    shareOnSocialsMutation({
       canvasData: canvasData,
       canvasParams: canvasParams,
-      platform: "lens",
+      platform: platform,
     })
       .then((res) => {
         if (res?.txHash) {
-          setOAerror("tes");
-          setOAisError(false);
-          setOAisLoading(false);
-          setOAisSuccess(true);
+          setIsShareError(false);
+          setIsShareLoading(false);
+          setIsShareSuccess(true);
         } else {
-          setOAerror(res?.error || ERROR.SOMETHING_WENT_WRONG);
-          setOAisError(true);
-          setOAisLoading(false);
-          setOAisSuccess(false);
+          setShareError(res?.error || ERROR.SOMETHING_WENT_WRONG);
+          setIsShareError(true);
+          setIsShareLoading(false);
+          setIsShareSuccess(false);
         }
       })
       .catch((error) => {
-        setOAisError(errorMessage(error));
-        setOAerror(true);
-        setOAisLoading(false);
-        setOAisSuccess(false);
+        setShareError(errorMessage(error));
+        setIsShareError(true);
+        setIsShareLoading(false);
+        setIsShareSuccess(false);
       });
   };
 
@@ -756,8 +766,6 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
     mutate(canvasBase64Ref.current[0]);
   };
 
-  // share open action edition on LENS
-
   // add recipient to the split list
   useEffect(() => {
     if (isAuthenticated) {
@@ -810,7 +818,23 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
   // create open adiction
   useEffect(() => {
     if (isOpenAction && receipt?.logs[0]?.address) {
-      createOpenAction(receipt?.logs[0]?.address);
+      const canvasParams = {
+        openAction: "mintToZora",
+        zoraMintAddress: receipt?.logs[0]?.address,
+      };
+
+      handleShare(canvasParams, "lens");
+    }
+  }, [isSuccess]);
+
+  // share on farcater
+  useEffect(() => {
+    if (isFarcaster && receipt?.logs[0]?.address) {
+      const canvasParams = {
+        zoraMintLink: receipt?.logs[0]?.address,
+      };
+
+      handleShare(canvasParams, "farcaster");
     }
   }, [isSuccess]);
 
@@ -844,10 +868,10 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
 
   // error handling for open action
   useEffect(() => {
-    if (OAisError) {
-      toast.error(OAerror);
+    if (isShareError) {
+      toast.error(errorMessage(shareError));
     }
-  }, [OAisError]);
+  }, [isShareError]);
 
   // error/success handling for network switch
   useEffect(() => {
@@ -863,14 +887,15 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
   return (
     <>
       <ZoraDialog
-        isError={isUploadError || isCreateSplitError || isError || OAisError}
+        isError={isUploadError || isCreateSplitError || isError || isShareError}
         isLoading={isLoading}
         isCreatingSplit={isCreateSplitLoading}
         isUploadingToIPFS={isUploading}
         isPending={isPending}
-        OAisLoading={OAisLoading}
-        OAisSuccess={OAisSuccess}
+        isShareLoading={isShareLoading}
+        isShareSuccess={isShareSuccess}
         isOpenAction={isOpenAction}
+        isFarcaster={isFarcaster}
         data={receipt}
         isSuccess={isSuccess}
       />
@@ -1098,28 +1123,6 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
         <div className="mb-4 m-4">
           <div className="flex justify-between">
             <h2 className="text-lg mb-2"> Royalty </h2>
-            {/* <Switch
-              checked={zoraErc721Enabled.isRoyaltyPercent}
-              onChange={() =>
-                setZoraErc721Enabled({
-                  ...zoraErc721Enabled,
-                  isRoyaltyPercent: !zoraErc721Enabled.isRoyaltyPercent,
-                })
-              }
-              className={`${
-                zoraErc721Enabled.isRoyaltyPercent
-                  ? "bg-[#00bcd4]"
-                  : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
-            >
-              <span
-                className={`${
-                  zoraErc721Enabled.isRoyaltyPercent
-                    ? "translate-x-6"
-                    : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />{" "}
-            </Switch> */}
           </div>
           <div className="w-4/5 opacity-75">
             {" "}
@@ -1487,6 +1490,18 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
 
       {!getEVMAuth ? (
         <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
+      ) : isFarcaster && !isFarcasterAuth ? (
+        <FarcasterAuth />
+      ) : isOpenAction && !lensAuth?.profileHandle ? (
+        <LensAuth
+          title="Login with Lens"
+          className="mx-2 w-[95%] outline-none"
+        />
+      ) : isOpenAction && !dispatcher ? (
+        <LensDispatcher
+          title="Enable signless transactions"
+          className="mx-2 w-[95%] outline-none"
+        />
       ) : isUnsupportedChain() ? (
         <div className="mx-2 outline-none">
           <Button

@@ -72,7 +72,6 @@ const CustomImageComponent = ({
       y: changeCanvasDimension ? 0 : store.height / 4,
     });
 
-
     // NOTE: NO NEED OF THIS NOW
     // if nft is a lens collect, add it to the lensCollectNftRecipientDataRef
     // if (isLensCollect?.isLensCollect) {
@@ -134,8 +133,9 @@ const CustomImageComponent = ({
         onDragEnd={handleClickOrDrop}
         onClick={handleClickOrDrop}
       >
-        <div className="rounded-lg overflow-hidden">
+        <div className="mb-3">
           <LazyLoadImage
+            className="rounded-lg"
             placeholderSrc={base64Data}
             effect="blur"
             src={base64Data}

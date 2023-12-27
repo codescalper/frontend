@@ -137,7 +137,7 @@ const DesignCard = ({
       }}
     >
       {/* <div className="rounded-lg overflow-hidden transition-transform duration-1000"> */}
-      <div className="rounded-lg overflow-hidden transition-transform ease-in-out duration-300 relative">
+      <div className="transition-transform ease-in-out duration-300 relative mb-3">
         {/* If there are more than 1 preview images, then `stPreviewIndex` is incremented */}
         {/* If not on user templates tab, just passing the `preview` - BE response */}
 
@@ -312,7 +312,7 @@ const LenspostTemplates = () => {
           {/* <div className=" overflow-y-scroll">  */}
           {data?.pages[0]?.data?.length > 0 ? (
             <>
-              <div className="overflow-y-scroll grid grid-cols-2">
+              <div className="columns-2 gap-1">
                 {data?.pages
                   .flatMap((item) => item?.data)
                   .map((item, index) => {
@@ -402,7 +402,7 @@ const LenspostTemplates = () => {
                 <div className="h-64 overflow-y-scroll">
                   {data?.pages[0]?.data?.length > 0 ? (
                     <>
-                      <div className="overflow-y-auto grid grid-cols-2">
+                      <div className="columns-2 gap-1">
                         {data?.pages
                           .flatMap((item) => item?.data)
                           .map((item, index) => {
@@ -530,7 +530,7 @@ const UserTemplates = () => {
       {/*   Pass these onto Line 25 */}
       {data?.pages[0]?.data?.length > 0 ? (
         <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 overflow-y-auto">
+          <div className="columns-2 gap-1">
             {data?.pages
               .flatMap((item) => item?.data)
               .map((item) => {

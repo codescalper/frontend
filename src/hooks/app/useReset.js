@@ -84,6 +84,12 @@ const useReset = () => {
     // for zora mint tab
     setZoraTab,
 
+    // lens tab
+    setLensTab,
+
+    // farcaster tab
+    setFarcasterTab,
+
     // for zora erc721 edition tab
     setZoraErc721Enabled,
 
@@ -106,7 +112,12 @@ const useReset = () => {
       oauth_token: "",
       oauth_verifier: "",
     });
+
+    // tabs
     setMenu("share");
+    setZoraTab("ERC721");
+    setLensTab("normalPost");
+    setFarcasterTab("normalPost");
 
     // reset all the states for lens monetization
     setEnabled({
@@ -242,7 +253,6 @@ const useReset = () => {
     });
 
     // reset all the states for zora mint
-    setZoraTab("ERC721");
     setZoraErc721Enabled({
       isContractDetails: false,
       contractName: "",
