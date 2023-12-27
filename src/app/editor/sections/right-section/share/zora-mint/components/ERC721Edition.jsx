@@ -41,6 +41,7 @@ import { useChainModal } from "@rainbow-me/rainbowkit";
 import { FarcasterAuth } from "../../farcaster-share/components";
 import { LensAuth, LensDispatcher } from "../../lens-share/components";
 import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
+import { zoraURLErc721 } from "../utils/zoraURL";
 
 const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   const { address } = useAccount();
@@ -84,7 +85,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     postDescription,
     parentRecipientListRef,
     canvasBase64Ref,
-    
+
     farcasterStates, // don't remove this
     lensAuthState, // don't remove this
   } = useContext(Context);
@@ -831,7 +832,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   useEffect(() => {
     if (isFarcaster && receipt?.logs[0]?.address) {
       const canvasParams = {
-        zoraMintLink: receipt?.logs[0]?.address,
+        zoraMintLink: zoraURLErc721(receipt?.logs[0]?.address),
       };
 
       handleShare(canvasParams, "farcaster");
