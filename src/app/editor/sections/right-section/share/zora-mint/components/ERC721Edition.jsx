@@ -832,7 +832,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   useEffect(() => {
     if (isFarcaster && receipt?.logs[0]?.address) {
       const canvasParams = {
-        zoraMintLink: zoraURLErc721(receipt?.logs[0]?.address),
+        zoraMintLink: zoraURLErc721(receipt?.logs[0]?.address, chain?.id),
       };
 
       handleShare(canvasParams, "farcaster");
