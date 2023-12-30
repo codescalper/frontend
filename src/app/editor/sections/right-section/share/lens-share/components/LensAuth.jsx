@@ -225,7 +225,7 @@ const LensAuth = ({ title, className }) => {
               return (
                 <div
                   key={item.id}
-                  className="rounded-lg w-full h-full border p-3 my-2 text-black cursor-pointer hover:bg-blue-gray-50 flex items-center justify-between"
+                  className="rounded-lg w-full h-full border p-2 my-2 text-black cursor-pointer hover:bg-blue-gray-50 flex items-center justify-between"
                   onClick={() => {
                     if (lensAuthState.loading.isLoading) return;
                     generateSignature(item.id);

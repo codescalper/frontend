@@ -36,7 +36,7 @@ import {
 
 const { chains, publicClient } = configureChains(
   ENVIRONMENT === "production"
-    ? [polygon, base, zora]
+    ? [polygon, mainnet, base, zora, optimism]
     : [polygonMumbai, goerli],
   [alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()]
 );

@@ -155,12 +155,10 @@ const Editor = () => {
     queryKey: ["farUserDetails"],
     queryFn: getFarUserDetails,
     onSuccess: (res) => {
-      if (res?.message) {
-        saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, res?.message);
-        setFarcasterStates({
-          isFarcasterAuth: res?.message,
-        });
-      }
+      saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, res?.message);
+      setFarcasterStates({
+        isFarcasterAuth: res?.message,
+      });
     },
     onError: (err) => {
       console.log("err", err);
@@ -174,9 +172,7 @@ const Editor = () => {
     queryKey: ["lensDispatcher"],
     queryFn: checkDispatcher,
     onSuccess: (res) => {
-      if (res?.message) {
-        saveToLocalStorage(LOCAL_STORAGE.dispatcher, true);
-      }
+      saveToLocalStorage(LOCAL_STORAGE.dispatcher, res?.message);
     },
     onError: (err) => {
       console.log("err", err);

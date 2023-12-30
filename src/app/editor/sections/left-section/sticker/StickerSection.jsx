@@ -150,11 +150,11 @@ export const StickerPanel = () => {
     {
       name: "Simp",
       author: "$simp",
-      campaign: "christmas",
+      campaign: null,
     },
     {
       name: "Christmas",
-      author: "Lil Beans",
+      author: null,
       campaign: "christmas",
     },
     {

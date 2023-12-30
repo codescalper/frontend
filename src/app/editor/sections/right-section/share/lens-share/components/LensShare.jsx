@@ -763,7 +763,7 @@ const LensShare = () => {
                               <NumberInputBox
                                 min={0}
                                 max={100}
-                                step={0.01}
+                                step={1}
                                 label={"%"}
                                 // placeholder="0.0%"
                                 value={recipient.split}

@@ -1,6 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
-import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
+import {
+  InputBox,
+  InputErrorMsg,
+  Networks,
+  NumberInputBox,
+} from "../../../../../common";
 import { Button, Option, Select, Spinner } from "@material-tailwind/react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsPlus from "@meronex/icons/bs/BsPlus";
@@ -23,6 +28,7 @@ import {
   LOCAL_STORAGE,
 } from "../../../../../../../data";
 import {
+  ENVIRONMENT,
   getENSDomain,
   shareOnSocials,
   uploadUserAssetToIPFS,
@@ -58,6 +64,9 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   const [isShareSuccess, setIsShareSuccess] = useState(false);
   const [isShareError, setIsShareError] = useState(false);
   const [shareError, setShareError] = useState("");
+
+  // farcaster data states
+  const [farTxHash, setFarTxHash] = useState("");
 
   const {
     createSplit,
@@ -126,6 +135,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     })
       .then((res) => {
         if (res?.txHash) {
+          setFarTxHash(res?.txHash);
           setIsShareError(false);
           setIsShareLoading(false);
           setIsShareSuccess(true);
@@ -144,6 +154,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       });
   };
 
+  // checking unsupported chain for individual networks
   const isUnsupportedChain = () => {
     // chains[0] is the polygon network
     if (
@@ -152,6 +163,33 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       chain?.id != selectedChainId
     )
       return true;
+  };
+
+  // networks data for samart posts
+  const networksDataSmartPosts = () => {
+    const networks = ENVIRONMENT === "production" ? [8453, 7777777] : [5]; // supported chains for Lens samart posts
+
+    // filter the chains for smart posts
+    const filteredChains = isOpenAction
+      ? chains.filter((chain) => {
+          return networks?.includes(chain?.id);
+        })
+      : chains.slice(1);
+
+    const isUnsupportedChain = () => {
+      if (
+        chain?.unsupported ||
+        (isOpenAction && !networks?.includes(chain?.id)) ||
+        chainId === chains[0]?.id
+      ) {
+        return true;
+      }
+    };
+
+    return {
+      chains: filteredChains,
+      isUnsupportedChain: isUnsupportedChain(),
+    };
   };
 
   // formate date and time in uxin timestamp
@@ -816,7 +854,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     }
   }, [isCreateSplitSuccess, write]);
 
-  // create open adiction
+  // create open adition on LENS
   useEffect(() => {
     if (isOpenAction && receipt?.logs[0]?.address) {
       const canvasParams = {
@@ -898,6 +936,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
         isOpenAction={isOpenAction}
         isFarcaster={isFarcaster}
         data={receipt}
+        farTxHash={farTxHash}
         isSuccess={isSuccess}
       />
       {/* Switch Number 1 Start */}
@@ -1060,7 +1099,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
                   <NumberInputBox
                     min={0}
                     max={100}
-                    step={0.01}
+                    step={1}
                     label="%"
                     value={recipient.percentAllocation}
                     onFocus={(e) => {
@@ -1489,6 +1528,18 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       </>
       {/* Switch Number 8 End */}
 
+      {/* network */}
+      {isFarcaster || isOpenAction ? (
+        <>
+          <h2 className="text-lg mx-2"> Switch Networks </h2>
+          <Networks
+            className="mx-2 w-[95%] outline-none mb-2"
+            chains={networksDataSmartPosts()?.chains}
+            isUnsupportedChain={networksDataSmartPosts()?.isUnsupportedChain}
+          />
+        </>
+      ) : null}
+
       {!getEVMAuth ? (
         <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
       ) : isFarcaster && !isFarcasterAuth ? (
@@ -1503,7 +1554,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           title="Enable signless transactions"
           className="mx-2 w-[95%] outline-none"
         />
-      ) : isUnsupportedChain() ? (
+      ) : !isFarcaster && !isOpenAction && isUnsupportedChain() ? (
         <div className="mx-2 outline-none">
           <Button
             className="w-full outline-none flex justify-center items-center gap-2"
@@ -1519,9 +1570,9 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           </Button>
         </div>
       ) : (
-        <div className="mx-2 my-4">
+        <div className="mx-2">
           <Button
-            disabled={isUnsupportedChain() || !write}
+            disabled={!write || networksDataSmartPosts()?.isUnsupportedChain}
             fullWidth
             color="cyan"
             onClick={handleSubmit}
