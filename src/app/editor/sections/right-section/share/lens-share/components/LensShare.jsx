@@ -70,6 +70,7 @@ import {
 } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { SharePanelHeaders } from "../../components";
+import BsPlus from "@meronex/icons/bs/BsPlus";
 
 const LensShare = () => {
   const [recipientsLensHandle, setRecipientsLensHandle] = useState([]);
@@ -298,6 +299,23 @@ const LensShare = () => {
     } else {
       return false;
     }
+  };
+
+  // split even percentage (decimal included)
+  const splitEvenPercentage = () => {
+    const result = enabled.splitRevenueRecipients.map((item) => {
+      return {
+        recipient: item.recipient,
+        split: parseFloat(
+          (100 / enabled.splitRevenueRecipients.length).toFixed(2)
+        ),
+      };
+    });
+
+    setEnabled({
+      ...enabled,
+      splitRevenueRecipients: result,
+    });
   };
 
   // function to handle recipient field change
@@ -808,15 +826,29 @@ const LensShare = () => {
                     {splitError.isError && (
                       <InputErrorMsg message={splitError.message} />
                     )}
-                    {enabled.splitRevenueRecipients.length < 5 && (
-                      <div
-                        className="bg-[#E1F26C] flex justify-between items-center cursor-pointer w-[40%] text-black p-2 rounded outline-none"
-                        onClick={addRecipientInputBox}
+                    <div className="flex justify-between">
+                      {enabled.splitRevenueRecipients.length < 5 && (
+                        <Button
+                          color="cyan"
+                          size="sm"
+                          variant="filled"
+                          className="flex items-center gap-3 mt-2 ml-0 outline-none"
+                          onClick={addRecipientInputBox}
+                        >
+                          <BsPlus />
+                          Add Recipient
+                        </Button>
+                      )}
+                      <Button
+                        color="cyan"
+                        size="sm"
+                        variant="filled"
+                        className="flex items-center gap-3 mt-2 ml-0 outline-none"
+                        onClick={splitEvenPercentage}
                       >
-                        <AiOutlinePlus className="h-5 w-5" />
-                        <span>Add recipient</span>
-                      </div>
-                    )}
+                        Split Even
+                      </Button>
+                    </div>
                   </div>
                 </div>
 

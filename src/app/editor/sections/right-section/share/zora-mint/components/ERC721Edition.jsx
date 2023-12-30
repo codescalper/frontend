@@ -541,6 +541,23 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     }
   };
 
+  // split even percentage (decimal included)
+  const splitEvenPercentage = () => {
+    const result = zoraErc721Enabled.royaltySplitRecipients.map((item) => {
+      return {
+        address: item.address,
+        percentAllocation: parseFloat(
+          (100 / zoraErc721Enabled.royaltySplitRecipients.length).toFixed(2)
+        ),
+      };
+    });
+
+    setZoraErc721Enabled((prevEnabled) => ({
+      ...prevEnabled,
+      royaltySplitRecipients: result,
+    }));
+  };
+
   // split contract settings
   const handleCreateSplitSettings = () => {
     const args = {
@@ -1144,16 +1161,27 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
             />
           )}
 
-          <Button
-            color="cyan"
-            size="sm"
-            variant="filled"
-            className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-            onClick={() => addArrlistInputBox("royaltySplitRecipients")}
-          >
-            <BsPlus />
-            Add Recipient
-          </Button>
+          <div className="flex justify-between">
+            <Button
+              color="cyan"
+              size="sm"
+              variant="filled"
+              className="flex items-center gap-3 mt-2 ml-0 outline-none"
+              onClick={() => addArrlistInputBox("royaltySplitRecipients")}
+            >
+              <BsPlus />
+              Add Recipient
+            </Button>
+            <Button
+              color="cyan"
+              size="sm"
+              variant="filled"
+              className="flex items-center gap-3 mt-2 ml-0 outline-none"
+              onClick={splitEvenPercentage}
+            >
+              Split Even
+            </Button>
+          </div>
         </div>
       </div>
       {/* Splits Switch End */}
