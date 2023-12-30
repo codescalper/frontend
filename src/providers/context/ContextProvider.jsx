@@ -335,6 +335,9 @@ const ContextProvider = ({ children }) => {
 
   const [farcasterStates, setFarcasterStates] = useState({
     isFarcasterAuth: false,
+
+    isChannel: false,
+    channel: null,
   });
 
   // for calendar

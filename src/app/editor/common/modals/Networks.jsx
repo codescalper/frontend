@@ -74,13 +74,13 @@ const Networks = ({ className, chains, isUnsupportedChain }) => {
                   className="p-2 hover:shadow-lg"
                 >
                   <div className="w-full flex justify-between items-center">
-                    <div className="flex">
+                    <div className="flex items-center">
                       <ListItemPrefix>
                         <Avatar
                           variant="circular"
                           alt={network?.name}
                           src={chainLogo(network?.id)}
-                          className="w-8 h-8"
+                          className="w-10 h-10"
                         />
                       </ListItemPrefix>
                       <Typography variant="h6" color="blue-gray">
