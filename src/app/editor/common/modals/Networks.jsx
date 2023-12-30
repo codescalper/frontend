@@ -4,14 +4,16 @@ import {
   Dialog,
   DialogHeader,
   DialogBody,
-  DialogFooter,
   Typography,
-  IconButton,
   Spinner,
-  Checkbox,
+  List,
+  ListItem,
+  ListItemPrefix,
+  Avatar,
 } from "@material-tailwind/react";
 import HiOutlineSwitchHorizontal from "@meronex/icons/hi/HiOutlineSwitchHorizontal";
 import AiOutlineCloseCircle from "@meronex/icons/ai/AiOutlineCloseCircle";
+import FaRegDotCircle from "@meronex/icons/fa/FaRegDotCircle";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { chainLogo } from "../../../../utils";
 
@@ -63,31 +65,43 @@ const Networks = ({ className, chains, isUnsupportedChain }) => {
         </DialogHeader>
         <DialogBody>
           {chains.map((network, index) => (
-            <div
-              key={network?.name}
-              className={`w-full rounded-lg p-2 cursor-pointer border hover:shadow-lg ${
-                network?.id === chain?.id && "bg-blue-gray-50 shadow-lg"
-              } hover:bg-blue-gray-50 flex justify-between items-center ${
-                index != 0 && "my-2"
-              }`}
-              onClick={() => {
-                network?.id !== chain?.id && switchNetwork(network?.id);
-              }}
-            >
-              <div className="flex items-center">
-                <img
-                  src={chainLogo(network?.id)}
-                  alt={network?.name}
-                  className="w-8 h-8 rounded-full"
-                />
-                <Typography variant="h6" color="blue-gray" className="ml-2">
-                  {network?.name}
-                </Typography>
-              </div>
-              {isLoading && variables?.chainId === network?.id && (
-                <Spinner color="red" />
-              )}
-            </div>
+            <>
+              <List className="border rounded-lg my-2 p-0">
+                <ListItem
+                  onClick={() => {
+                    network?.id !== chain?.id && switchNetwork(network?.id);
+                  }}
+                  className="p-2 hover:shadow-lg"
+                >
+                  <div className="w-full flex justify-between items-center">
+                    <div className="flex">
+                      <ListItemPrefix>
+                        <Avatar
+                          variant="circular"
+                          alt={network?.name}
+                          src={chainLogo(network?.id)}
+                          className="w-8 h-8"
+                        />
+                      </ListItemPrefix>
+                      <Typography variant="h6" color="blue-gray">
+                        {network?.name}
+                      </Typography>
+                    </div>
+                    {isLoading && variables?.chainId === network?.id && (
+                      <Spinner color="red" />
+                    )}
+                    {!isLoading && network?.id === chain?.id && (
+                      <div className="flex items-center gap-2">
+                        <Typography variant="h6" color="blue-gray">
+                          Connected
+                        </Typography>
+                        <FaRegDotCircle className="text-green-500" />
+                      </div>
+                    )}
+                  </div>
+                </ListItem>
+              </List>
+            </>
           ))}
         </DialogBody>
       </Dialog>

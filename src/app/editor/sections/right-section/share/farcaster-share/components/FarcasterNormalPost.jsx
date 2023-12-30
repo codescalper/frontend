@@ -75,6 +75,7 @@ import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { SharePanelHeaders } from "../../components";
 import FarcasterAuth from "./FarcasterAuth";
 import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
+import FarcasterChannel from "./FarcasterChannel";
 
 const FarcasterNormalPost = () => {
   const { resetState } = useReset();
@@ -164,7 +165,11 @@ const FarcasterNormalPost = () => {
 
   return (
     <>
-      <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none">
+      <div className="mb-4 m-4">
+        <FarcasterChannel/>
+      </div>
+
+      {/* <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none">
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />
         ) : !isFarcasterAuth ? (
@@ -181,7 +186,7 @@ const FarcasterNormalPost = () => {
             </Button>
           </div>
         )}
-      </div>
+      </div> */}
     </>
   );
 };
