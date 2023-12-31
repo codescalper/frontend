@@ -104,6 +104,7 @@ const Editor = () => {
     parentRecipientDataRef,
     parentRecipientListRef,
     canvasBase64Ref,
+    farcasterStates,
     setFarcasterStates,
   } = useContext(Context);
 
@@ -157,6 +158,7 @@ const Editor = () => {
     onSuccess: (res) => {
       saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, res?.message);
       setFarcasterStates({
+        ...farcasterStates,
         isFarcasterAuth: res?.message,
       });
     },

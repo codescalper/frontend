@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { Context } from "../../../../../../../providers/context";
 
 const FarcasterAuth = () => {
-  const { setFarcasterStates } = useContext(Context);
+  const { setFarcasterStates, farcasterStates } = useContext(Context);
   var authWindow;
   const neynarLoginUrl = "https://app.neynar.com/login";
   const clientId = NEYNAR_CLIENT_ID;
@@ -28,6 +28,7 @@ const FarcasterAuth = () => {
       .then((res) => {
         saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, is_authenticated);
         setFarcasterStates({
+          ...farcasterStates,
           isFarcasterAuth: is_authenticated,
         });
         toast.success("Successfully logged in to Farcaster");

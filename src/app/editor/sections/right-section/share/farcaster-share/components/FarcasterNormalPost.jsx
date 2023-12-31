@@ -1,80 +1,18 @@
-import { useContext, useState, useEffect } from "react";
-import {
-  useAccount,
-  useChainId,
-  useNetwork,
-  useSignMessage,
-  useSwitchNetwork,
-} from "wagmi";
-import {
-  checkDispatcher,
-  lensAuthenticate,
-  getBroadcastData,
-  shareOnSocials,
-  lensChallenge,
-  signSetDispatcherTypedData,
-  ENVIRONMENT,
-  setBroadcastOnChainTx,
-  getSocialDetails,
-  getTop5SocialDetails,
-  NEYNAR_CLIENT_ID,
-} from "../../../../../../../services";
+import { useContext, useState } from "react";
+import { shareOnSocials } from "../../../../../../../services";
 import { toast } from "react-toastify";
-import { DateTimePicker } from "@atlaskit/datetime-picker";
-import BsLink45Deg from "@meronex/icons/bs/BsLink45Deg";
-import AiOutlinePlus from "@meronex/icons/ai/AiOutlinePlus";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Context } from "../../../../../../../providers/context/ContextProvider";
 import {
   getFromLocalStorage,
-  saveToLocalStorage,
   errorMessage,
-  isEthAddress,
-  isLensHandle,
   jsConfettiFn,
 } from "../../../../../../../utils";
-import testnetTokenAddress from "../../../../../../../data/json/testnet-token-list.json";
-import mainnetTokenAddress from "../../../../../../../data/json/mainnet-token-list.json";
-import {
-  CustomPopover,
-  InputBox,
-  InputErrorMsg,
-  NumberInputBox,
-} from "../../../../../common";
-import { useStore } from "../../../../../../../hooks/polotno";
-// import SplitPolicyCard from "../../../../../../data/constant/SplitPolicyCard";
-import BsX from "@meronex/icons/bs/BsX";
-import {
-  LensAuth,
-  LensDispatcher,
-  SplitPolicyCard,
-} from "../../lens-share/components";
-import {
-  useAppAuth,
-  useDynamicScript,
-  useLocalStorage,
-  useReset,
-} from "../../../../../../../hooks/app";
-import {
-  APP_ETH_ADDRESS,
-  APP_LENS_HANDLE,
-  ERROR,
-  LOCAL_STORAGE,
-} from "../../../../../../../data";
-import {
-  Button,
-  Select,
-  Option,
-  Tabs,
-  Tab,
-  TabsHeader,
-  Alert,
-  Spinner,
-} from "@material-tailwind/react";
+import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
+import { ERROR, LOCAL_STORAGE } from "../../../../../../../data";
+import { Button } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
-import { SharePanelHeaders } from "../../components";
 import FarcasterAuth from "./FarcasterAuth";
-import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
 import FarcasterChannel from "./FarcasterChannel";
 import { Switch } from "@headlessui/react";
 
