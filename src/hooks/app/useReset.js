@@ -97,6 +97,7 @@ const useReset = () => {
     setZoraErc721StatesError,
 
     // farcaster states
+    farcasterStates,
     setFarcasterStates,
   } = useContext(Context);
 
@@ -351,8 +352,9 @@ const useReset = () => {
 
     // reset all the states for farcaster
     setFarcasterStates({
+      ...farcasterStates,
       isChannel: false,
-      channel: null,
+      channel: "",
     });
   };
 

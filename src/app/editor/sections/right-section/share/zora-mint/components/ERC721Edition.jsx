@@ -898,7 +898,6 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   // share on farcater
   useEffect(() => {
     if (isFarcaster && receipt?.logs[0]?.address) {
-      console.log("underUseEffect", farcasterStates.channel?.id);
       const canvasParams = {
         zoraMintLink: zoraURLErc721(receipt?.logs[0]?.address, chain?.id),
         channelId: farcasterStates.channel?.id || "",
@@ -953,8 +952,6 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       toast.success(`Network switched to ${chain?.name}`);
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
-
-  console.log("zoraErc721", farcasterStates.channel?.id);
 
   return (
     <>
@@ -1577,36 +1574,42 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           )}
         </div>
 
-        {/* <div className="mb-4 m-4">
-          <div className="flex justify-between">
-            <h2 className="text-lg mb-2"> Channel </h2>
-            <Switch
-              checked={farcasterStates.isChannel}
-              onChange={() =>
-                setFarcasterStates({
-                  ...farcasterStates,
-                  isChannel: !farcasterStates.isChannel,
-                })
-              }
-              className={`${
-                farcasterStates.isChannel ? "bg-[#00bcd4]" : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
-            >
-              <span
-                className={`${
-                  farcasterStates.isChannel ? "translate-x-6" : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />{" "}
-            </Switch>
-          </div>
-          <div className="w-4/5 opacity-75">
-            {" "}
-            Share your post in the Farcaster channel.{" "}
-          </div>
-        </div>
-        <div className={`m-4 ${!farcasterStates.isChannel && "hidden"}`}>
-          <FarcasterChannel />
-        </div> */}
+        {isFarcaster && (
+          <>
+            <div className="mb-4 m-4">
+              <div className="flex justify-between">
+                <h2 className="text-lg mb-2"> Channel </h2>
+                <Switch
+                  checked={farcasterStates.isChannel}
+                  onChange={() =>
+                    setFarcasterStates({
+                      ...farcasterStates,
+                      isChannel: !farcasterStates.isChannel,
+                    })
+                  }
+                  className={`${
+                    farcasterStates.isChannel ? "bg-[#00bcd4]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+                >
+                  <span
+                    className={`${
+                      farcasterStates.isChannel
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />{" "}
+                </Switch>
+              </div>
+              <div className="w-4/5 opacity-75">
+                {" "}
+                Share your post in the Farcaster channel.{" "}
+              </div>
+            </div>
+            <div className={`m-4 ${!farcasterStates.isChannel && "hidden"}`}>
+              <FarcasterChannel />
+            </div>
+          </>
+        )}
       </>
       {/* Switch Number 8 End */}
 

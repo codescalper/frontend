@@ -337,7 +337,7 @@ const ContextProvider = ({ children }) => {
     isFarcasterAuth: false,
 
     isChannel: false,
-    channel: null,
+    channel: "",
   });
 
   // for calendar
@@ -425,7 +425,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  console.log("ContextProvider", farcasterStates.channel?.id);
+  // console.log("ContextProvider", farcasterStates.channel?.id);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (
