@@ -75,6 +75,8 @@ import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { SharePanelHeaders } from "../../components";
 import FarcasterAuth from "./FarcasterAuth";
 import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
+import FarcasterChannel from "./FarcasterChannel";
+import { Switch } from "@headlessui/react";
 
 const FarcasterNormalPost = () => {
   const { resetState } = useReset();
@@ -83,7 +85,7 @@ const FarcasterNormalPost = () => {
   const {
     postDescription,
     contextCanvasIdRef,
-
+    setFarcasterStates,
     farcasterStates, // don't remove this
     lensAuthState, // don't remove this
   } = useContext(Context);
@@ -95,6 +97,23 @@ const FarcasterNormalPost = () => {
     mutationKey: "shareOnFarcaster",
     mutationFn: shareOnSocials,
   });
+
+  const monetizationSettings = () => {
+    let canvasParams = {
+      zoraMintLink: "",
+      channelId: "",
+    };
+
+    if (farcasterStates.isChannel) {
+      canvasParams = {
+        ...canvasParams,
+        zoraMintLink: "",
+        channelId: farcasterStates.channel?.id,
+      };
+    }
+
+    return canvasParams;
+  };
 
   // share post on lens
   const sharePost = async (platform) => {
@@ -120,9 +139,7 @@ const FarcasterNormalPost = () => {
     const id = toast.loading(`Sharing on ${platform}...`);
     shareOnLens({
       canvasData: canvasData,
-      canvasParams: {
-        zoraMintLink: "",
-      },
+      canvasParams: monetizationSettings(),
       platform: platform,
     })
       .then((res) => {
@@ -164,6 +181,37 @@ const FarcasterNormalPost = () => {
 
   return (
     <>
+      <div className="mb-4 m-4">
+        <div className="flex justify-between">
+          <h2 className="text-lg mb-2"> Channel </h2>
+          <Switch
+            checked={farcasterStates.isChannel}
+            onChange={() =>
+              setFarcasterStates({
+                ...farcasterStates,
+                isChannel: !farcasterStates.isChannel,
+              })
+            }
+            className={`${
+              farcasterStates.isChannel ? "bg-[#00bcd4]" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+          >
+            <span
+              className={`${
+                farcasterStates.isChannel ? "translate-x-6" : "translate-x-1"
+              } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+            />{" "}
+          </Switch>
+        </div>
+        <div className="w-4/5 opacity-75">
+          {" "}
+          Share your post in the Farcaster channel.{" "}
+        </div>
+      </div>
+      <div className={`m-4 ${!farcasterStates.isChannel && "hidden"}`}>
+        <FarcasterChannel />
+      </div>
+
       <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none">
         {!getEVMAuth ? (
           <EVMWallets title="Login with EVM" className="mx-2" />

@@ -26,7 +26,6 @@ const FarcasterAuth = () => {
       fid: fid,
     })
       .then((res) => {
-        console.log("res", res.message);
         saveToLocalStorage(LOCAL_STORAGE.farcasterAuth, is_authenticated);
         setFarcasterStates({
           isFarcasterAuth: is_authenticated,
@@ -64,7 +63,7 @@ const FarcasterAuth = () => {
       authUrl.searchParams.append("redirect_uri", redirectUri);
     }
 
-    var authOrigin = new URL(neynarLoginUrl).origin;
+    var authOrigin = new URL(neynarLoginUrl).origin;     
     authWindow = window.open(authUrl.toString(), "_blank");
 
     // get the data from the iframe

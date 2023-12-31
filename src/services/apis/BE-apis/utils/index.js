@@ -8,3 +8,9 @@ export const redeemCode = async (code, address) => {
 
   return result.data;
 };
+
+export const searchChannelFar = async (channel) => {
+  const result = await api.get(`${API}/util/search-channel?channel=${channel}`);
+
+  return result.data;
+};

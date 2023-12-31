@@ -11,17 +11,18 @@ import {
   Checkbox,
 } from "@material-tailwind/react";
 import { ZoraLogo } from "../../../../../../../assets";
-import { zoraURLErc721 } from "../utils/zoraURL";
 import { useReset } from "../../../../../../../hooks/app";
 import { useNetwork } from "wagmi";
 import BiCopy from "@meronex/icons/bi/BiCopy";
 import { toast } from "react-toastify";
+import { zoraURLErc721 } from "../utils";
 
 const ZoraDialog = ({
   isError,
   isLoading,
   isPending,
   data,
+  farTxHash,
   isSuccess,
   isCreatingSplit,
   isUploadingToIPFS,
@@ -36,6 +37,8 @@ const ZoraDialog = ({
   const [isCopy, setIsCopy] = useState(false);
 
   const handleOpen = () => setOpen(!open);
+
+  const farConversationUrl = `https://warpcast.com/~/conversations/`;
 
   // if loading show the dialog
   useEffect(() => {
@@ -81,7 +84,34 @@ const ZoraDialog = ({
               {isOpenAction
                 ? isShareSuccess && <>Open Action is created successfully.</>
                 : isFarcaster
-                ? isShareSuccess && <>Shared on Farcaster.</>
+                ? isShareSuccess && (
+                    <>
+                      Successfully shared.
+                      <span className="flex gap-1 items-center">
+                        Check your post on
+                        <a
+                          href={farConversationUrl + farTxHash}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-500"
+                        >
+                          Warpcast
+                        </a>
+                        <BiCopy
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              farConversationUrl + farTxHash
+                            );
+                            setIsCopy(true);
+                          }}
+                          className="cursor-pointer"
+                        />
+                        {isCopy && (
+                          <span className="text-green-500">Copied</span>
+                        )}
+                      </span>
+                    </>
+                  )
                 : isSuccess && (
                     <>
                       Transaction is successful. <br />

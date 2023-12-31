@@ -1,7 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
-import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
-import { Button, Option, Select, Spinner } from "@material-tailwind/react";
+import {
+  InputBox,
+  InputErrorMsg,
+  Networks,
+  NumberInputBox,
+} from "../../../../../common";
+import {
+  Button,
+  Option,
+  Select,
+  Spinner,
+  Typography,
+} from "@material-tailwind/react";
 import { DateTimePicker } from "@atlaskit/datetime-picker";
 import BsPlus from "@meronex/icons/bs/BsPlus";
 import { XCircleIcon } from "@heroicons/react/24/outline";
@@ -23,6 +34,7 @@ import {
   LOCAL_STORAGE,
 } from "../../../../../../../data";
 import {
+  ENVIRONMENT,
   getENSDomain,
   shareOnSocials,
   uploadUserAssetToIPFS,
@@ -38,7 +50,10 @@ import { useCreateSplit } from "../../../../../../../hooks/0xsplit";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { useChainModal } from "@rainbow-me/rainbowkit";
-import { FarcasterAuth } from "../../farcaster-share/components";
+import {
+  FarcasterAuth,
+  FarcasterChannel,
+} from "../../farcaster-share/components";
 import { LensAuth, LensDispatcher } from "../../lens-share/components";
 import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
 import { zoraURLErc721 } from "../utils/zoraURL";
@@ -52,12 +67,16 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const { openChainModal } = useChainModal();
   const [recipientsEns, setRecipientsEns] = useState([]);
+  const [totalPercent, setTotalPercent] = useState(0);
 
   // share states
   const [isShareLoading, setIsShareLoading] = useState(false);
   const [isShareSuccess, setIsShareSuccess] = useState(false);
   const [isShareError, setIsShareError] = useState(false);
   const [shareError, setShareError] = useState("");
+
+  // farcaster data states
+  const [farTxHash, setFarTxHash] = useState("");
 
   const {
     createSplit,
@@ -85,7 +104,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     postDescription,
     parentRecipientListRef,
     canvasBase64Ref,
-
+    setFarcasterStates,
     farcasterStates, // don't remove this
     lensAuthState, // don't remove this
   } = useContext(Context);
@@ -126,6 +145,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     })
       .then((res) => {
         if (res?.txHash) {
+          setFarTxHash(res?.txHash);
           setIsShareError(false);
           setIsShareLoading(false);
           setIsShareSuccess(true);
@@ -144,6 +164,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       });
   };
 
+  // checking unsupported chain for individual networks
   const isUnsupportedChain = () => {
     // chains[0] is the polygon network
     if (
@@ -152,6 +173,33 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       chain?.id != selectedChainId
     )
       return true;
+  };
+
+  // networks data for samart posts
+  const networksDataSmartPosts = () => {
+    const networks = ENVIRONMENT === "production" ? [8453, 7777777] : [5]; // supported chains for Lens samart posts
+
+    // filter the chains for smart posts
+    const filteredChains = isOpenAction
+      ? chains.filter((chain) => {
+          return networks?.includes(chain?.id);
+        })
+      : chains.slice(1);
+
+    const isUnsupportedChain = () => {
+      if (
+        chain?.unsupported ||
+        (isOpenAction && !networks?.includes(chain?.id)) ||
+        chainId === chains[0]?.id
+      ) {
+        return true;
+      }
+    };
+
+    return {
+      chains: filteredChains,
+      isUnsupportedChain: isUnsupportedChain(),
+    };
   };
 
   // formate date and time in uxin timestamp
@@ -496,11 +544,30 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       0
     );
 
+    setTotalPercent(result);
+
     if (result === 100) {
       return true;
     } else {
       return false;
     }
+  };
+
+  // split even percentage (decimal included)
+  const splitEvenPercentage = () => {
+    const result = zoraErc721Enabled.royaltySplitRecipients.map((item) => {
+      return {
+        address: item.address,
+        percentAllocation: Math.floor(
+          (100 / zoraErc721Enabled.royaltySplitRecipients.length).toFixed(2)
+        ),
+      };
+    });
+
+    setZoraErc721Enabled((prevEnabled) => ({
+      ...prevEnabled,
+      royaltySplitRecipients: result,
+    }));
   };
 
   // split contract settings
@@ -816,7 +883,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     }
   }, [isCreateSplitSuccess, write]);
 
-  // create open adiction
+  // create open adition on LENS
   useEffect(() => {
     if (isOpenAction && receipt?.logs[0]?.address) {
       const canvasParams = {
@@ -831,8 +898,10 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   // share on farcater
   useEffect(() => {
     if (isFarcaster && receipt?.logs[0]?.address) {
+      console.log("underUseEffect", farcasterStates.channel?.id);
       const canvasParams = {
         zoraMintLink: zoraURLErc721(receipt?.logs[0]?.address, chain?.id),
+        channelId: farcasterStates.channel?.id || "",
       };
 
       handleShare(canvasParams, "farcaster");
@@ -885,6 +954,8 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     }
   }, [isErrorSwitchNetwork, isSuccessSwitchNetwork]);
 
+  console.log("zoraErc721", farcasterStates.channel?.id);
+
   return (
     <>
       <ZoraDialog
@@ -898,6 +969,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
         isOpenAction={isOpenAction}
         isFarcaster={isFarcaster}
         data={receipt}
+        farTxHash={farTxHash}
         isSuccess={isSuccess}
       />
       {/* Switch Number 1 Start */}
@@ -1060,7 +1132,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
                   <NumberInputBox
                     min={0}
                     max={100}
-                    step={0.01}
+                    step={1}
                     label="%"
                     value={recipient.percentAllocation}
                     onFocus={(e) => {
@@ -1099,22 +1171,40 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
             );
           })}
 
-          {zoraErc721StatesError.isRoyaltySplitError && (
-            <InputErrorMsg
-              message={zoraErc721StatesError.royaltySplitErrorMessage}
-            />
-          )}
+          <div className="flex justify-between items-center">
+            {zoraErc721StatesError.isRoyaltySplitError && (
+              <>
+                <InputErrorMsg
+                  message={zoraErc721StatesError.royaltySplitErrorMessage}
+                />
+                <Typography variant="h6" color="blue-gray">
+                  {totalPercent} %
+                </Typography>
+              </>
+            )}
+          </div>
 
-          <Button
-            color="cyan"
-            size="sm"
-            variant="filled"
-            className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-            onClick={() => addArrlistInputBox("royaltySplitRecipients")}
-          >
-            <BsPlus />
-            Add Recipient
-          </Button>
+          <div className="flex justify-between">
+            <Button
+              color="cyan"
+              size="sm"
+              variant="filled"
+              className="flex items-center gap-3 mt-2 ml-0 outline-none"
+              onClick={() => addArrlistInputBox("royaltySplitRecipients")}
+            >
+              <BsPlus />
+              Add Recipient
+            </Button>
+            <Button
+              color="cyan"
+              size="sm"
+              variant="filled"
+              className="flex items-center gap-3 mt-2 ml-0 outline-none"
+              onClick={splitEvenPercentage}
+            >
+              Split Even
+            </Button>
+          </div>
         </div>
       </div>
       {/* Splits Switch End */}
@@ -1486,8 +1576,51 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
             />
           )}
         </div>
+
+        {/* <div className="mb-4 m-4">
+          <div className="flex justify-between">
+            <h2 className="text-lg mb-2"> Channel </h2>
+            <Switch
+              checked={farcasterStates.isChannel}
+              onChange={() =>
+                setFarcasterStates({
+                  ...farcasterStates,
+                  isChannel: !farcasterStates.isChannel,
+                })
+              }
+              className={`${
+                farcasterStates.isChannel ? "bg-[#00bcd4]" : "bg-gray-200"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+            >
+              <span
+                className={`${
+                  farcasterStates.isChannel ? "translate-x-6" : "translate-x-1"
+                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              />{" "}
+            </Switch>
+          </div>
+          <div className="w-4/5 opacity-75">
+            {" "}
+            Share your post in the Farcaster channel.{" "}
+          </div>
+        </div>
+        <div className={`m-4 ${!farcasterStates.isChannel && "hidden"}`}>
+          <FarcasterChannel />
+        </div> */}
       </>
       {/* Switch Number 8 End */}
+
+      {/* network */}
+      {isFarcaster || isOpenAction ? (
+        <>
+          <h2 className="text-lg mx-2"> Switch Networks </h2>
+          <Networks
+            className="mx-2 w-[95%] outline-none mb-2"
+            chains={networksDataSmartPosts()?.chains}
+            isUnsupportedChain={networksDataSmartPosts()?.isUnsupportedChain}
+          />
+        </>
+      ) : null}
 
       {!getEVMAuth ? (
         <EVMWallets title="Login with EVM" className="mx-2 w-[97%]" />
@@ -1503,7 +1636,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           title="Enable signless transactions"
           className="mx-2 w-[95%] outline-none"
         />
-      ) : isUnsupportedChain() ? (
+      ) : !isFarcaster && !isOpenAction && isUnsupportedChain() ? (
         <div className="mx-2 outline-none">
           <Button
             className="w-full outline-none flex justify-center items-center gap-2"
@@ -1519,9 +1652,9 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           </Button>
         </div>
       ) : (
-        <div className="mx-2 my-4">
+        <div className="mx-2">
           <Button
-            disabled={isUnsupportedChain() || !write}
+            disabled={!write || networksDataSmartPosts()?.isUnsupportedChain}
             fullWidth
             color="cyan"
             onClick={handleSubmit}

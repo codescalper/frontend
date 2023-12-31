@@ -67,9 +67,11 @@ import {
   TabsHeader,
   Alert,
   Spinner,
+  Typography,
 } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { SharePanelHeaders } from "../../components";
+import BsPlus from "@meronex/icons/bs/BsPlus";
 
 const LensShare = () => {
   const [recipientsLensHandle, setRecipientsLensHandle] = useState([]);
@@ -79,6 +81,7 @@ const LensShare = () => {
   const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
+  const [totalPercentage, setTotalPercentage] = useState(0);
   const { isAuthenticated } = useAppAuth();
   const chainId = useChainId();
   const { chains, chain } = useNetwork();
@@ -293,11 +296,29 @@ const LensShare = () => {
       totalPercentage += arr[i].split;
     }
 
+    setTotalPercentage(totalPercentage);
     if (totalPercentage == 100) {
       return true;
     } else {
       return false;
     }
+  };
+
+  // split even percentage (decimal included)
+  const splitEvenPercentage = () => {
+    const result = enabled.splitRevenueRecipients.map((item) => {
+      return {
+        recipient: item.recipient,
+        split: Math.floor(
+          (100 / enabled.splitRevenueRecipients.length).toFixed(2)
+        ),
+      };
+    });
+
+    setEnabled({
+      ...enabled,
+      splitRevenueRecipients: result,
+    });
   };
 
   // function to handle recipient field change
@@ -763,7 +784,7 @@ const LensShare = () => {
                               <NumberInputBox
                                 min={0}
                                 max={100}
-                                step={0.01}
+                                step={1}
                                 label={"%"}
                                 // placeholder="0.0%"
                                 value={recipient.split}
@@ -806,17 +827,36 @@ const LensShare = () => {
                       );
                     })}
                     {splitError.isError && (
-                      <InputErrorMsg message={splitError.message} />
+                      <>
+                        <InputErrorMsg message={splitError.message} />
+                        <Typography variant="h6" color="blue-gray">
+                          {totalPercent} %
+                        </Typography>
+                      </>
                     )}
-                    {enabled.splitRevenueRecipients.length < 5 && (
-                      <div
-                        className="bg-[#E1F26C] flex justify-between items-center cursor-pointer w-[40%] text-black p-2 rounded outline-none"
-                        onClick={addRecipientInputBox}
+                    <div className="flex justify-between">
+                      {enabled.splitRevenueRecipients.length < 5 && (
+                        <Button
+                          color="cyan"
+                          size="sm"
+                          variant="filled"
+                          className="flex items-center gap-3 mt-2 ml-0 outline-none"
+                          onClick={addRecipientInputBox}
+                        >
+                          <BsPlus />
+                          Add Recipient
+                        </Button>
+                      )}
+                      <Button
+                        color="cyan"
+                        size="sm"
+                        variant="filled"
+                        className="flex items-center gap-3 mt-2 ml-0 outline-none"
+                        onClick={splitEvenPercentage}
                       >
-                        <AiOutlinePlus className="h-5 w-5" />
-                        <span>Add recipient</span>
-                      </div>
-                    )}
+                        Split Even
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
