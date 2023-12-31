@@ -86,7 +86,7 @@ const ZoraDialog = ({
                 : isFarcaster
                 ? isShareSuccess && (
                     <>
-                      successfully shared.
+                      Successfully shared.
                       <span className="flex gap-1 items-center">
                         Check your post on
                         <a
@@ -95,7 +95,7 @@ const ZoraDialog = ({
                           rel="noreferrer"
                           className="text-blue-500"
                         >
-                          Farcaster
+                          Warpcast
                         </a>
                         <BiCopy
                           onClick={() => {

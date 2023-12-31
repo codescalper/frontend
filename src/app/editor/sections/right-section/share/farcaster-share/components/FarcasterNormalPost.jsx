@@ -205,7 +205,7 @@ const FarcasterNormalPost = () => {
         </div>
         <div className="w-4/5 opacity-75">
           {" "}
-          Share your post in the channel.{" "}
+          Share your post in the Farcaster channel.{" "}
         </div>
       </div>
       <div className={`m-4 ${!farcasterStates.isChannel && "hidden"}`}>

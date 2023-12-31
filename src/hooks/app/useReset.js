@@ -95,6 +95,9 @@ const useReset = () => {
 
     // for zora mint error
     setZoraErc721StatesError,
+
+    // farcaster states
+    setFarcasterStates,
   } = useContext(Context);
 
   const resetState = () => {
@@ -344,6 +347,12 @@ const useReset = () => {
 
       isPublicsaleScheduleError: false,
       publicsaleScheduleErrorMessage: "",
+    });
+
+    // reset all the states for farcaster
+    setFarcasterStates({
+      isChannel: false,
+      channel: null,
     });
   };
 

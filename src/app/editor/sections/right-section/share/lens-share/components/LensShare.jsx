@@ -67,6 +67,7 @@ import {
   TabsHeader,
   Alert,
   Spinner,
+  Typography,
 } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import { SharePanelHeaders } from "../../components";
@@ -80,6 +81,7 @@ const LensShare = () => {
   const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
+  const [totalPercentage, setTotalPercentage] = useState(0);
   const { isAuthenticated } = useAppAuth();
   const chainId = useChainId();
   const { chains, chain } = useNetwork();
@@ -294,6 +296,7 @@ const LensShare = () => {
       totalPercentage += arr[i].split;
     }
 
+    setTotalPercentage(totalPercentage);
     if (totalPercentage == 100) {
       return true;
     } else {
@@ -306,7 +309,7 @@ const LensShare = () => {
     const result = enabled.splitRevenueRecipients.map((item) => {
       return {
         recipient: item.recipient,
-        split: parseFloat(
+        split: Math.floor(
           (100 / enabled.splitRevenueRecipients.length).toFixed(2)
         ),
       };
@@ -824,7 +827,12 @@ const LensShare = () => {
                       );
                     })}
                     {splitError.isError && (
-                      <InputErrorMsg message={splitError.message} />
+                      <>
+                        <InputErrorMsg message={splitError.message} />
+                        <Typography variant="h6" color="blue-gray">
+                          {totalPercent} %
+                        </Typography>
+                      </>
                     )}
                     <div className="flex justify-between">
                       {enabled.splitRevenueRecipients.length < 5 && (

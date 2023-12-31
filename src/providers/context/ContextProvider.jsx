@@ -425,7 +425,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", enabled.chargeForCollectPrice);
+  console.log("ContextProvider", farcasterStates.channel?.id);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (
