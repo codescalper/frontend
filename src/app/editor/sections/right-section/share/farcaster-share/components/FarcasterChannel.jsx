@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   List,
   ListItem,
@@ -8,6 +8,7 @@ import {
   Typography,
   Button,
   IconButton,
+  Spinner,
 } from "@material-tailwind/react";
 import { InputBox } from "../../../../../common";
 import BiSearchAlt2 from "@meronex/icons/bi/BiSearchAlt2";
@@ -22,17 +23,20 @@ const FarcasterChannel = () => {
   const handleOpen = () => setOpen(!open);
   const { farcasterStates, setFarcasterStates } = useContext(Context);
   const [query, setQuery] = useState("");
+  const [delayedQuery, setDelayedQuery] = useState(query);
   const [data, setData] = useState([]);
+  const requestTimeout = useRef();
 
-  const { mutateAsync, isError, error } = useMutation({
+  const { mutateAsync, isError, error, isLoading } = useMutation({
     mutationKey: "searchChannel",
     mutationFn: searchChannelFar,
   });
 
   const searchChannel = async () => {
     if (!query) return;
+    setOpen(true);
 
-    mutateAsync(query)
+    mutateAsync(delayedQuery)
       .then((res) => {
         setData(res?.message);
       })
@@ -41,30 +45,62 @@ const FarcasterChannel = () => {
       });
   };
 
+  useEffect(() => {
+    requestTimeout.current = setTimeout(() => {
+      setDelayedQuery(query?.split(" ").join("-").toLowerCase());
+    }, 2000);
+    return () => {
+      clearTimeout(requestTimeout.current);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    if (delayedQuery) {
+      searchChannel();
+    }
+    if (!query) {
+      setOpen(false);
+    }
+  }, [query, delayedQuery]);
+
   return (
     <>
-      <div
-        className="relative flex w-full max-w-[24rem]"
-        onFocus={() => setOpen(true)}
-        // onBlur={() => setOpen(false)}
-      >
+      <div className="relative flex w-full max-w-[24rem]">
         <InputBox
           label="Search channel"
           onChange={(e) => setQuery(e.target.value)}
         />
-        <IconButton
+        {/* <IconButton
           size="sm"
           color="blue-gray"
           className="!absolute right-1 top-1 rounded-md outline-none text-white"
           onClick={searchChannel}
         >
           <BiSearchAlt2 />
-        </IconButton>
+        </IconButton> */}
       </div>
 
       {open && (
         <Card>
-          {data?.length > 0 &&
+          {isLoading ? (
+            <List>
+              <ListItem className="flex justify-center items-center gap-2">
+                <Typography variant="h6" color="blue-gray">
+                  Loading...
+                </Typography>
+                <Spinner color="green" />
+              </ListItem>
+            </List>
+          ) : data?.length === 0 ? (
+            <List>
+              <ListItem className="flex justify-center items-center">
+                <Typography variant="h6" color="blue-gray">
+                  No channel found
+                </Typography>
+              </ListItem>
+            </List>
+          ) : (
+            data?.length > 0 &&
             data.map((item) => (
               <List key={item?.id}>
                 <ListItem
@@ -91,7 +127,8 @@ const FarcasterChannel = () => {
                   </div>
                 </ListItem>
               </List>
-            ))}
+            ))
+          )}
         </Card>
       )}
 
