@@ -6,7 +6,8 @@ export const replaceImageURL = (url) => {
       "https://lenspost.s3.ap-south-1.amazonaws.com/",
       ""
     );
-    return `https://lenspost.b-cdn.net/${replacedURL}`;
+
+    return `https://lenspost.b-cdn.net/${replacedURL}`.split(" ").join("");
   } else if (url.includes("lenspost.s3.amazonaws.com")) {
     const replacedURL = url.replace("https://lenspost.s3.amazonaws.com/", "");
     return `https://lenspost.b-cdn.net/${replacedURL}`;

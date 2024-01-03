@@ -148,6 +148,11 @@ export const StickerPanel = () => {
   // Halloween use 'H' and not 'h' - BE Response
   const tabArray = [
     {
+      name: "GI Toadz",
+      author: "GI Toadz",
+      campaign: "GI Toadz",
+    },
+    {
       name: "Simp",
       author: "$simp",
       campaign: null,
@@ -223,7 +228,7 @@ export const StickerPanel = () => {
                 <TabsHeader className="overflow-x-auto">
                   {tabArray.map((tab, index) => (
                     <Tab
-                    key={index}
+                      key={index}
                       value={tab?.name}
                       onClick={() => {
                         setCurrentTab(tab);
