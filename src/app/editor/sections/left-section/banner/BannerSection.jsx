@@ -18,11 +18,6 @@ import {
 export const BannerPanel = () => {
   const tabArray = [
     {
-      name: "GI Toadz",
-      author: "GI Toadz",
-      campaign: "GI Toadz",
-    },
-    {
       name: "Simp",
       author: null,
       campaign: "christmas",
