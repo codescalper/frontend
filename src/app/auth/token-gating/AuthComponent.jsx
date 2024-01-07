@@ -12,8 +12,8 @@ import {
 } from "../../../utils";
 import { Button, Typography } from "@material-tailwind/react";
 import { InputBox } from "../../editor/common";
-import { IoMdSend } from "react-icons/io";
 import { redeemCode } from "../../../services/apis/BE-apis/utils";
+import BisSend from "@meronex/icons/bi/BisSend";
 
 const AuthComponent = () => {
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
@@ -27,6 +27,7 @@ const AuthComponent = () => {
     queryKey: ["isHolderOfCollection"],
     queryFn: () => getIsUserWhitelisted(address),
     enabled: address ? true : false,
+    retry: 1,
   });
 
   // invite code mutuation
@@ -34,6 +35,19 @@ const AuthComponent = () => {
     mutationKey: "inviteCode",
     mutationFn: redeemCode,
   });
+
+  const redeemInviteCode = () => {
+    mutateAsync({
+      code: inviteCode,
+      address: address,
+    })
+      .then((res) => {
+        toast.success("Invite Code Redeemed Successfully");
+      })
+      .catch((err) => {
+        toast.error(errorMessage(err));
+      });
+  };
 
   const isUserEligibleFn = () => {
     if (
@@ -188,8 +202,8 @@ const AuthComponent = () => {
                           onChange={(e) => setInviteCode(e.target.value)}
                           value={inviteCode}
                         />
-                        <div className="bg-[#2c346b] rounded-md flex justify-center items-center w-1/3 hover:bg-[#2c346b] hover:shadow-xl hover:cursor-pointer">
-                          <IoMdSend className="w-full text-white" />
+                        <div onClick={redeemInviteCode} className="bg-[#2c346b] rounded-md flex justify-center items-center w-1/3 hover:bg-[#2c346b] hover:shadow-xl hover:cursor-pointer">
+                          <BisSend className="text-white" />
                         </div>
                       </div>
                       {/* Zootools Form End */}

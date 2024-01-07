@@ -9,6 +9,7 @@ import { useStore } from "../../../../hooks/polotno";
 import { useContext } from "react";
 import { Context } from "../../../../providers/context/ContextProvider";
 import { addressCrop } from "../../../../utils";
+import posthog from "posthog-js";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
@@ -104,6 +105,16 @@ const CustomImageComponent = ({
           elementId: store.selectedElements[0]?.id,
           recipient: creator.address || creator.recipient,
         });
+      });
+    }
+
+    // track assets selected
+    if (item?.type === "props" || item?.type === "background") {
+      posthog.capture("Assets", {
+        id: id,
+        type: item?.type === "props" ? "stickers" : item?.type,
+        author: item?.author,
+        campaign: item?.campaign,
       });
     }
   };
