@@ -179,7 +179,9 @@ const App = () => {
           });
           saveToLocalStorage(LOCAL_STORAGE.userId, res?.userId);
           setSession(res.jwt);
-          posthog.identify(res?.userId);
+          posthog.identify(res?.userId, {
+            evm_address: address,
+          });
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
@@ -221,7 +223,9 @@ const App = () => {
           });
           saveToLocalStorage(LOCAL_STORAGE.userId, res?.userId);
           setSession(res.jwt);
-          posthog.identify(res?.userId);
+          posthog.identify(res?.userId, {
+            solana_address: solanaAddress,
+          });
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
@@ -267,7 +271,7 @@ const App = () => {
 
   useEffect(() => {
     // if false redirect to ifUserEligible page but only in production
-    if (ENVIRONMENT === "production") {
+    if (ENVIRONMENT !== "production") {
       if (!isUserEligible()) {
         navigate("/ifUserEligible");
       }

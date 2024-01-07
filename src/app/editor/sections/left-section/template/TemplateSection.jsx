@@ -45,9 +45,11 @@ import {
   TabPanel,
 } from "@material-tailwind/react";
 import { useAppAuth } from "../../../../../hooks/app";
+import posthog from "posthog-js";
 
 // Design card component start
 const DesignCard = ({
+  item,
   id,
   preview,
   json,
@@ -97,6 +99,12 @@ const DesignCard = ({
         }
       }
     }
+
+    // track community template assets selected
+    posthog.capture("Community Drop Assets", {
+      id: item?.id,
+      ownerAddress: item?.referredFrom[0],
+    });
   };
 
   // Function to change the preview image on hover
@@ -318,6 +326,7 @@ const LenspostTemplates = () => {
                   .map((item, index) => {
                     return (
                       <DesignCard
+                        item={item}
                         id={item?.id}
                         referredFrom={item?.referredFrom}
                         isGated={item?.isGated}
@@ -408,6 +417,7 @@ const LenspostTemplates = () => {
                           .map((item, index) => {
                             return (
                               <DesignCard
+                                item={item}
                                 id={item?.id}
                                 referredFrom={item?.referredFrom}
                                 isGated={item?.isGated}
@@ -536,6 +546,7 @@ const UserTemplates = () => {
               .map((item) => {
                 return (
                   <DesignCard
+                    item={item}
                     id={item?.id}
                     referredFrom={item?.referredFrom}
                     isGated={item?.isGated}
