@@ -102,7 +102,7 @@ const DesignCard = ({
 
     // track community template assets selected
     posthog.capture("Community Drop Assets", {
-      id: item?.id,
+      asset_id: item?.id,
       ownerAddress: item?.referredFrom[0],
     });
   };

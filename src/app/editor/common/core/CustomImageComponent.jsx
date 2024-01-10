@@ -99,7 +99,7 @@ const CustomImageComponent = ({
     }
 
     // if it is a solana nft or eth nft, add creators address to the recipient list to solanaNftRecipientListRef
-    if (item?.creators.length > 0) {
+    if (item?.creators?.length > 0) {
       item?.creators.map((creator) => {
         nftRecipientDataRef.current.push({
           elementId: store.selectedElements[0]?.id,
@@ -111,7 +111,7 @@ const CustomImageComponent = ({
     // track assets selected
     if (item?.type === "props" || item?.type === "background") {
       posthog.capture("Assets", {
-        id: id,
+        asset_id: item?.id,
         type: item?.type === "props" ? "stickers" : item?.type,
         author: item?.author,
         campaign: item?.campaign,

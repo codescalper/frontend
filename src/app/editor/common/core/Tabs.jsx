@@ -85,14 +85,13 @@ const Tabs = ({
         // <div className="h-full overflow-y-auto">
         // <div className="overflow-y-auto">
         // To Fix Lenspost Banner Preview size issue
-        <div
-          className="columns-2 gap-1"
-        >
+        <div className="columns-2 gap-1">
           {data?.pages
             .flatMap((item) => item?.data)
             .map((item, index) => {
               return (
                 <CustomImageComponent
+                  item={item}
                   key={index}
                   preview={item?.image}
                   dimensions={item?.dimensions != null && item.dimensions}
