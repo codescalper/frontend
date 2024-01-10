@@ -8,12 +8,14 @@ import { getIsUserWhitelisted } from "../../../services";
 import {
   errorMessage,
   getFromLocalStorage,
+  jsConfettiFn,
   saveToLocalStorage,
 } from "../../../utils";
 import { Button, Typography } from "@material-tailwind/react";
 import { InputBox } from "../../editor/common";
 import { redeemCode } from "../../../services/apis/BE-apis/utils";
 import BisSend from "@meronex/icons/bi/BisSend";
+import { ERROR } from "../../../data";
 
 const AuthComponent = () => {
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
@@ -42,7 +44,23 @@ const AuthComponent = () => {
       address: address,
     })
       .then((res) => {
-        toast.success("Invite Code Redeemed Successfully");
+        if (res?.status === "success") {
+          jsConfettiFn();
+
+          saveToLocalStorage("ifUserEligible", {
+            address: address,
+            isUserEligible: true,
+          });
+
+          toast.success(res?.message);
+          setIsUserEligible(true);
+        } else if (res?.status === "error") {
+          toast.error(res?.message);
+          setIsUserEligible(false);
+        } else {
+          toast.error(ERROR.SOMETHING_WENT_WRONG);
+          setIsUserEligible(false);
+        }
       })
       .catch((err) => {
         toast.error(errorMessage(err));
@@ -202,7 +220,10 @@ const AuthComponent = () => {
                           onChange={(e) => setInviteCode(e.target.value)}
                           value={inviteCode}
                         />
-                        <div onClick={redeemInviteCode} className="bg-[#2c346b] rounded-md flex justify-center items-center w-1/3 hover:bg-[#2c346b] hover:shadow-xl hover:cursor-pointer">
+                        <div
+                          onClick={redeemInviteCode}
+                          className="bg-[#2c346b] rounded-md flex justify-center items-center w-1/3 hover:bg-[#2c346b] hover:shadow-xl hover:cursor-pointer"
+                        >
                           <BisSend className="text-white" />
                         </div>
                       </div>
