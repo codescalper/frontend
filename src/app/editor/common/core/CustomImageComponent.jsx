@@ -8,13 +8,14 @@ import { useEffect, useState } from "react";
 import { useStore } from "../../../../hooks/polotno";
 import { useContext } from "react";
 import { Context } from "../../../../providers/context/ContextProvider";
-import { addressCrop } from "../../../../utils";
+import { addressCrop, assetsTrack } from "../../../../utils";
 import posthog from "posthog-js";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
   item,
-  id,
+  assetType,
+  collectionName,
   preview,
   dimensions,
   hasOptionBtn,
@@ -109,14 +110,7 @@ const CustomImageComponent = ({
     }
 
     // track assets selected
-    if (item?.type === "props" || item?.type === "background") {
-      posthog.capture("Assets", {
-        asset_id: item?.id,
-        type: item?.type === "props" ? "stickers" : item?.type,
-        author: item?.author,
-        campaign: item?.campaign,
-      });
-    }
+    assetsTrack(item, assetType, collectionName);
   };
 
   useEffect(() => {

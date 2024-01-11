@@ -76,11 +76,17 @@ const CustomHorizontalScroller = ({ type, author, campaign }) => {
                       {" "}
                       <CustomImageComponent
                         key={index}
+                        item={item}
+                        assetType={null}
+                        collectionName={null}
                         preview={item?.image}
                         dimensions={item?.dimensions != null && item.dimensions}
+                        hasOptionBtn={null}
+                        onDelete={null}
+                        isLensCollect={null}
                         recipientWallet={item?.wallet}
+                        showAuthor={null}
                         author={item?.author}
-                        tab="halloween"
                       />{" "}
                     </div>
                   );

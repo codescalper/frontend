@@ -108,7 +108,7 @@ const App = () => {
 
   // generate signature for EVM
   const generateSignature = () => {
-    saveToLocalStorage("hasUserSeenTheApp", true);
+    saveToLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp, true);
     if (isDisconnected) return;
 
     if (getEvmAuth) {
@@ -271,7 +271,7 @@ const App = () => {
 
   useEffect(() => {
     // if false redirect to ifUserEligible page but only in production
-    if (ENVIRONMENT === "production") {
+    if (ENVIRONMENT !== "production") {
       if (!isUserEligible()) {
         navigate("/ifUserEligible");
       }
@@ -280,7 +280,7 @@ const App = () => {
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
-      saveToLocalStorage("hasUserSeenTheApp", true);
+      saveToLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp, true);
       disconnect();
       setIsLoading(false);
       toast.error("User rejected the signature request");
@@ -289,7 +289,7 @@ const App = () => {
 
   useEffect(() => {
     if (solanaWalletError.isError) {
-      saveToLocalStorage("hasUserSeenTheApp", true);
+      saveToLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp, true);
       solanaDisconnect();
       setIsLoading(false);
       toast.error(solanaWalletError.message);

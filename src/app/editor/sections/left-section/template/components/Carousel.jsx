@@ -51,15 +51,19 @@ const CompCarousel = ({ type, author, campaign }) => {
           .map((item, index) => {
             return (
               <CustomImageComponent
-                isLensCollect={item?.wallet}
-                // json = {mapData?.data} //Pass Json if it's a template
+                key={index}
+                item={item}
+                assetType={null}
+                collectionName={null}
                 preview={item?.image}
                 dimensions={item?.dimensions != null && item.dimensions}
-                recipientWallet={item?.wallet}
+                hasOptionBtn={null}
+                onDelete={null}
+                isLensCollect={item?.wallet}
                 changeCanvasDimension={true}
-                // className="h-fit w-full object-contain overflow-hidden"
-                author={item?.author}
+                recipientWallet={item?.wallet}
                 showAuthor={true}
+                author={item?.author}
               />
             );
           })}
