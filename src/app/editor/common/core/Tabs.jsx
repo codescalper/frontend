@@ -91,14 +91,19 @@ const Tabs = ({
             .map((item, index) => {
               return (
                 <CustomImageComponent
-                  item={item}
                   key={index}
+                  item={item}
+                  assetType={null}
+                  collectionName={null}
                   preview={item?.image}
                   dimensions={item?.dimensions != null && item.dimensions}
+                  hasOptionBtn={null}
+                  onDelete={null}
+                  isLensCollect={null}
                   changeCanvasDimension={changeCanvasDimension}
                   recipientWallet={item?.wallet}
-                  author={item?.author}
                   showAuthor={campaignName === "halloween" ? true : false}
+                  author={item?.author}
                 />
               );
             })}

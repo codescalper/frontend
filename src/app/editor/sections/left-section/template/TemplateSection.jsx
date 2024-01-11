@@ -22,6 +22,7 @@ import { useAccount } from "wagmi";
 import { Spinner, Icon } from "@blueprintjs/core";
 import { useStore } from "../../../../../hooks/polotno";
 import {
+  assetsTrack,
   fnLoadJsonOnPage,
   fnLoadMore,
   randomThreeDigitNumber,
@@ -101,10 +102,7 @@ const DesignCard = ({
     }
 
     // track community template assets selected
-    posthog.capture("Community Drop Assets", {
-      asset_id: item?.id,
-      ownerAddress: item?.referredFrom[0],
-    });
+    assetsTrack(item, "community", null);
   };
 
   // Function to change the preview image on hover
