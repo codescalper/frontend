@@ -27,21 +27,7 @@ const LensCard = () => {
           </div>
         </div>
 
-        <div className="flex ml-4 mb-4">
-          <div className=" text-sm ">Become a </div>
-          <div className="ml-2">
-            {" "}
-            <img className="h-4" src={chadText} alt="" />{" "}
-          </div>
-          <div className="">
-            {" "}
-            <img className="h-4" src={chadStar} alt="" />
-            <img className="h-4" src={chadStar} alt="" />
-            <img className="h-4" src={chadStar} alt="" />{" "}
-          </div>
-        </div>
-
-        <div className="flex align-middle ml-4 mb-4">
+        <div className="flex align-middle ml-4 mb-4 mt-2">
           {/* Points < 50 : Show Message */}
           {userProfileDetails?.points < 50 && (
             <div className="text-sm">

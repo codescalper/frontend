@@ -586,9 +586,9 @@ const SolanaMint = () => {
                   }
                   className={`${
                     solanaEnabled.isChargeForMint
-                      ? "bg-[#008080]"
+                      ? "bg-[#ffeb3b]"
                       : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -725,7 +725,7 @@ const SolanaMint = () => {
                 )}
 
                 <Button
-                  color="teal"
+                  color="yellow"
                   size="sm"
                   variant="filled"
                   className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -751,9 +751,9 @@ const SolanaMint = () => {
                   }
                   className={`${
                     solanaEnabled.isSellerFeeBasisPoints
-                      ? "bg-[#008080]"
+                      ? "bg-[#ffeb3b]"
                       : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -805,9 +805,9 @@ const SolanaMint = () => {
                   }
                   className={`${
                     solanaEnabled.isLimitedEdition
-                      ? "bg-[#008080]"
+                      ? "bg-[#ffeb3b]"
                       : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -860,8 +860,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isTimeLimit ? "bg-[#008080]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                    solanaEnabled.isTimeLimit ? "bg-[#ffeb3b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -909,8 +909,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isAllowlist ? "bg-[#008080]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                    solanaEnabled.isAllowlist ? "bg-[#ffeb3b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -970,7 +970,7 @@ const SolanaMint = () => {
                 />
               )}
               <Button
-                color="teal"
+                color="yellow"
                 size="sm"
                 variant="filled"
                 className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -984,7 +984,7 @@ const SolanaMint = () => {
 
               <Button
                 disabled={true}
-                color="teal"
+                color="yellow"
                 className="mt-2"
                 size="sm"
                 variant="outlined"
@@ -1009,8 +1009,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isNftBurnable ? "bg-[#008080]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                    solanaEnabled.isNftBurnable ? "bg-[#ffeb3b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -1077,7 +1077,7 @@ const SolanaMint = () => {
               )}
 
               <Button
-                color="teal"
+                color="yellow"
                 size="sm"
                 variant="filled"
                 className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -1104,8 +1104,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isNftGate ? "bg-[#008080]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                    solanaEnabled.isNftGate ? "bg-[#ffeb3b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -1171,7 +1171,7 @@ const SolanaMint = () => {
               )}
 
               <Button
-                color="teal"
+                color="yellow"
                 size="sm"
                 variant="filled"
                 className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -1196,8 +1196,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isTokenGate ? "bg-[#008080]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#008080] focus:ring-offset-2`}
+                    solanaEnabled.isTokenGate ? "bg-[#ffeb3b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -1262,7 +1262,7 @@ const SolanaMint = () => {
               )}
 
               <Button
-                color="teal"
+                color="yellow"
                 size="sm"
                 variant="filled"
                 className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -1278,7 +1278,7 @@ const SolanaMint = () => {
                 <Button
                   disabled={sharing}
                   onClick={() => sharePost("solana-cnft")}
-                  color="teal"
+                  color="yellow"
                   className="mx-4"
                 >
                   {" "}
@@ -1288,7 +1288,7 @@ const SolanaMint = () => {
                 <Button
                   disabled={true}
                   onClick={() => sharePost("solana-master")}
-                  color="teal"
+                  color="yellow"
                   className="mx-4"
                 >
                   {" "}

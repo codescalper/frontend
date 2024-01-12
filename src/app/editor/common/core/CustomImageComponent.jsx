@@ -149,7 +149,7 @@ const CustomImageComponent = ({
           <>
             <div
               title="Collected from Lens"
-              // className="bg-[#E1F26C] p-1 rounded-lg absolute top-2 left-2 opacity-60 hover:opacity-100"
+              // className="bg-[#ffeb3b] p-1 rounded-lg absolute top-2 left-2 opacity-60 hover:opacity-100"
               className="text-white text-xs bg-[#161616] px-2 py-0.5 rounded-md absolute top-2 right-2 opacity-96 hover:opacity-80"
               onClick={(e) => {
                 e.stopPropagation();

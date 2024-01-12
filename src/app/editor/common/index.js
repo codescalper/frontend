@@ -28,6 +28,8 @@ import CompCarousel from "../sections/left-section/template/components/Carousel"
 import BraveShieldWarn from "./modals/BraveShieldWarn";
 import TabsWithArrows from "./core/CustomsTabsWArrows/TabsWithArrows";
 
+import ShareWithTagsModal from "../sections/left-section/design/components/modals/ShareWithTagsModal";
+
 export {
   CustomImageComponent,
   OnboardingSteps,
@@ -53,4 +55,5 @@ export {
   CompCarousel,
   BraveShieldWarn,
   TabsWithArrows,
+  ShareWithTagsModal,
 };

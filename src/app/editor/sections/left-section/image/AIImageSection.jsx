@@ -128,7 +128,7 @@ const CompSearch = () => {
             type="search"
           />
           {/* 
-			<button className="bg-[#E1F26C] w-full px-4 p-1  mb-4 rounded-md hover:bg-[#e0f26cce]" onClick={fnGenerateImages}>Generate</button>
+			<button className="bg-[#ffeb3b] w-full px-4 p-1  mb-4 rounded-md hover:bg-[#e0f26cce]" onClick={fnGenerateImages}>Generate</button>
 			*/}
         </div>
         <div className="hidden md:flex flex-row overflow-x-scroll">

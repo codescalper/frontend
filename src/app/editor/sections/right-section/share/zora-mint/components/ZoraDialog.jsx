@@ -112,7 +112,7 @@ const ZoraDialog = ({
               isPending ||
               OAisLoading
             }
-            color="teal"
+            // color="teal"
             onClick={() => {
               handleOpen();
               resetState();

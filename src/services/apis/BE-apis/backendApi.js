@@ -283,6 +283,7 @@ export const updateCanvas = async ({
   isPublic,
   assetsRecipientElementData,
   preview,
+  tags
 }) => {
   const result = await api.put(`${API}/user/canvas/update`, {
     canvasData: {
@@ -291,6 +292,7 @@ export const updateCanvas = async ({
       isPublic: isPublic,
       referredFrom: referredFrom,
       assetsRecipientElementData: assetsRecipientElementData,
+      tags: tags
     },
     preview: preview,
   });

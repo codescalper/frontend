@@ -928,8 +928,8 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
               })
             }
             className={`${
-              zoraErc721Enabled.isChargeForMint ? "bg-[#00bcd4]" : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              zoraErc721Enabled.isChargeForMint ? "bg-[#ffeb3b]" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
           >
             <span
               className={`${
@@ -1080,7 +1080,7 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
           )}
 
           <Button
-            color="cyan"
+            color="yellow"
             size="sm"
             variant="filled"
             className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -1108,9 +1108,9 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
               }
               className={`${
                 zoraErc721Enabled.isRoyaltyPercent
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -1167,9 +1167,9 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
             }
             className={`${
               zoraErc721Enabled.isMintLimitPerAddress
-                ? "bg-[#00bcd4]"
+                ? "bg-[#ffeb3b]"
                 : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
           >
             <span
               className={`${
@@ -1224,8 +1224,8 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
                 })
               }
               className={`${
-                zoraErc721Enabled.isMaxSupply ? "bg-[#00bcd4]" : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+                zoraErc721Enabled.isMaxSupply ? "bg-[#ffeb3b]" : "bg-gray-200"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -1280,8 +1280,8 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
               })
             }
             className={`${
-              zoraErc721Enabled.isAllowlist ? "bg-[#00bcd4]" : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              zoraErc721Enabled.isAllowlist ? "bg-[#ffeb3b]" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
           >
             <span
               className={`${
@@ -1337,7 +1337,7 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
           />
         )}
         <Button
-          color="cyan"
+          color="yellow"
           size="sm"
           variant="filled"
           className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -1351,7 +1351,7 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
 
         <Button
           disabled={true}
-          color="cyan"
+          color="yellow"
           className="mt-2"
           size="sm"
           variant="outlined"
@@ -1378,9 +1378,9 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
               }
               className={`${
                 zoraErc721Enabled.isPreSaleSchedule
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -1439,9 +1439,9 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
               }
               className={`${
                 zoraErc721Enabled.isPublicSaleSchedule
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -1507,7 +1507,7 @@ const ERC721Edition = ({ isOpenAction, selectedChainId }) => {
           <Button
             disabled={isUnsupportedChain() || !write}
             fullWidth
-            color="cyan"
+            // color="yellow"
             onClick={handleSubmit}
           >
             {" "}

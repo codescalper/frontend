@@ -11,7 +11,7 @@ const SwitchGroup = ({ switchHead, switchDesc, mintOption }) => {
       <div className="flex justify-between">
         <h2 className="text-lg mb-2"> {switchHead} </h2>
         <Switch
-          color="teal"
+          color="yellow"
           // defaultChecked
           onClick={() => {
             console.log("Clicked")
