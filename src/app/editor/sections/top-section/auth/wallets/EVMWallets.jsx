@@ -16,7 +16,7 @@ const EVMWallets = ({title, className}) => {
       <img
         src={EVMLogo}
         alt="evm"
-        className="h-6 w-6"
+        className="h-6 w-6 object-contain bg-cover"
       />
       {title}
     </Button>
