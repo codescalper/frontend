@@ -271,7 +271,7 @@ const App = () => {
 
   useEffect(() => {
     // if false redirect to ifUserEligible page but only in production
-    if (ENVIRONMENT !== "production") {
+    if (ENVIRONMENT === "production") {
       if (!isUserEligible()) {
         navigate("/ifUserEligible");
       }
