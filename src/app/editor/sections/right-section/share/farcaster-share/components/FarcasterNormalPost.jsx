@@ -132,8 +132,8 @@ const FarcasterNormalPost = () => {
               })
             }
             className={`${
-              farcasterStates.isChannel ? "bg-[#00bcd4]" : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              farcasterStates.isChannel ? "bg-[#ffeb3b]" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
           >
             <span
               className={`${

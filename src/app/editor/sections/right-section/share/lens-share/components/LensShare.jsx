@@ -838,7 +838,7 @@ const LensShare = () => {
                     <div className="flex justify-between">
                       {enabled.splitRevenueRecipients.length < 5 && (
                         <Button
-                          color="cyan"
+                          color="yellow"
                           size="sm"
                           variant="filled"
                           className="flex items-center gap-3 mt-2 ml-0 outline-none"
@@ -849,7 +849,7 @@ const LensShare = () => {
                         </Button>
                       )}
                       <Button
-                        color="cyan"
+                        color="yellow"
                         size="sm"
                         variant="filled"
                         className="flex items-center gap-3 mt-2 ml-0 outline-none"
