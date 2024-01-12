@@ -256,14 +256,25 @@ const RenderImages = ({ contractAddressRef, setActiveCat, activeCat }) => {
         ) : data?.pages[0]?.data?.length > 0 ? (
           //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
           <div className="h-full overflow-y-auto">
-            <div className="grid grid-cols-2 overflow-y-auto">
+            <div className="columns-2 gap-1">
               {data?.pages
                 .flatMap((item) => item?.data)
                 .map((item, index) => {
                   return (
                     <CustomImageComponent
                       key={index}
+                      item={item}
+                      assetType="cc0"
+                      collectionName={activeCat}
                       preview={item?.imageURL}
+                      dimensions={null}
+                      hasOptionBtn={null}
+                      onDelete={null}
+                      isLensCollect={null}
+                      changeCanvasDimension={null}
+                      recipientWallet={null}
+                      showAuthor={null}
+                      author={null}
                     />
                   );
                 })}
@@ -325,7 +336,20 @@ const RenderSearchedNFTs = ({
           //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
           <div className="h-full overflow-y-auto">
             <div className="grid grid-cols-2 overflow-y-auto">
-              <CustomImageComponent preview={data?.imageURL} />
+              <CustomImageComponent
+                item={data}
+                assetType="cc0"
+                collectionName={activeCat}
+                preview={data?.imageURL}
+                dimensions={null}
+                hasOptionBtn={null}
+                onDelete={null}
+                isLensCollect={null}
+                changeCanvasDimension={null}
+                recipientWallet={null}
+                showAuthor={null}
+                author={null}
+              />
             </div>
           </div>
         ) : (
@@ -396,7 +420,20 @@ const RenderSearchedWalletNFT = ({ goBack, delayedQuery }) => {
           //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
           <div className="h-full overflow-y-auto">
             <div className="grid grid-cols-2 overflow-y-auto">
-              <CustomImageComponent preview={data?.imageURL} />
+              <CustomImageComponent
+                item={data}
+                assetType="cc0"
+                collectionName={activeCat}
+                preview={data?.imageURL}
+                dimensions={null}
+                hasOptionBtn={null}
+                onDelete={null}
+                isLensCollect={null}
+                changeCanvasDimension={null}
+                recipientWallet={null}
+                showAuthor={null}
+                author={null}
+              />
             </div>
           </div>
         ) : (
@@ -549,27 +586,35 @@ const WalletNFT = () => {
         />
         {/* Render Tabs body in Here or in TabPanel */}
         <TabsBody>
-          <div className="">
+          <div className="mt-3">
             {isError ? (
               <ErrorComponent error={error} />
             ) : data?.pages[0]?.data?.length > 0 ? (
               //  {/* CustomImage - LazyLoaded component - Definition for this is given above  */}
               <>
-                <div className="grid grid-cols-2">
+                <div className="columns-2 gap-1">
                   {data?.pages
                     .flatMap((item) => item?.data)
                     .map((item, index) => {
                       return (
                         <CustomImageComponent
-                          item={item}
-                          id={item?.id}
                           key={index}
+                          item={item}
+                          assetType="nft"
+                          collectionName={null}
                           preview={item?.imageURL || item?.permaLink}
+                          dimensions={null}
+                          hasOptionBtn={null}
+                          onDelete={null}
                           isLensCollect={lensCollect(
                             item?.title,
                             item?.id,
                             item
                           )}
+                          changeCanvasDimension={null}
+                          recipientWallet={null}
+                          showAuthor={null}
+                          author={null}
                         />
                       );
                     })}

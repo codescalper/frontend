@@ -27,6 +27,7 @@ import CustomHorizontalScroller from "./core/CustomHorizontalScroller/CustomHori
 import CompCarousel from "../sections/left-section/template/components/Carousel";
 import BraveShieldWarn from "./modals/BraveShieldWarn";
 import TabsWithArrows from "./core/CustomsTabsWArrows/TabsWithArrows";
+import Networks from "./modals/Networks";
 
 import ShareWithTagsModal from "../sections/left-section/design/components/modals/ShareWithTagsModal";
 
@@ -55,5 +56,9 @@ export {
   CompCarousel,
   BraveShieldWarn,
   TabsWithArrows,
+
   ShareWithTagsModal,
+
+  Networks,
+
 };

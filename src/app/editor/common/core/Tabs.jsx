@@ -85,25 +85,25 @@ const Tabs = ({
         // <div className="h-full overflow-y-auto">
         // <div className="overflow-y-auto">
         // To Fix Lenspost Banner Preview size issue
-        <div
-          className={`grid ${
-            defaultQuery === "lensjump" && getType === "background"
-              ? "grid-cols-1"
-              : "grid-cols-2"
-          } overflow-y-auto`}
-        >
+        <div className="columns-2 gap-1">
           {data?.pages
             .flatMap((item) => item?.data)
             .map((item, index) => {
               return (
                 <CustomImageComponent
                   key={index}
+                  item={item}
+                  assetType={null}
+                  collectionName={null}
                   preview={item?.image}
                   dimensions={item?.dimensions != null && item.dimensions}
+                  hasOptionBtn={null}
+                  onDelete={null}
+                  isLensCollect={null}
                   changeCanvasDimension={changeCanvasDimension}
                   recipientWallet={item?.wallet}
-                  author={item?.author}
                   showAuthor={campaignName === "halloween" ? true : false}
+                  author={item?.author}
                 />
               );
             })}

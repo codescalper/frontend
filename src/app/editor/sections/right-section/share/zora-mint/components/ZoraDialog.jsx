@@ -11,27 +11,34 @@ import {
   Checkbox,
 } from "@material-tailwind/react";
 import { ZoraLogo } from "../../../../../../../assets";
-import { zoraURLErc721 } from "../utils/zoraURL";
 import { useReset } from "../../../../../../../hooks/app";
 import { useNetwork } from "wagmi";
+import BiCopy from "@meronex/icons/bi/BiCopy";
+import { toast } from "react-toastify";
+import { zoraURLErc721 } from "../utils";
 
 const ZoraDialog = ({
   isError,
   isLoading,
   isPending,
   data,
+  farTxHash,
   isSuccess,
   isCreatingSplit,
   isUploadingToIPFS,
-  OAisLoading,
-  OAisSuccess,
+  isShareLoading,
+  isShareSuccess,
   isOpenAction,
+  isFarcaster,
 }) => {
   const [open, setOpen] = useState(false);
   const { resetState } = useReset();
   const { chain } = useNetwork();
+  const [isCopy, setIsCopy] = useState(false);
 
   const handleOpen = () => setOpen(!open);
+
+  const farConversationUrl = `https://warpcast.com/~/conversations/`;
 
   // if loading show the dialog
   useEffect(() => {
@@ -72,13 +79,43 @@ const ZoraDialog = ({
                 "Confirm the transaction to create the split..."}
               {isLoading && "Confirm the transaction to create the Edition..."}
               {isPending && "Transaction is pending..."}
-              {OAisLoading && "Creating Lens open action..."}
+              {isOpenAction && isShareLoading && "Creating Lens open action..."}
+              {isFarcaster && isShareLoading && "Sharing on Farcaster..."}
               {isOpenAction
-                ? OAisSuccess && <>Open Action is created successfully.</>
+                ? isShareSuccess && <>Open Action is created successfully.</>
+                : isFarcaster
+                ? isShareSuccess && (
+                    <>
+                      Successfully shared.
+                      <span className="flex gap-1 items-center">
+                        Check your post on
+                        <a
+                          href={farConversationUrl + farTxHash}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-500"
+                        >
+                          Warpcast
+                        </a>
+                        <BiCopy
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              farConversationUrl + farTxHash
+                            );
+                            setIsCopy(true);
+                          }}
+                          className="cursor-pointer"
+                        />
+                        {isCopy && (
+                          <span className="text-green-500">Copied</span>
+                        )}
+                      </span>
+                    </>
+                  )
                 : isSuccess && (
                     <>
                       Transaction is successful. <br />
-                      <span className="text-md">
+                      <span className="text-md flex items-center gap-1">
                         Check your edition on{" "}
                         <a
                           href={zoraURLErc721(
@@ -91,6 +128,18 @@ const ZoraDialog = ({
                         >
                           Zora
                         </a>
+                        <BiCopy
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              zoraURLErc721(data?.logs[0]?.address, chain?.id)
+                            );
+                            setIsCopy(true);
+                          }}
+                          className="cursor-pointer"
+                        />
+                        {isCopy && (
+                          <span className="text-green-500">Copied</span>
+                        )}
                       </span>
                     </>
                   )}
@@ -99,7 +148,7 @@ const ZoraDialog = ({
               isCreatingSplit ||
               isLoading ||
               isPending ||
-              OAisLoading) && <Spinner color="blue" />}
+              isShareLoading) && <Spinner color="blue" />}
           </div>
         </DialogBody>
 
@@ -110,7 +159,7 @@ const ZoraDialog = ({
               isCreatingSplit ||
               isLoading ||
               isPending ||
-              OAisLoading
+              isShareLoading
             }
             // color="teal"
             onClick={() => {

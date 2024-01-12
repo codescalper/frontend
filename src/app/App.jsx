@@ -108,7 +108,7 @@ const App = () => {
 
   // generate signature for EVM
   const generateSignature = () => {
-    saveToLocalStorage("hasUserSeenTheApp", true);
+    saveToLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp, true);
     if (isDisconnected) return;
 
     if (getEvmAuth) {
@@ -179,7 +179,9 @@ const App = () => {
           });
           saveToLocalStorage(LOCAL_STORAGE.userId, res?.userId);
           setSession(res.jwt);
-          posthog.identify(res?.userId);
+          posthog.identify(res?.userId, {
+            evm_address: address,
+          });
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
@@ -221,7 +223,9 @@ const App = () => {
           });
           saveToLocalStorage(LOCAL_STORAGE.userId, res?.userId);
           setSession(res.jwt);
-          posthog.identify(res?.userId);
+          posthog.identify(res?.userId, {
+            solana_address: solanaAddress,
+          });
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
@@ -276,7 +280,7 @@ const App = () => {
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
-      saveToLocalStorage("hasUserSeenTheApp", true);
+      saveToLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp, true);
       disconnect();
       setIsLoading(false);
       toast.error("User rejected the signature request");
@@ -285,7 +289,7 @@ const App = () => {
 
   useEffect(() => {
     if (solanaWalletError.isError) {
-      saveToLocalStorage("hasUserSeenTheApp", true);
+      saveToLocalStorage(LOCAL_STORAGE.hasUserSeenTheApp, true);
       solanaDisconnect();
       setIsLoading(false);
       toast.error(solanaWalletError.message);

@@ -191,44 +191,35 @@ const ShareSection = () => {
         <div className={`relative mt-6 px-4 sm:px-6`}>
           <p className="text-lg">Share on socials</p>
           <div className="flex ">
-          <div className="flex items-center space-x-12 py-5">
-            <div onClick={() => setMenu("lensmonetization")}>
-              {" "}
-              <img
-                className="w-10 cursor-pointer"
-                src="/other-icons/share-section/iconLens.png"
-                alt="Lens"
-              />{" "}
+            <div className="flex items-center space-x-12 py-5">
+              <div onClick={() => setMenu("lensmonetization")}>
+                {" "}
+                <img
+                  className="w-10 cursor-pointer"
+                  src="/other-icons/share-section/iconLens.png"
+                  alt="Lens"
+                />{" "}
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center space-x-12 py-5 ml-8">
-            <div onClick={() => setMenu("farcasterShare")}>
-              {" "}
-              <img
-                className="w-10 cursor-pointer rounded-md"
-                src={logoFarcaster}
-                alt="Farcaster"
-              />{" "}
+            <div className="flex items-center space-x-12 py-5 ml-8">
+              <div onClick={() => setMenu("farcasterShare")}>
+                {" "}
+                <img
+                  className="w-10 cursor-pointer rounded-md"
+                  src={logoFarcaster}
+                  alt="Farcaster"
+                />{" "}
+              </div>
             </div>
           </div>
-        </div>
         </div>
         <hr />
 
         <hr />
         <div className={`relative mt-6 px-4 sm:px-6`}>
-          <p className="text-lg">Mint as an NFT</p>
+          <p className="text-lg">Mint as an NFT on EVM</p>
           <div className="flex flex-wrap items-center gap-10 my-3">
-            <div
-              className="cursor-pointer flex flex-col items-center"
-              onClick={() => setMenu("solanaMint")}
-            >
-              {" "}
-              <img className="w-10" src={logoSolana} alt="Solana" />{" "}
-              <Typography className="text-md font-semibold">Solana</Typography>
-            </div>
-
             {chains.slice(1).map((item) => {
               return (
                 <div
@@ -238,7 +229,7 @@ const ShareSection = () => {
                 >
                   {" "}
                   <img
-                    className="w-10"
+                    className="w-10 h-10"
                     src={chainLogo(item?.id)}
                     alt={item?.name}
                   />{" "}
@@ -248,6 +239,21 @@ const ShareSection = () => {
                 </div>
               );
             })}
+          </div>
+        </div>
+        <hr />
+
+        <div className={`relative mt-6 px-4 sm:px-6`}>
+          <p className="text-lg">Mint as an NFT on Solana</p>
+          <div className="flex flex-wrap items-center gap-10 my-3">
+            <div
+              className="cursor-pointer flex flex-col items-center"
+              onClick={() => setMenu("solanaMint")}
+            >
+              {" "}
+              <img className="w-10" src={logoSolana} alt="Solana" />{" "}
+              <Typography className="text-md font-semibold">Solana</Typography>
+            </div>
           </div>
         </div>
         <hr />

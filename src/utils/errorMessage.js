@@ -3,7 +3,9 @@ export const errorMessage = (error) => {
     if (error?.response?.status === 500) {
       console.log({
         InternalServerError:
-          error?.response?.data?.message || error?.response?.data?.name,
+          error?.response?.data?.message ||
+          error?.response?.data?.name ||
+          error?.response?.data?.message?.name,
       });
       return "Internal Server Error, please try again later";
     } else if (error?.response?.status === 401) {

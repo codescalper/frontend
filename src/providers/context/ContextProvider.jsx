@@ -38,13 +38,17 @@ const ContextProvider = ({ children }) => {
   });
 
   // for open different menu in share
-  const [menu, setMenu] = useState("");
-  
+
+  const [menu, setMenu] = useState("share");
+
   // Lens Share tab
   const [lensTab, setLensTab] = useState("normalPost");
 
   // Farcaster Share tab
-  const [farcasterTab, setFarcasterTab ] = useState("normalPost");
+  const [farcasterTab, setFarcasterTab] = useState("normalPost");
+
+  // Zora Mint Tab
+  const [zoraTab, setZoraTab] = useState("ERC721");
 
   // for lens monetization
   const [enabled, setEnabled] = useState({
@@ -154,9 +158,6 @@ const ContextProvider = ({ children }) => {
     isTokenGateError: false,
     tokenGateErrorMessage: "",
   });
-
-  // Zora Mint Tab
-  const [zoraTab, setZoraTab] = useState("ERC721");
 
   const [zoraErc721Enabled, setZoraErc721Enabled] = useState({
     isContractDetails: false,
@@ -336,6 +337,13 @@ const ContextProvider = ({ children }) => {
     publicsaleScheduleErrorMessage: "",
   });
 
+  const [farcasterStates, setFarcasterStates] = useState({
+    isFarcasterAuth: false,
+
+    isChannel: false,
+    channel: "",
+  });
+
   // for calendar
   const [stFormattedDate, setStFormattedDate] = useState("");
   const [stFormattedTime, setStFormattedTime] = useState("");
@@ -421,7 +429,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", enabled.chargeForCollectPrice);
+  // console.log("ContextProvider", farcasterStates.channel?.id);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (
@@ -474,7 +482,7 @@ const ContextProvider = ({ children }) => {
         setIsProfileOpen,
         openedProfileModal,
         setOpenedProfileModal,
-        
+
         // for calendar
         stFormattedDate,
         setStFormattedDate,
@@ -576,6 +584,10 @@ const ContextProvider = ({ children }) => {
         // For Lens Share - Smart Post
         enabledSmartPost,
         setEnabledSmartPost,
+
+        // for farcaster
+        farcasterStates,
+        setFarcasterStates,
       }}
     >
       {children}

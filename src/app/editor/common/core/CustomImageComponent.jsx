@@ -8,12 +8,14 @@ import { useEffect, useState } from "react";
 import { useStore } from "../../../../hooks/polotno";
 import { useContext } from "react";
 import { Context } from "../../../../providers/context/ContextProvider";
-import { addressCrop } from "../../../../utils";
+import { addressCrop, assetsTrack } from "../../../../utils";
+import posthog from "posthog-js";
 
 // Custom Image card component start - 23Jun2023
 const CustomImageComponent = ({
   item,
-  id,
+  assetType,
+  collectionName,
   preview,
   dimensions,
   hasOptionBtn,
@@ -72,7 +74,6 @@ const CustomImageComponent = ({
       y: changeCanvasDimension ? 0 : store.height / 4,
     });
 
-
     // NOTE: NO NEED OF THIS NOW
     // if nft is a lens collect, add it to the lensCollectNftRecipientDataRef
     // if (isLensCollect?.isLensCollect) {
@@ -99,7 +100,7 @@ const CustomImageComponent = ({
     }
 
     // if it is a solana nft or eth nft, add creators address to the recipient list to solanaNftRecipientListRef
-    if (item?.creators.length > 0) {
+    if (item?.creators?.length > 0) {
       item?.creators.map((creator) => {
         nftRecipientDataRef.current.push({
           elementId: store.selectedElements[0]?.id,
@@ -107,6 +108,9 @@ const CustomImageComponent = ({
         });
       });
     }
+
+    // track assets selected
+    assetsTrack(item, assetType, collectionName);
   };
 
   useEffect(() => {
@@ -134,8 +138,9 @@ const CustomImageComponent = ({
         onDragEnd={handleClickOrDrop}
         onClick={handleClickOrDrop}
       >
-        <div className="rounded-lg overflow-hidden">
+        <div className="mb-3">
           <LazyLoadImage
+            className="rounded-lg"
             placeholderSrc={base64Data}
             effect="blur"
             src={base64Data}

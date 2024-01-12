@@ -1,24 +1,71 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { getIsUserWhitelisted } from "../../../services";
-import { errorMessage, getFromLocalStorage, saveToLocalStorage } from "../../../utils";
- 
+import {
+  errorMessage,
+  getFromLocalStorage,
+  jsConfettiFn,
+  saveToLocalStorage,
+} from "../../../utils";
+import { Button, Typography } from "@material-tailwind/react";
+import { InputBox } from "../../editor/common";
+import { redeemCode } from "../../../services/apis/BE-apis/utils";
+import BisSend from "@meronex/icons/bi/BisSend";
+import { ERROR } from "../../../data";
+
 const AuthComponent = () => {
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
   const getifUserEligible = getFromLocalStorage("ifUserEligible");
   const { address } = useAccount();
   const navigate = useNavigate();
-  const [isUserEligible, setIsUserEligible] = useState(false); 
+  const [isUserEligible, setIsUserEligible] = useState(false);
+  const [inviteCode, setInviteCode] = useState("");
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["isHolderOfCollection"],
     queryFn: () => getIsUserWhitelisted(address),
     enabled: address ? true : false,
+    retry: 1,
   });
+
+  // invite code mutuation
+  const { mutateAsync } = useMutation({
+    mutationKey: "inviteCode",
+    mutationFn: redeemCode,
+  });
+
+  const redeemInviteCode = () => {
+    mutateAsync({
+      code: inviteCode,
+      address: address,
+    })
+      .then((res) => {
+        if (res?.status === "success") {
+          jsConfettiFn();
+
+          saveToLocalStorage("ifUserEligible", {
+            address: address,
+            isUserEligible: true,
+          });
+
+          toast.success(res?.message);
+          setIsUserEligible(true);
+        } else if (res?.status === "error") {
+          toast.error(res?.message);
+          setIsUserEligible(false);
+        } else {
+          toast.error(ERROR.SOMETHING_WENT_WRONG);
+          setIsUserEligible(false);
+        }
+      })
+      .catch((err) => {
+        toast.error(errorMessage(err));
+      });
+  };
 
   const isUserEligibleFn = () => {
     if (
@@ -134,7 +181,7 @@ const AuthComponent = () => {
                       Checking your eligibility...{" "}
                     </div>
                   ) : (
-                    <div className="flex flex-col text-center align-middle justify-center m-2 text-lg">
+                    <div className="flex flex-col text-center items-center justify-center m-2 text-lg">
                       <div>
                         {/* Opps! */}
                         Looks like you’re not eligible at this time!
@@ -160,6 +207,25 @@ const AuthComponent = () => {
                             Join the Waitlist
                           </div>
                         </a>
+                      </div>
+
+                      <Typography className="text-lg font-semibold">
+                        or
+                      </Typography>
+
+                      <div className="w-1/2 py-2 flex gap-2">
+                        <InputBox
+                          className="bg-white"
+                          label="Enter the invite code"
+                          onChange={(e) => setInviteCode(e.target.value)}
+                          value={inviteCode}
+                        />
+                        <div
+                          onClick={redeemInviteCode}
+                          className="bg-[#2c346b] rounded-md flex justify-center items-center w-1/3 hover:bg-[#2c346b] hover:shadow-xl hover:cursor-pointer"
+                        >
+                          <BisSend className="text-white" />
+                        </div>
                       </div>
                       {/* Zootools Form End */}
                     </div>

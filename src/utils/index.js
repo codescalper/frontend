@@ -19,4 +19,5 @@ export * from "./addressCrop";
 export * from "./clearLocalStorage";
 export * from "./jsConfettiFn";
 export * from "./stringify";
-export * from "./chainLogo"
+export * from "./chainLogo";
+export * from "./assetsTrack";
