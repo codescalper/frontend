@@ -14,6 +14,7 @@ import React, { useContext, useState } from "react";
 import { Context } from "../../../../../../../providers/context";
 import { toast } from "react-toastify";
 import {
+  changeCanvasVisibility,
   tokengateCanvasById,
   updateCanvas,
 } from "../../../../../../../services";
@@ -31,7 +32,7 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
   // Modal States
   const [modal, setModal] = useState({
     isOpen: false,
-    isPublic: isPublic,
+    isPublic: isPublic ? true : false,
     isTokengate: false,
     isNewDesign: false,
     stTokengateIpValue: "",
@@ -39,6 +40,8 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
     errorMsg: "",
     canvasId: canvasId,
   });
+  
+  console.log("modal.isPublic", modal.isPublic);
 
   return (
     <>
@@ -137,22 +140,27 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
           <div className="">
             <Button
               variant="filled"
+              loading={true}
               // color="blue"
               // onClick={() => setOpen(false)}
               onClick={async () => {
                 console.log("tags", tags);
                 const splitTags = tags.split(",");
+
                 await updateCanvas({
                   id: modal.canvasId,
                   tags: splitTags,
-                  isPublic: true,
                 });
 
-                switchState &&
-                  (await tokengateCanvasById({
-                    id: modal.canvasId,
-                    gatewith: modal.stTokengateIpValue,
-                  }));
+                await changeCanvasVisibility({
+                  id: modal.canvasId,
+                  isPublic: !isPublic,
+                });
+
+                await tokengateCanvasById({
+                  id: modal.canvasId,
+                  gatewith: modal.stTokengateIpValue,
+                });
 
                 console.log(
                   "modal.stTokengateIpValue",
@@ -164,11 +172,8 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
               }}
             >
               {/* {switchState ? "Tokengate and Make Public" : " Make Public"} */}
-              {switchState && !isPublic
-                ? "Tokengate and Make Public"
-                : switchState && isPublic
-                ? "Make Private"
-                : " Make Public"}
+              { modal?.isPublic ? "Make Private" : "Make Public"}
+
             </Button>
           </div>
         </DialogFooter>
