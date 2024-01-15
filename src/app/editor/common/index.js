@@ -29,6 +29,8 @@ import BraveShieldWarn from "./modals/BraveShieldWarn";
 import TabsWithArrows from "./core/CustomsTabsWArrows/TabsWithArrows";
 import Networks from "./modals/Networks";
 
+import ShareWithTagsModal from "../sections/left-section/design/components/modals/ShareWithTagsModal";
+
 export {
   CustomImageComponent,
   OnboardingSteps,
@@ -54,5 +56,9 @@ export {
   CompCarousel,
   BraveShieldWarn,
   TabsWithArrows,
+
+  ShareWithTagsModal,
+
   Networks,
+
 };

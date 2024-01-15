@@ -1023,8 +1023,8 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
               })
             }
             className={`${
-              zoraErc721Enabled.isChargeForMint ? "bg-[#00bcd4]" : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              zoraErc721Enabled.isChargeForMint ? "bg-[#ffeb3b]" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
           >
             <span
               className={`${
@@ -1181,9 +1181,10 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
             )}
           </div>
 
+
           <div className="flex justify-between">
             <Button
-              color="cyan"
+              color="yellow"
               size="sm"
               variant="filled"
               className="flex items-center gap-3 mt-2 ml-0 outline-none"
@@ -1193,7 +1194,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
               Add Recipient
             </Button>
             <Button
-              color="cyan"
+              color="yellow"
               size="sm"
               variant="filled"
               className="flex items-center gap-3 mt-2 ml-0 outline-none"
@@ -1211,6 +1212,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
         <div className="mb-4 m-4">
           <div className="flex justify-between">
             <h2 className="text-lg mb-2"> Royalty </h2>
+
           </div>
           <div className="w-4/5 opacity-75">
             {" "}
@@ -1258,9 +1260,9 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
             }
             className={`${
               zoraErc721Enabled.isMintLimitPerAddress
-                ? "bg-[#00bcd4]"
+                ? "bg-[#ffeb3b]"
                 : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
           >
             <span
               className={`${
@@ -1315,8 +1317,8 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
                 })
               }
               className={`${
-                zoraErc721Enabled.isMaxSupply ? "bg-[#00bcd4]" : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+                zoraErc721Enabled.isMaxSupply ? "bg-[#ffeb3b]" : "bg-gray-200"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -1371,8 +1373,8 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
               })
             }
             className={`${
-              zoraErc721Enabled.isAllowlist ? "bg-[#00bcd4]" : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              zoraErc721Enabled.isAllowlist ? "bg-[#ffeb3b]" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
           >
             <span
               className={`${
@@ -1428,7 +1430,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           />
         )}
         <Button
-          color="cyan"
+          color="yellow"
           size="sm"
           variant="filled"
           className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -1442,7 +1444,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
 
         <Button
           disabled={true}
-          color="cyan"
+          color="yellow"
           className="mt-2"
           size="sm"
           variant="outlined"
@@ -1469,9 +1471,9 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
               }
               className={`${
                 zoraErc721Enabled.isPreSaleSchedule
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -1530,9 +1532,9 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
               }
               className={`${
                 zoraErc721Enabled.isPublicSaleSchedule
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -1588,8 +1590,8 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
                     })
                   }
                   className={`${
-                    farcasterStates.isChannel ? "bg-[#00bcd4]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+                    farcasterStates.isChannel ? "bg-[#ffeb3b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -1659,7 +1661,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           <Button
             disabled={!write || networksDataSmartPosts()?.isUnsupportedChain}
             fullWidth
-            color="cyan"
+            // color="yellow"
             onClick={handleSubmit}
           >
             {" "}

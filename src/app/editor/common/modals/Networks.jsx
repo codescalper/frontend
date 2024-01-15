@@ -35,7 +35,7 @@ const Networks = ({ className, chains, isUnsupportedChain }) => {
     <>
       <Button
         onClick={handleOpen}
-        color={isUnsupportedChain ? "red" : "teal"}
+        color={isUnsupportedChain ? "red" : ""}
         className={`${className}`}
       >
         {isUnsupportedChain ? "Unsupported Network" : chain?.name}

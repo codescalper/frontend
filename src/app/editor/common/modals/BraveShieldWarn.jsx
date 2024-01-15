@@ -51,14 +51,14 @@ const BraveShieldWarn = () => {
 
         <DialogFooter>
           <Checkbox
-            color="teal"
+            color="yellow"
             className="outline-none"
             label="Don't show this again"
             onChange={handleCheckbox}
           />
 
           <Button
-            color="teal"
+            color="yellow"
             onClick={handleOpen}
             ripple="light"
             className="ml-4 outline-none"

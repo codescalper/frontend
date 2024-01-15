@@ -28,24 +28,124 @@ import {
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { useStore } from "../../../../../hooks/polotno";
 import { Context } from "../../../../../providers/context/ContextProvider";
-import { fnLoadMore, errorMessage } from "../../../../../utils";
+import {
+  fnLoadMore,
+  errorMessage,
+  randomThreeDigitNumber,
+  replaceImageURL,
+} from "../../../../../utils";
 import { LoadingAnimatedComponent } from "../../../common";
 import { fnPageHasElements } from "../../../../../utils/fnPageHasElements";
 import { useAppAuth, useReset } from "../../../../../hooks/app";
-import DesignCard from "./components/cards/DesignCard";
+
+// Design card component start - 23Jun2023
+
+const DesignCard = ({
+  item,
+  preview,
+  json,
+  onDelete,
+  onPublic,
+  isPublic,
+  openTokengateModal,
+}) => {
+  const {
+    fastPreview,
+    contextCanvasIdRef,
+    referredFromRef,
+    preStoredRecipientDataRef,
+    designModal,
+    setDesignModal,
+  } = useContext(Context);
+  const store = useStore();
+
+  const handleClickOrDrop = () => {
+    store.loadJSON(json);
+    contextCanvasIdRef.current = item.id;
+    referredFromRef.current = item.referredFrom;
+    preStoredRecipientDataRef.current = item.assetsRecipientElementData;
+  };
+
+  return (
+    <Card
+      className="relative p-0 m-1 rounded-lg h-fit"
+      interactive
+      onDragEnd={handleClickOrDrop}
+      onClick={handleClickOrDrop}
+    >
+      <div className="rounded-lg overflow-hidden">
+        <LazyLoadImage
+          placeholderSrc={replaceImageURL(preview)}
+          effect="blur"
+          src={
+            contextCanvasIdRef.current === item.id
+              ? fastPreview[0]
+              : replaceImageURL(preview)
+          }
+          alt="Preview Image"
+        />
+      </div>
+
+      <div
+        style={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          // padding: "3px",
+        }}
+      >
+        {/* {design.name} */}
+      </div>
+      <div
+        style={{ position: "absolute", top: "5px", right: "5px" }}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        {/* <Popover2
+          content={
+            <Menu>
+              <MenuItem
+                icon="globe"
+                text={isPublic ? "Make Private" : "Make Public"}
+                onClick={onPublic}
+              />
+              <MenuItem
+                icon="layout-circle"
+                text="Tokengate & Make Public"
+                onClick={openTokengateModal}
+              />
+              <MenuItem icon="trash" text="Delete" onClick={onDelete} />
+            </Menu>
+          }
+          position={Position.BOTTOM}
+        >
+          <div id="makePublic">
+            <Button icon="more" />
+          </div>
+        </Popover2> */}
+
+        <Button icon="trash" />
+        <Button onClick={() => setDesignModal(!designModal)} icon="share" />
+      </div>
+    </Card>
+  );
+};
+
+// Design card component end - 23Jun2023
 
 export const DesignPanel = () => {
   const { isAuthenticated } = useAppAuth();
   const { resetState } = useReset();
   const { fastPreview, contextCanvasIdRef, designModal } = useContext(Context);
-  const [modalImageLink, setModalImageLink] = useState("");
   const store = useStore();
-
   // My Design Modal
+
   const [modal, setModal] = useState({
     isOpen: false,
     isTokengate: false,
@@ -213,7 +313,11 @@ export const DesignPanel = () => {
       />
 
       <MyDesignReacTour />
+      {/* This is the Modal that Appears on the screen for Confirmation - 25Jun2023 */}
 
+      {/* New Design card start - 23Jun2023 */}
+      {/* For reference : design - array name, design.id - Key, design.preview - Url  */}
+      {/*   Pass these onto Line 25 */}
       {isError ? (
         <ErrorComponent error={error} />
       ) : data?.pages[0]?.data?.length > 0 ? (
@@ -244,14 +348,6 @@ export const DesignPanel = () => {
                         : changeVisibility({ id: item?.id, isPublic: true });
                     }}
                     isPublic={item?.isPublic}
-                    onOpenTagModal={() => {
-                      setModal({
-                        ...modal,
-                      
-                        canvasId: item?.id,
-                      })
-                      console.log("canvasId", item?.id)
-                      setModalImageLink(item?.imageLink)}}
                     openTokengateModal={() =>
                       setModal({
                         ...modal,
@@ -278,7 +374,7 @@ export const DesignPanel = () => {
       )}
 
       {/* New Design card end - 23Jun2023 */}
-      {designModal && <ShareWithTagsModal canvasId={modal.canvasId} displayImg={modalImageLink} />}
+      <ShareWithTagsModal setOpenModalProp={true} displayImg={item} />
     </div>
   );
 };

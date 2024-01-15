@@ -119,6 +119,7 @@ const FarcasterNormalPost = () => {
 
   return (
     <>
+
       <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Channel </h2>
@@ -131,8 +132,8 @@ const FarcasterNormalPost = () => {
               })
             }
             className={`${
-              farcasterStates.isChannel ? "bg-[#00bcd4]" : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              farcasterStates.isChannel ? "bg-[#ffeb3b]" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
           >
             <span
               className={`${
@@ -160,8 +161,10 @@ const FarcasterNormalPost = () => {
             <Button
               className="w-full outline-none"
               disabled={sharing}
-              onClick={() => sharePost("farcaster")}
-              color="teal"
+
+              onClick={() => sharePost("lens")}
+              // color="yellow"
+
             >
               Share
             </Button>

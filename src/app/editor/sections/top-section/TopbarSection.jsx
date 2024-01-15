@@ -8,7 +8,7 @@ import { useAppAuth } from "../../../../hooks/app";
 import { Typography } from "@material-tailwind/react";
 import { EVMWallets, SolanaWallets } from "./auth/wallets";
 import Logo from "./logo/Logo";
-
+import PointsBtn from "./PointsBtn/PointsBtn"
 const TopbarSection = () => {
   const { isAuthenticated } = useAppAuth();
   const { chain } = useNetwork();
@@ -55,7 +55,8 @@ const TopbarSection = () => {
             <DownloadBtn />
 
             <div className="" id="first-step">
-              <ProfileMenu />
+              {/* <ProfileMenu /> */}
+              <PointsBtn/>
             </div>
           </div>
         ) : null}

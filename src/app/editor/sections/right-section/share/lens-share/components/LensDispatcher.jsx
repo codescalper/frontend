@@ -60,7 +60,7 @@ const LensDispatcher = ({ title, className }) => {
     <>
       <Button
         onClick={handleOpen}
-        color="teal"
+        // color="yellow"
         className={`${className}`}
       >
         {title}
@@ -75,7 +75,9 @@ const LensDispatcher = ({ title, className }) => {
         }}
       >
         <DialogHeader className="justify-between border-b border-gray-300">
-          <Typography variant="h5" color="blue-gray">
+          <Typography variant="h5" 
+          color="blue-gray"
+          >
             Enable signless transactions
           </Typography>
           <IconButton
@@ -111,7 +113,7 @@ const LensDispatcher = ({ title, className }) => {
           <Button
             disabled={loading}
             variant="gradient"
-            color="teal"
+            // color="yellow"
             onClick={setDispatcherFn}
             className="flex gap-3 items-center"
           >

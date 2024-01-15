@@ -82,7 +82,7 @@ const FarcasterAuth = () => {
       <Button
         onClick={handleSignIn}
         className="w-full outline-none"
-        color="teal"
+        // color="teal"
       >
         LogIn to Farcaster
       </Button>

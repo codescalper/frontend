@@ -1,38 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
-import { LogoutBtn, ProfilePanelHeaders } from "./components";
-import iconTrending from "./assets/svgs/iconTrending.svg";
-import {
-  Tabs,
-  Tab,
-  TabsHeader,
-  Select,
-  Option,
-} from "@material-tailwind/react";
-import { useQuery } from "@tanstack/react-query";
-import BsGift from "@meronex/icons/bs/BsGift";
+import { Tab, Tabs, TabsHeader } from "@material-tailwind/react";
 import MdcStarFourPointsOutline from "@meronex/icons/mdc/MdcStarFourPointsOutline";
-import {
-  CardsHeading,
-  LensCard,
-  TasksCard,
-  UserCard,
-} from "./components/Cards";
-import { useUser } from "../../../../../hooks/user";
-import {
-  getAllTasks,
-  getInviteCode,
-} from "../../../../../services/apis/BE-apis";
-import { ErrorComponent } from "../../../common";
-import { Context } from "../../../../../providers/context";
-import HiOutlineArrowNarrowRight from "@meronex/icons/hi/HiOutlineArrowNarrowRight";
+import React, { useState } from "react";
+import { CardsHeading, TasksCard } from "../Cards";
+import BsGift from "@meronex/icons/bs/BsGift";
+import { ErrorComponent } from "../../../../../common";
+import { useQuery } from "@tanstack/react-query";
+import { getAllTasks } from "../../../../../../../services/apis/BE-apis";
+import ProfilePanelHeaders from "../ProfilePanelHeaders";
+import BiWallet from "@meronex/icons/bi/BiWallet";
+import { useUser } from "../../../../../../../hooks/user";
+import Coin from "../../assets/pngs/coin.png"
 
-const ProfilePanel = () => {
-  const { setMenu } = useContext(Context);
-  const { username } = useUser();
-  const [tasksArr, setTasksArr] = useState([]);
-  const [inviteCodesArr, setInviteCodesArr] = useState([]);
+export const AllTasksNRewards = () => {
   const [selectedTab, setSelectedTab] = useState("tasks");
   const [openedModal, setOpenedModal] = useState("");
+  const { points } = useUser();
 
   const {
     data: taskData,
@@ -44,43 +26,25 @@ const ProfilePanel = () => {
     queryFn: getAllTasks,
   });
 
-  const { data } = useQuery({
-    queryKey: ["getInviteCode"],
-    queryFn: getInviteCode,
-  });
-
   const taskList = taskData?.message;
-  const inviteCodeList = data?.message;
 
   return (
-    <ProfilePanelHeaders
-      // panelHeader={`Hi @${username || "username"}`}
-      panelHeader={`My Profile`}
-      panelContent={
-        <>
-          <div className="flex flex-col align-middle justify-between">
-            <UserCard username={username} />
+    <>
+      <ProfilePanelHeaders
+        prevMenu="profile"
+        // panelHeader={`Hi @${username || "username"}`}
+        panelHeader={`Tasks and Rewards`}
+        panelContent={
+          <>
+            <div className="flex justify-between">
+              <div className=" bg-gray-200 p-2 m-2 rounded-sm">Completed {"6"} </div>
+              <div className="flex align-middle bg-gray-200 p-2 m-2 rounded-sm">
+                <BiWallet className="mt-1" />
+                <div className="mt-0.5 ml-2">{points} </div>
+                <img className="ml-1 h-5" src={Coin}/>
 
-            <div className="flex m-2">
-              <div className="ml-2 text-base font-semibold"> Invite Codes </div>
-              {/* <div className="ml-4 mt-0.5">{inviteCodeList}</div> */}
-
-              {inviteCodeList && (
-                <Select className="" label={"Choose an Invite code"}>
-                  {inviteCodeList.map((val) => {
-                    return <Option>{val}</Option>;
-                  })}
-                </Select>
-              )}
+              </div>
             </div>
-
-            <hr className="mb-2" />
-
-            {/* <CardsHeading
-              name="Trending"
-              iconImg={iconTrending && iconTrending}
-            /> */}
-            <LensCard />
 
             <Tabs className="overflow-scroll my-2" value={selectedTab}>
               <TabsHeader className="relative top-0 mx-2 mb-4">
@@ -158,18 +122,9 @@ const ProfilePanel = () => {
                 </>
               )}
             </Tabs>
-          </div>
-          <div
-            className="flex flex-row align-middle justify-center cursor-pointer hover:opacity-0.5"
-            onClick={() => setMenu("allTasksnRewards")}
-          >
-            <div className="mr-0.5">View all</div>
-            <HiOutlineArrowNarrowRight className="m-1" />
-          </div>
-        </>
-      }
-    />
+          </>
+        }
+      />
+    </>
   );
 };
-
-export default ProfilePanel;

@@ -18,9 +18,9 @@ const ERC1155Edition = () => {
           }
           className={`${
             zoraEnabled.isChargeForMint
-              ? "bg-[#00bcd4]"
+              ? "bg-[#ffeb3b]"
               : "bg-gray-200"
-          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
         >
           <span
             className={`${
@@ -157,7 +157,7 @@ const ERC1155Edition = () => {
         )}
 
         <Button
-          color="cyan"
+          color="yellow"
           size="sm"
           variant="filled"
           className="flex items-center gap-3 mt-2 ml-0 mr-4 "
@@ -189,9 +189,9 @@ const ERC1155Edition = () => {
               }
               className={`${
                 zoraEnabled.isLimitedEdition
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -248,9 +248,9 @@ const ERC1155Edition = () => {
           }
           className={`${
             zoraEnabled.isMintLimitPerAddress
-              ? "bg-[#00bcd4]"
+              ? "bg-[#ffeb3b]"
               : "bg-gray-200"
-          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
         >
           <span
             className={`${
@@ -306,9 +306,9 @@ const ERC1155Edition = () => {
               }
               className={`${
                 zoraEnabled.isRoyaltyPercent
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -370,9 +370,9 @@ const ERC1155Edition = () => {
               }
               className={`${
                 zoraEnabled.isMaxSupply
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -432,9 +432,9 @@ const ERC1155Edition = () => {
               }
               className={`${
                 zoraEnabled.isScheduleMint
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -486,9 +486,9 @@ const ERC1155Edition = () => {
               }
               className={`${
                 zoraEnabled.isPresaleSchedule
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -549,9 +549,9 @@ const ERC1155Edition = () => {
               }
               className={`${
                 zoraEnabled.isPublicsaleSchedule
-                  ? "bg-[#00bcd4]"
+                  ? "bg-[#ffeb3b]"
                   : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -610,9 +610,9 @@ const ERC1155Edition = () => {
           }
           className={`${
             zoraEnabled.isContractDetails
-              ? "bg-[#00bcd4]"
+              ? "bg-[#ffeb3b]"
               : "bg-gray-200"
-          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#00bcd4] focus:ring-offset-2`}
+          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
         >
           <span
             className={`${
@@ -659,7 +659,7 @@ const ERC1155Edition = () => {
     </div>
 
     <div className="mx-2 my-4">
-      <Button fullWidth color="cyan">
+      <Button fullWidth color="yellow">
         {" "}
         Mint{" "}
       </Button>

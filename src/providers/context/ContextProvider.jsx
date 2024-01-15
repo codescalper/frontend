@@ -15,6 +15,9 @@ const ContextProvider = ({ children }) => {
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);
 
+  // Modal: MyDesign Section
+  const [designModal, setDesignModal] = useState(false);
+
   // Profile Panel
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [openedProfileModal, setOpenedProfileModal] = useState(false);
@@ -35,6 +38,7 @@ const ContextProvider = ({ children }) => {
   });
 
   // for open different menu in share
+
   const [menu, setMenu] = useState("share");
 
   // Lens Share tab
@@ -438,6 +442,9 @@ const ContextProvider = ({ children }) => {
         contextCanvasIdRef,
         canvasBase64Ref,
 
+        // Modal: MyDesign Section
+        designModal,
+        setDesignModal,
         // User Profile Details
         userProfileDetails,
         setUserProfileDetails,

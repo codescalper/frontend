@@ -3,6 +3,7 @@ import { PowerIcon } from "@heroicons/react/24/outline";
 import { useLogout } from "../../../../../../hooks/app";
 import { Typography } from "@material-tailwind/react";
 import { toast } from "react-toastify";
+import FiLogOut from "@meronex/icons/fi/FiLogOut";
 
 const LogoutBtn = () => {
   const { logout } = useLogout();
@@ -13,22 +14,11 @@ const LogoutBtn = () => {
   };
 
   return (
-    <div
-      onClick={fnLogout}
-      className="flex justify-center cursor-pointer bg-red-50 m-4 hover:opacity-80  rounded-md"
-    >
-      {React.createElement(PowerIcon, {
-        className: `h-4 w-4 text-red-500 mt-2.5`,
-        strokeWidth: 2,
-      })}
-      <Typography
-        as="span"
-        variant="small"
-        className="font-normal m-2"
-        color={"red"}
-      >
-        Logout{" "}
-      </Typography>
+    <div onClick={fnLogout}>
+      <div className="text-red-400 flex p-1 pl-2 pr-2 mt-4 cursor-pointer hover:bg-red-50 w-fit rounded-md">
+        {" "}
+        <FiLogOut className="mt-0.5" /> <div className="ml-2">Logout</div>{" "}
+      </div>
     </div>
   );
 };

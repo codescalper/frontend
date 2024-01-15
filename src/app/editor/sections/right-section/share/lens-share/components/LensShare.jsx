@@ -632,9 +632,9 @@ const LensShare = () => {
                       }}
                       className={`${
                         enabled.chargeForCollect
-                          ? "bg-[#E1F26C]"
+                          ? "bg-[#ffeb3b]"
                           : "bg-gray-200"
-                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                     >
                       <span
                         className={`${
@@ -709,9 +709,9 @@ const LensShare = () => {
                       }
                       className={`${
                         enabled.mirrorReferralReward
-                          ? "bg-[#E1F26C]"
+                          ? "bg-[#ffeb3b]"
                           : "bg-gray-200"
-                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                     >
                       <span
                         className={`${
@@ -834,10 +834,11 @@ const LensShare = () => {
                         </Typography>
                       </>
                     )}
+
                     <div className="flex justify-between">
                       {enabled.splitRevenueRecipients.length < 5 && (
                         <Button
-                          color="cyan"
+                          color="yellow"
                           size="sm"
                           variant="filled"
                           className="flex items-center gap-3 mt-2 ml-0 outline-none"
@@ -848,7 +849,7 @@ const LensShare = () => {
                         </Button>
                       )}
                       <Button
-                        color="cyan"
+                        color="yellow"
                         size="sm"
                         variant="filled"
                         className="flex items-center gap-3 mt-2 ml-0 outline-none"
@@ -875,8 +876,8 @@ const LensShare = () => {
                         })
                       }
                       className={`${
-                        enabled.limitedEdition ? "bg-[#E1F26C]" : "bg-gray-200"
-                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                        enabled.limitedEdition ? "bg-[#ffeb3b]" : "bg-gray-200"
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                     >
                       <span
                         className={`${
@@ -923,8 +924,8 @@ const LensShare = () => {
                         })
                       }
                       className={`${
-                        enabled.timeLimit ? "bg-[#E1F26C]" : "bg-gray-200"
-                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                        enabled.timeLimit ? "bg-[#ffeb3b]" : "bg-gray-200"
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                     >
                       <span
                         className={`${
@@ -945,7 +946,7 @@ const LensShare = () => {
 
                     <div className={`flex flex-col my-2`}>
                       <div className="mt-1 mb-3">Schedule</div>
-                      <div className="flex flex-row border-l-8 border-l-[#E1F26C] p-4 rounded-md">
+                      <div className="flex flex-row border-l-8 border-l-[#ffeb3b] p-4 rounded-md">
                         <div className="flex flex-col">
                           <div className="text-4xl text-[#E699D9]">
                             {enabled.endTimestamp.date.slice(0, 2)}
@@ -980,8 +981,8 @@ const LensShare = () => {
                         })
                       }
                       className={`${
-                        enabled.whoCanCollect ? "bg-[#E1F26C]" : "bg-gray-200"
-                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#E1F26C] focus:ring-offset-2`}
+                        enabled.whoCanCollect ? "bg-[#ffeb3b]" : "bg-gray-200"
+                      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
                     >
                       <span
                         className={`${
@@ -1028,7 +1029,7 @@ const LensShare = () => {
               className="w-full outline-none"
               disabled={sharing}
               onClick={() => sharePost("lens")}
-              color="teal"
+              // color="yellow"
             >
               Share Now
             </Button>
