@@ -20,4 +20,4 @@ export * from "./clearLocalStorage";
 export * from "./jsConfettiFn";
 export * from "./stringify";
 export * from "./chainLogo";
-export * from "./assetsTrack";
+export * from "./eventTracks";
