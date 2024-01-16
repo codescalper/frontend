@@ -26,7 +26,7 @@ import { errorMessage } from "../../../../../../../utils";
 const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
   const { designModal, setDesignModal } = useContext(Context);
   // Store input as tags array
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState("");
   // Switch States
   const [switchState, setSwitchState] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,18 +47,26 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
     canvasId: canvasId,
   });
 
+  const filterTagsData = () => {
+    if (tags) {
+      const rmSpace = tags.replace(/\s/g, "");
+      const splitTags = rmSpace.split(",");
+      return splitTags;
+    } else {
+      return [];
+    }
+  };
+
   const handleSubmit = async () => {
     if (switchState && modal?.isError) return;
 
     setLoading(true);
 
-    const splitTags = tags ?? tags.split(",");
-
-    if (splitTags.length > 0) {
+    if (filterTagsData().length > 0) {
       try {
         await updateCanvas({
           id: modal.canvasId,
-          tags: splitTags,
+          tags: filterTagsData(),
         });
       } catch (error) {
         console.log("updateCanvas error", errorMessage(error));
