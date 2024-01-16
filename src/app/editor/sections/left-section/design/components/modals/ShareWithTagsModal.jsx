@@ -106,7 +106,7 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
       <Dialog
         size="sm"
         open={designModal}
-        handler={!loading && handler}
+        handler={!loading ? handler : null}
         animate={{
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },
@@ -120,7 +120,7 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
             color="blue-gray"
             size="sm"
             variant="text"
-            onClick={!loading && handler}
+            onClick={!loading ? handler : null}
             className="appFont outline-none"
           >
             <svg
@@ -171,7 +171,7 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
               <div className="m-2">
                 <Switch
                   checked={switchState}
-                  onClick={() => setSwitchState(!switchState)}
+                  onChange={() => setSwitchState(!switchState)}
                   // color="blue"
                 />
               </div>
