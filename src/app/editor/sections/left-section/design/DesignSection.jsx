@@ -247,10 +247,8 @@ export const DesignPanel = () => {
                     onOpenTagModal={() => {
                       setModal({
                         ...modal,
-                      
                         canvasId: item?.id,
                       })
-                      console.log("canvasId", item?.id)
                       setModalImageLink(item?.imageLink)}}
                     openTokengateModal={() =>
                       setModal({
@@ -278,7 +276,7 @@ export const DesignPanel = () => {
       )}
 
       {/* New Design card end - 23Jun2023 */}
-      {designModal && <ShareWithTagsModal canvasId={modal.canvasId} displayImg={modalImageLink} />}
+      {designModal && <ShareWithTagsModal canvasId={modal.canvasId} displayImg={modalImageLink}  />}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import {
   DialogHeader,
   IconButton,
   Input,
+  Spinner,
   Switch,
   Typography,
 } from "@material-tailwind/react";
@@ -19,15 +20,20 @@ import {
   updateCanvas,
 } from "../../../../../../../services";
 import { handleChange } from "../../utils";
-import { InputBox } from "../../../../../common";
+import { InputBox, InputErrorMsg } from "../../../../../common";
+import { errorMessage } from "../../../../../../../utils";
 
 const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
   const { designModal, setDesignModal } = useContext(Context);
-  const [open, setOpen] = useState(designModal);
   // Store input as tags array
-  const [tags, setTags] = useState(["lens", "lenspost"]);
+  const [tags, setTags] = useState("");
   // Switch States
   const [switchState, setSwitchState] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handler = () => {
+    setDesignModal(false);
+  };
 
   // Modal States
   const [modal, setModal] = useState({
@@ -40,15 +46,67 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
     errorMsg: "",
     canvasId: canvasId,
   });
-  
-  console.log("modal.isPublic", modal.isPublic);
+
+  const filterTagsData = () => {
+    if (tags) {
+      const rmSpace = tags.replace(/\s/g, "");
+      const splitTags = rmSpace.split(",");
+      return splitTags;
+    } else {
+      return [];
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (switchState && modal?.isError) return;
+
+    setLoading(true);
+
+    if (filterTagsData().length > 0) {
+      try {
+        await updateCanvas({
+          id: modal.canvasId,
+          tags: filterTagsData(),
+        });
+      } catch (error) {
+        console.log("updateCanvas error", errorMessage(error));
+      }
+    }
+
+    if (switchState && !modal?.isError && modal?.stTokengateIpValue) {
+      try {
+        await tokengateCanvasById({
+          id: modal.canvasId,
+          gatewith: modal.stTokengateIpValue,
+        });
+      } catch (error) {
+        console.log("tokengateCanvasById error", errorMessage(error));
+      }
+    }
+
+    try {
+      await changeCanvasVisibility({
+        id: modal.canvasId,
+        isPublic: !isPublic,
+      }).then((res) => {
+        if (res?.status === "success") {
+          setLoading(false);
+          toast.success("Design made public");
+          handler();
+        }
+      });
+    } catch (error) {
+      setLoading(false);
+      toast.error(errorMessage(error));
+    }
+  };
 
   return (
     <>
       <Dialog
         size="sm"
-        open={open}
-        handler={() => setOpen(!open)}
+        open={designModal}
+        handler={!loading && handler}
         animate={{
           mount: { scale: 1, y: 0 },
           unmount: { scale: 0.9, y: -100 },
@@ -62,7 +120,7 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
             color="blue-gray"
             size="sm"
             variant="text"
-            onClick={() => setDesignModal(false)}
+            onClick={!loading && handler}
             className="appFont outline-none"
           >
             <svg
@@ -94,13 +152,13 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
               Add some creative tags to help others find your design{" "}
             </div> */}
             <Input
+              autoFocus={true}
               // className="w-full mt-2 border border-gray-300 rounded-md p-2"
               label="Add some creative tags to help others find your design"
               placeholder=""
               value={tags}
               onChange={(e) => {
                 setTags(e.target.value);
-                console.log(tags);
               }}
             />
 
@@ -125,12 +183,18 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
             {switchState && (
               <div className="mt-4">
                 {switchState && (
-                  <InputBox
-                    value={modal?.stTokengateIpValue}
-                    onChange={(e) => handleChange(e, modal, setModal)}
-                    // placeholder={"contract address / Lenster post link"}
-                    label={"Enter contract address / Hey (Lenster) post link"}
-                  />
+                  <>
+                    <InputBox
+                      value={modal?.stTokengateIpValue}
+                      onFocus={(e) => handleChange(e, modal, setModal)}
+                      onChange={(e) => handleChange(e, modal, setModal)}
+                      // placeholder={"contract address / Lenster post link"}
+                      label={"Enter contract address / Hey (Lenster) post link"}
+                    />
+                    {modal?.isError && (
+                      <InputErrorMsg message={modal?.errorMsg} />
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -140,40 +204,16 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
           <div className="">
             <Button
               variant="filled"
+              disabled={loading || (switchState && modal?.isError)}
               loading={true}
               // color="blue"
               // onClick={() => setOpen(false)}
-              onClick={async () => {
-                console.log("tags", tags);
-                const splitTags = tags.split(",");
-
-                await updateCanvas({
-                  id: modal.canvasId,
-                  tags: splitTags,
-                });
-
-                await changeCanvasVisibility({
-                  id: modal.canvasId,
-                  isPublic: !isPublic,
-                });
-
-                await tokengateCanvasById({
-                  id: modal.canvasId,
-                  gatewith: modal.stTokengateIpValue,
-                });
-
-                console.log(
-                  "modal.stTokengateIpValue",
-                  modal.stTokengateIpValue
-                );
-                console.log("modal.canvasId", modal.canvasId);
-                toast.success("Canvas is tokengated and made public"),
-                  setDesignModal(false);
-              }}
+              onClick={handleSubmit}
+              className="flex justify-center items-center gap-2"
             >
               {/* {switchState ? "Tokengate and Make Public" : " Make Public"} */}
-              { modal?.isPublic ? "Make Private" : "Make Public"}
-
+              {modal?.isPublic ? "Make Private" : "Make Public"}
+              {loading && <Spinner color="black" className="h-5" />}
             </Button>
           </div>
         </DialogFooter>

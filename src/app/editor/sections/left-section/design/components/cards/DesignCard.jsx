@@ -75,8 +75,7 @@ const DesignCard = ({
         <Button
           className="ml-1"
           onClick={() => {
-            console.log("Share with tags clicked");
-            setDesignModal(!designModal);
+            setDesignModal(true);
             onOpenTagModal();
           }}
           icon="share"
