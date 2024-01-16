@@ -46,8 +46,8 @@ export const handleChange = (e, modal, setModal) => {
   } else if (!value) {
     setModal({
       ...modal,
-      isError: false,
-      errorMsg: "",
+      isError: true,
+      errorMsg: "Value cannot be empty",
       stTokengateIpValue: value,
     });
 
