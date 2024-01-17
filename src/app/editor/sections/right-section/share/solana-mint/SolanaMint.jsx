@@ -61,9 +61,7 @@ const SolanaMint = () => {
   const mintSettings = (platform) => {
     // TODO: check if here needs to be any checks
 
-    let canvasParams = {
-      guards: {},
-    };
+    let canvasParams = {};
 
     if (platform === "solana-cnft") {
       canvasParams = {
@@ -381,17 +379,30 @@ const SolanaMint = () => {
 
   // check if recipient percentage is more than 100
   const isPercentage100 = () => {
-    const arr = solanaEnabled.onChainSplitRecipients;
-    let totalPercentage = 0;
-    for (let i = 0; i < arr.length; i++) {
-      totalPercentage += arr[i].share;
-    }
+    const result = solanaEnabled.onChainSplitRecipients.reduce((acc, item) => {
+      return acc + item.share;
+    }, 0);
 
-    if (totalPercentage == 100) {
+    if (result == 100) {
       return true;
     } else {
       return false;
     }
+  };
+
+  // split even percentage
+  const splitEvenPercentage = () => {
+    const result = solanaEnabled.onChainSplitRecipients.map((item) => ({
+      address: item.address,
+      share: Math.floor(
+        (100 / solanaEnabled.onChainSplitRecipients.length).toFixed(2)
+      ),
+    }));
+
+    setSolanaEnabled((prevEnabled) => ({
+      ...prevEnabled,
+      onChainSplitRecipients: result,
+    }));
   };
 
   // mint on solana
@@ -461,6 +472,7 @@ const SolanaMint = () => {
       });
     }
 
+    return;
     setSharing(true);
 
     const canvasData = {
@@ -724,16 +736,27 @@ const SolanaMint = () => {
                   />
                 )}
 
-                <Button
-                  color="yellow"
-                  size="sm"
-                  variant="filled"
-                  className="flex items-center gap-3 mt-2 ml-0 mr-4 "
-                  onClick={addRecipientInputBox}
-                >
-                  <BsPlus />
-                  Add Recipient
-                </Button>
+                <div className="flex justify-between">
+                  <Button
+                    color="yellow"
+                    size="sm"
+                    variant="filled"
+                    className="flex items-center gap-3 mt-2 ml-0 mr-4 "
+                    onClick={addRecipientInputBox}
+                  >
+                    <BsPlus />
+                    Add Recipient
+                  </Button>
+                  <Button
+                    color="yellow"
+                    size="sm"
+                    variant="filled"
+                    className="flex items-center gap-3 mt-2 ml-0 outline-none"
+                    onClick={splitEvenPercentage}
+                  >
+                    Split Even
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -1286,13 +1309,13 @@ const SolanaMint = () => {
                 </Button>
 
                 <Button
-                  disabled={true}
+                  disabled={sharing}
                   onClick={() => sharePost("solana-master")}
                   color="yellow"
                   className="mx-4"
                 >
                   {" "}
-                  Mint as master edition (Coming Soon){" "}
+                  Mint as master edition{" "}
                 </Button>
               </div>
             ) : (
