@@ -38,8 +38,8 @@ const SolanaMintWrapper = () => {
               {/* add components */}
               {solanaTab === "cnft" && <CompressedNft />}
               {solanaTab === "masterEdition" && (
-                // <MasterEdition />
-                <Typography className="text-center">Coming Soon!</Typography>
+                <MasterEdition />
+                // <Typography className="text-center">Coming Soon!</Typography>
               )}
             </Tabs>
           </>

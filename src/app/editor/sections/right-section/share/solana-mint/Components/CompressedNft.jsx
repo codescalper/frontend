@@ -1244,7 +1244,7 @@ const CompressedNft = () => {
             disabled={sharing}
             onClick={() => sharePost("solana-cnft")}
             color="yellow"
-            className="mx-4"
+            className="w-full"
           >
             {" "}
             Mint as cNFT{" "}

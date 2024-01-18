@@ -1642,7 +1642,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       {/* Switch Number 8 End */}
 
       {/* network */}
-      {isFarcaster || isOpenAction ? (
+      {getEVMAuth && (isFarcaster || isOpenAction) ? (
         <>
           <h2 className="text-lg mx-2"> Switch Networks </h2>
           <Networks
