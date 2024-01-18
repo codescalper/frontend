@@ -429,7 +429,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", designModal);
+  // console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (

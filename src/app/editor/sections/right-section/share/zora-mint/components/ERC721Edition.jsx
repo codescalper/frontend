@@ -55,7 +55,10 @@ import {
   FarcasterChannel,
 } from "../../farcaster-share/components";
 import { LensAuth, LensDispatcher } from "../../lens-share/components";
-import { getFarUserDetails } from "../../../../../../../services/apis/BE-apis";
+import {
+  getFarUserDetails,
+  mintToXchain,
+} from "../../../../../../../services/apis/BE-apis";
 import { zoraURLErc721 } from "../utils/zoraURL";
 
 const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
@@ -126,6 +129,12 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   const { mutateAsync: shareOnSocialsMutation } = useMutation({
     mutationKey: "shareOnSocials",
     mutationFn: shareOnSocials,
+  });
+
+  // store zora link in DB Mutation
+  const { mutateAsync: storeZoraLinkMutation } = useMutation({
+    mutationKey: "storeZoraLink",
+    mutationFn: mintToXchain,
   });
 
   // create lens open action
@@ -553,7 +562,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     }
   };
 
-  // split even percentage (decimal included)
+  // split even percentage
   const splitEvenPercentage = () => {
     const result = zoraErc721Enabled.royaltySplitRecipients.map((item) => {
       return {
@@ -907,6 +916,24 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     }
   }, [isSuccess]);
 
+  // store the zora link in DB
+  useEffect(() => {
+    if (isSuccess && receipt?.logs[0]?.address) {
+      storeZoraLinkMutation({
+        canvasId: contextCanvasIdRef.current,
+        mintLink: zoraURLErc721(receipt?.logs[0]?.address, chain?.id),
+        platform: "Zora",
+        chain: chain?.name,
+      })
+        .then((res) => {
+          console.log("StoreZoraLink", res?.message);
+        })
+        .catch((error) => {
+          console.log("StoreZoraLinkErr", errorMessage(error));
+        });
+    }
+  }, [isSuccess]);
+
   // error handling for mint
   useEffect(() => {
     if (isError) {
@@ -1181,7 +1208,6 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
             )}
           </div>
 
-
           <div className="flex justify-between">
             <Button
               color="yellow"
@@ -1212,7 +1238,6 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
         <div className="mb-4 m-4">
           <div className="flex justify-between">
             <h2 className="text-lg mb-2"> Royalty </h2>
-
           </div>
           <div className="w-4/5 opacity-75">
             {" "}

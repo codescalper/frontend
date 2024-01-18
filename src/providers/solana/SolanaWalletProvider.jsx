@@ -18,6 +18,7 @@ import {
 
 import { clusterApiUrl } from "@solana/web3.js";
 import { createContext, useCallback, useMemo, useState } from "react";
+import { ENVIRONMENT } from "../../services";
 
 export const SolanaWalletErrorContext = createContext();
 
@@ -29,7 +30,10 @@ const SolanaWalletProvider = ({ children }) => {
   });
 
   // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
-  const network = WalletAdapterNetwork.Mainnet;
+  const network =
+    ENVIRONMENT === "production"
+      ? WalletAdapterNetwork.Mainnet
+      : WalletAdapterNetwork.Devnet;
 
   // You can also provide a custom RPC endpoint.
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
@@ -78,7 +82,7 @@ const SolanaWalletProvider = ({ children }) => {
         <SolanaWalletErrorContext.Provider
           value={{
             solanaWalletError,
-            setSolanaWalletError
+            setSolanaWalletError,
           }}
         >
           {children}
