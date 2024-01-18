@@ -44,6 +44,9 @@ const ContextProvider = ({ children }) => {
   // Lens Share tab
   const [lensTab, setLensTab] = useState("normalPost");
 
+    // solana Share tab
+    const [solanaTab, setSolanaTab] = useState("cnft");
+
   // Farcaster Share tab
   const [farcasterTab, setFarcasterTab] = useState("normalPost");
 
@@ -588,6 +591,10 @@ const ContextProvider = ({ children }) => {
         // for farcaster
         farcasterStates,
         setFarcasterStates,
+
+        // for solana tab
+        solanaTab,
+        setSolanaTab,
       }}
     >
       {children}

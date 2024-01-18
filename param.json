@@ -1,0 +1,20 @@
+{
+    "canvasData": {
+        "constent": "test",
+        "id": 19792,
+        "name": "test"
+    },
+    "canvasParams": {
+        "creators": [
+            {
+                "address": "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa",
+                "share": 50
+            },
+            {
+                "address": "4v6hZ15S7C5DK9GxDd1T5hZCKfM3Gq8JdUkQZfc5gGmp",
+                "share": 50
+            }
+        ]
+    },
+    "platform": "solana-master"
+}

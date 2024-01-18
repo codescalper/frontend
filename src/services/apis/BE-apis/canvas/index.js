@@ -1,12 +1,7 @@
 import { API, api } from "../config";
 
-export const mintToXchain = async ({ canvasId, mintLink, platform, chain }) => {
-  const result = await api.post(`${API}/user/canvas/minted`, {
-    canvasId,
-    mintLink,
-    platform,
-    chain,
-  });
+export const mintToXchain = async (paramsData) => {
+  const result = await api.post(`${API}/user/canvas/minted`, paramsData);
 
   return result?.data;
 };
