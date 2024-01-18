@@ -16,7 +16,7 @@ const SolanaMintWrapper = () => {
           <>
             {/* tabs for cnft / master edition */}
             <Tabs className="overflow-scroll my-2" value={solanaTab}>
-              <TabsHeader className="relative top-0 ">
+              <TabsHeader className="relative top-0">
                 <Tab
                   value={"cnft"}
                   className="appFont"
@@ -38,6 +38,7 @@ const SolanaMintWrapper = () => {
               {/* add components */}
               {solanaTab === "cnft" && <CompressedNft />}
               {solanaTab === "masterEdition" && (
+                // <MasterEdition />
                 <Typography className="text-center">Coming Soon!</Typography>
               )}
             </Tabs>

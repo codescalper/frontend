@@ -592,7 +592,7 @@ const MasterEdition = () => {
   }, [isAuthenticated]);
 
   return (
-    <>
+    <div className="w-full px-2">
       <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Charge for mint </h2>
@@ -1241,6 +1241,7 @@ const MasterEdition = () => {
       {/* Switch Number 7 End */}
       {getSolanaAuth ? (
         <div className="flex flex-col gap-2">
+
           <Button
             disabled={sharing}
             onClick={() => sharePost("solana-master")}
@@ -1252,9 +1253,9 @@ const MasterEdition = () => {
           </Button>
         </div>
       ) : (
-        <SolanaWallets title="Login with Solana" className="mx-2" />
+        <SolanaWallets title="Login with Solana" className="w-full" />
       )}
-    </>
+    </div>
   );
 };
 

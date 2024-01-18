@@ -591,7 +591,7 @@ const CompressedNft = () => {
   }, [isAuthenticated]);
 
   return (
-    <>
+    <div className=" w-full px-2">
       <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Charge for mint </h2>
@@ -1251,9 +1251,9 @@ const CompressedNft = () => {
           </Button>
         </div>
       ) : (
-        <SolanaWallets title="Login with Solana" className="mx-2" />
+        <SolanaWallets title="Login with Solana" className="w-full" />
       )}
-    </>
+    </div>
   );
 };
 
