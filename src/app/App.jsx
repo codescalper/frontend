@@ -334,7 +334,7 @@ const App = () => {
     if (solanaConnected && solanaAddress) {
       generateSignatureSolana();
     }
-  }, [solanaConnected]);
+  }, [solanaConnected, solanaAddress]);
 
   return (
     <>

@@ -29,7 +29,7 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-import base58 from "bs58";
+import bs58 from "bs58";
 import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
 
 const MasterEdition = () => {
@@ -555,7 +555,7 @@ const MasterEdition = () => {
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
     const frontend_key = "----";
-    const frontend_wallet = Keypair.fromSecretKey(base58.decode(frontend_key));
+    const frontend_wallet = Keypair.fromSecretKey(bs58.decode(frontend_key));
 
     const recoveredTx = getRawTransaction(txBase64);
     // recoveredTx.recentBlockhash =
