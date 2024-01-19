@@ -14,6 +14,7 @@ import { useAccount } from "wagmi";
 import { getAvatar } from "../../../../../utils";
 import { Avatar } from "@material-tailwind/react";
 import { AllTasksNRewards } from "../../right-section/profile/components/section/AllTasksNRewards";
+import ProfilePanelV2 from "../../right-section/profile/ProfilePanelV2";
 
 const PointsBtn = () => {
   const [transitionRtoL, setTransitionRtoL] = useState(false);
@@ -32,7 +33,7 @@ const PointsBtn = () => {
     <>
       <button
         onClick={() => {
-          setIsProfileOpen(true);
+          setIsProfileOpen(!isProfileOpen);
           setMenu("profile");
         }}
         className="outline-none"
@@ -51,14 +52,14 @@ const PointsBtn = () => {
         isOpen={isProfileOpen}
         // canOutsideClickClose
         size={"small"}
-        onClose={() => setIsProfileOpen(false)}
+        onClose={() => setIsProfileOpen(!isProfileOpen)}
         className={`relative z-1000`}
       >
         <div className="fixed overflow-hidden">
           <div className="overflow-scroll">
             <div className="fixed inset-y-0 right-0 flex max-w-full top-2">
               <div className="w-screen max-w-sm mb-2">
-                {menu === "profile" && <ProfilePanel />}
+                {menu === "profile" && <ProfilePanelV2 />}
                 {menu === "allTasksnRewards" && <AllTasksNRewards />}
               </div>
             </div>
