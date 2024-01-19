@@ -28,12 +28,17 @@ import {
   Connection,
   Transaction,
   VersionedTransaction,
+  TransactionInstruction,
+  PublicKey,
 } from "@solana/web3.js";
 import bs58 from "bs58";
 import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const MasterEdition = () => {
-  const { solanaAddress, solanaSignTransaction } = useSolanaWallet();
+  const { solanaAddress, solanaSignTransaction, solanaPublicKey } =
+    useSolanaWallet();
+  const { wallet, signTransaction } = useWallet();
   const [sharing, setSharing] = useState(false);
   const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const { isAuthenticated } = useAppAuth();
@@ -495,12 +500,12 @@ const MasterEdition = () => {
         if (res?.assetId || res?.tx || res?.data) {
           // jsConfettiFn();
 
-          toast.update(id, {
-            render: `Successfully created the edition`,
-            type: "success",
-            isLoading: false,
-            autoClose: 3000,
-          });
+          // toast.update(id, {
+          //   render: `Successfully created the edition`,
+          //   type: "success",
+          //   isLoading: false,
+          //   autoClose: 3000,
+          // });
 
           // open explorer link
           if (res?.assetId) {
@@ -516,7 +521,7 @@ const MasterEdition = () => {
           }
 
           // TODO: clear all the states and variables
-          // resetState();
+          resetState();
         } else {
           toast.update(id, {
             render: `Error sharing on ${platform}`,
@@ -554,18 +559,31 @@ const MasterEdition = () => {
   const signTx = async (txBase64) => {
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-    const frontend_key = "----";
-    const frontend_wallet = Keypair.fromSecretKey(bs58.decode(frontend_key));
-
+    // Retrieve the raw transaction
     const recoveredTx = getRawTransaction(txBase64);
-    // recoveredTx.recentBlockhash =
+    console.log("recoveredTx:", recoveredTx);
 
-    recoveredTx.partialSign(frontend_wallet);
-    console.log(await connection.sendRawTransaction(recoveredTx.serialize()));
+    // Sign the transaction using Phantom wallet
+    const signedTx = await signTransaction(recoveredTx);
+    console.log("signedTx:", signedTx);
+
+    if (!signedTx?.signature) {
+      return toast.error("Transaction not signed!");
+    }
+
+    const signature = bs58.encode(signedTx?.signature);
+    console.log("signatures:", signature);
+
+    if (!signedTx?.verifySignatures()) {
+      return toast.error("Transaction signature invalid!");
+    }
+
+    toast.success("Transaction signature valid!");
   };
 
   useEffect(() => {
     if (solanaMasterEditionData.tx) {
+      console.log("solanaMasterEditionData:", solanaMasterEditionData.tx);
       signTx(solanaMasterEditionData?.tx);
     }
   }, [solanaMasterEditionData]);
@@ -1241,7 +1259,6 @@ const MasterEdition = () => {
       {/* Switch Number 7 End */}
       {getSolanaAuth ? (
         <div className="flex flex-col gap-2">
-
           <Button
             disabled={sharing}
             onClick={() => sharePost("solana-master")}

@@ -27,6 +27,7 @@ const useSolanaWallet = () => {
     solanaDisconnect: disconnect,
     solanaDisconnecting: disconnecting,
     solanaAddress: publicKey?.toBase58(),
+    solanaPublicKey: publicKey,
     solanaSelect: select,
     solanaSendTransaction: sendTransaction,
     solanaSignAllTransactions: signAllTransactions,
