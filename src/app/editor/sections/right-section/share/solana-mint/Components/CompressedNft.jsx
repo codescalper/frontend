@@ -506,7 +506,7 @@ const CompressedNft = () => {
 
   return (
     <div className=" w-full px-2">
-      <div className="mb-4 m-4">
+      {/* <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Charge for mint </h2>
           <Switch
@@ -534,9 +534,9 @@ const CompressedNft = () => {
           {" "}
           Set an amount to be charged for minting{" "}
         </div>
-      </div>
+      </div> */}
 
-      <div className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}>
+      {/* <div className={`${!solanaEnabled.isChargeForMint && "hidden"} mx-4`}>
         <div className="flex gap-5">
           <div className="flex flex-col py-2">
             <NumberInputBox
@@ -577,7 +577,7 @@ const CompressedNft = () => {
             message={solanaStatesError.chargeForMintErrorMessage}
           />
         )}
-      </div>
+      </div> */}
 
       <div className="mb-4 m-4">
         <div className="flex justify-between">
