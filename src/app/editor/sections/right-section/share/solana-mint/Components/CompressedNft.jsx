@@ -83,7 +83,7 @@ const CompressedNft = () => {
       if (solanaEnabled.isSellerFeeBasisPoints) {
         canvasParams = {
           ...canvasParams,
-          seller_fee_basis_points: solanaEnabled.sellerFeeBasisPoints * 100,
+          sellerFeeBasisPoints: solanaEnabled.sellerFeeBasisPoints * 100,
         };
       }
     }
@@ -337,32 +337,8 @@ const CompressedNft = () => {
       return;
     }
 
-    if (solanaEnabled.isChargeForMint) {
-      if (solanaStatesError.isChargeForMintError) return;
-    }
-
     if (solanaEnabled.isSellerFeeBasisPoints) {
       if (solanaStatesError.isSellerFeeError) return;
-    }
-
-    if (solanaEnabled.isLimitedEdition) {
-      if (solanaStatesError.isLimitedEditionError) return;
-    }
-
-    if (solanaEnabled.isTimeLimit) {
-      if (solanaStatesError.isTimeLimitError) return;
-    }
-
-    if (solanaEnabled.isAllowlist) {
-      if (solanaStatesError.isAllowlistError) return;
-    }
-
-    if (solanaEnabled.isNftBurnable) {
-      if (solanaStatesError.isNftBurnableError) return;
-    }
-
-    if (solanaEnabled.isNftGate) {
-      if (solanaStatesError.isNftGateError) return;
     }
 
     if (solanaStatesError.isSplitError) return;
@@ -389,6 +365,7 @@ const CompressedNft = () => {
       });
     }
 
+    // return;
     setSharing(true);
 
     const canvasData = {
@@ -451,38 +428,6 @@ const CompressedNft = () => {
       });
   };
 
-  // funtion for sign the transaction for solana master edition
-  function getRawTransaction(encodedTx) {
-    let recoveredTx;
-    try {
-      recoveredTx = Transaction.from(Buffer.from(encodedTx, "base64"));
-    } catch (e) {
-      recoveredTx = VersionedTransaction.deserialize(
-        Buffer.from(encodedTx, "base64")
-      );
-    }
-    return recoveredTx;
-  }
-
-  const signTx = async (txBase64) => {
-    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
-    const frontend_key = "----";
-    const frontend_wallet = Keypair.fromSecretKey(base58.decode(frontend_key));
-
-    const recoveredTx = getRawTransaction(txBase64);
-    // recoveredTx.recentBlockhash =
-
-    recoveredTx.partialSign(frontend_wallet);
-    console.log(await connection.sendRawTransaction(recoveredTx.serialize()));
-  };
-
-  useEffect(() => {
-    if (solanaMasterEditionData.tx) {
-      signTx(solanaMasterEditionData?.tx);
-    }
-  }, [solanaMasterEditionData]);
-
   // add recipient to the split list
   useEffect(() => {
     if (isAuthenticated) {
@@ -505,7 +450,7 @@ const CompressedNft = () => {
   }, [isAuthenticated]);
 
   return (
-    <div className=" w-full px-2">
+    <div className=" w-full p-2">
       {/* <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Charge for mint </h2>
@@ -705,11 +650,13 @@ const CompressedNft = () => {
       >
         <div className="flex flex-col w-full py-2">
           {/* <label htmlFor="price">Collect limit</label> */}
-          <InputBox
+          <NumberInputBox
+            step={1}
             label="Seller Fees"
             name="sellerFeeBasisPoints"
             onChange={(e) => handleChange(e)}
             value={solanaEnabled.sellerFeeBasisPoints}
+            onFocus={(e) => handleChange(e)}
           />
           {solanaStatesError.isSellerFeeError && (
             <InputErrorMsg message={solanaStatesError.sellerFeeErrorMessage} />

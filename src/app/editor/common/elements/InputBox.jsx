@@ -10,6 +10,7 @@ const InputBox = ({
   name,
   onFocus,
   onBlur,
+  autoFocus,
 }) => {
   return (
     <Input
@@ -23,6 +24,7 @@ const InputBox = ({
       placeholder={placeholder}
       onBlur={onBlur}
       containerProps={{ className: "min-w-[100px]" }}
+      autoFocus={autoFocus}
     />
   );
 };

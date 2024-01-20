@@ -214,6 +214,20 @@ const MasterEdition = () => {
           sellerFeeErrorMessage: "",
         });
       }
+    } else if (name === "limitedEditionNumber") {
+      if (value < 1) {
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isLimitedEditionError: true,
+          limitedEditionErrorMessage: "Minimum edition should be 1",
+        });
+      } else {
+        setSolanaStatesError({
+          ...solanaStatesError,
+          isLimitedEditionError: false,
+          limitedEditionErrorMessage: "",
+        });
+      }
     }
 
     setSolanaEnabled((prevEnabled) => ({ ...prevEnabled, [name]: value }));
@@ -610,7 +624,7 @@ const MasterEdition = () => {
   }, [isAuthenticated]);
 
   return (
-    <div className="w-full px-2">
+    <div className="w-full p-2">
       <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Charge for mint </h2>
@@ -652,6 +666,7 @@ const MasterEdition = () => {
               name="chargeForMintPrice"
               value={solanaEnabled.chargeForMintPrice}
               onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
             />
           </div>
           <div className="flex flex-col py-2">
@@ -810,10 +825,12 @@ const MasterEdition = () => {
       >
         <div className="flex flex-col w-full py-2">
           {/* <label htmlFor="price">Collect limit</label> */}
-          <InputBox
+          <NumberInputBox
+            step={1}
             label="Seller Fees"
             name="sellerFeeBasisPoints"
             onChange={(e) => handleChange(e)}
+            onFocus={(e) => handleChange(e)}
             value={solanaEnabled.sellerFeeBasisPoints}
           />
           {solanaStatesError.isSellerFeeError && (
@@ -866,6 +883,7 @@ const MasterEdition = () => {
             label="Collect limit"
             name="limitedEditionNumber"
             onChange={(e) => handleChange(e)}
+            onFocus={(e) => handleChange(e)}
             value={solanaEnabled.limitedEditionNumber}
           />
           {solanaStatesError.isLimitedEditionError && (
