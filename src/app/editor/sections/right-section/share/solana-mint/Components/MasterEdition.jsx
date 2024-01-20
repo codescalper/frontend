@@ -500,12 +500,12 @@ const MasterEdition = () => {
         if (res?.assetId || res?.tx || res?.data) {
           // jsConfettiFn();
 
-          // toast.update(id, {
-          //   render: `Successfully created the edition`,
-          //   type: "success",
-          //   isLoading: false,
-          //   autoClose: 3000,
-          // });
+          toast.update(id, {
+            render: `Successfully created the edition`,
+            type: "success",
+            isLoading: false,
+            autoClose: 3000,
+          });
 
           // open explorer link
           if (res?.assetId) {
@@ -543,7 +543,7 @@ const MasterEdition = () => {
       });
   };
 
-  // funtion for sign the transaction for solana master edition
+  // function for sign the transaction for solana master edition
   function getRawTransaction(encodedTx) {
     let recoveredTx;
     try {
