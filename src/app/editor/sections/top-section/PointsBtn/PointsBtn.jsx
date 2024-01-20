@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { ShareIcon } from "../../../../../assets/assets";
 import {
   ShareSection,
@@ -29,12 +29,16 @@ const PointsBtn = () => {
     "left-0 w-80": !transitionRtoL,
   };
 
+  useEffect(() => {
+    setIsProfileOpen(false);
+  }, []);
+
   return (
     <>
       <button
         onClick={() => {
-          setIsProfileOpen(!isProfileOpen);
           setMenu("profile");
+          setIsProfileOpen(!isProfileOpen);
         }}
         className="outline-none"
       >
