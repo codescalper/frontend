@@ -614,7 +614,7 @@ const MasterEdition = () => {
       <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Charge for mint </h2>
-          <Switch
+          {/* <Switch
             checked={solanaEnabled.isChargeForMint}
             onChange={() =>
               setSolanaEnabled({
@@ -633,7 +633,7 @@ const MasterEdition = () => {
                   : "translate-x-1"
               } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />{" "}
-          </Switch>
+          </Switch> */}
         </div>
         <div className="w-4/5 opacity-75">
           {" "}
@@ -777,7 +777,7 @@ const MasterEdition = () => {
       <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Seller Fees </h2>
-          <Switch
+          {/* <Switch
             checked={solanaEnabled.isSellerFeeBasisPoints}
             onChange={() =>
               setSolanaEnabled({
@@ -798,7 +798,7 @@ const MasterEdition = () => {
                   : "translate-x-1"
               } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />{" "}
-          </Switch>
+          </Switch> */}
         </div>
         <div className="w-4/5 opacity-75"> Seller fee basis point </div>
       </div>
@@ -829,7 +829,7 @@ const MasterEdition = () => {
       <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Limit number of editions </h2>
-          <Switch
+          {/* <Switch
             checked={solanaEnabled.isLimitedEdition}
             onChange={() =>
               setSolanaEnabled({
@@ -848,7 +848,7 @@ const MasterEdition = () => {
                   : "translate-x-1"
               } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />{" "}
-          </Switch>
+          </Switch> */}
         </div>
         <div className="w-4/5 opacity-75">
           {" "}

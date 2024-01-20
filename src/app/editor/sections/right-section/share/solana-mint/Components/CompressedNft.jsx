@@ -614,7 +614,7 @@ const CompressedNft = () => {
                       className="w-4"
                       min={0}
                       max={100}
-                      step={0.01}
+                      step={1}
                       label="%"
                       value={recipient.share}
                       onChange={(e) => {
@@ -671,8 +671,8 @@ const CompressedNft = () => {
 
       <div className="mb-4 m-4">
         <div className="flex justify-between">
-          <h2 className="text-lg mb-2"> Seller Fees </h2>
-          <Switch
+          <h2 className="text-lg mb-2"> Royalty </h2>
+          {/* <Switch
             checked={solanaEnabled.isSellerFeeBasisPoints}
             onChange={() =>
               setSolanaEnabled({
@@ -693,7 +693,7 @@ const CompressedNft = () => {
                   : "translate-x-1"
               } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />{" "}
-          </Switch>
+          </Switch> */}
         </div>
         <div className="w-4/5 opacity-75"> Seller fee basis point </div>
       </div>
@@ -721,7 +721,7 @@ const CompressedNft = () => {
       {/* Working End */}
 
       {/* Switch Number 3 Start */}
-      <div className="mb-4 m-4">
+      {/* <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Limit number of editions </h2>
           <Switch
@@ -749,9 +749,9 @@ const CompressedNft = () => {
           {" "}
           Limit the number of editions that can be minted{" "}
         </div>
-      </div>
+      </div> */}
 
-      <div
+      {/* <div
         className={`${!solanaEnabled.isLimitedEdition && "hidden"} ml-4 mr-4`}
       >
         <div className="flex flex-col w-full py-2">
@@ -769,11 +769,11 @@ const CompressedNft = () => {
             />
           )}
         </div>
-      </div>
+      </div> */}
       {/* Switch Number 3 End */}
 
       {/* Switch Number 4 Start */}
-      <div className="mb-4 m-4">
+      {/* <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Schedule your Mint </h2>
           <Switch
@@ -799,9 +799,9 @@ const CompressedNft = () => {
           {" "}
           Set a start and end date for your mint{" "}
         </div>
-      </div>
+      </div> */}
 
-      <div
+      {/* <div
         className={`flex flex-col ${!solanaEnabled.isTimeLimit && "hidden"} `}
       >
         <div className="ml-4 mr-4 flex justify-between text-center align-middle">
@@ -814,9 +814,9 @@ const CompressedNft = () => {
         {solanaStatesError.isTimeLimitError && (
           <InputErrorMsg message={solanaStatesError.timeLimitErrorMessage} />
         )}
-      </div>
+      </div> */}
 
-      <div className="mb-4 m-4">
+      {/* <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Allowlist </h2>
           <Switch
@@ -842,9 +842,9 @@ const CompressedNft = () => {
           {" "}
           Allow specific wallet addresses to mint{" "}
         </div>
-      </div>
+      </div> */}
 
-      <div className={`ml-4 mr-4 ${!solanaEnabled.isAllowlist && "hidden"} `}>
+      {/* <div className={`ml-4 mr-4 ${!solanaEnabled.isAllowlist && "hidden"} `}>
         {solanaEnabled.allowlistAddresses.map((recipient, index) => {
           return (
             <>
@@ -906,11 +906,11 @@ const CompressedNft = () => {
           {" "}
           Upload CSV{" "}
         </Button>
-      </div>
+      </div> */}
       {/* Switch Number 4 End */}
 
       {/* Switch Number 5 Start */}
-      <div className="mb-4 m-4">
+      {/* <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> NFT Burn </h2>
           <Switch
@@ -933,8 +933,9 @@ const CompressedNft = () => {
           </Switch>
         </div>
         <div className="w-4/5 opacity-75"> Add NFT Contract Addresses </div>
-      </div>
-      <div className={`${!solanaEnabled.isNftBurnable && "hidden"} ml-4 mr-4 `}>
+      </div> */}
+
+      {/* <div className={`${!solanaEnabled.isNftBurnable && "hidden"} ml-4 mr-4 `}>
         {solanaEnabled.nftBurnableContractAddresses.map((recipient, index) => {
           return (
             <>
@@ -986,11 +987,11 @@ const CompressedNft = () => {
           <BsPlus />
           Add Recipient
         </Button>
-      </div>
+      </div> */}
       {/* Switch Number 5 End */}
 
       {/* Switch Number 6 Start */}
-      <div className="mb-4 m-4">
+      {/* <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> NFT Gate </h2>
           <Switch
@@ -1016,8 +1017,9 @@ const CompressedNft = () => {
           {" "}
           Add NFT contract addresses to gate{" "}
         </div>
-      </div>
-      <div className={`${!solanaEnabled.isNftGate && "hidden"} ml-4 mr-4 `}>
+      </div> */}
+
+      {/* <div className={`${!solanaEnabled.isNftGate && "hidden"} ml-4 mr-4 `}>
         {solanaEnabled.nftGateContractAddresses.map((recipient, index) => {
           return (
             <>
@@ -1067,11 +1069,11 @@ const CompressedNft = () => {
           <BsPlus />
           Add Recipient
         </Button>
-      </div>
+      </div> */}
       {/* Switch Number 6 End */}
 
       {/* Switch Number 7 Start */}
-      <div className="mb-4 m-4">
+      {/* <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Token Gate </h2>
           <Switch
@@ -1097,8 +1099,9 @@ const CompressedNft = () => {
           {" "}
           Add Token contract addresses to gate{" "}
         </div>
-      </div>
-      <div className={`${!solanaEnabled.isTokenGate && "hidden"} ml-4 mr-4 `}>
+      </div> */}
+
+      {/* <div className={`${!solanaEnabled.isTokenGate && "hidden"} ml-4 mr-4 `}>
         {solanaEnabled.tokenGateContractAddresses.map((recipient, index) => {
           return (
             <>
@@ -1150,7 +1153,8 @@ const CompressedNft = () => {
           <BsPlus />
           Add Recipient
         </Button>
-      </div>
+      </div> */}
+
       {/* Switch Number 7 End */}
       {getSolanaAuth ? (
         <div className="flex flex-col gap-2">

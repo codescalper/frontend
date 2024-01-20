@@ -44,8 +44,8 @@ const ContextProvider = ({ children }) => {
   // Lens Share tab
   const [lensTab, setLensTab] = useState("normalPost");
 
-    // solana Share tab
-    const [solanaTab, setSolanaTab] = useState("cnft");
+  // solana Share tab
+  const [solanaTab, setSolanaTab] = useState("cnft");
 
   // Farcaster Share tab
   const [farcasterTab, setFarcasterTab] = useState("normalPost");
@@ -91,7 +91,7 @@ const ContextProvider = ({ children }) => {
   });
 
   const [solanaEnabled, setSolanaEnabled] = useState({
-    isChargeForMint: false,
+    isChargeForMint: true,
     chargeForMintPrice: "",
     chargeForMintCurrency: "SOL",
 
@@ -104,10 +104,10 @@ const ContextProvider = ({ children }) => {
       },
     ],
 
-    isSellerFeeBasisPoints: false,
+    isSellerFeeBasisPoints: true,
     sellerFeeBasisPoints: "",
 
-    isLimitedEdition: false,
+    isLimitedEdition: true,
     limitedEditionNumber: "",
 
     isTimeLimit: false,
