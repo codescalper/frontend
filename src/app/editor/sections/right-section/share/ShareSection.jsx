@@ -31,6 +31,33 @@ const ShareSection = () => {
   const getTwitterAuth = getFromLocalStorage("twitterAuth");
   const [stClickedEmojiIcon, setStClickedEmojiIcon] = useState(false);
 
+  const chainsArray = [
+    {
+      id: 1,
+      name: "Ethereum",
+    },
+    {
+      id: 8453,
+      name: "Base",
+    },
+    {
+      id: 7777777,
+      name: "Zora",
+    },
+    {
+      id: 10,
+      name: "OP Mainnet",
+    },
+  ];
+
+  const filterChains = () => {
+    if (chains?.length > 0) {
+      return chains?.slice(1);
+    } else {
+      return chainsArray;
+    }
+  };
+
   // Aurh for twitter
   const twitterAuth = async () => {
     const res = await twitterAuthenticate();
@@ -220,7 +247,7 @@ const ShareSection = () => {
         <div className={`relative mt-6 px-4 sm:px-6`}>
           <p className="text-lg">Mint as an NFT on EVM</p>
           <div className="flex flex-wrap items-center gap-10 my-3">
-            {chains.slice(1).map((item) => {
+            {filterChains().map((item) => {
               return (
                 <div
                   key={item?.id}

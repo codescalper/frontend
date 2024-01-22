@@ -99,6 +99,9 @@ const useReset = () => {
     // farcaster states
     farcasterStates,
     setFarcasterStates,
+
+    // solana tabs
+    setSolanaTab,
   } = useContext(Context);
 
   const resetState = () => {
@@ -182,9 +185,12 @@ const useReset = () => {
       message: "",
     });
 
+    // solana tabs
+    setSolanaTab("cnft");
+
     // reset all the states for solana mint
     setSolanaEnabled({
-      isChargeForMint: false,
+      isChargeForMint: true,
       chargeForMintPrice: "",
       chargeForMintCurrency: "SOL",
 
@@ -197,10 +203,10 @@ const useReset = () => {
         },
       ],
 
-      isSellerFeeBasisPoints: false,
+      isSellerFeeBasisPoints: true,
       sellerFeeBasisPoints: "",
 
-      isLimitedEdition: false,
+      isLimitedEdition: true,
       limitedEditionNumber: "",
 
       isTimeLimit: false,

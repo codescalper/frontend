@@ -9,7 +9,7 @@ import { getAllTasks } from "../../../../../../../services/apis/BE-apis";
 import ProfilePanelHeaders from "../ProfilePanelHeaders";
 import BiWallet from "@meronex/icons/bi/BiWallet";
 import { useUser } from "../../../../../../../hooks/user";
-import Coin from "../../assets/pngs/coin.png"
+import Coin from "../../assets/pngs/coin.png";
 
 export const AllTasksNRewards = () => {
   const [selectedTab, setSelectedTab] = useState("tasks");
@@ -37,12 +37,13 @@ export const AllTasksNRewards = () => {
         panelContent={
           <>
             <div className="flex justify-between">
-              <div className=" bg-gray-200 p-2 m-2 rounded-sm">Completed {"6"} </div>
+              <div className=" bg-gray-200 p-2 m-2 rounded-sm">
+                Completed {"6"}{" "}
+              </div>
               <div className="flex align-middle bg-gray-200 p-2 m-2 rounded-sm">
                 <BiWallet className="mt-1" />
                 <div className="mt-0.5 ml-2">{points} </div>
-                <img className="ml-1 h-5" src={Coin}/>
-
+                <img className="ml-1 h-5" src={Coin} />
               </div>
             </div>
 
@@ -85,6 +86,7 @@ export const AllTasksNRewards = () => {
                             }}
                           >
                             <TasksCard
+                              key={task?.tag}
                               modalName={task?.tag}
                               isCompleted={task?.completed}
                               // CardHead={task?.description.split(/\\n/)[0]}

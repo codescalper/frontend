@@ -119,7 +119,6 @@ const FarcasterNormalPost = () => {
 
   return (
     <>
-
       <div className="mb-4 m-4">
         <div className="flex justify-between">
           <h2 className="text-lg mb-2"> Channel </h2>
@@ -161,10 +160,8 @@ const FarcasterNormalPost = () => {
             <Button
               className="w-full outline-none"
               disabled={sharing}
-
-              onClick={() => sharePost("lens")}
+              onClick={() => sharePost("farcaster")}
               // color="yellow"
-
             >
               Share
             </Button>
