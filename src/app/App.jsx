@@ -340,11 +340,6 @@ const App = () => {
     <>
       <Editor />
       {window.navigator?.brave && !isBraveShieldWarn && <BraveShieldWarn />}
-      <ExplorerDialog
-        handleOpen={handleOpen}
-        open={dialogOpen}
-        link={explorerLink}
-      />
       <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
       <ToastContainer
