@@ -42,6 +42,7 @@ import {
   StickerSection,
   TemplateSection,
   UploadSection,
+  MemeSection
 } from "./sections/left-section";
 import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
@@ -59,6 +60,7 @@ unstable_setAnimationsEnabled(true);
 const sections = [
   NFTSection,
   TemplateSection,
+  MemeSection,
   TextSection,
   DesignSection,
   StickerSection,
