@@ -7,6 +7,7 @@ import ShapeSection from "./shape/ShapeSection";
 import StickerSection from "./sticker/StickerSection";
 import TemplateSection from "./template/TemplateSection";
 import UploadSection from "./upload/UploadSection";
+import MemeSection from "./meme/MemeSection";
 
 export {
   BannerSection,
@@ -18,4 +19,5 @@ export {
   StickerSection,
   TemplateSection,
   UploadSection,
+  MemeSection,
 };
