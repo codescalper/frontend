@@ -149,7 +149,7 @@ export const StickerPanel = () => {
   const tabArray = [
     {
       name: "Degen",
-      author: "degen",
+      author: null,
       campaign: "degen",
     },
     {
