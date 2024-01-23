@@ -334,17 +334,12 @@ const App = () => {
     if (solanaConnected && solanaAddress) {
       generateSignatureSolana();
     }
-  }, [solanaConnected]);
+  }, [solanaConnected, solanaAddress]);
 
   return (
     <>
       <Editor />
       {window.navigator?.brave && !isBraveShieldWarn && <BraveShieldWarn />}
-      <ExplorerDialog
-        handleOpen={handleOpen}
-        open={dialogOpen}
-        link={explorerLink}
-      />
       <CheckInternetConnection />
       {isLoading && <LoadingComponent text={text} />}
       <ToastContainer

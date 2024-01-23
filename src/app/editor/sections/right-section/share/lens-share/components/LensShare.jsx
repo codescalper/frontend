@@ -830,7 +830,7 @@ const LensShare = () => {
                       <>
                         <InputErrorMsg message={splitError.message} />
                         <Typography variant="h6" color="blue-gray">
-                          {totalPercent} %
+                          {totalPercentage} %
                         </Typography>
                       </>
                     )}

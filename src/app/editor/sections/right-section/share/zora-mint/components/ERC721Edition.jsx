@@ -919,12 +919,13 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   // store the zora link in DB
   useEffect(() => {
     if (isSuccess && receipt?.logs[0]?.address) {
-      storeZoraLinkMutation({
+      let paramsData = {
         canvasId: contextCanvasIdRef.current,
         mintLink: zoraURLErc721(receipt?.logs[0]?.address, chain?.id),
-        platform: "Zora",
         chain: chain?.name,
-      })
+      };
+
+      storeZoraLinkMutation(paramsData)
         .then((res) => {
           console.log("StoreZoraLink", res?.message);
         })
@@ -1641,7 +1642,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       {/* Switch Number 8 End */}
 
       {/* network */}
-      {isFarcaster || isOpenAction ? (
+      {getEVMAuth && (isFarcaster || isOpenAction) ? (
         <>
           <h2 className="text-lg mx-2"> Switch Networks </h2>
           <Networks

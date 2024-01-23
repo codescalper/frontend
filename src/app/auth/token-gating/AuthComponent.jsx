@@ -1,6 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -16,19 +16,27 @@ import { InputBox } from "../../editor/common";
 import { redeemCode } from "../../../services/apis/BE-apis/utils";
 import BisSend from "@meronex/icons/bi/BisSend";
 import { ERROR } from "../../../data";
+import {
+  EVMWallets,
+  SolanaWallets,
+} from "../../editor/sections/top-section/auth/wallets";
+import { useSolanaWallet } from "../../../hooks/solana";
 
 const AuthComponent = () => {
   const getHasUserSeenTheApp = getFromLocalStorage("hasUserSeenTheApp");
   const getifUserEligible = getFromLocalStorage("ifUserEligible");
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
+  const { solanaDisconnect, solanaConnected, solanaAddress } =
+    useSolanaWallet();
   const navigate = useNavigate();
   const [isUserEligible, setIsUserEligible] = useState(false);
   const [inviteCode, setInviteCode] = useState("");
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["isHolderOfCollection"],
-    queryFn: () => getIsUserWhitelisted(address),
-    enabled: address ? true : false,
+    queryFn: () => getIsUserWhitelisted(address || solanaAddress),
+    enabled: address || solanaAddress ? true : false,
     retry: 1,
   });
 
@@ -39,16 +47,17 @@ const AuthComponent = () => {
   });
 
   const redeemInviteCode = () => {
+    if (!inviteCode) return toast.error("Please enter the invite code");
     mutateAsync({
       code: inviteCode,
-      address: address,
+      address: address || solanaAddress,
     })
       .then((res) => {
         if (res?.status === "success") {
           jsConfettiFn();
 
           saveToLocalStorage("ifUserEligible", {
-            address: address,
+            address: address || solanaAddress,
             isUserEligible: true,
           });
 
@@ -70,7 +79,8 @@ const AuthComponent = () => {
   const isUserEligibleFn = () => {
     if (
       getifUserEligible &&
-      getifUserEligible.address === address &&
+      (getifUserEligible.address === address ||
+        getifUserEligible.address === solanaAddress) &&
       getifUserEligible.isUserEligible === true
     ) {
       return true;
@@ -93,7 +103,7 @@ const AuthComponent = () => {
       // user is whitelisted
       // store the address in local storage
       saveToLocalStorage("ifUserEligible", {
-        address: address,
+        address: address || solanaAddress,
         isUserEligible: true,
       });
 
@@ -154,7 +164,7 @@ const AuthComponent = () => {
                 />{" "}
               </div>
               {/* if wallet is disconnected */}
-              {!address && (
+              {!isConnected && !solanaConnected && (
                 <div className="m-2 text-lg">
                   {" "}
                   Welcome to the future of creating DOPE content with your
@@ -165,7 +175,7 @@ const AuthComponent = () => {
               )}
 
               {/* if wallet is connected but not eligible */}
-              {!isUserEligible && address && (
+              {!isUserEligible && (isConnected || solanaConnected) && (
                 <>
                   <h1
                     className="text-3xl font-bold line"
@@ -234,7 +244,7 @@ const AuthComponent = () => {
               )}
 
               {/* if wallet if connected and eligible */}
-              {isUserEligible && address && (
+              {isUserEligible && (isConnected || solanaConnected) && (
                 <>
                   <h1
                     className="text-3xl font-bold line"
@@ -263,29 +273,47 @@ const AuthComponent = () => {
               )}
 
               {/* {if wallet is connected but not eligible} */}
-              {address && !isUserEligible && (
+              {(isConnected || solanaConnected) && !isUserEligible && (
                 <div className="mb-2 p-2 flex flex-row justify-center">
-                  {<ConnectButton showBalance={false} />}
+                  {/* {<ConnectButton showBalance={false} />} */}
+                  <Button
+                    className="bg-[#2c346b]"
+                    onClick={() => {
+                      disconnect();
+                      solanaDisconnect();
+                    }}
+                  >
+                    Disconnect
+                  </Button>
                 </div>
               )}
 
               {/* if disconnected */}
-              {!address && (
-                <div className="mb-2 p-2 flex flex-row justify-center">
-                  {<ConnectButton />}
-                </div>
+              {!isConnected && !solanaConnected && (
+                <>
+                  <Typography variant="h4" className="mt-6">
+                    Connect your wallet
+                  </Typography>
+                  <div className="mb-2 p-2 flex flex-row justify-center gap-2">
+                    {/* {<ConnectButton />} */}
+                    <SolanaWallets title="Solana" />
+                    <EVMWallets title="EVM" />
+                  </div>
+                </>
               )}
 
-              {isUserEligible && address && !isLoading && (
-                <div className="mb-2 p-2 flex flex-row justify-center">
-                  <button
-                    onClick={() => navigate("/")}
-                    className="bg-blue-500 py-3 px-5 rounded-md text-white hover:shadow-xl"
-                  >
-                    Launch App
-                  </button>
-                </div>
-              )}
+              {isUserEligible &&
+                (isConnected || solanaConnected) &&
+                !isLoading && (
+                  <div className="mb-2 p-2 flex flex-row justify-center">
+                    <button
+                      onClick={() => navigate("/")}
+                      className="bg-blue-500 py-3 px-5 rounded-md text-white hover:shadow-xl"
+                    >
+                      Launch App
+                    </button>
+                  </div>
+                )}
 
               <div className=""></div>
             </div>

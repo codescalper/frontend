@@ -9,12 +9,14 @@ import { useUser } from "../../../../../../../hooks/user";
 import iconLens from "../../assets/svgs/LogoLens.svg";
 import iconFarcaster from "../../assets/svgs/LogoFarcaster.svg";
 import LogoutBtn from "../LogoutBtn";
+import { useSolanaWallet } from "../../../../../../../hooks/solana";
 
 const UserCard = ({ username, profilePic, lensHandle, farcasterHandle }) => {
   const { address } = useAccount();
+  const { solanaAddress } = useSolanaWallet();
   const { points } = useUser();
 
-  const handleCopy = () => {
+  const handleCopy = (address) => {
     navigator.clipboard.writeText(address);
     toast.success("Address copied");
   };
@@ -56,15 +58,26 @@ const UserCard = ({ username, profilePic, lensHandle, farcasterHandle }) => {
           </div>
         </div>
       </div>
-      <div className="flex  justify-between m-4">
+      <div className="flex justify-between items-center m-4">
         <div className="mt-3">
-          <div
-            onClick={handleCopy}
-            className="flex mr-4 bg-blue-gray-50 p-1 pl-2 pr-2 rounded-full cursor-pointer w-fit"
-          >
-            {address ? addressCrop(address) : ""}
-            <BiCopy className="ml-1 mt-0.5 " />
-          </div>
+          {address && (
+            <div
+              onClick={() => handleCopy(address)}
+              className="flex mr-4 bg-blue-gray-50 p-1 pl-2 pr-2 rounded-full cursor-pointer w-fit mb-2"
+            >
+              {addressCrop(address)}
+              <BiCopy className="ml-1 mt-0.5 " />
+            </div>
+          )}
+          {solanaAddress && (
+            <div
+              onClick={() => handleCopy(solanaAddress)}
+              className="flex mr-4 bg-blue-gray-50 p-1 pl-2 pr-2 rounded-full cursor-pointer w-fit"
+            >
+              {addressCrop(solanaAddress)}
+              <BiCopy className="ml-1 mt-0.5 " />
+            </div>
+          )}
           <LogoutBtn />
         </div>
 
