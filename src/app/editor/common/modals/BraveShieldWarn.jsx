@@ -58,10 +58,10 @@ const BraveShieldWarn = () => {
           />
 
           <Button
-            color="yellow"
+            color="lenspostLime"
             onClick={handleOpen}
             ripple="light"
-            className="ml-4 outline-none"
+            className="ml-4 outline-none bg-[#e1f16b] text-black"
           >
             Ok
           </Button>

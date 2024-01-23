@@ -12,6 +12,7 @@ const SwitchGroup = ({ switchHead, switchDesc, mintOption }) => {
         <h2 className="text-lg mb-2"> {switchHead} </h2>
         <Switch
           color="yellow"
+          className={"bg-[#e1f16b] text-black"}
           // defaultChecked
           onClick={() => {
             console.log("Clicked")

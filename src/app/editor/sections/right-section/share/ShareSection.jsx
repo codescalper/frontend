@@ -169,7 +169,7 @@ const ShareSection = () => {
 
           <div className={`flex flex-col m-2 ml-8`}>
             <div className="mt-1 mb-3">Schedule</div>
-            <div className="flex flex-row border-l-8 border-l-[#ffeb3b] p-4 rounded-md">
+            <div className="flex flex-row border-l-8 border-l-[#e1f16b] p-4 rounded-md">
               <div className="flex flex-col">
                 <div className="text-4xl text-[#E699D9]">
                   {stFormattedDate.slice(0, 2)}

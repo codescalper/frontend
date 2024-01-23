@@ -598,9 +598,9 @@ const SolanaMint = () => {
                   }
                   className={`${
                     solanaEnabled.isChargeForMint
-                      ? "bg-[#ffeb3b]"
+                      ? "bg-[#e1f16b]"
                       : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -738,20 +738,20 @@ const SolanaMint = () => {
 
                 <div className="flex justify-between">
                   <Button
-                    color="yellow"
+                    // color="yellow"
                     size="sm"
                     variant="filled"
-                    className="flex items-center gap-3 mt-2 ml-0 mr-4 "
+                    className="flex items-center gap-3 mt-2 ml-0 mr-4 bg-[#e1f16b] text-black"
                     onClick={addRecipientInputBox}
                   >
                     <BsPlus />
                     Add Recipient
                   </Button>
                   <Button
-                    color="yellow"
+                    // color="yellow"
                     size="sm"
                     variant="filled"
-                    className="flex items-center gap-3 mt-2 ml-0 outline-none"
+                    className="flex items-center gap-3 mt-2 ml-0 outline-none bg-[#e1f16b] text-black"
                     onClick={splitEvenPercentage}
                   >
                     Split Even
@@ -774,9 +774,9 @@ const SolanaMint = () => {
                   }
                   className={`${
                     solanaEnabled.isSellerFeeBasisPoints
-                      ? "bg-[#ffeb3b]"
+                      ? "bg-[#e1f16b]"
                       : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -828,9 +828,9 @@ const SolanaMint = () => {
                   }
                   className={`${
                     solanaEnabled.isLimitedEdition
-                      ? "bg-[#ffeb3b]"
+                      ? "bg-[#e1f16b]"
                       : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -883,8 +883,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isTimeLimit ? "bg-[#ffeb3b]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
+                    solanaEnabled.isTimeLimit ? "bg-[#e1f16b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -932,8 +932,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isAllowlist ? "bg-[#ffeb3b]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
+                    solanaEnabled.isAllowlist ? "bg-[#e1f16b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -993,10 +993,10 @@ const SolanaMint = () => {
                 />
               )}
               <Button
-                color="yellow"
+                // color="yellow"
                 size="sm"
                 variant="filled"
-                className="flex items-center gap-3 mt-2 ml-0 mr-4 "
+                className="flex items-center gap-3 mt-2 ml-0 mr-4 bg-[#e1f16b] text-black"
                 onClick={() => addArrlistInputBox("allowlistAddresses")}
               >
                 <BsPlus />
@@ -1007,8 +1007,8 @@ const SolanaMint = () => {
 
               <Button
                 disabled={true}
-                color="yellow"
-                className="mt-2"
+                // color="yellow"
+                className="mt-2 bg-[#e1f16b] text-black"
                 size="sm"
                 variant="outlined"
                 fullWidth
@@ -1032,8 +1032,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isNftBurnable ? "bg-[#ffeb3b]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
+                    solanaEnabled.isNftBurnable ? "bg-[#e1f16b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -1100,10 +1100,10 @@ const SolanaMint = () => {
               )}
 
               <Button
-                color="yellow"
+                // color="yellow"
                 size="sm"
                 variant="filled"
-                className="flex items-center gap-3 mt-2 ml-0 mr-4 "
+                className="flex items-center gap-3 mt-2 ml-0 mr-4 bg-[#e1f16b] text-black"
                 onClick={() =>
                   addArrlistInputBox("nftBurnableContractAddresses")
                 }
@@ -1127,8 +1127,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isNftGate ? "bg-[#ffeb3b]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
+                    solanaEnabled.isNftGate ? "bg-[#e1f16b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -1194,10 +1194,10 @@ const SolanaMint = () => {
               )}
 
               <Button
-                color="yellow"
+                // color="yellow"
                 size="sm"
                 variant="filled"
-                className="flex items-center gap-3 mt-2 ml-0 mr-4 "
+                className="flex items-center gap-3 mt-2 ml-0 mr-4 bg-[#e1f16b] text-black"
                 onClick={() => addArrlistInputBox("nftGateContractAddresses")}
               >
                 <BsPlus />
@@ -1219,8 +1219,8 @@ const SolanaMint = () => {
                     })
                   }
                   className={`${
-                    solanaEnabled.isTokenGate ? "bg-[#ffeb3b]" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#ffeb3b] focus:ring-offset-2`}
+                    solanaEnabled.isTokenGate ? "bg-[#e1f16b]" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
                 >
                   <span
                     className={`${
@@ -1285,10 +1285,10 @@ const SolanaMint = () => {
               )}
 
               <Button
-                color="yellow"
+                // color="yellow"
                 size="sm"
                 variant="filled"
-                className="flex items-center gap-3 mt-2 ml-0 mr-4 "
+                className="flex items-center gap-3 mt-2 ml-0 mr-4 bg-[#e1f16b] text-black"
                 onClick={() => addArrlistInputBox("tokenGateContractAddresses")}
               >
                 <BsPlus />
@@ -1301,8 +1301,8 @@ const SolanaMint = () => {
                 <Button
                   disabled={sharing}
                   onClick={() => sharePost("solana-cnft")}
-                  color="yellow"
-                  className="mx-4"
+                  // color="yellow"
+                  className="mx-4 bg-[#e1f16b] text-black"
                 >
                   {" "}
                   Mint as cNFT{" "}
@@ -1311,8 +1311,8 @@ const SolanaMint = () => {
                 <Button
                   disabled={sharing}
                   onClick={() => sharePost("solana-master")}
-                  color="yellow"
-                  className="mx-4"
+                  // color="yellow"
+                  className="mx-4 bg-[#e1f16b] text-black"
                 >
                   {" "}
                   Mint as master edition{" "}
