@@ -8,82 +8,111 @@ import {
   apiSearchMemes,
 } from "../../../../../services/apis/meme-apis/memeApi";
 import {
+  ConnectWalletMsgComponent,
   CustomImageComponent,
+  ErrorComponent,
   LoadingAnimatedComponent,
+  MessageComponent,
+  SearchComponent,
 } from "../../../common";
 import BiSearch from "@meronex/icons/bi/BiSearch";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAppAuth } from "../../../../../hooks/app";
 
 export const MemePanel = () => {
-  const [memeData, setMemeData] = useState([]);
-  const [memeSearchKey, setMemeSearchKey] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { isAuthenticated } = useAppAuth();
+  const [query, setQuery] = useState("");
 
-  const fnFetchAllMemes = async () => {
-    setLoading(true);
-    const res = await apiGetAllMemes();
-    console.log(res.data.memes);
-    setMemeData(res.data.memes);
-    setLoading(false);
-  };
+  const {
+    data: memeData,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useQuery({
+    queryKey: ["meme"],
+    queryFn: apiGetAllMemes,
+    enabled: isAuthenticated ? true : false,
+  });
 
-  const fnSearchMemes = async () => {
-    setLoading(true);
+  const {
+    data: mutateData,
+    mutateAsync,
+    isLoading: isMutating,
+    isError: isMutatingError,
+    error: mutateError,
+  } = useMutation({
+    mutationKey: "meme",
+    mutationFn: apiSearchMemes,
+  });
 
-    const res = await apiSearchMemes(memeSearchKey);
-    console.log(res?.data?.memes);
-    setMemeData(res?.data?.memes);
+  const memes = memeData?.data?.memes || [];
 
-    setLoading(false);
-  };
+  if (!isAuthenticated) {
+    return <ConnectWalletMsgComponent />;
+  }
 
-  useEffect(() => {
-    fnFetchAllMemes();
-  }, []);
-
-  return (
-    <>
-      <div className="h-full overflow-hidden">
-        <div className="m-2 mb-4">
-          <div className="flex gap-2">
-            <Input
-              value={memeSearchKey}
-              onChange={(e) => setMemeSearchKey(e.target.value)}
-              className=""
-              label="Search Memes"
+  if (mutateData?.data?.memes?.length > 0) {
+    return (
+      <SearchMemes
+        error={mutateError}
+        isError={isMutatingError}
+        isLoading={isMutating}
+        memes={mutateData?.data?.memes || []}
+        query={query}
+        setQuery={setQuery}
+        mutateAsync={mutateAsync}
+      />
+    );
+  } else {
+    return (
+      <>
+        <div className="h-full overflow-hidden">
+          <div className="" id="stickerSearch">
+            <SearchComponent
+              query={query}
+              setQuery={setQuery}
+              placeholder="Search icons"
+              funtion={() => mutateAsync(query)}
             />
-            <IconButton onClick={() => fnSearchMemes()} variant="text">
-              {" "}
-              <BiSearch size={16} />{" "}
-            </IconButton>
           </div>
+          {isLoading ? (
+            <LoadingAnimatedComponent />
+          ) : isError ? (
+            <ErrorComponent message={error} />
+          ) : memes?.length > 0 ? (
+            <>
+              <div className=" h-full overflow-auto">
+                <div className="columns-2 gap-1">
+                  {memes.map((item, index) => (
+                    <CustomImageComponent
+                      key={index}
+                      item={item}
+                      assetType="meme"
+                      // collectionName={null}
+                      preview={item?.url}
+                      dimensions={item?.dimensions != null && item.dimensions}
+                      // hasOptionBtn={null}
+                      // onDelete={null}
+                      // isLensCollect={null}
+                      // changeCanvasDimension={changeCanvasDimension}
+                      // recipientWallet={item?.wallet}
+                      // showAuthor={campaignName === "halloween" ? true : false}
+                      // author={item?.author}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <MessageComponent message="No Results" />
+          )}
         </div>
-        {loading && <LoadingAnimatedComponent />}
-        {!loading && (
-          <div className=" h-full overflow-auto">
-            <div className="columns-2 gap-1">
-              {memeData?.map((item, index) => (
-                <CustomImageComponent
-                  key={index}
-                  item={item}
-                  // assetType={null}
-                  // collectionName={null}
-                  preview={item?.url}
-                  dimensions={item?.dimensions != null && item.dimensions}
-                  // hasOptionBtn={null}
-                  // onDelete={null}
-                  // isLensCollect={null}
-                  // changeCanvasDimension={changeCanvasDimension}
-                  // recipientWallet={item?.wallet}
-                  // showAuthor={campaignName === "halloween" ? true : false}
-                  // author={item?.author}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 };
 
 // define the new custom section
@@ -99,3 +128,59 @@ const MemeSection = {
 };
 
 export default MemeSection;
+
+const SearchMemes = ({
+  query,
+  setQuery,
+  isLoading,
+  isError,
+  error,
+  memes,
+  mutateAsync,
+}) => {
+  return (
+    <>
+      <div className="h-full overflow-hidden">
+        <div className="" id="stickerSearch">
+          <SearchComponent
+            query={query}
+            setQuery={setQuery}
+            placeholder="Search icons"
+            funtion={() => mutateAsync(query)}
+          />
+        </div>
+        {isLoading ? (
+          <LoadingAnimatedComponent />
+        ) : isError ? (
+          <ErrorComponent message={error} />
+        ) : memes?.length > 0 ? (
+          <>
+            <div className=" h-full overflow-auto">
+              <div className="columns-2 gap-1">
+                {memes.map((item, index) => (
+                  <CustomImageComponent
+                    key={index}
+                    item={item}
+                    assetType="meme"
+                    // collectionName={null}
+                    preview={item?.url}
+                    dimensions={item?.dimensions != null && item.dimensions}
+                    // hasOptionBtn={null}
+                    // onDelete={null}
+                    // isLensCollect={null}
+                    // changeCanvasDimension={changeCanvasDimension}
+                    // recipientWallet={item?.wallet}
+                    // showAuthor={campaignName === "halloween" ? true : false}
+                    // author={item?.author}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <MessageComponent message="No Results" />
+        )}
+      </div>
+    </>
+  );
+};

@@ -2,7 +2,14 @@ import React from "react";
 import { Button } from "@blueprintjs/core";
 import InputBox from "./InputBox";
 
-const SearchComponent = ({ query, setQuery, onClick, placeholder, error }) => {
+const SearchComponent = ({
+  query,
+  setQuery,
+  onClick,
+  placeholder,
+  error,
+  funtion,
+}) => {
   return (
     <div className="flex flex-col justify-between gap-2 my-4 mx-2 ">
       <div className="flex flex-row justify-between gap-2 mx-1">
@@ -11,6 +18,7 @@ const SearchComponent = ({ query, setQuery, onClick, placeholder, error }) => {
           label={placeholder || "Search"}
           onChange={(e) => setQuery(e.target.value)}
           value={query}
+          funtion={funtion}
         />
         {onClick && (
           <Button

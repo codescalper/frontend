@@ -16,7 +16,7 @@ const getChainName = (chainId) => {
 
 export const assetsTrack = (item, assetType, collectionName) => {
   let assetsData = {
-    asset_id: item?.id,
+    asset_id: Number(item?.id),
   };
 
   if (item?.type === "props" || item?.type === "background") {
@@ -50,6 +50,14 @@ export const assetsTrack = (item, assetType, collectionName) => {
       ...assetsData,
       type: "community drop",
       ownerAddress: item?.referredFrom[0],
+    };
+  }
+
+  if (assetType === "meme") {
+    assetsData = {
+      ...assetsData,
+      type: "meme",
+      name: item?.name,
     };
   }
 

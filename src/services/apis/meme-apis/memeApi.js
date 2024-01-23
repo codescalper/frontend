@@ -14,20 +14,24 @@ const ipPassword = MEME_API_PASSWORD;
 
 export const apiGetAllMemes = async () => {
   const result = await axios.get(`${API}/get_memes`);
+
   return result?.data;
 };
 
 export const apiSearchMemes = async (ipQuery) => {
-  const formData = new URLSearchParams();
-
-  formData.append("username", ipUsername);
-  formData.append("password", ipPassword);
-  formData.append("query", ipQuery);
-
-  const result = await axios.post(`${API}/search_memes`, formData, {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+  const result = await axios.post(
+    `${API}/search_memes`,
+    {
+      username: ipUsername,
+      password: ipPassword,
+      query: ipQuery,
     },
-  });
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
   return result?.data;
 };
