@@ -3,7 +3,7 @@ import LogoutBtn from "../LogoutBtn";
 import { useAccount } from "wagmi";
 import { useUser } from "../../../../../../../hooks/user";
 import { addressCrop } from "../../../../../../../utils";
-import Coin from "../../assets/svgs/coin.svg";
+import Coin from "../../assets/svgs/Coin.svg";
 import BiCopy from "@meronex/icons/bi/BiCopy";
 import { NormieDP, NormieBadge, NormieHex } from "../../assets/svgs/Normie";
 import { PlebDP, PlebBadge, PlebHex } from "../../assets/svgs/Pleb";
