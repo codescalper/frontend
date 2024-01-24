@@ -3,7 +3,7 @@ import { NormieDP, NormieBadge, NormieHex } from "../../assets/svgs/Normie";
 import { PlebDP, PlebBadge, PlebHex } from "../../assets/svgs/Pleb";
 import { ChadDP, ChadBadge, ChadHex } from "../../assets/svgs/Chad";
 import { useUser } from "../../../../../../../hooks/user";
-import Coin from "../../assets/svgs/coin.svg";
+import Coin from "../../assets/svgs/Coin.svg";
 import iconReward from "../../assets/svgs/iconReward.svg";
 import iconCheck from "../../assets/svgs/iconCheck.svg";
 import iconLock from "../../assets/svgs/iconLock.svg";
