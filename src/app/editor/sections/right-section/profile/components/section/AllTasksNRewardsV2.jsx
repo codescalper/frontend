@@ -9,7 +9,7 @@ import { getAllTasks } from "../../../../../../../services/apis/BE-apis";
 import ProfilePanelHeaders from "../ProfilePanelHeaders";
 import BiWallet from "@meronex/icons/bi/BiWallet";
 import { useUser } from "../../../../../../../hooks/user";
-import Coin from "../../assets/svgs/coin.svg"
+import Coin from "../../assets/svgs/Coin.svg"
 
 const AllTasksNRewardsV2 = () => {
   const [selectedTab, setSelectedTab] = useState("tasks");

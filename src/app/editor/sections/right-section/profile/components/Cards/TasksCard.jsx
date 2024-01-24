@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import Coin from "../../assets/svgs/coin.svg";
+import Coin from "../../assets/svgs/Coin.svg";
 import { Context } from "../../../../../../../providers/context";
 import {
   Button,
