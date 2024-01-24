@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
 import LensLogo from "../../assets/svgs/LogoLens.svg";
-import chadText from "../../assets/svgs/Chad/ChadText.svg";
-import chadStar from "../../assets/svgs/Chad/ChadStar.svg";
-import Coin from "../../assets/pngs/coin.png";
+import Coin from "../../assets/svgs/Coin.svg";
 import { Context } from "../../../../../../../providers/context/ContextProvider";
 import { Button } from "@material-tailwind/react";
 
