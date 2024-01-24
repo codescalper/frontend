@@ -5,7 +5,6 @@ import {
   SolanaMint,
   ZoraMint,
   LensShareWrapper,
-  ProfilePanel,
 } from "../../right-section";
 import { Drawer } from "@blueprintjs/core";
 import { Context } from "../../../../../providers/context";
@@ -52,7 +51,6 @@ const ShareButton = () => {
             <div className="fixed inset-y-0 right-0 flex max-w-full top-2">
               <div className="w-screen max-w-sm mb-2">
                 {menu === "share" && <ShareSection />}
-                {/* {menu === "profile" && <ProfilePanel />} */}
                 {/* {menu === "allTasksnRewards" && <AllTasksNRewards/>} */}
                 {/* {menu === "lensmonetization" && <LensShare />} */}
                 {menu === "farcasterShare" && <FarcasterShareWrapper />}

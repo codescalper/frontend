@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { useAppAuth, useLocalStorage } from "../app";
 import { getUserProfile } from "../../services/apis/BE-apis";
@@ -7,6 +8,7 @@ import { useAccount } from "wagmi";
 
 const useUser = () => {
   const [profileImage, setProfileImage] = useState(null);
+  const [userLevel, setUserLevel] = useState("Normie");
   const { userId } = useLocalStorage();
   const { address } = useAccount();
   const { isAuthenticated } = useAppAuth();
@@ -19,12 +21,28 @@ const useUser = () => {
 
   const res = async () => {
     const data = await getProfileImage(address);
+    console.log(data);
     setProfileImage(data);
   };
 
+  const fnGetUserLevel = async () => {
+    if (data?.message?.points < 500) {
+      setUserLevel("Normie");
+    }
+    if (data?.message?.points >= 500) {
+      setUserLevel("Pleb");
+    } else if (data?.message?.points >= 1000) {
+      setUserLevel("Chad");
+    }
+  };
+  
   useEffect(() => {
     res();
   }, [address]);
+
+  useEffect(() => {
+    fnGetUserLevel();
+  }, [data]);
 
   return {
     username: data?.message?.username,
@@ -35,6 +53,7 @@ const useUser = () => {
     error,
     isError,
     isLoading,
+    userLevel,
   };
 };
 
