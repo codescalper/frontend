@@ -55,7 +55,11 @@ const CustomImageComponent = ({
 
   // Function to add image on the Canvas/Page
   const handleClickOrDrop = () => {
-    changeCanvasDimension && store.setSize(dimensions[0], dimensions[1]);
+    changeCanvasDimension &&
+      store.setSize(
+        dimensions[0] || item?.width,
+        dimensions[1] || item?.height
+      );
 
     var widthOnCanvas = 400;
     var heightOnCanvas = 400;

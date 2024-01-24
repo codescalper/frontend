@@ -97,7 +97,7 @@ export const MemePanel = () => {
                       // hasOptionBtn={null}
                       // onDelete={null}
                       // isLensCollect={null}
-                      // changeCanvasDimension={changeCanvasDimension}
+                      changeCanvasDimension={true}
                       // recipientWallet={item?.wallet}
                       // showAuthor={campaignName === "halloween" ? true : false}
                       // author={item?.author}
