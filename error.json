@@ -1,0 +1,40 @@
+{
+    "message": "Request failed with status code 500",
+    "name": "AxiosError",
+    "stack": "AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=8dc7b863:1189:12)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=8dc7b863:1417:7)",
+    "config": {
+        "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+        },
+        "adapter": [
+            "xhr",
+            "http"
+        ],
+        "transformRequest": [
+            null
+        ],
+        "transformResponse": [
+            null
+        ],
+        "timeout": 0,
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN",
+        "maxContentLength": -1,
+        "maxBodyLength": -1,
+        "env": {},
+        "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJldm1fYWRkcmVzcyI6IjB4N2Q4NTA0QzIzOUY5NTFkOTQ0RDIzQjdBZDliZURFRGM0ZDQ1MTJkOSIsInNvbGFuYV9hZGRyZXNzIjoiNHY2aFoxNVM3QzVESzlHeERkMVQ1aFpDS2ZNM0dxOEpkVWtRWmZjNWdHbXAiLCJ1c2VyX2lkIjo1OCwiZmlkIjoiMTI3ODQiLCJpYXQiOjE3MDcwNzMwMDUsImV4cCI6MTcwNzE1OTQwNX0.28w7udv51ZhFyUifeip4GLdiBxyS0o2MpWWXWW1EHNk",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "*"
+        },
+        "method": "post",
+        "url": "https://lenspost-development.up.railway.app/user/canvas/publish",
+        "data": "{\"canvasData\":{\"id\":20035,\"name\":\"Farcaster post\",\"content\":\"Remixed on @lenspost and directly sharing on warpcast as a Frame.\\n\\nhttps://frames-lenspost.vercel.app/frame/20035\"},\"canvasParams\":{\"zoraMintLink\":\"\",\"channelId\":\"frames\"},\"platform\":\"farcaster\"}"
+    },
+    "code": "ERR_BAD_RESPONSE",
+    "status": 500
+}
