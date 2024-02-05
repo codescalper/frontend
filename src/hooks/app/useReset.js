@@ -361,6 +361,8 @@ const useReset = () => {
       ...farcasterStates,
       isChannel: false,
       channel: "",
+
+      isFrame: false,
     });
   };
 
