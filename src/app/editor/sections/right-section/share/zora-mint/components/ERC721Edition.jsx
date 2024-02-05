@@ -986,7 +986,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     <>
       <ZoraDialog
         title=" Zora ERC721 Edition"
-        icon={zoraIcon}
+        icon={ZoraLogo}
         isError={isUploadError || isCreateSplitError || isError || isShareError}
         isLoading={isLoading}
         isCreatingSplit={isCreateSplitLoading}
