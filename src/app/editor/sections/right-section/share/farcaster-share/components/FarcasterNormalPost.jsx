@@ -207,7 +207,7 @@ const FarcasterNormalPost = () => {
         </div>
         <div className="w-4/5 opacity-75">
           {" "}
-          Share your post as Frame the Farcaster.{" "}
+          Share your post as Frame on Farcaster.{" "}
         </div>
       </div>
 
