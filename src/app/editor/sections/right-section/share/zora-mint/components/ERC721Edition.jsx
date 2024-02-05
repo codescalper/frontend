@@ -60,6 +60,7 @@ import {
   mintToXchain,
 } from "../../../../../../../services/apis/BE-apis";
 import { zoraURLErc721 } from "../utils/zoraURL";
+import { ZoraLogo } from "../../../../../../../assets";
 
 const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   const { address } = useAccount();
@@ -984,6 +985,8 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   return (
     <>
       <ZoraDialog
+        title=" Zora ERC721 Edition"
+        icon={zoraIcon}
         isError={isUploadError || isCreateSplitError || isError || isShareError}
         isLoading={isLoading}
         isCreatingSplit={isCreateSplitLoading}

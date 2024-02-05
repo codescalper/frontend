@@ -345,6 +345,8 @@ const ContextProvider = ({ children }) => {
 
     isChannel: false,
     channel: "",
+
+    isFrame: false,
   });
 
   // for calendar

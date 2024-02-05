@@ -10,7 +10,6 @@ import {
   Spinner,
   Checkbox,
 } from "@material-tailwind/react";
-import { ZoraLogo } from "../../../../../../../assets";
 import { useReset } from "../../../../../../../hooks/app";
 import { useNetwork } from "wagmi";
 import BiCopy from "@meronex/icons/bi/BiCopy";
@@ -18,6 +17,8 @@ import { toast } from "react-toastify";
 import { zoraURLErc721 } from "../utils";
 
 const ZoraDialog = ({
+  title,
+  icon,
   isError,
   isLoading,
   isPending,
@@ -66,9 +67,9 @@ const ZoraDialog = ({
         className="outline-none"
       >
         <DialogHeader className="gap-2 border-b border-gray-300">
-          <img src={ZoraLogo} alt="zora logo" className="h-10 w-10" />
+          <img src={icon} alt="zora logo" className="h-10 w-10" />
           <Typography variant="h5" color="blue-gray">
-            Zora ERC721 Edition
+            {title}
           </Typography>
         </DialogHeader>
         <DialogBody>
