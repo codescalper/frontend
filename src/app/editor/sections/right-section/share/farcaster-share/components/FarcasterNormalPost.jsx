@@ -31,7 +31,7 @@ const FarcasterNormalPost = () => {
   const [isShareSuccess, setIsShareSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [farTxHash, setFarTxHash] = useState("");
-  
+
   // frame POST states
   const [isPostingFrame, setIsPostingFrame] = useState(false);
   const [isPostingFrameError, setIsPostingFrameError] = useState(false);
@@ -65,7 +65,7 @@ const FarcasterNormalPost = () => {
       canvasId: contextCanvasIdRef.current,
       metadata: {
         name: postName,
-        decription: postDescription,
+        description: postDescription,
       },
       isLike: farcasterStates.frameData?.isLike,
       isRecast: farcasterStates.frameData?.isRecast,
