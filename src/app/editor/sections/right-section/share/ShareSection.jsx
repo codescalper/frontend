@@ -10,12 +10,15 @@ import { Textarea, Typography } from "@material-tailwind/react";
 import logoSolana from "../../../../../assets/logos/logoSolana.png";
 import logoZora from "../../../../../assets/logos/logoZora.png";
 import logoFarcaster from "../../../../../assets/logos/logoFarcaster.jpg";
+import { InputBox } from "../../../common";
 
 const ShareSection = () => {
   const { address, isConnected } = useAccount();
   const { chains, chain } = useNetwork();
   const {
     setMenu,
+    postName,
+    setPostName,
     postDescription,
     setPostDescription,
     stFormattedDate,
@@ -124,12 +127,17 @@ const ShareSection = () => {
         <div className="relative mt-0 px-4 pt-1 pb-1 sm:px-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between"></div>
+            <InputBox
+              label={"Title"}
+              autoFocus={true}
+              onChange={(e) => setPostName(e.target.value)}
+              value={postName}
+            />
             <div className="space-x-2">
               <Textarea
                 label="Description"
                 onChange={(e) => setPostDescription(e.target.value)}
                 value={postDescription}
-                autoFocus={true}
                 // placeholder="Write a description..."
                 // className="border border-b-4 w-full h-40 mb-2 text-lg outline-none p-2 ring-0 focus:ring-2 rounded-lg"
               />

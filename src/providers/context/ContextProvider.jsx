@@ -12,6 +12,7 @@ const ContextProvider = ({ children }) => {
   const [text, setText] = useState("");
   const contextCanvasIdRef = useRef(null);
   const canvasBase64Ref = useRef([]);
+  const [postName, setPostName] = useState("");
   const [postDescription, setPostDescription] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -346,7 +347,12 @@ const ContextProvider = ({ children }) => {
     isChannel: false,
     channel: "",
 
-    isFrame: false,
+    frameData: {
+      isFrame: false,
+      isLike: false,
+      isRecast: false,
+      isFollow: false,
+    },
   });
 
   // for calendar
@@ -434,7 +440,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", solanaEnabled.onChainSplitRecipients);
+  // console.log("ContextProvider", farcasterStates?.frameData);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (
@@ -477,6 +483,9 @@ const ContextProvider = ({ children }) => {
         // for lens monetization
         enabled,
         setEnabled,
+        postName,
+        setPostName,
+
         postDescription,
         setPostDescription,
         open,

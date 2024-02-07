@@ -18,6 +18,7 @@ const useReset = () => {
 
     // for lens monetization
     setEnabled,
+    setPostName,
     setPostDescription,
     setOpen,
 
@@ -153,6 +154,7 @@ const useReset = () => {
 
       whoCanCollect: false,
     });
+    setPostName("");
     setPostDescription("");
     setOpen(false);
     setStFormattedDate("");
@@ -362,7 +364,12 @@ const useReset = () => {
       isChannel: false,
       channel: "",
 
-      isFrame: false,
+      frameData: {
+        isFrame: false,
+        isLike: false,
+        isRecast: false,
+        isFollow: false,
+      },
     });
   };
 
