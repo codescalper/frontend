@@ -298,7 +298,7 @@ const LenspostTemplates = () => {
             hasSeeMore
             seeMoreFn={() => store.openSidePanel("Backgrounds2")}
           />
-          <CompCarousel type="background" author={null} campaign="christmas" />
+          <CompCarousel type="background" author="UNLONELY" campaign="LOVE on LEVERAGE" />
 
           {/*  Featured Panels : Stickers */}
           <SecNameHeading
@@ -309,8 +309,8 @@ const LenspostTemplates = () => {
           />
           <CustomHorizontalScroller
             type="props"
-            author="degen"
-            campaign="degen"
+            author="UNLONELY"
+            campaign="LOVE on LEVERAGE"
           />
 
           <div className="ml-2 mt-4 mb-1 "> Lenspost Templates </div>
