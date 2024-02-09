@@ -1,8 +1,7 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useAppAuth, useLocalStorage } from "../app";
 import { getUserProfile } from "../../services/apis/BE-apis";
-import { getProfileImage } from "../../services";
+import { getENSDomain, getProfileImage } from "../../services";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -18,6 +17,9 @@ const useUser = () => {
     enabled: isAuthenticated ? true : false,
     refetchOnMount: false,
   });
+  const [ensDomain, setENSDomain] = useState(
+    getENSDomain(address) ? getENSDomain(address) : null
+  );
 
   const res = async () => {
     const data = await getProfileImage(address);
@@ -35,7 +37,7 @@ const useUser = () => {
       setUserLevel("Chad");
     }
   };
-  
+
   useEffect(() => {
     res();
   }, [address]);
@@ -49,11 +51,13 @@ const useUser = () => {
     email: data?.message?.mail,
     lensHandle: data?.message?.lens_handle,
     points: data?.message?.points,
+    // points: 100,
     profileImage: profileImage,
     error,
     isError,
     isLoading,
     userLevel,
+    ensDomain,
   };
 };
 

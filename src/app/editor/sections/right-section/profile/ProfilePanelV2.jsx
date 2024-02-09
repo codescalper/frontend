@@ -55,6 +55,7 @@ const ProfilePanelV2 = () => {
             <UserCardV2 username={username} />
 
             <div className="m-4 font-semibold ">TASKS</div>
+            {/* Progress Bar  */}
             {isLoading ? <LoadingAnimatedComponent /> : null}
             {taskList && taskList.length > 0
               ? taskList.map((task) => (

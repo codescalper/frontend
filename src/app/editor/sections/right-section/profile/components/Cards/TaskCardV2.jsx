@@ -23,7 +23,7 @@ const TaskCardV2 = ({
       setStColor("bg-green-50");
     }
     if (!isCompleted) {
-      setStColor("bg-gray-200");
+      setStColor("bg-blue-50");
     }
     if (isReward) {
       setStColor("bg-yellow-100");

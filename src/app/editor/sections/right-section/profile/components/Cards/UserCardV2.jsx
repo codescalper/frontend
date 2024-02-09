@@ -14,7 +14,7 @@ import { getInviteCode } from "../../../../../../../services/apis/BE-apis";
 
 const UserCardV2 = ({ username }) => {
   const { address } = useAccount();
-  const { points, profileImage, userLevel } = useUser();
+  const { points, profileImage, userLevel, lensHandle } = useUser();
   const [inviteCodesArr, setInviteCodesArr] = useState([]);
 
   const { data, isLoading } = useQuery({
@@ -138,7 +138,7 @@ const UserCardV2 = ({ username }) => {
             </div>
           </div>
           <div className="flex flex-col mt-2">
-            <div className="">@{username ? username : "lenspostuser"}</div>
+            <div className="">@{lensHandle ? lensHandle : "lenspostuser"}</div>
             <div
               onClick={() => handleCopy(address)}
               className="flex align-middle mt-2 bg-blue-gray-50 p-1 pl-2 pr-2 rounded-md cursor-pointer w-fit"
