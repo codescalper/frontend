@@ -287,7 +287,6 @@ const App = () => {
   }, []);
 
   // -- Testing Share Canvas Start --
-  // Test Push 
 
   // useEffect(() => {
   //   const slugId = 20174;
