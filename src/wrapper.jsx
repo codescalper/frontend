@@ -70,6 +70,7 @@ export const Wrapper = () => {
                   }
                 />
                 <Route path="/ifUserEligible" element={<AuthComponent />} />
+                <Route path="/design/:slugId" element={<App />} />
               </Routes>
               {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
             </BrowserRouter>

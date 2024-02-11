@@ -16,6 +16,7 @@ import { Context } from "../../../../../../../providers/context";
 import { toast } from "react-toastify";
 import {
   changeCanvasVisibility,
+  generateShareSlug,
   tokengateCanvasById,
   updateCanvas,
 } from "../../../../../../../services";
@@ -101,6 +102,17 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
     }
   };
 
+  const fnGenerateSlug = async () => {
+    console.log("fnGenerateSlug");
+
+    console.log("canvasId", modal?.canvasId);
+    const slugRes = await generateShareSlug(modal?.canvasId);
+
+    console.log("slugRes", slugRes);
+
+    // toast.success("Link copied to clipboard");
+    // navigator.clipboard.writeText(slugRes?.data?.slug);
+  }
   return (
     <>
       <Dialog
@@ -214,6 +226,15 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
               {/* {switchState ? "Tokengate and Make Public" : " Make Public"} */}
               {modal?.isPublic ? "Make Private" : "Make Public"}
               {loading && <Spinner color="black" className="h-5" />}
+            </Button>
+          </div>
+          <div className="ml-2">
+            <Button
+              variant="outline"
+              color=""
+              onClick={fnGenerateSlug}
+            >
+              Copy Link
             </Button>
           </div>
         </DialogFooter>

@@ -612,3 +612,16 @@ export const claimReward = async (data) => {
 }
 
 
+export const generateShareSlug = async (data) => {
+  const result = await api.post(`${API}/user/canvas/generate-share-slug?canvasId=${data}`);
+  return {
+    data: result?.data
+  }
+}
+
+export const getJSONDataForSlug = async (data) => {
+  const result = await api.get(`${API}/user/canvas/get-shared-canvas?slug=${data}`);
+  return {
+    data: result?.data
+  }
+} 

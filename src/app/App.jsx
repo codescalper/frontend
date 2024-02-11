@@ -4,6 +4,7 @@ import {
   refreshNFT,
   solanaAuth,
   evmAuth,
+  getJSONDataForSlug,
 } from "../services/apis/BE-apis/backendApi";
 import {
   getFromLocalStorage,
@@ -12,7 +13,12 @@ import {
 } from "../utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
 import { Context } from "../providers/context/ContextProvider";
-import { useNavigate } from "react-router-dom";
+import {
+  redirect,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { useTour } from "@reactour/tour";
 
 import Editor from "./editor/Editor";
@@ -32,6 +38,7 @@ import { ExplorerDialog } from "./editor/sections/right-section/share/components
 import { ENVIRONMENT } from "../services";
 import { SolanaWalletErrorContext } from "../providers/solana/SolanaWalletProvider";
 import { useLogout } from "../hooks/app";
+import { useStore } from "../hooks/polotno";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();
@@ -45,6 +52,7 @@ const App = () => {
     dialogOpen,
     explorerLink,
     handleOpen,
+    contextCanvasIdRef,
   } = useContext(Context);
   const [sign, setSign] = useState("");
   const { address, isConnected, isDisconnected } = useAccount();
@@ -277,6 +285,59 @@ const App = () => {
       }
     }
   }, []);
+
+  // -- Testing Share Canvas Start --
+
+  // useEffect(() => {
+  //   const slugId = 20174;
+  //   if (isUserEligible()) {
+  //     navigate(`/design/${slugId}?share=true`);
+  //     // navigate(`/`);
+  //     contextCanvasIdRef.current = slugId;
+  //     redirect(`/design/${slugId}`);
+  //   }
+  // }, []);
+
+  const { slugId } = useParams();
+  const location = useLocation();
+  // const { store } = useStore();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const share = queryParams.get("share");
+
+    if (isUserEligible()) {
+      if (share === "true" && slugId) {
+        // Redirect to '/design/:slugId' without the 'share' query parameter
+        navigate(`/design/${slugId}`, { replace: true });
+      }
+    }
+
+    if (slugId) {
+      // contextCanvasIdRef.current = slugId;
+      fnLoadDataOnCanvas();
+    }
+  }, [location, navigate, slugId]);
+
+  const fnLoadDataOnCanvas = async () => {
+    const store = useStore();
+    const dataForSlug = await getJSONDataForSlug(slugId);
+    console.log("dataForSlug", dataForSlug?.data);
+
+    const ogImageLink = dataForSlug?.data?.image;
+    store.loadJSON(dataForSlug?.data?.data);
+
+    let metaTag = document.querySelector('meta[property="og:image"]');
+    if (!metaTag) {
+      // If the meta tag doesn't exist, create it
+      metaTag = document.createElement("meta");
+      metaTag.setAttribute("property", "og:image");
+      document.getElementsByTagName("head")[0].appendChild(metaTag);
+    }
+    // Set or update the content of the meta tag
+    metaTag.setAttribute("content", ogImageLink);
+  };
+  // -- Testing Share Canvas End --
 
   useEffect(() => {
     if (isError && error?.name === "UserRejectedRequestError") {
