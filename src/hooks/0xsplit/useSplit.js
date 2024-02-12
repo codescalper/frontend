@@ -6,11 +6,17 @@ const useSplit = () => {
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
 
-  const splitsClient = new SplitsClient({
-    chainId,
-    walletClient,
-    publicClient,
-  });
+  let splitsClient;
+
+  try {
+    splitsClient = new SplitsClient({
+      chainId,
+      walletClient,
+      publicClient,
+    });
+  } catch (error) {
+    console.error("Error in useSplit", error);
+  }
 
   return {
     splitsClient,

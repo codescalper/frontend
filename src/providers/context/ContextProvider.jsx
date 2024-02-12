@@ -352,6 +352,12 @@ const ContextProvider = ({ children }) => {
       isLike: false,
       isRecast: false,
       isFollow: false,
+
+      allowedMints: null,
+      allowedMintsIsError: false,
+      allowedMintsError: "",
+
+      isTopup: false,
     },
   });
 
