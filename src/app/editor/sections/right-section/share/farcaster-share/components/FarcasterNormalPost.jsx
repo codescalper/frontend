@@ -103,7 +103,7 @@ const FarcasterNormalPost = () => {
       canvasId: contextCanvasIdRef.current,
       owner: address,
       isTopUp: farcasterStates.frameData?.isTopup,
-      allowedMints: farcasterStates.frameData?.allowedMints,
+      allowedMints: farcasterStates.frameData?.allowedMints || 50,
       metadata: {
         name: postName,
         description: postDescription,
