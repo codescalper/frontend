@@ -23,9 +23,11 @@ import {
 } from "../../../../../../../services/apis/BE-apis";
 import { InputErrorMsg, NumberInputBox } from "../../../../../common";
 import Topup from "./Topup";
+import { useAccount } from "wagmi";
 
 const FarcasterNormalPost = () => {
   const { resetState } = useReset();
+  const { address } = useAccount();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
 
   // farcaster states
@@ -99,6 +101,9 @@ const FarcasterNormalPost = () => {
     setIsPostingFrame(true);
     postFrameData({
       canvasId: contextCanvasIdRef.current,
+      owner: address,
+      isTopUp: farcasterStates.frameData?.isTopup,
+      allowedMints: farcasterStates.frameData?.allowedMints,
       metadata: {
         name: postName,
         description: postDescription,
