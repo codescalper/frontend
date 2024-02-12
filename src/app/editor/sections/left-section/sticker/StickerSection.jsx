@@ -163,6 +163,11 @@ export const StickerPanel = () => {
       campaign: "degen",
     },
     {
+      name: "Wgmis",
+      author: "wgmis",
+      campaign: "wgmis",
+    },
+    {
       name: "Simp",
       author: "$simp",
       campaign: null,

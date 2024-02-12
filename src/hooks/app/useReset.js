@@ -369,6 +369,12 @@ const useReset = () => {
         isLike: false,
         isRecast: false,
         isFollow: false,
+
+        allowedMints: null,
+        allowedMintsIsError: false,
+        allowedMintsError: "",
+
+        isTopup: false,
       },
     });
   };

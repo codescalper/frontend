@@ -21,6 +21,8 @@ import {
   getFrame,
   postFrame,
 } from "../../../../../../../services/apis/BE-apis";
+import { InputErrorMsg, NumberInputBox } from "../../../../../common";
+import Topup from "./Topup";
 
 const FarcasterNormalPost = () => {
   const { resetState } = useReset();
@@ -58,6 +60,40 @@ const FarcasterNormalPost = () => {
     mutationKey: "shareOnFarcaster",
     mutationFn: shareOnSocials,
   });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "allowedMints") {
+      if (!value || value <= 0) {
+        setFarcasterStates({
+          ...farcasterStates,
+          frameData: {
+            ...farcasterStates.frameData,
+            allowedMintsIsError: true,
+            allowedMintsError: "Please enter number of mints",
+          },
+        });
+      } else {
+        setFarcasterStates({
+          ...farcasterStates,
+          frameData: {
+            ...farcasterStates.frameData,
+            allowedMintsIsError: false,
+            allowedMintsError: "",
+          },
+        });
+      }
+    }
+
+    setFarcasterStates({
+      ...farcasterStates,
+      frameData: {
+        ...farcasterStates.frameData,
+        allowedMints: value,
+      },
+    });
+  };
 
   const postFrameDataFn = async () => {
     setIsPostingFrame(true);
@@ -159,6 +195,25 @@ const FarcasterNormalPost = () => {
     // check if description is provided
     if (!postDescription) {
       toast.error("Please provide a description");
+      return;
+    }
+
+    // check if allowed mint is provided
+    if (
+      farcasterStates.frameData?.isFrame &&
+      (farcasterStates.frameData?.allowedMintsIsError ||
+        farcasterStates.frameData?.allowedMints === null)
+    ) {
+      toast.error("Please enter number of mints");
+      return;
+    }
+
+    if (
+      farcasterStates.frameData?.isFrame &&
+      farcasterStates.frameData?.allowedMints > 50 &&
+      !farcasterStates.frameData?.isTopup
+    ) {
+      toast.error("Please topup with Base ETH to mint more than 50 frames");
       return;
     }
 
@@ -343,6 +398,33 @@ const FarcasterNormalPost = () => {
               } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />{" "}
           </Switch>
+        </div>
+
+        <div className="my-2">
+          <p className="text-sm">
+            {" "}
+            First 50 mints are free. Topup with Base ETH if you want to drop
+            more that 50 mints{" "}
+          </p>
+          <div className="flex flex-col w-full py-2">
+            <NumberInputBox
+              min={1}
+              step={1}
+              label="Allowed Mints"
+              name="allowedMints"
+              onChange={(e) => handleChange(e)}
+              onFocus={(e) => handleChange(e)}
+              value={farcasterStates.frameData.allowedMints}
+            />
+          </div>
+
+          {farcasterStates.frameData?.allowedMintsIsError && (
+            <InputErrorMsg
+              message={farcasterStates.frameData?.allowedMintsError}
+            />
+          )}
+
+          {farcasterStates.frameData?.allowedMints > 50 && <Topup />}
         </div>
       </div>
 
