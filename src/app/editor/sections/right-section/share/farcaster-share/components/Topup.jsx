@@ -37,24 +37,22 @@ const Topup = () => {
     cacheTime: 2_000,
   });
 
-//   console.log("feeData", feeData);
+  //   console.log("feeData", feeData);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfMints = Number(farcasterStates.frameData?.allowedMints) - 50;
 
-//   console.log("numberOfMints", numberOfMints);
+  //   console.log("numberOfMints", numberOfMints);
 
   const payForMints = (Number(feeData?.formatted?.gasPrice) * numberOfMints)
     .toFixed(18)
     .toString();
 
-//   console.log("payForMints", payForMints);
-
-
+  //   console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
     to: "0x1376c8D47585e3F0B004e5600ed2975648F71d8a", // sponsor address
-    value: parseEther(payForMints),
+    value: parseEther(payForMints) || parseEther("0.000273998861727664"),
     chainId: base.id,
   });
 
