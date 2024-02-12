@@ -37,18 +37,18 @@ const Topup = () => {
     cacheTime: 2_000,
   });
 
-  //   console.log("feeData", feeData);
+//   console.log("feeData", feeData);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfMints = Number(farcasterStates.frameData?.allowedMints) - 50;
 
-  //   console.log("numberOfMints", numberOfMints);
+//   console.log("numberOfMints", numberOfMints);
 
-  const payForMints = (Number("0.000000001500000254") * numberOfMints)
+  const payForMints = (Number(feeData?.formatted?.gasPrice) * numberOfMints)
     .toFixed(18)
     .toString();
 
-  //   console.log("payForMints", payForMints);
+//   console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
     to: "0x1376c8D47585e3F0B004e5600ed2975648F71d8a", // sponsor address
@@ -88,6 +88,49 @@ const Topup = () => {
       toast.error(txError?.message.split("\n")[0]);
     }
   }, [isError, isTxError]);
+
+  if (chain.id !== base.id) {
+    return (
+      <Card>
+        <List>
+          <ListItem
+            className="flex justify-between items-center gap-2"
+            onClick={() => switchNetwork(base.id)}
+          >
+            <Typography variant="h6" color="blue-gray">
+              Please switch to {base.name} network
+            </Typography>
+          </ListItem>
+        </List>
+      </Card>
+    );
+  }
+
+  if (isFeeLoading) {
+    return (
+      <Card>
+        <List>
+          <ListItem className="flex justify-between items-center gap-2">
+            <Spinner color="green" />
+          </ListItem>
+        </List>
+      </Card>
+    );
+  }
+
+  if (isFeeError) {
+    return (
+      <Card>
+        <List>
+          <ListItem className="flex justify-between items-center gap-2">
+            <Typography variant="h6" color="blue-gray">
+              Error fetching gas price
+            </Typography>
+          </ListItem>
+        </List>
+      </Card>
+    );
+  }
 
   return (
     <Card>
