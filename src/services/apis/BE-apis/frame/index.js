@@ -7,6 +7,9 @@ export const getFrame = async (frameId) => {
 
 export const postFrame = async ({
   canvasId,
+  owner,
+  isTopUp,
+  allowedMints,
   metadata,
   isLike,
   isRecast,
@@ -14,6 +17,9 @@ export const postFrame = async ({
 }) => {
   const res = await api.post(`${API}/util//create-frame-data`, {
     canvasId,
+    owner,
+    isTopUp,
+    allowedMints,
     metadata,
     isLike,
     isRecast,

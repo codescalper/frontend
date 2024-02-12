@@ -44,7 +44,7 @@ const Topup = () => {
 
   //   console.log("numberOfMints", numberOfMints);
 
-  const payForMints = (Number(feeData?.formatted?.gasPrice) * numberOfMints)
+  const payForMints = (Number("0.000000001500000254") * numberOfMints)
     .toFixed(18)
     .toString();
 
@@ -52,7 +52,7 @@ const Topup = () => {
 
   const { config } = usePrepareSendTransaction({
     to: "0x1376c8D47585e3F0B004e5600ed2975648F71d8a", // sponsor address
-    value: parseEther(payForMints) || parseEther("0.000273998861727664"),
+    value: parseEther(payForMints),
     chainId: base.id,
   });
 
