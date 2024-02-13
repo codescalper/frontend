@@ -67,7 +67,7 @@ const FarcasterNormalPost = () => {
     const { name, value } = e.target;
 
     if (name === "allowedMints") {
-      if (!value || value <= 0) {
+      if (!value || value === 0) {
         setFarcasterStates({
           ...farcasterStates,
           frameData: {
@@ -103,7 +103,7 @@ const FarcasterNormalPost = () => {
       canvasId: contextCanvasIdRef.current,
       owner: address,
       isTopUp: farcasterStates.frameData?.isTopup,
-      allowedMints: farcasterStates.frameData?.allowedMints || 50,
+      allowedMints: parseInt(farcasterStates.frameData?.allowedMints),
       metadata: {
         name: postName,
         description: postDescription,
@@ -204,23 +204,23 @@ const FarcasterNormalPost = () => {
     }
 
     // check if allowed mint is provided
-    // if (
-    //   farcasterStates.frameData?.isFrame &&
-    //   (farcasterStates.frameData?.allowedMintsIsError ||
-    //     farcasterStates.frameData?.allowedMints === null)
-    // ) {
-    //   toast.error("Please enter number of mints");
-    //   return;
-    // }
+    if (
+      farcasterStates.frameData?.isFrame &&
+      (farcasterStates.frameData?.allowedMintsIsError ||
+        farcasterStates.frameData?.allowedMints === null)
+    ) {
+      toast.error("Please enter number of mints");
+      return;
+    }
 
-    // if (
-    //   farcasterStates.frameData?.isFrame &&
-    //   farcasterStates.frameData?.allowedMints > 50 &&
-    //   !farcasterStates.frameData?.isTopup
-    // ) {
-    //   toast.error("Please topup with Base ETH to mint more than 50 frames");
-    //   return;
-    // }
+    if (
+      farcasterStates.frameData?.isFrame &&
+      farcasterStates.frameData?.allowedMints > 50 &&
+      !farcasterStates.frameData?.isTopup
+    ) {
+      toast.error("Please topup with Base ETH to mint more than 50 frames");
+      return;
+    }
 
     // upload to IPFS
     postFrameDataFn();
@@ -405,7 +405,7 @@ const FarcasterNormalPost = () => {
           </Switch>
         </div>
 
-        {/* <div className="my-2">
+        <div className="my-2">
           <p className="text-sm">
             {" "}
             First 50 mints are free. Topup with Base ETH if you want to drop
@@ -430,7 +430,7 @@ const FarcasterNormalPost = () => {
           )}
 
           {farcasterStates.frameData?.allowedMints > 50 && <Topup />}
-        </div> */}
+        </div>
       </div>
 
       <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none">

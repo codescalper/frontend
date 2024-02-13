@@ -1,13 +1,18 @@
 import React, { useContext, useEffect } from "react";
 import { Context } from "../../../../../../../providers/context";
 import {
+  Button,
   Card,
   List,
   ListItem,
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import { useFeeData, useNetwork, useSwitchNetwork } from "wagmi";
+import {
+  useFeeData,
+  useNetwork,
+  useSwitchNetwork,
+} from "wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import {
   useSendTransaction,
@@ -37,18 +42,21 @@ const Topup = () => {
     cacheTime: 2_000,
   });
 
-//   console.log("feeData", feeData);
+  const freeMints = 50;
+
+//   console.log("feeData", feeData.formatted);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
-  const numberOfMints = Number(farcasterStates.frameData?.allowedMints) - 50;
+  const numberOfMints =
+    Number(farcasterStates.frameData?.allowedMints) - freeMints;
 
-//   console.log("numberOfMints", numberOfMints);
+  //   console.log("numberOfMints", numberOfMints);
 
-  const payForMints = (Number(feeData?.formatted?.gasPrice) * numberOfMints)
+  const payForMints = (Number("0.000067513023052397") * numberOfMints)
     .toFixed(18)
     .toString();
 
-//   console.log("payForMints", payForMints);
+  //   console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
     to: "0x1376c8D47585e3F0B004e5600ed2975648F71d8a", // sponsor address
@@ -135,25 +143,42 @@ const Topup = () => {
   return (
     <Card>
       <List>
-        <ListItem
-          className="flex-col items-end gap-2"
-          onClick={() => sendTransaction?.()}
-        >
+        <ListItem className="flex-col items-end gap-2">
           <Typography variant="h6" color="blue-gray">
             {payForMints} Base ETH
           </Typography>
 
-          <Typography variant="h6" color="blue-gray">
-            {isTxSuccess
-              ? "Paid ✅"
-              : isTxError || isError
-              ? "Failed ❌"
-              : isLoading
-              ? "Conform transaction..."
-              : isTxLoading
-              ? "Confirming..."
-              : "Pay 💵"}
-          </Typography>
+          <div className="w-full flex justify-between items-center">
+            {isTxLoading || isLoading ? (
+              <div className="flex justify-start gap-2">
+                <Typography variant="h6" color="blue-gray">
+                  {isLoading
+                    ? "Confirm transaction"
+                    : isTxLoading
+                    ? "Confirming"
+                    : ""}
+                </Typography>
+                <Spinner color="green" />
+              </div>
+            ) : (
+              <div></div>
+            )}
+
+            {isTxSuccess ? (
+              <Button color="green" size="sm" className="flex justify-end">
+                Paid
+              </Button>
+            ) : (
+              <Button
+                onClick={() => sendTransaction?.()}
+                color="green"
+                size="sm"
+                className="flex justify-end"
+              >
+                Pay
+              </Button>
+            )}
+          </div>
         </ListItem>
       </List>
     </Card>
