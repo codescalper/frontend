@@ -8,14 +8,18 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import { useFeeData, useNetwork, useSwitchNetwork } from "wagmi";
+import {
+  useFeeData,
+  useNetwork,
+  useSwitchNetwork,
+} from "wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import {
   useSendTransaction,
   usePrepareSendTransaction,
   useWaitForTransaction,
 } from "wagmi";
-import { parseEther } from "viem"; 
+import { parseEther } from "viem";
 import { toast } from "react-toastify";
 
 const Topup = () => {
@@ -33,17 +37,18 @@ const Topup = () => {
     isError: isFeeError,
     isLoading: isFeeLoading,
   } = useFeeData({
-    chainId: baseSepolia.id,
+    chainId: base.id,
     formatUnits: "ether",
     cacheTime: 2_000,
   });
 
   const freeMints = 50;
 
-  //   console.log("feeData", feeData);
+//   console.log("feeData", feeData.formatted);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
-  const numberOfMints = Number(farcasterStates.frameData?.allowedMints) - freeMints;
+  const numberOfMints =
+    Number(farcasterStates.frameData?.allowedMints) - freeMints;
 
   //   console.log("numberOfMints", numberOfMints);
 
@@ -56,7 +61,7 @@ const Topup = () => {
   const { config } = usePrepareSendTransaction({
     to: "0x1376c8D47585e3F0B004e5600ed2975648F71d8a", // sponsor address
     value: parseEther(payForMints),
-    chainId: baseSepolia.id,
+    chainId: base.id,
   });
 
   const { data, isLoading, isSuccess, isError, error, sendTransaction } =
@@ -92,16 +97,16 @@ const Topup = () => {
     }
   }, [isError, isTxError]);
 
-  if (chain.id !== baseSepolia.id) {
+  if (chain.id !== base.id) {
     return (
       <Card>
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(baseSepolia.id)}
+            onClick={() => switchNetwork(base.id)}
           >
             <Typography variant="h6" color="blue-gray">
-              Please switch to {baseSepolia.name} network
+              Please switch to {base.name} network
             </Typography>
           </ListItem>
         </List>

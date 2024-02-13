@@ -67,7 +67,7 @@ const FarcasterNormalPost = () => {
     const { name, value } = e.target;
 
     if (name === "allowedMints") {
-      if (!value || value <= 0) {
+      if (!value || value === 0) {
         setFarcasterStates({
           ...farcasterStates,
           frameData: {
