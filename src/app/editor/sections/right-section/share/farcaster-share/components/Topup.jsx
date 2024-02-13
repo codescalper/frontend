@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Context } from "../../../../../../../providers/context";
 import {
+  Button,
   Card,
   List,
   ListItem,
@@ -14,7 +15,7 @@ import {
   usePrepareSendTransaction,
   useWaitForTransaction,
 } from "wagmi";
-import { parseEther } from "viem";
+import { parseEther } from "viem"; 
 import { toast } from "react-toastify";
 
 const Topup = () => {
@@ -32,28 +33,30 @@ const Topup = () => {
     isError: isFeeError,
     isLoading: isFeeLoading,
   } = useFeeData({
-    chainId: base.id,
+    chainId: baseSepolia.id,
     formatUnits: "ether",
     cacheTime: 2_000,
   });
 
-//   console.log("feeData", feeData);
+  const freeMints = 50;
+
+  //   console.log("feeData", feeData);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
-  const numberOfMints = Number(farcasterStates.frameData?.allowedMints) - 50;
+  const numberOfMints = Number(farcasterStates.frameData?.allowedMints) - freeMints;
 
-//   console.log("numberOfMints", numberOfMints);
+  //   console.log("numberOfMints", numberOfMints);
 
-  const payForMints = (Number(feeData?.formatted?.gasPrice) * numberOfMints)
+  const payForMints = (Number("0.000067513023052397") * numberOfMints)
     .toFixed(18)
     .toString();
 
-//   console.log("payForMints", payForMints);
+  //   console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
     to: "0x1376c8D47585e3F0B004e5600ed2975648F71d8a", // sponsor address
     value: parseEther(payForMints),
-    chainId: base.id,
+    chainId: baseSepolia.id,
   });
 
   const { data, isLoading, isSuccess, isError, error, sendTransaction } =
@@ -89,16 +92,16 @@ const Topup = () => {
     }
   }, [isError, isTxError]);
 
-  if (chain.id !== base.id) {
+  if (chain.id !== baseSepolia.id) {
     return (
       <Card>
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(base.id)}
+            onClick={() => switchNetwork(baseSepolia.id)}
           >
             <Typography variant="h6" color="blue-gray">
-              Please switch to {base.name} network
+              Please switch to {baseSepolia.name} network
             </Typography>
           </ListItem>
         </List>
@@ -135,25 +138,42 @@ const Topup = () => {
   return (
     <Card>
       <List>
-        <ListItem
-          className="flex-col items-end gap-2"
-          onClick={() => sendTransaction?.()}
-        >
+        <ListItem className="flex-col items-end gap-2">
           <Typography variant="h6" color="blue-gray">
             {payForMints} Base ETH
           </Typography>
 
-          <Typography variant="h6" color="blue-gray">
-            {isTxSuccess
-              ? "Paid ✅"
-              : isTxError || isError
-              ? "Failed ❌"
-              : isLoading
-              ? "Conform transaction..."
-              : isTxLoading
-              ? "Confirming..."
-              : "Pay 💵"}
-          </Typography>
+          <div className="w-full flex justify-between items-center">
+            {isTxLoading || isLoading ? (
+              <div className="flex justify-start gap-2">
+                <Typography variant="h6" color="blue-gray">
+                  {isLoading
+                    ? "Confirm transaction"
+                    : isTxLoading
+                    ? "Confirming"
+                    : ""}
+                </Typography>
+                <Spinner color="green" />
+              </div>
+            ) : (
+              <div></div>
+            )}
+
+            {isTxSuccess ? (
+              <Button color="green" size="sm" className="flex justify-end">
+                Paid
+              </Button>
+            ) : (
+              <Button
+                onClick={() => sendTransaction?.()}
+                color="green"
+                size="sm"
+                className="flex justify-end"
+              >
+                Pay
+              </Button>
+            )}
+          </div>
         </ListItem>
       </List>
     </Card>
