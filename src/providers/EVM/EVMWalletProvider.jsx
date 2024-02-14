@@ -38,7 +38,7 @@ import { publicActions } from "viem";
 
 const { chains, publicClient } = configureChains(
   ENVIRONMENT === "production"
-    ? [polygon, mainnet, base, zora, optimism, baseSepolia]
+    ? [polygon, mainnet, base, zora, optimism]
     : [polygonMumbai, goerli, baseSepolia, base],
   [alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()]
 );
