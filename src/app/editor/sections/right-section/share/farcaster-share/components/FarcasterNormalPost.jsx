@@ -9,7 +9,7 @@ import {
   jsConfettiFn,
 } from "../../../../../../../utils";
 import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
-import { ERROR, LOCAL_STORAGE } from "../../../../../../../data";
+import { ERROR, FREE_MINTS, LOCAL_STORAGE } from "../../../../../../../data";
 import { Button } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import FarcasterAuth from "./FarcasterAuth";
@@ -215,10 +215,10 @@ const FarcasterNormalPost = () => {
 
     if (
       farcasterStates.frameData?.isFrame &&
-      farcasterStates.frameData?.allowedMints > 10 &&
+      farcasterStates.frameData?.allowedMints > FREE_MINTS &&
       !farcasterStates.frameData?.isTopup
     ) {
-      toast.error("Please topup with Base ETH to mint more than 10 frames");
+      toast.error(`Please topup with Base ETH to mint more than ${FREE_MINTS} frames`);
       return;
     }
 
@@ -408,8 +408,8 @@ const FarcasterNormalPost = () => {
         <div className="my-2">
           <p className="text-sm">
             {" "}
-            First 10 mints are free. Topup with Base ETH if you want to drop
-            more that 10 mints{" "}
+            First {FREE_MINTS} mints are free. Topup with Base ETH if you want to drop
+            more that {FREE_MINTS} mints{" "}
           </p>
           <div className="flex flex-col w-full py-2">
             <NumberInputBox
@@ -429,7 +429,7 @@ const FarcasterNormalPost = () => {
             />
           )}
 
-          {farcasterStates.frameData?.allowedMints > 10 && <Topup />}
+          {farcasterStates.frameData?.allowedMints > FREE_MINTS && <Topup />}
         </div>
       </div>
 
