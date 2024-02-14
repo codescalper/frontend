@@ -13,3 +13,5 @@ export const SOLANA_MESSAGE =
   export const APP_LENS_HANDLE = "@lenspost";
   export const APP_SOLANA_ADDRESS = "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa"
   export const APP_ETH_ADDRESS = "0x77fAD8D0FcfD481dAf98D0D156970A281e66761b"
+
+  export const FREE_MINTS = 10;

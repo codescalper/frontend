@@ -21,6 +21,7 @@ import {
 } from "wagmi";
 import { parseEther } from "viem";
 import { toast } from "react-toastify";
+import { FREE_MINTS } from "../../../../../../../data";
 
 const Topup = () => {
   const { farcasterStates, setFarcasterStates } = useContext(Context);
@@ -42,24 +43,22 @@ const Topup = () => {
     cacheTime: 2_000,
   });
 
-  const freeMints = 10;
-
 //   console.log("feeData", feeData.formatted);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
-  const numberOfMints =
-    Number(farcasterStates.frameData?.allowedMints) - freeMints;
+  const numberOfExtraMints =
+    Number(farcasterStates.frameData?.allowedMints) - FREE_MINTS;
 
-  //   console.log("numberOfMints", numberOfMints);
+  //   console.log("numberOfExtraMints", numberOfExtraMints);
 
-  const payForMints = (Number("0.000067513023052397") * numberOfMints)
+  const payForMints = (Number("0.000067513023052397") * numberOfExtraMints)
     .toFixed(18)
     .toString();
 
   //   console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
-    to: "0x1376c8D47585e3F0B004e5600ed2975648F71d8a", // sponsor address
+    to: "0xa4aC0dbE3103FD34B8a8305936847dB1C3Ae0630", // Funding 1 - address
     value: parseEther(payForMints),
     chainId: base.id,
   });
