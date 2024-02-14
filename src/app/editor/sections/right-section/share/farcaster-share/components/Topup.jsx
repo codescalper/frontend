@@ -42,7 +42,7 @@ const Topup = () => {
     cacheTime: 2_000,
   });
 
-  const freeMints = 50;
+  const freeMints = 10;
 
 //   console.log("feeData", feeData.formatted);
 

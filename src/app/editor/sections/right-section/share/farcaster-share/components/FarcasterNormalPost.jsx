@@ -215,10 +215,10 @@ const FarcasterNormalPost = () => {
 
     if (
       farcasterStates.frameData?.isFrame &&
-      farcasterStates.frameData?.allowedMints > 50 &&
+      farcasterStates.frameData?.allowedMints > 10 &&
       !farcasterStates.frameData?.isTopup
     ) {
-      toast.error("Please topup with Base ETH to mint more than 50 frames");
+      toast.error("Please topup with Base ETH to mint more than 10 frames");
       return;
     }
 
@@ -408,8 +408,8 @@ const FarcasterNormalPost = () => {
         <div className="my-2">
           <p className="text-sm">
             {" "}
-            First 50 mints are free. Topup with Base ETH if you want to drop
-            more that 50 mints{" "}
+            First 10 mints are free. Topup with Base ETH if you want to drop
+            more that 10 mints{" "}
           </p>
           <div className="flex flex-col w-full py-2">
             <NumberInputBox
@@ -429,7 +429,7 @@ const FarcasterNormalPost = () => {
             />
           )}
 
-          {farcasterStates.frameData?.allowedMints > 50 && <Topup />}
+          {farcasterStates.frameData?.allowedMints > 10 && <Topup />}
         </div>
       </div>
 
