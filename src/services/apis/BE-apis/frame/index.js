@@ -50,3 +50,10 @@ export const updateFrame = async ({
   });
   return res.data;
 };
+
+export const getOrCreateWallet = async (address) => {
+  const res = await api.get(`${API}/mint`, {
+    address,
+  });
+  return res.data;
+};
