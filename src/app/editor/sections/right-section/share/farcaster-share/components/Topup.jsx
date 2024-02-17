@@ -18,10 +18,8 @@ import {
 import { parseEther } from "viem";
 import { toast } from "react-toastify";
 import { FREE_MINTS } from "../../../../../../../data";
-import { useQuery } from "@tanstack/react-query";
-import { getOrCreateWallet } from "../../../../../../../services/apis/BE-apis";
 
-const Topup = () => {
+const Topup = ({ topUpAccount }) => {
   const { farcasterStates, setFarcasterStates } = useContext(Context);
   const { chain } = useNetwork();
   const {
@@ -31,7 +29,7 @@ const Topup = () => {
     error: switchErrorData,
     switchNetwork,
   } = useSwitchNetwork();
-  
+
   const {
     data: feeData,
     isError: isFeeError,
@@ -43,35 +41,6 @@ const Topup = () => {
   });
 
   //   console.log("feeData", feeData.formatted);
-
-  const {
-    data: walletData,
-    isError: isWalletError,
-    isLoading: isWalletLoading,
-    error: walletError,
-  } = useQuery({
-    queryKey: ["getOrCreateWallet"],
-    queryFn: () => getOrCreateWallet(),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnSettled: false,
-    retry: false,
-    retryOnMount: false,
-    retryOnReconnect: false,
-    retryOnSettled: false,
-    staleTime: 2_000,
-    cacheTime: 2_000,
-    onError: (error) => {
-      console.log("error", error);
-    },
-    onSuccess: (data) => {
-      console.log("data", data);
-    },
-  });
-
-//   console.log("walletData", walletData);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfExtraMints =
@@ -86,7 +55,7 @@ const Topup = () => {
   //   console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
-    to: walletData?.publicAddress, // users wallet
+    to: topUpAccount, // users wallet
     value: parseEther(payForMints),
     chainId: baseSepolia.id,
   });
