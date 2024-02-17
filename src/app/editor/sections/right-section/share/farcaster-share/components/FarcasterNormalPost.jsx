@@ -7,6 +7,7 @@ import {
   getFromLocalStorage,
   errorMessage,
   jsConfettiFn,
+  addressCrop,
 } from "../../../../../../../utils";
 import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
 import { ERROR, FREE_MINTS, LOCAL_STORAGE } from "../../../../../../../data";
@@ -436,7 +437,21 @@ const FarcasterNormalPost = () => {
             to drop more that {FREE_MINTS} mints{" "}
           </p>
           <p className="text-end mt-4">
-            Topup balance: {walletData?.balance} ETH
+            <span>Topup account:</span>
+            <span
+              className="text-blue-500 cursor-pointer"
+              onClick={() => {
+                navigator.clipboard.writeText(walletData?.publicAddress);
+                toast.success("Copied topup account address");
+              }}
+            >
+              {" "}
+              {addressCrop(walletData?.publicAddress)}
+            </span>
+          </p>
+          <p className="text-end">
+            <span>Topup balance:</span> {walletData?.balance}
+            ETH
           </p>
           <div className="flex flex-col w-full py-2">
             <NumberInputBox
