@@ -451,7 +451,7 @@ const FarcasterNormalPost = () => {
           </p>
           <p className="text-end">
             <span>Topup balance:</span> {walletData?.balance}
-            ETH
+            {" "}Base ETH
           </p>
           <div className="flex flex-col w-full py-2">
             <NumberInputBox
