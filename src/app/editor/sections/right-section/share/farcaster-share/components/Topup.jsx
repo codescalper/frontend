@@ -8,12 +8,8 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import {
-  useFeeData,
-  useNetwork,
-  useSwitchNetwork,
-} from "wagmi";
-import { base, baseSepolia } from "wagmi/chains";
+import { useFeeData, useNetwork, useSwitchNetwork } from "wagmi";
+import { baseSepolia, base } from "wagmi/chains";
 import {
   useSendTransaction,
   usePrepareSendTransaction,
@@ -23,7 +19,7 @@ import { parseEther } from "viem";
 import { toast } from "react-toastify";
 import { FREE_MINTS } from "../../../../../../../data";
 
-const Topup = () => {
+const Topup = ({ topUpAccount }) => {
   const { farcasterStates, setFarcasterStates } = useContext(Context);
   const { chain } = useNetwork();
   const {
@@ -33,17 +29,18 @@ const Topup = () => {
     error: switchErrorData,
     switchNetwork,
   } = useSwitchNetwork();
+
   const {
     data: feeData,
     isError: isFeeError,
     isLoading: isFeeLoading,
   } = useFeeData({
-    chainId: base.id,
+    chainId: baseSepolia.id,
     formatUnits: "ether",
     cacheTime: 2_000,
   });
 
-//   console.log("feeData", feeData.formatted);
+  //   console.log("feeData", feeData.formatted);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfExtraMints =
@@ -58,9 +55,9 @@ const Topup = () => {
   //   console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
-    to: "0xa4aC0dbE3103FD34B8a8305936847dB1C3Ae0630", // Funding 1 - address
+    to: topUpAccount, // users wallet
     value: parseEther(payForMints),
-    chainId: base.id,
+    chainId: baseSepolia.id,
   });
 
   const { data, isLoading, isSuccess, isError, error, sendTransaction } =
@@ -96,16 +93,16 @@ const Topup = () => {
     }
   }, [isError, isTxError]);
 
-  if (chain.id !== base.id) {
+  if (chain?.id !== baseSepolia?.id) {
     return (
       <Card>
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(base.id)}
+            onClick={() => switchNetwork(baseSepolia?.id)}
           >
             <Typography variant="h6" color="blue-gray">
-              Please switch to {base.name} network
+              Please switch to {baseSepolia?.name} network
             </Typography>
           </ListItem>
         </List>
@@ -144,7 +141,7 @@ const Topup = () => {
       <List>
         <ListItem className="flex-col items-end gap-2">
           <Typography variant="h6" color="blue-gray">
-            {payForMints} Base ETH
+            {payForMints} baseSepolia ETH
           </Typography>
 
           <div className="w-full flex justify-between items-center">

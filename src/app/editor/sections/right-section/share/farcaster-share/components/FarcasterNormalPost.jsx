@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { shareOnSocials } from "../../../../../../../services";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Context } from "../../../../../../../providers/context/ContextProvider";
 import {
   getFromLocalStorage,
   errorMessage,
   jsConfettiFn,
+  addressCrop,
 } from "../../../../../../../utils";
 import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
 import { ERROR, FREE_MINTS, LOCAL_STORAGE } from "../../../../../../../data";
@@ -19,6 +20,7 @@ import { ZoraDialog } from "../../zora-mint/components";
 import logoFarcaster from "../../../../../../../assets/logos/logoFarcaster.jpg";
 import {
   getFrame,
+  getOrCreateWallet,
   postFrame,
 } from "../../../../../../../services/apis/BE-apis";
 import { InputErrorMsg, NumberInputBox } from "../../../../../common";
@@ -52,6 +54,27 @@ const FarcasterNormalPost = () => {
   } = useContext(Context);
 
   const { isFarcasterAuth } = useLocalStorage();
+
+  const {
+    data: walletData,
+    isError: isWalletError,
+    isLoading: isWalletLoading,
+    error: walletError,
+  } = useQuery({
+    queryKey: ["getOrCreateWallet"],
+    queryFn: () => getOrCreateWallet(),
+    enabled: true,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnSettled: false,
+    retry: false,
+    retryOnMount: false,
+    retryOnReconnect: false,
+    retryOnSettled: false,
+    staleTime: 2_000,
+    cacheTime: 2_000,
+  });
 
   const { mutateAsync: postFrameData } = useMutation({
     mutationKey: "postFrameData",
@@ -218,7 +241,9 @@ const FarcasterNormalPost = () => {
       farcasterStates.frameData?.allowedMints > FREE_MINTS &&
       !farcasterStates.frameData?.isTopup
     ) {
-      toast.error(`Please topup with Base ETH to mint more than ${FREE_MINTS} frames`);
+      toast.error(
+        `Please topup with Base ETH to mint more than ${FREE_MINTS} frames`
+      );
       return;
     }
 
@@ -408,8 +433,25 @@ const FarcasterNormalPost = () => {
         <div className="my-2">
           <p className="text-sm">
             {" "}
-            First {FREE_MINTS} mints are free. Topup with Base ETH if you want to drop
-            more that {FREE_MINTS} mints{" "}
+            First {FREE_MINTS} mints are free. Topup with Base ETH if you want
+            to drop more that {FREE_MINTS} mints{" "}
+          </p>
+          <p className="text-end mt-4">
+            <span>Topup account:</span>
+            <span
+              className="text-blue-500 cursor-pointer"
+              onClick={() => {
+                navigator.clipboard.writeText(walletData?.publicAddress);
+                toast.success("Copied topup account address");
+              }}
+            >
+              {" "}
+              {addressCrop(walletData?.publicAddress)}
+            </span>
+          </p>
+          <p className="text-end">
+            <span>Topup balance:</span> {walletData?.balance}
+            ETH
           </p>
           <div className="flex flex-col w-full py-2">
             <NumberInputBox
@@ -429,7 +471,9 @@ const FarcasterNormalPost = () => {
             />
           )}
 
-          {farcasterStates.frameData?.allowedMints > FREE_MINTS && <Topup />}
+          {farcasterStates.frameData?.allowedMints > FREE_MINTS && (
+            <Topup topUpAccount={walletData?.publicAddress} />
+          )}
         </div>
       </div>
 
