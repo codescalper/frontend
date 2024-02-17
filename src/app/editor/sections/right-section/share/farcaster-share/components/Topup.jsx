@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useFeeData, useNetwork, useSwitchNetwork } from "wagmi";
-import { baseSepolia, base } from "wagmi/chains";
+import { base, baseSepolia } from "wagmi/chains";
 import {
   useSendTransaction,
   usePrepareSendTransaction,
@@ -35,7 +35,7 @@ const Topup = ({ topUpAccount }) => {
     isError: isFeeError,
     isLoading: isFeeLoading,
   } = useFeeData({
-    chainId: baseSepolia.id,
+    chainId: base.id,
     formatUnits: "ether",
     cacheTime: 2_000,
   });
@@ -57,7 +57,7 @@ const Topup = ({ topUpAccount }) => {
   const { config } = usePrepareSendTransaction({
     to: topUpAccount, // users wallet
     value: parseEther(payForMints),
-    chainId: baseSepolia.id,
+    chainId: base.id,
   });
 
   const { data, isLoading, isSuccess, isError, error, sendTransaction } =
@@ -93,16 +93,16 @@ const Topup = ({ topUpAccount }) => {
     }
   }, [isError, isTxError]);
 
-  if (chain?.id !== baseSepolia?.id) {
+  if (chain?.id !== base?.id) {
     return (
       <Card>
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(baseSepolia?.id)}
+            onClick={() => switchNetwork(base?.id)}
           >
             <Typography variant="h6" color="blue-gray">
-              Please switch to {baseSepolia?.name} network
+              Please switch to {base?.name} network
             </Typography>
           </ListItem>
         </List>
@@ -141,7 +141,7 @@ const Topup = ({ topUpAccount }) => {
       <List>
         <ListItem className="flex-col items-end gap-2">
           <Typography variant="h6" color="blue-gray">
-            {payForMints} baseSepolia ETH
+            {payForMints} base ETH
           </Typography>
 
           <div className="w-full flex justify-between items-center">
