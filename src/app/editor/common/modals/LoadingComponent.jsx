@@ -1,14 +1,77 @@
+import {
+  Button,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Spinner,
+  Typography,
+} from "@material-tailwind/react";
+import React, { useContext, useEffect, useState } from "react";
+import GoSignIn from "@meronex/icons/go/GoSignIn";
+import { useLocalStorage, useLogout } from "../../../../hooks/app";
+import { Context } from "../../../../providers/context";
 
-import React from "react";
+const LoadingComponent = ({ isLoading, text }) => {
+  const { logout } = useLogout();
+  const { authToken } = useLocalStorage();
+  const [open, setOpen] = useState(false);
+  const { setIsLoading, setText } = useContext(Context);
 
-const LoadingComponent = ({ text }) => {
+  const handleOpen = () => setOpen(!open);
+
+  // if loading show the dialog
+  useEffect(() => {
+    if (isLoading) {
+      setOpen(true);
+    } else if (!isLoading) {
+      setOpen(false);
+    }
+  }, [isLoading]);
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-40">
-      <div className="w-max h-max px-8 py-8 bg-white rounded-lg flex flex-col gap-5 items-center justify-center shadow-xl">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-black"></div>
-        <h1 className="font-bold text-2xl text-black">{text}</h1>
-      </div>
-    </div>
+    <>
+      <Dialog
+        size="sm"
+        open={open}
+        animate={{
+          mount: { scale: 1, y: 0 },
+          unmount: { scale: 0.9, y: -100 },
+        }}
+        className="outline-none"
+      >
+        <DialogHeader className="gap-2 border-b border-gray-300">
+          <GoSignIn />
+          <Typography variant="h5" color="blue-gray">
+            Auth
+          </Typography>
+        </DialogHeader>
+        <DialogBody>
+          <div className="flex items-center gap-2 ">
+            <Typography variant="h6" color="blue-gray">
+              {text ? text : "Done"}
+            </Typography>
+            <Spinner color="blue" />
+          </div>
+        </DialogBody>
+
+        <DialogFooter>
+          <Button
+            ripple="light"
+            className="ml-4 outline-none"
+            color="red"
+            onClick={() => {
+              logout();
+              setOpen(false);
+              setIsLoading(false);
+              setText("");
+            }}
+          >
+            Cancel
+          </Button>
+        </DialogFooter>
+      </Dialog>
+    </>
   );
 };
 

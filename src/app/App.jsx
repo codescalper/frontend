@@ -166,8 +166,8 @@ const App = () => {
     })
       .then((res) => {
         if (res?.status === "success") {
-          setText("");
           setIsLoading(false);
+          setText("");
           toast.success("Login successful");
           saveToLocalStorage(LOCAL_STORAGE.evmAuth, true);
           saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
@@ -185,8 +185,8 @@ const App = () => {
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
-          setText("");
           setIsLoading(false);
+          setText("");
           toast.error(res);
         }
       })
@@ -194,8 +194,8 @@ const App = () => {
         console.log(err);
         toast.error(errorMessage(err));
         disconnect();
-        setText("");
         setIsLoading(false);
+        setText("");
       });
   };
 
@@ -210,8 +210,8 @@ const App = () => {
     })
       .then((res) => {
         if (res?.status === "success") {
-          setText("");
           setIsLoading(false);
+          setText("");
           toast.success("Login successful");
           saveToLocalStorage(LOCAL_STORAGE.solanaAuth, true);
           saveToLocalStorage(LOCAL_STORAGE.userAuthToken, res.jwt);
@@ -229,8 +229,8 @@ const App = () => {
         } else {
           toast.error(ERROR.SOMETHING_WENT_WRONG);
           disconnect();
-          setText("");
           setIsLoading(false);
+          setText("");
           toast.error(res);
         }
       })
@@ -238,8 +238,8 @@ const App = () => {
         console.log(err);
         toast.error(errorMessage(err));
         disconnect();
-        setText("");
         setIsLoading(false);
+        setText("");
       });
   };
 
@@ -341,7 +341,7 @@ const App = () => {
       <Editor />
       {window.navigator?.brave && !isBraveShieldWarn && <BraveShieldWarn />}
       <CheckInternetConnection />
-      {isLoading && <LoadingComponent text={text} />}
+      <LoadingComponent isLoading={isLoading} text={text} />
       <ToastContainer
         position="top-center"
         autoClose={3000}
