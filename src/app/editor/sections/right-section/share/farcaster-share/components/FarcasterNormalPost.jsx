@@ -10,7 +10,12 @@ import {
   addressCrop,
 } from "../../../../../../../utils";
 import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
-import { ERROR, FREE_MINTS, LOCAL_STORAGE } from "../../../../../../../data";
+import {
+  ERROR,
+  FRAME_LINK,
+  FREE_MINTS,
+  LOCAL_STORAGE,
+} from "../../../../../../../data";
 import { Button } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import FarcasterAuth from "./FarcasterAuth";
@@ -60,6 +65,7 @@ const FarcasterNormalPost = () => {
     isError: isWalletError,
     isLoading: isWalletLoading,
     error: walletError,
+    refetch: refetchWallet,
   } = useQuery({
     queryKey: ["getOrCreateWallet"],
     queryFn: () => getOrCreateWallet(),
@@ -165,7 +171,7 @@ const FarcasterNormalPost = () => {
     if (farcasterStates.frameData?.isFrame) {
       canvasParams = {
         ...canvasParams,
-        frameLink: `https://frames.lenspost.xyz/frame/${frameId}`,
+        frameLink: FRAME_LINK + frameId,
       };
     }
 
@@ -239,11 +245,9 @@ const FarcasterNormalPost = () => {
     if (
       farcasterStates.frameData?.isFrame &&
       farcasterStates.frameData?.allowedMints > FREE_MINTS &&
-      !farcasterStates.frameData?.isTopup
+      !farcasterStates.frameData?.isSufficientBalance
     ) {
-      toast.error(
-        `Please topup with Base ETH to mint more than ${FREE_MINTS} frames`
-      );
+      toast.error(`Insufficient balance. Please topup your account to mint`);
       return;
     }
 
@@ -274,6 +278,8 @@ const FarcasterNormalPost = () => {
         data={null}
         farTxHash={farTxHash}
         isSuccess={false}
+        isFrame={farcasterStates.frameData?.isFrame}
+        frameId={frameId}
       />
       <div className="mb-4 m-4">
         <div className="flex justify-between">
@@ -450,8 +456,7 @@ const FarcasterNormalPost = () => {
             </span>
           </p>
           <p className="text-end">
-            <span>Topup balance:</span> {walletData?.balance}
-            {" "}Base ETH
+            <span>Topup balance:</span> {walletData?.balance} Base ETH
           </p>
           <div className="flex flex-col w-full py-2">
             <NumberInputBox
@@ -472,7 +477,11 @@ const FarcasterNormalPost = () => {
           )}
 
           {farcasterStates.frameData?.allowedMints > FREE_MINTS && (
-            <Topup topUpAccount={walletData?.publicAddress} />
+            <Topup
+              topUpAccount={walletData?.publicAddress}
+              balance={walletData?.balance}
+              refetch={refetchWallet}
+            />
           )}
         </div>
       </div>

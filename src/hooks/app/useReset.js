@@ -375,6 +375,7 @@ const useReset = () => {
         allowedMintsError: "",
 
         isTopup: false,
+        isSufficientBalance: false,
       },
     });
   };

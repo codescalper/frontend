@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../../../../../../../providers/context";
 import {
   Button,
@@ -19,8 +19,9 @@ import { parseEther } from "viem";
 import { toast } from "react-toastify";
 import { FREE_MINTS } from "../../../../../../../data";
 
-const Topup = ({ topUpAccount }) => {
+const Topup = ({ topUpAccount, balance, refetch }) => {
   const { farcasterStates, setFarcasterStates } = useContext(Context);
+  const [extraPayForMints, setExtraPayForMints] = useState(null);
   const { chain } = useNetwork();
   const {
     data: switchData,
@@ -40,23 +41,22 @@ const Topup = ({ topUpAccount }) => {
     cacheTime: 2_000,
   });
 
-  //   console.log("feeData", feeData.formatted);
+  const isSufficientBalance = farcasterStates.frameData?.isSufficientBalance;
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfExtraMints =
     Number(farcasterStates.frameData?.allowedMints) - FREE_MINTS;
 
-  //   console.log("numberOfExtraMints", numberOfExtraMints);
-
   const payForMints = (Number("0.000067513023052397") * numberOfExtraMints)
     .toFixed(18)
     .toString();
 
-  //   console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
     to: topUpAccount, // users wallet
-    value: parseEther(payForMints),
+    value: extraPayForMints
+      ? parseEther(extraPayForMints)
+      : parseEther(payForMints),
     chainId: base.id,
   });
 
@@ -73,6 +73,7 @@ const Topup = ({ topUpAccount }) => {
     hash: data?.hash,
   });
 
+  // change the frameData isTopup to true if transaction is success
   useEffect(() => {
     if (isTxSuccess) {
       setFarcasterStates({
@@ -82,9 +83,37 @@ const Topup = ({ topUpAccount }) => {
           isTopup: true,
         },
       });
+      refetch();
     }
   }, [isTxSuccess]);
 
+  // check if the user has enough balance to pay for mints
+  useEffect(() => {
+    if (balance >= payForMints) {
+      // balance is sufficient
+      setFarcasterStates({
+        ...farcasterStates,
+        frameData: {
+          ...farcasterStates.frameData,
+          isSufficientBalance: true,
+        },
+      });
+    } else {
+      // balance is not sufficient
+      setFarcasterStates({
+        ...farcasterStates,
+        frameData: {
+          ...farcasterStates.frameData,
+          isSufficientBalance: false,
+        },
+      });
+
+      // if the user has insufficient balance then we need to topup
+      setExtraPayForMints((payForMints - balance).toFixed(18).toString());
+    }
+  }, [farcasterStates.frameData.allowedMints, balance]);
+
+  // get the error message
   useEffect(() => {
     if (isError) {
       toast.error(error?.message.split("\n")[0]);
@@ -140,41 +169,53 @@ const Topup = ({ topUpAccount }) => {
     <Card>
       <List>
         <ListItem className="flex-col items-end gap-2">
-          <Typography variant="h6" color="blue-gray">
-            {payForMints} base ETH
-          </Typography>
+          {isSufficientBalance ? (
+            <Typography variant="h6" color="green">
+              Sufficient balance to pay for mints
+            </Typography>
+          ) : (
+            <>
+              <Typography variant="h6" color="red">
+                Insufficient balance please topup
+              </Typography>
+              <Typography variant="h6" color="blue-gray">
+                {extraPayForMints ? extraPayForMints : payForMints} {base?.name}{" "}
+                {base?.nativeCurrency?.symbol}
+              </Typography>
 
-          <div className="w-full flex justify-between items-center">
-            {isTxLoading || isLoading ? (
-              <div className="flex justify-start gap-2">
-                <Typography variant="h6" color="blue-gray">
-                  {isLoading
-                    ? "Confirm transaction"
-                    : isTxLoading
-                    ? "Confirming"
-                    : ""}
-                </Typography>
-                <Spinner color="green" />
+              <div className="w-full flex justify-between items-center">
+                {isTxLoading || isLoading ? (
+                  <div className="flex justify-start gap-2">
+                    <Typography variant="h6" color="blue-gray">
+                      {isLoading
+                        ? "Confirm transaction"
+                        : isTxLoading
+                        ? "Confirming"
+                        : ""}
+                    </Typography>
+                    <Spinner color="green" />
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+
+                {isTxSuccess ? (
+                  <Button color="green" size="sm" className="flex justify-end">
+                    Paid
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => sendTransaction?.()}
+                    color="green"
+                    size="sm"
+                    className="flex justify-end"
+                  >
+                    Pay
+                  </Button>
+                )}
               </div>
-            ) : (
-              <div></div>
-            )}
-
-            {isTxSuccess ? (
-              <Button color="green" size="sm" className="flex justify-end">
-                Paid
-              </Button>
-            ) : (
-              <Button
-                onClick={() => sendTransaction?.()}
-                color="green"
-                size="sm"
-                className="flex justify-end"
-              >
-                Pay
-              </Button>
-            )}
-          </div>
+            </>
+          )}
         </ListItem>
       </List>
     </Card>
