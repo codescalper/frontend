@@ -358,6 +358,7 @@ const ContextProvider = ({ children }) => {
       allowedMintsError: "",
 
       isTopup: false,
+      isSufficientBalance: false,
     },
   });
 

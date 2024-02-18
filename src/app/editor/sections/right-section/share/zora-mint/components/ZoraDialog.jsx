@@ -15,6 +15,7 @@ import { useNetwork } from "wagmi";
 import BiCopy from "@meronex/icons/bi/BiCopy";
 import { toast } from "react-toastify";
 import { zoraURLErc721 } from "../utils";
+import { FRAME_LINK } from "../../../../../../../data";
 
 const ZoraDialog = ({
   title,
@@ -31,11 +32,15 @@ const ZoraDialog = ({
   isShareSuccess,
   isOpenAction,
   isFarcaster,
+  isFrame,
+  frameId,
 }) => {
   const [open, setOpen] = useState(false);
   const { resetState } = useReset();
   const { chain } = useNetwork();
-  const [isCopy, setIsCopy] = useState(false);
+  const [isCopy, setIsCopy] = useState({
+    id: null,
+  });
 
   const handleOpen = () => setOpen(!open);
 
@@ -103,14 +108,43 @@ const ZoraDialog = ({
                             navigator.clipboard.writeText(
                               farConversationUrl + farTxHash
                             );
-                            setIsCopy(true);
+                            setIsCopy({
+                              id: 1,
+                            });
                           }}
                           className="cursor-pointer"
                         />
-                        {isCopy && (
+                        {isCopy?.id === 1 && (
                           <span className="text-green-500">Copied</span>
                         )}
                       </span>
+                      {isFrame && (
+                        <span className="flex gap-1 items-center">
+                          Check your
+                          <a
+                            href={FRAME_LINK + frameId}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-500"
+                          >
+                            Frame
+                          </a>
+                          <BiCopy
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                FRAME_LINK + frameId
+                              );
+                              setIsCopy({
+                                id: 2,
+                              });
+                            }}
+                            className="cursor-pointer"
+                          />
+                          {isCopy?.id === 2 && (
+                            <span className="text-green-500">Copied</span>
+                          )}
+                        </span>
+                      )}
                     </>
                   )
                 : isSuccess && (
