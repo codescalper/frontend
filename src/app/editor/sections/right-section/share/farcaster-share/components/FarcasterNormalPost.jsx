@@ -440,7 +440,7 @@ const FarcasterNormalPost = () => {
           <p className="text-sm">
             {" "}
             First {FREE_MINTS} mints are free. Topup with Base ETH if you want
-            to drop more that {FREE_MINTS} mints{" "}
+            to drop more than {FREE_MINTS} mints{" "}
           </p>
           <p className="text-end mt-4">
             <span>Topup account:</span>
