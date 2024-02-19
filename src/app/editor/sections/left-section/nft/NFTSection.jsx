@@ -451,7 +451,7 @@ const WalletNFT = () => {
   const [delayedQuery, setDelayedQuery] = useState(query);
   const requestTimeout = useRef();
   const [currentTab, setCurrentTab] = useState("polygon");
-  const tabsArray = ["polygon", "ethereum", "zora", "base", "solana"];
+  const tabsArray = ["polygon", "ethereum", "zora", "base", "OP", "solana"];
   const getSolanaAuth = getFromLocalStorage(LOCAL_STORAGE.solanaAuth);
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
 
@@ -469,6 +469,8 @@ const WalletNFT = () => {
       return 7777777;
     } else if (currentTab === "base") {
       return 8453;
+    } else if (currentTab === "OP") {
+      return 10;
     }
   };
 
