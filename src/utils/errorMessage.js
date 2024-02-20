@@ -24,6 +24,11 @@ export const errorMessage = (error) => {
         400: error?.response?.data?.message,
       });
       return error?.response?.data?.message;
+    } else if (error?.response?.status === 503) {
+      console.log({
+        503: error?.response?.data?.message,
+      });
+      return error?.response?.data?.message;
     }
   } else {
     return "Something went wrong, please try again later";
