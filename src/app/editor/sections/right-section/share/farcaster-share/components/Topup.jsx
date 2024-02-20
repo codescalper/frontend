@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useFeeData, useNetwork, useSwitchNetwork } from "wagmi";
-import { base, baseSepolia } from "wagmi/chains";
+import { baseSepolia, base } from "wagmi/chains";
 import {
   useSendTransaction,
   usePrepareSendTransaction,
@@ -35,7 +35,7 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     isError: isFeeError,
     isLoading: isFeeLoading,
   } = useFeeData({
-    chainId: base.id,
+    chainId: baseSepolia.id,
     formatUnits: "ether",
     cacheTime: 2_000,
   });
@@ -55,7 +55,7 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     value: extraPayForMints
       ? parseEther(extraPayForMints)
       : parseEther(payForMints),
-    chainId: base.id,
+    chainId: baseSepolia.id,
   });
 
   const { data, isLoading, isSuccess, isError, error, sendTransaction } =
@@ -120,16 +120,16 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     }
   }, [isError, isTxError]);
 
-  if (chain?.id !== base?.id) {
+  if (chain?.id !== baseSepolia?.id) {
     return (
       <Card className="my-2">
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(base?.id)}
+            onClick={() => switchNetwork(baseSepolia?.id)}
           >
             <Typography variant="h6" color="blue-gray">
-              Please switch to {base?.name} network
+              Please switch to {baseSepolia?.name} network
             </Typography>
           </ListItem>
         </List>
@@ -177,8 +177,8 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
                 Insufficient balance please topup
               </Typography>
               <Typography variant="h6" color="blue-gray">
-                {extraPayForMints ? extraPayForMints : payForMints} {base?.name}{" "}
-                {base?.nativeCurrency?.symbol}
+                {extraPayForMints ? extraPayForMints : payForMints} {baseSepolia?.name}{" "}
+                {baseSepolia?.nativeCurrency?.symbol}
               </Typography>
 
               <div className="w-full flex justify-between items-center">
