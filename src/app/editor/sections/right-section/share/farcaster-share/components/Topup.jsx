@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useFeeData, useNetwork, useSwitchNetwork } from "wagmi";
-import { baseSepolia, base } from "wagmi/chains";
+import { base, baseSepolia } from "wagmi/chains";
 import {
   useSendTransaction,
   usePrepareSendTransaction,
@@ -35,12 +35,14 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     isError: isFeeError,
     isLoading: isFeeLoading,
   } = useFeeData({
-    chainId: baseSepolia.id,
+    chainId: base.id,
     formatUnits: "ether",
     cacheTime: 2_000,
   });
 
   const isSufficientBalance = farcasterStates.frameData?.isSufficientBalance;
+
+  console.log(typeof sponsored);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfExtraMints =
@@ -55,7 +57,7 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     value: extraPayForMints
       ? parseEther(extraPayForMints)
       : parseEther(payForMints),
-    chainId: baseSepolia.id,
+    chainId: base.id,
   });
 
   const { data, isLoading, isSuccess, isError, error, sendTransaction } =
@@ -87,28 +89,23 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
 
   // check if the user has enough balance to pay for mints
   useEffect(() => {
-    if (balance >= payForMints) {
-      // balance is sufficient
-      setFarcasterStates({
-        ...farcasterStates,
-        frameData: {
-          ...farcasterStates.frameData,
-          isSufficientBalance: true,
-        },
-      });
-    } else {
-      // balance is not sufficient
-      setFarcasterStates({
-        ...farcasterStates,
-        frameData: {
-          ...farcasterStates.frameData,
-          isSufficientBalance: false,
-        },
-      });
+    setFarcasterStates((prevState) => {
+      const newState = { ...prevState };
+      const payForMints = calculatePayForMints(
+        prevState.frameData.allowedMints
+      ); // Assuming you have a function to calculate payForMints
 
-      // if the user has insufficient balance then we need to topup
-      setExtraPayForMints((payForMints - balance).toFixed(18).toString());
-    }
+      if (balance >= payForMints) {
+        // balance is sufficient
+        newState.frameData.isSufficientBalance = true;
+      } else {
+        // balance is not sufficient
+        newState.frameData.isSufficientBalance = false;
+        setExtraPayForMints((payForMints - balance).toFixed(18).toString());
+      }
+
+      return newState;
+    });
   }, [farcasterStates.frameData.allowedMints, balance]);
 
   // get the error message
@@ -120,16 +117,16 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     }
   }, [isError, isTxError]);
 
-  if (chain?.id !== baseSepolia?.id) {
+  if (chain?.id !== base?.id) {
     return (
       <Card className="my-2">
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(baseSepolia?.id)}
+            onClick={() => switchNetwork(base?.id)}
           >
             <Typography variant="h6" color="blue-gray">
-              Please switch to {baseSepolia?.name} network
+              Please switch to {base?.name} network
             </Typography>
           </ListItem>
         </List>
@@ -177,8 +174,8 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
                 Insufficient balance please topup
               </Typography>
               <Typography variant="h6" color="blue-gray">
-                {extraPayForMints ? extraPayForMints : payForMints} {baseSepolia?.name}{" "}
-                {baseSepolia?.nativeCurrency?.symbol}
+                {extraPayForMints ? extraPayForMints : payForMints} {base?.name}{" "}
+                {base?.nativeCurrency?.symbol}
               </Typography>
 
               <div className="w-full flex justify-between items-center">

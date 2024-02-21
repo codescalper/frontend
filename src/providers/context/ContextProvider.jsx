@@ -353,7 +353,7 @@ const ContextProvider = ({ children }) => {
       isRecast: false,
       isFollow: false,
 
-      allowedMints: null,
+      allowedMints: "",
       allowedMintsIsError: false,
       allowedMintsError: "",
 
