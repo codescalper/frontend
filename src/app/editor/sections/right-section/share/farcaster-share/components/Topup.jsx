@@ -42,7 +42,6 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
 
   const isSufficientBalance = farcasterStates.frameData?.isSufficientBalance;
 
-  console.log(typeof sponsored);
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfExtraMints =
