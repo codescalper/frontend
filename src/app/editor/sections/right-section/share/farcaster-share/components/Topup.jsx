@@ -91,9 +91,6 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
   useEffect(() => {
     setFarcasterStates((prevState) => {
       const newState = { ...prevState };
-      const payForMints = calculatePayForMints(
-        prevState.frameData.allowedMints
-      ); // Assuming you have a function to calculate payForMints
 
       if (balance >= payForMints) {
         // balance is sufficient
