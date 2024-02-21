@@ -17,9 +17,8 @@ import {
 } from "wagmi";
 import { parseEther } from "viem";
 import { toast } from "react-toastify";
-import { FREE_MINTS } from "../../../../../../../data";
 
-const Topup = ({ topUpAccount, balance, refetch }) => {
+const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
   const { farcasterStates, setFarcasterStates } = useContext(Context);
   const [extraPayForMints, setExtraPayForMints] = useState(null);
   const { chain } = useNetwork();
@@ -43,14 +42,15 @@ const Topup = ({ topUpAccount, balance, refetch }) => {
 
   const isSufficientBalance = farcasterStates.frameData?.isSufficientBalance;
 
+  console.log(typeof sponsored);
+
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfExtraMints =
-    Number(farcasterStates.frameData?.allowedMints) - FREE_MINTS;
+    Number(farcasterStates.frameData?.allowedMints) - sponsored;
 
   const payForMints = (Number("0.000067513023052397") * numberOfExtraMints)
     .toFixed(18)
     .toString();
-
 
   const { config } = usePrepareSendTransaction({
     to: topUpAccount, // users wallet
@@ -89,28 +89,23 @@ const Topup = ({ topUpAccount, balance, refetch }) => {
 
   // check if the user has enough balance to pay for mints
   useEffect(() => {
-    if (balance >= payForMints) {
-      // balance is sufficient
-      setFarcasterStates({
-        ...farcasterStates,
-        frameData: {
-          ...farcasterStates.frameData,
-          isSufficientBalance: true,
-        },
-      });
-    } else {
-      // balance is not sufficient
-      setFarcasterStates({
-        ...farcasterStates,
-        frameData: {
-          ...farcasterStates.frameData,
-          isSufficientBalance: false,
-        },
-      });
+    setFarcasterStates((prevState) => {
+      const newState = { ...prevState };
+      const payForMints = calculatePayForMints(
+        prevState.frameData.allowedMints
+      ); // Assuming you have a function to calculate payForMints
 
-      // if the user has insufficient balance then we need to topup
-      setExtraPayForMints((payForMints - balance).toFixed(18).toString());
-    }
+      if (balance >= payForMints) {
+        // balance is sufficient
+        newState.frameData.isSufficientBalance = true;
+      } else {
+        // balance is not sufficient
+        newState.frameData.isSufficientBalance = false;
+        setExtraPayForMints((payForMints - balance).toFixed(18).toString());
+      }
+
+      return newState;
+    });
   }, [farcasterStates.frameData.allowedMints, balance]);
 
   // get the error message
@@ -124,7 +119,7 @@ const Topup = ({ topUpAccount, balance, refetch }) => {
 
   if (chain?.id !== base?.id) {
     return (
-      <Card>
+      <Card className="my-2">
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
@@ -141,7 +136,7 @@ const Topup = ({ topUpAccount, balance, refetch }) => {
 
   if (isFeeLoading) {
     return (
-      <Card>
+      <Card className="my-2">
         <List>
           <ListItem className="flex justify-between items-center gap-2">
             <Spinner color="green" />
@@ -153,7 +148,7 @@ const Topup = ({ topUpAccount, balance, refetch }) => {
 
   if (isFeeError) {
     return (
-      <Card>
+      <Card className="my-2">
         <List>
           <ListItem className="flex justify-between items-center gap-2">
             <Typography variant="h6" color="blue-gray">
@@ -166,7 +161,7 @@ const Topup = ({ topUpAccount, balance, refetch }) => {
   }
 
   return (
-    <Card>
+    <Card className="my-2">
       <List>
         <ListItem className="flex-col items-end gap-2">
           {isSufficientBalance ? (

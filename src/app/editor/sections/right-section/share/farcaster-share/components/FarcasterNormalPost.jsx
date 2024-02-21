@@ -10,12 +10,7 @@ import {
   addressCrop,
 } from "../../../../../../../utils";
 import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
-import {
-  ERROR,
-  FRAME_LINK,
-  FREE_MINTS,
-  LOCAL_STORAGE,
-} from "../../../../../../../data";
+import { ERROR, FRAME_LINK, LOCAL_STORAGE } from "../../../../../../../data";
 import { Button } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import FarcasterAuth from "./FarcasterAuth";
@@ -31,6 +26,7 @@ import {
 import { InputErrorMsg, NumberInputBox } from "../../../../../common";
 import Topup from "./Topup";
 import { useAccount } from "wagmi";
+import WithdrawFunds from "./WithdrawFunds";
 
 const FarcasterNormalPost = () => {
   const { resetState } = useReset();
@@ -95,34 +91,30 @@ const FarcasterNormalPost = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "allowedMints") {
-      if (!value || value === 0) {
-        setFarcasterStates({
-          ...farcasterStates,
-          frameData: {
-            ...farcasterStates.frameData,
-            allowedMintsIsError: true,
-            allowedMintsError: "Please enter number of mints",
-          },
-        });
-      } else {
-        setFarcasterStates({
-          ...farcasterStates,
-          frameData: {
-            ...farcasterStates.frameData,
-            allowedMintsIsError: false,
-            allowedMintsError: "",
-          },
-        });
-      }
-    }
+    setFarcasterStates((prevState) => {
+      // Create a new state based on the previous state
+      const newState = {
+        ...prevState,
+        frameData: {
+          ...prevState.frameData,
+          allowedMints: value,
+        },
+      };
 
-    setFarcasterStates({
-      ...farcasterStates,
-      frameData: {
-        ...farcasterStates.frameData,
-        allowedMints: value,
-      },
+      // Check if the name is "allowedMints" and perform validation
+      if (name === "allowedMints") {
+        if (!value || value <= 0) {
+          newState.frameData.allowedMintsIsError = true;
+          newState.frameData.allowedMintsError =
+            "Please enter a valid number of mints";
+        } else {
+          newState.frameData.allowedMintsIsError = false;
+          newState.frameData.allowedMintsError = "";
+        }
+      }
+
+      // Return the new state
+      return newState;
     });
   };
 
@@ -236,7 +228,7 @@ const FarcasterNormalPost = () => {
     if (
       farcasterStates.frameData?.isFrame &&
       (farcasterStates.frameData?.allowedMintsIsError ||
-        farcasterStates.frameData?.allowedMints === null)
+        !farcasterStates.frameData?.allowedMints)
     ) {
       toast.error("Please enter number of mints");
       return;
@@ -244,15 +236,19 @@ const FarcasterNormalPost = () => {
 
     if (
       farcasterStates.frameData?.isFrame &&
-      farcasterStates.frameData?.allowedMints > FREE_MINTS &&
+      farcasterStates.frameData?.allowedMints > walletData?.sponsored &&
       !farcasterStates.frameData?.isSufficientBalance
     ) {
       toast.error(`Insufficient balance. Please topup your account to mint`);
       return;
     }
 
-    // upload to IPFS
-    postFrameDataFn();
+    if (farcasterStates.frameData?.isFrame) {
+      // upload to IPFS
+      postFrameDataFn();
+    } else {
+      sharePost("farcaster");
+    }
   };
 
   useEffect(() => {
@@ -439,8 +435,12 @@ const FarcasterNormalPost = () => {
         <div className="my-2">
           <p className="text-sm">
             {" "}
-            First {FREE_MINTS} mints are free. Topup with Base ETH if you want
-            to drop more than {FREE_MINTS} mints{" "}
+            {walletData?.sponsored > 0
+              ? `${
+                  walletData?.sponsored
+                } mints are free. Topup with Base ETH if you want
+              to drop more than ${walletData?.sponsored} mints ${" "}`
+              : "You don't have any free mint. please Topup with Base ETH to mint"}{" "}
           </p>
           <p className="text-end mt-4">
             <span>Topup account:</span>
@@ -476,12 +476,17 @@ const FarcasterNormalPost = () => {
             />
           )}
 
-          {farcasterStates.frameData?.allowedMints > FREE_MINTS && (
+          {farcasterStates.frameData?.allowedMints > walletData?.sponsored && (
             <Topup
               topUpAccount={walletData?.publicAddress}
               balance={walletData?.balance}
               refetch={refetchWallet}
+              sponsored={walletData?.sponsored}
             />
+          )}
+
+          {walletData?.balance > 0 && (
+            <WithdrawFunds refetchWallet={refetchWallet} />
           )}
         </div>
       </div>

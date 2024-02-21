@@ -57,3 +57,11 @@ export const getOrCreateWallet = async (address) => {
   });
   return res.data;
 };
+
+export const withdrawFunds = async ({ address, amount }) => {
+  const res = await api.post(`${API}/mint/withdraw`, {
+    to: address,
+    amount: amount,
+  });
+  return res.data;
+};
