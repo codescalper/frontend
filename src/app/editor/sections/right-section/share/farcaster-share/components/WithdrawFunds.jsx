@@ -1,7 +1,4 @@
-import {
-  Button,
-  Typography,
-} from "@material-tailwind/react";
+import { Button, Typography } from "@material-tailwind/react";
 import { InputBox, NumberInputBox } from "../../../../../common";
 import { useMutation } from "@tanstack/react-query";
 import { withdrawFunds } from "../../../../../../../services/apis/BE-apis";
@@ -54,7 +51,9 @@ const WithdrawFunds = ({ refetchWallet }) => {
 
   useEffect(() => {
     if (isSuccess) {
-      refetchWallet();
+      setTimeout(() => {
+        refetchWallet();
+      }, 2000);
     }
   }, [isSuccess]);
 

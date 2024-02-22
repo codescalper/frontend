@@ -61,6 +61,7 @@ const FarcasterNormalPost = () => {
     isError: isWalletError,
     isLoading: isWalletLoading,
     error: walletError,
+    isSuccess: isWalletSuccess,
     refetch: refetchWallet,
   } = useQuery({
     queryKey: ["getOrCreateWallet"],
@@ -256,6 +257,8 @@ const FarcasterNormalPost = () => {
       sharePost("farcaster");
     }
   }, [isPostingFrameSuccess]);
+
+  console.log("Topup balance", walletData?.balance);
 
   return (
     <>
