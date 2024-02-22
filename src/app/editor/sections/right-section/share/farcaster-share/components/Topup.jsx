@@ -17,8 +17,11 @@ import {
 } from "wagmi";
 import { parseEther } from "viem";
 import { toast } from "react-toastify";
+import { ENVIRONMENT } from "../../../../../../../services";
 
-const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
+const network = ENVIRONMENT === "production" ? base : baseSepolia;
+
+const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
   const { farcasterStates, setFarcasterStates } = useContext(Context);
   const [extraPayForMints, setExtraPayForMints] = useState(null);
   const { chain } = useNetwork();
@@ -35,17 +38,19 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     isError: isFeeError,
     isLoading: isFeeLoading,
   } = useFeeData({
-    chainId: base.id,
+    chainId: network?.id,
     formatUnits: "ether",
     cacheTime: 2_000,
   });
 
+  const allowedMints = Number(farcasterStates.frameData?.allowedMints);
   const isSufficientBalance = farcasterStates.frameData?.isSufficientBalance;
-
+  const isTopup = farcasterStates.frameData?.isTopup;
 
   //   bcoz first 50 is free so we are subtracting 50 from total mints
-  const numberOfExtraMints =
-    Number(farcasterStates.frameData?.allowedMints) - sponsored;
+  const numberOfExtraMints = allowedMints - sponsored;
+
+  // console.log("numberOfExtraMints", numberOfExtraMints);
 
   const payForMints = (Number("0.000067513023052397") * numberOfExtraMints)
     .toFixed(18)
@@ -56,7 +61,7 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     value: extraPayForMints
       ? parseEther(extraPayForMints)
       : parseEther(payForMints),
-    chainId: base.id,
+    chainId: network?.id,
   });
 
   const { data, isLoading, isSuccess, isError, error, sendTransaction } =
@@ -82,7 +87,10 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
           isTopup: true,
         },
       });
-      refetch();
+
+      setTimeout(() => {
+        refetch();
+      }, 2000);
     }
   }, [isTxSuccess]);
 
@@ -96,13 +104,18 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
         newState.frameData.isSufficientBalance = true;
       } else {
         // balance is not sufficient
-        newState.frameData.isSufficientBalance = false;
-        setExtraPayForMints((payForMints - balance).toFixed(18).toString());
+
+        if (payForMints - balance > 0) {
+          setExtraPayForMints((payForMints - balance).toFixed(18).toString());
+          newState.frameData.isSufficientBalance = false;
+        } else {
+          newState.frameData.isSufficientBalance = true;
+        }
       }
 
       return newState;
     });
-  }, [farcasterStates.frameData.allowedMints, balance]);
+  }, [farcasterStates.frameData.allowedMints, balance, isTopup]);
 
   // get the error message
   useEffect(() => {
@@ -113,16 +126,16 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
     }
   }, [isError, isTxError]);
 
-  if (chain?.id !== base?.id) {
+  if (chain?.id !== network?.id) {
     return (
       <Card className="my-2">
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(base?.id)}
+            onClick={() => switchNetwork(network?.id)}
           >
             <Typography variant="h6" color="blue-gray">
-              Please switch to {base?.name} network
+              Please switch to {network?.name} network
             </Typography>
           </ListItem>
         </List>
@@ -170,8 +183,8 @@ const Topup = ({ topUpAccount, balance, refetch, sponsored }) => {
                 Insufficient balance please topup
               </Typography>
               <Typography variant="h6" color="blue-gray">
-                {extraPayForMints ? extraPayForMints : payForMints} {base?.name}{" "}
-                {base?.nativeCurrency?.symbol}
+                {extraPayForMints ? extraPayForMints : payForMints}{" "}
+                {network?.name} {network?.nativeCurrency?.symbol}
               </Typography>
 
               <div className="w-full flex justify-between items-center">
