@@ -48,10 +48,10 @@ const ZoraDialog = ({
 
   // if loading show the dialog
   useEffect(() => {
-    if (isUploadingToIPFS) {
-      handleOpen();
+    if (isUploadingToIPFS || isShareLoading) {
+      setOpen(true);
     }
-  }, [isUploadingToIPFS]);
+  }, [isUploadingToIPFS, isShareLoading]);
 
   // if error close the dialog
   useEffect(() => {
