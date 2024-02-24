@@ -1,4 +1,4 @@
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import ShareButton from "./share/ShareButton";
 import DownloadBtn from "./download/DownloadBtn";
 import { ENVIRONMENT } from "../../../../services";
@@ -8,11 +8,10 @@ import { useAppAuth } from "../../../../hooks/app";
 import { Typography } from "@material-tailwind/react";
 import { EVMWallets, SolanaWallets } from "./auth/wallets";
 import Logo from "./logo/Logo";
-import PointsBtn from "./PointsBtn/PointsBtn"
+import PointsBtn from "./PointsBtn/PointsBtn";
 const TopbarSection = () => {
+  const { chain } = useAccount();
   const { isAuthenticated } = useAppAuth();
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
 
   const isSupportedChain = () => {
     if (ENVIRONMENT === "production") {

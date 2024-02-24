@@ -8,13 +8,14 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import { useFeeData, useNetwork, useSwitchNetwork } from "wagmi";
-import { base, baseSepolia } from "wagmi/chains";
 import {
+  useEstimateGas,
+  useAccount,
+  useSwitchChain,
   useSendTransaction,
-  usePrepareSendTransaction,
-  useWaitForTransaction,
+  useWaitForTransactionReceipt,
 } from "wagmi";
+import { base, baseSepolia } from "wagmi/chains";
 import { parseEther } from "viem";
 import { toast } from "react-toastify";
 import { ENVIRONMENT } from "../../../../../../../services";
@@ -24,20 +25,20 @@ const network = ENVIRONMENT === "production" ? base : baseSepolia;
 const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
   const { farcasterStates, setFarcasterStates } = useContext(Context);
   const [extraPayForMints, setExtraPayForMints] = useState(null);
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
   const {
     data: switchData,
-    isLoading: switchLoading,
-    isError: switchError,
+    isLoading: isSwitchLoading,
+    isError: isSwitchError,
     error: switchErrorData,
-    switchNetwork,
-  } = useSwitchNetwork();
+    switchChain,
+  } = useSwitchChain();
 
   const {
     data: feeData,
     isError: isFeeError,
     isLoading: isFeeLoading,
-  } = useFeeData({
+  } = useEstimateGas({
     chainId: network?.id,
     formatUnits: "ether",
     cacheTime: 2_000,
@@ -50,22 +51,20 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfExtraMints = allowedMints - sponsored;
 
-  // console.log("numberOfExtraMints", numberOfExtraMints);
-
   const payForMints = (Number("0.000067513023052397") * numberOfExtraMints)
     .toFixed(18)
     .toString();
 
-  const { config } = usePrepareSendTransaction({
+  const txConfig = {
+    gas: feeData,
     to: topUpAccount, // users wallet
     value: extraPayForMints
       ? parseEther(extraPayForMints)
       : parseEther(payForMints),
-    chainId: network?.id,
-  });
+  };
 
   const { data, isLoading, isSuccess, isError, error, sendTransaction } =
-    useSendTransaction(config);
+    useSendTransaction();
 
   const {
     data: txData,
@@ -73,8 +72,8 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
     error: txError,
     isLoading: isTxLoading,
     isSuccess: isTxSuccess,
-  } = useWaitForTransaction({
-    hash: data?.hash,
+  } = useWaitForTransactionReceipt({
+    hash: data,
   });
 
   // change the frameData isTopup to true if transaction is success
@@ -123,8 +122,10 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
       toast.error(error?.message.split("\n")[0]);
     } else if (isTxError) {
       toast.error(txError?.message.split("\n")[0]);
+    } else if (isSwitchError) {
+      toast.error(switchErrorData?.message.split("\n")[0]);
     }
-  }, [isError, isTxError]);
+  }, [isError, isTxError, isSwitchError]);
 
   if (chain?.id !== network?.id) {
     return (
@@ -132,10 +133,10 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
         <List>
           <ListItem
             className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(network?.id)}
+            onClick={() => switchChain({ chainId: network?.id })}
           >
             <Typography variant="h6" color="blue-gray">
-              Please switch to {network?.name} network
+              { isSwitchLoading ? "Switching network..." : `Please switch to ${network?.name} network`}
             </Typography>
           </ListItem>
         </List>
@@ -209,7 +210,7 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => sendTransaction?.()}
+                    onClick={() => sendTransaction(txConfig)}
                     color="green"
                     size="sm"
                     className="flex justify-end"

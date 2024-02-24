@@ -20,12 +20,11 @@ import { Context } from "../../../../../../../providers/context";
 import { toast } from "react-toastify";
 import {
   useAccount,
-  useChainId,
-  useContractWrite,
-  useNetwork,
-  usePrepareContractWrite,
-  useSwitchNetwork,
-  useWaitForTransaction,
+  useWriteContract,
+  useSimulateContract,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+  useConfig,
 } from "wagmi";
 import { useAppAuth, useLocalStorage } from "../../../../../../../hooks/app";
 import {
@@ -63,11 +62,10 @@ import { zoraURLErc721 } from "../utils/zoraURL";
 import { ZoraLogo } from "../../../../../../../assets";
 
 const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
-  const { address } = useAccount();
+  const { address, chain, chainId } = useAccount();
+  const { chains } = useConfig();
   const { isAuthenticated } = useAppAuth();
   const { isFarcasterAuth, lensAuth, dispatcher } = useLocalStorage();
-  const chainId = useChainId();
-  const { chains, chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const { openChainModal } = useChainModal();
   const [recipientsEns, setRecipientsEns] = useState([]);
@@ -96,8 +94,8 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     isError: isErrorSwitchNetwork,
     isLoading: isLoadingSwitchNetwork,
     isSuccess: isSuccessSwitchNetwork,
-    switchNetwork,
-  } = useSwitchNetwork();
+    switchChain,
+  } = useSwitchChain();
 
   const {
     zoraErc721Enabled,
@@ -706,21 +704,21 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
 
   // create edition configs
   const {
-    config,
+    data: createEditionData,
     error: prepareError,
     isError: isPrepareError,
-  } = usePrepareContractWrite({
+  } = useSimulateContract({
     abi: zoraNftCreatorV1Config.abi,
     address: zoraNftCreatorV1Config.address[chainId],
     functionName: "createEditionWithReferral",
     args: handleMintSettings().args,
   });
-  const { write, data, error, isLoading, isError } = useContractWrite(config);
+  const { write, data, error, isLoading, isError } = useWriteContract();
   const {
     data: receipt,
     isLoading: isPending,
     isSuccess,
-  } = useWaitForTransaction({ hash: data?.hash });
+  } = useWaitForTransactionReceipt({ hash: data });
 
   // mint on Zora
   const handleSubmit = () => {
@@ -888,7 +886,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   useEffect(() => {
     if (createSplitData?.splitAddress) {
       setTimeout(() => {
-        write?.();
+        write(createEditionData?.request);
       }, 1000);
     }
   }, [isCreateSplitSuccess, write]);
@@ -1675,7 +1673,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           <Button
             className="w-full outline-none flex justify-center items-center gap-2"
             disabled={isLoadingSwitchNetwork}
-            onClick={() => switchNetwork(selectedChainId)}
+            onClick={() => switchChain({ chainId: selectedChainId })}
             color="red"
           >
             {isLoadingSwitchNetwork ? "Switching" : "Switch"} to{" "}

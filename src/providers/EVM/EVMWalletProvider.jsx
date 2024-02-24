@@ -1,75 +1,75 @@
 import "@rainbow-me/rainbowkit/styles.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider, createConfig, http } from "wagmi";
 import {
-  getDefaultWallets,
+  base,
+  baseSepolia,
+  goerli,
+  mainnet,
+  optimism,
+  polygon,
+  polygonMumbai,
+  zora,
+} from "wagmi/chains";
+import {
   RainbowKitProvider,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
-  polygon,
-  mainnet,
-  zora,
-  optimism,
-  base,
-  polygonMumbai,
-  zoraTestnet,
-  goerli,
-  baseGoerli,
-  optimismGoerli,
-  baseSepolia,
-} from "wagmi/chains";
-import {
-  coinbaseWallet,
-  ledgerWallet,
-  metaMaskWallet,
-  phantomWallet,
-  rabbyWallet,
   rainbowWallet,
   walletConnectWallet,
+  coinbaseWallet,
+  rabbyWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { publicProvider } from "wagmi/providers/public";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import {
-  ALCHEMY_API_KEY,
-  ENVIRONMENT,
-  WALLETCONNECT_PROJECT_ID,
-} from "../../services";
-import { publicActions } from "viem";
 
-const { chains, publicClient } = configureChains(
-  ENVIRONMENT === "production"
-    ? [polygon, mainnet, base, zora, optimism]
-    : [polygonMumbai, goerli, baseSepolia],
-  [alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()]
+import { ENVIRONMENT, WALLETCONNECT_PROJECT_ID } from "../../services";
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: "Recommended",
+      wallets: [
+        rainbowWallet,
+        walletConnectWallet,
+        rabbyWallet,
+        coinbaseWallet,
+      ],
+    },
+  ],
+  {
+    appName: "Lenspost Studio",
+    projectId: WALLETCONNECT_PROJECT_ID,
+  }
 );
 
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      metaMaskWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),
-      phantomWallet({ chains }),
-      rabbyWallet({ chains }),
-      rainbowWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),
-      walletConnectWallet({ projectId: WALLETCONNECT_PROJECT_ID, chains }),
-      coinbaseWallet({ chains }),
-    ],
-  },
-]);
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
+/* New API that includes Wagmi's createConfig and replaces getDefaultWallets and connectorsForWallets */
+const config = createConfig({
   connectors,
-  publicClient,
+  chains:
+    ENVIRONMENT === "production"
+      ? [polygon, mainnet, base, zora, optimism]
+      : [polygonMumbai, goerli, baseSepolia],
+  transports: {
+    [polygon.id]: http(),
+    [mainnet.id]: http(),
+    [base.id]: http(),
+    [zora.id]: http(),
+    [optimism.id]: http(),
+    [polygonMumbai.id]: http(),
+    [goerli.id]: http(),
+    [baseSepolia.id]: http(),
+  },
 });
+
+const queryClient = new QueryClient();
 
 const EVMWalletProvider = ({ children }) => {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains} coolMode={true}>
-        {children}
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider coolMode>{children}</RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 };
 

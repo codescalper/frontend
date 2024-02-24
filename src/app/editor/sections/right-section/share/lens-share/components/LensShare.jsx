@@ -1,11 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import {
-  useAccount,
-  useChainId,
-  useNetwork,
-  useSignMessage,
-  useSwitchNetwork,
-} from "wagmi";
+import { useAccount, useConfig, useSwitchChain } from "wagmi";
 import TiDelete from "@meronex/icons/ti/TiDelete";
 import BsArrowLeft from "@meronex/icons/bs/BsArrowLeft";
 import { Switch } from "@headlessui/react";
@@ -76,22 +70,21 @@ import BsPlus from "@meronex/icons/bs/BsPlus";
 const LensShare = () => {
   const [recipientsLensHandle, setRecipientsLensHandle] = useState([]);
   const store = useStore();
-  const { address, isConnected } = useAccount();
+  const { address, chain } = useAccount();
+  const { chains } = useConfig();
   const { resetState } = useReset();
   const getDispatcherStatus = getFromLocalStorage(LOCAL_STORAGE.dispatcher);
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
   const getLensAuth = getFromLocalStorage(LOCAL_STORAGE.lensAuth);
   const [totalPercentage, setTotalPercentage] = useState(0);
   const { isAuthenticated } = useAppAuth();
-  const chainId = useChainId();
-  const { chains, chain } = useNetwork();
   const {
     error: errorSwitchNetwork,
     isError: isErrorSwitchNetwork,
     isLoading: isLoadingSwitchNetwork,
     isSuccess: isSuccessSwitchNetwork,
-    switchNetwork,
-  } = useSwitchNetwork();
+    switchChain,
+  } = useSwitchChain();
 
   const {
     setIsLoading,
@@ -1006,7 +999,7 @@ const LensShare = () => {
             <Button
               className="w-full outline-none flex justify-center items-center gap-2"
               disabled={isLoadingSwitchNetwork}
-              onClick={() => switchNetwork(chains[0]?.id)}
+              onClick={() => switchChain({chainId: chains[0]?.id})}
               color="red"
             >
               {isLoadingSwitchNetwork ? "Switching" : "Switch"} to{" "}

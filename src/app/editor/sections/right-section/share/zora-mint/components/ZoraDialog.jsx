@@ -11,11 +11,11 @@ import {
   Checkbox,
 } from "@material-tailwind/react";
 import { useReset } from "../../../../../../../hooks/app";
-import { useNetwork } from "wagmi";
 import BiCopy from "@meronex/icons/bi/BiCopy";
 import { toast } from "react-toastify";
 import { zoraURLErc721 } from "../utils";
 import { FRAME_LINK } from "../../../../../../../data";
+import { useAccount } from "wagmi";
 
 const ZoraDialog = ({
   title,
@@ -35,9 +35,9 @@ const ZoraDialog = ({
   isFrame,
   frameId,
 }) => {
+  const {chain} = useAccount();
   const [open, setOpen] = useState(false);
   const { resetState } = useReset();
-  const { chain } = useNetwork();
   const [isCopy, setIsCopy] = useState({
     id: null,
   });
