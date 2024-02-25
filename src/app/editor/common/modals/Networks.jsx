@@ -66,7 +66,7 @@ const Networks = ({ className, chains, isUnsupportedChain }) => {
         <DialogBody>
           {chains.map((network, index) => (
             <>
-              <List className="border rounded-lg my-2 p-0">
+              <List className="border rounded-lg my-2 p-0" key={index}>
                 <ListItem
                   onClick={() => {
                     network?.id !== chain?.id &&

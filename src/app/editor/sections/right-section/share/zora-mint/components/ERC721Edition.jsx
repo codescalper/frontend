@@ -118,7 +118,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     isError: isUploadError,
     error: uploadError,
     isSuccess: isUploadSuccess,
-    isLoading: isUploading,
+    isPending: isUploadingToIPFS,
   } = useMutation({
     mutationKey: "uploadToIPFS",
     mutationFn: uploadUserAssetToIPFS,
@@ -136,7 +136,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     mutationFn: mintToXchain,
   });
 
-  // create lens open action
+  // create lens/FC smart post
   const handleShare = (canvasParams, platform) => {
     setIsShareLoading(true);
 
@@ -713,12 +713,26 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     functionName: "createEditionWithReferral",
     args: handleMintSettings().args,
   });
-  const { write, data, error, isLoading, isError } = useWriteContract();
+  console.log("createEditionData", createEditionData);
+
   const {
-    data: receipt,
-    isLoading: isPending,
-    isSuccess,
+    writeContract,
+    data,
+    error,
+    isError,
+    isPending: isTxPending,
+  } = useWriteContract({
+    config: createEditionData?.request,
+  });
+  console.log("writeContract", data);
+
+  const {
+    data: txReceiptData,
+    isLoading: isTxReceiptLoading,
+    isSuccess: isTxReceiptSuccess,
   } = useWaitForTransactionReceipt({ hash: data });
+  console.log("splitAddress", createSplitData?.splitAddress);
+  console.log("receipt", txReceiptData?.logs[0]?.address);
 
   // mint on Zora
   const handleSubmit = () => {
@@ -882,45 +896,45 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     }
   }, [isUploadSuccess]);
 
-  // mint on Zora
+  // create zora edition
   useEffect(() => {
     if (createSplitData?.splitAddress) {
       setTimeout(() => {
-        write(createEditionData?.request);
+        writeContract();
       }, 1000);
     }
-  }, [isCreateSplitSuccess, write]);
+  }, [isCreateSplitSuccess]);
 
   // create open adition on LENS
   useEffect(() => {
-    if (isOpenAction && receipt?.logs[0]?.address) {
+    if (isOpenAction && txReceiptData?.logs[0]?.address) {
       const canvasParams = {
         openAction: "mintToZora",
-        zoraMintAddress: receipt?.logs[0]?.address,
+        zoraMintAddress: txReceiptData?.logs[0]?.address,
       };
 
       handleShare(canvasParams, "lens");
     }
-  }, [isSuccess]);
+  }, [isTxReceiptSuccess]);
 
   // share on farcater
   useEffect(() => {
-    if (isFarcaster && receipt?.logs[0]?.address) {
+    if (isFarcaster && txReceiptData?.logs[0]?.address) {
       const canvasParams = {
-        zoraMintLink: zoraURLErc721(receipt?.logs[0]?.address, chain?.id),
+        zoraMintLink: zoraURLErc721(txReceiptData?.logs[0]?.address, chain?.id),
         channelId: farcasterStates.channel?.id || "",
       };
 
       handleShare(canvasParams, "farcaster");
     }
-  }, [isSuccess]);
+  }, [isTxReceiptSuccess]);
 
   // store the zora link in DB
   useEffect(() => {
-    if (isSuccess && receipt?.logs[0]?.address) {
+    if (isTxReceiptSuccess && txReceiptData?.logs[0]?.address) {
       let paramsData = {
         canvasId: contextCanvasIdRef.current,
-        mintLink: zoraURLErc721(receipt?.logs[0]?.address, chain?.id),
+        mintLink: zoraURLErc721(txReceiptData?.logs[0]?.address, chain?.id),
         chain: chain?.name,
       };
 
@@ -932,18 +946,18 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
           console.log("StoreZoraLinkErr", errorMessage(error));
         });
     }
-  }, [isSuccess]);
+  }, [isTxReceiptSuccess]);
 
   // error handling for mint
   useEffect(() => {
     if (isError) {
-      console.log("mint error", error);
+      console.log("writeContract error", error);
       toast.error(error.message.split("\n")[0]);
     }
 
     if (isPrepareError) {
       console.log("prepare error", prepareError);
-      // toast.error(prepareError.message);
+      toast.error(prepareError.message?.split("\n")[0]);
     }
   }, [isError, isPrepareError]);
 
@@ -986,17 +1000,17 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
         title=" Zora ERC721 Edition"
         icon={ZoraLogo}
         isError={isUploadError || isCreateSplitError || isError || isShareError}
-        isLoading={isLoading}
+        isLoading={isTxPending}
         isCreatingSplit={isCreateSplitLoading}
-        isUploadingToIPFS={isUploading}
-        isPending={isPending}
+        isUploadingToIPFS={isUploadingToIPFS}
+        isPending={isTxReceiptLoading}
         isShareLoading={isShareLoading}
         isShareSuccess={isShareSuccess}
         isOpenAction={isOpenAction}
         isFarcaster={isFarcaster}
-        data={receipt}
+        data={txReceiptData}
         farTxHash={farTxHash}
-        isSuccess={isSuccess}
+        isSuccess={isTxReceiptSuccess}
       />
       {/* Switch Number 1 Start */}
       <div className="mb-4 m-4">
@@ -1686,7 +1700,10 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
       ) : (
         <div className="mx-2">
           <Button
-            disabled={!write || networksDataSmartPosts()?.isUnsupportedChain}
+            disabled={
+              !createEditionData?.request ||
+              networksDataSmartPosts()?.isUnsupportedChain
+            }
             fullWidth
             // color="yellow"
             onClick={handleSubmit}

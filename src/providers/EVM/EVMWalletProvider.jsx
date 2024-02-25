@@ -9,6 +9,7 @@ import {
   optimism,
   polygon,
   polygonMumbai,
+  sepolia,
   zora,
 } from "wagmi/chains";
 import {
@@ -48,7 +49,7 @@ const config = createConfig({
   chains:
     ENVIRONMENT === "production"
       ? [polygon, mainnet, base, zora, optimism]
-      : [polygonMumbai, goerli, baseSepolia],
+      : [polygonMumbai, sepolia, baseSepolia],
   transports: {
     [polygon.id]: http(),
     [mainnet.id]: http(),
@@ -56,7 +57,7 @@ const config = createConfig({
     [zora.id]: http(),
     [optimism.id]: http(),
     [polygonMumbai.id]: http(),
-    [goerli.id]: http(),
+    [sepolia.id]: http(),
     [baseSepolia.id]: http(),
   },
 });

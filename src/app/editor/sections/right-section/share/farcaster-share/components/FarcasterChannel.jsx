@@ -27,7 +27,7 @@ const FarcasterChannel = () => {
   const [data, setData] = useState([]);
   const requestTimeout = useRef();
 
-  const { mutateAsync, isError, error, isLoading } = useMutation({
+  const { mutateAsync, isError, error, isPending } = useMutation({
     mutationKey: "searchChannel",
     mutationFn: searchChannelFar,
   });

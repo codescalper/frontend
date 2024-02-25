@@ -26,7 +26,7 @@ export const zoraURLErc721 = (contractAddress, chainId) => {
   return `https://${
     ENVIRONMENT === "production" ? "" : "testnet."
   }zora.co/collect/${
-    ENVIRONMENT === "production" ? mainnetPrefix() : "gor"
+    ENVIRONMENT === "production" ? mainnetPrefix() : "sep"
   }:${contractAddress}`;
 };
 

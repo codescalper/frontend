@@ -40,7 +40,7 @@ export const MemePanel = () => {
   const {
     data: mutateData,
     mutateAsync,
-    isLoading: isMutating,
+    isPending: isMutating,
     isError: isMutatingError,
     error: mutateError,
   } = useMutation({
