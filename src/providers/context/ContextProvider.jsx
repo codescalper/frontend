@@ -349,6 +349,8 @@ const ContextProvider = ({ children }) => {
 
     frameData: {
       isFrame: false,
+
+      isGateWith: false,
       isLike: false,
       isRecast: false,
       isFollow: false,
@@ -359,6 +361,12 @@ const ContextProvider = ({ children }) => {
 
       isTopup: false,
       isSufficientBalance: false,
+
+      isExternalLink: false,
+      externalLink: "",
+
+      isExternalLinkError: false,
+      externalLinkError: "",
     },
   });
 
@@ -447,7 +455,7 @@ const ContextProvider = ({ children }) => {
     dispatcherStatus: false,
   });
 
-  // console.log("ContextProvider", farcasterStates);
+  // console.log("ContextProvider", farcasterStates?.frameData);
   // console.log("ContextProvider", zoraErc721StatesError);
 
   return (

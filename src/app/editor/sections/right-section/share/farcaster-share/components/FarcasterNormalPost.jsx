@@ -10,7 +10,12 @@ import {
   addressCrop,
 } from "../../../../../../../utils";
 import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
-import { ERROR, FRAME_LINK, LOCAL_STORAGE } from "../../../../../../../data";
+import {
+  ERROR,
+  FRAME_LINK,
+  LOCAL_STORAGE,
+  URL_REGEX,
+} from "../../../../../../../data";
 import { Button } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import FarcasterAuth from "./FarcasterAuth";
@@ -23,7 +28,7 @@ import {
   getOrCreateWallet,
   postFrame,
 } from "../../../../../../../services/apis/BE-apis";
-import { InputErrorMsg, NumberInputBox } from "../../../../../common";
+import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
 import Topup from "./Topup";
 import { useAccount } from "wagmi";
 import WithdrawFunds from "./WithdrawFunds";
@@ -89,7 +94,7 @@ const FarcasterNormalPost = () => {
     mutationFn: shareOnSocials,
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e, key) => {
     const { name, value } = e.target;
 
     setFarcasterStates((prevState) => {
@@ -98,7 +103,7 @@ const FarcasterNormalPost = () => {
         ...prevState,
         frameData: {
           ...prevState.frameData,
-          allowedMints: value,
+          [key]: value,
         },
       };
 
@@ -111,6 +116,17 @@ const FarcasterNormalPost = () => {
         } else {
           newState.frameData.allowedMintsIsError = false;
           newState.frameData.allowedMintsError = "";
+        }
+      }
+
+      // check if external link is a valid URL
+      if (name === "externalLink") {
+        if (value && !value.match(URL_REGEX)) {
+          newState.frameData.isExternalLinkError = true;
+          newState.frameData.isExternalLinkError = "Please enter a valid URL";
+        } else {
+          newState.frameData.isExternalLinkError = false;
+          newState.frameData.isExternalLinkError = "";
         }
       }
 
@@ -133,6 +149,7 @@ const FarcasterNormalPost = () => {
       isLike: farcasterStates.frameData?.isLike,
       isRecast: farcasterStates.frameData?.isRecast,
       isFollow: farcasterStates.frameData?.isFollow,
+      redirectLink: farcasterStates.frameData?.externalLink,
     })
       .then((res) => {
         if (res?.status === "success") {
@@ -244,6 +261,14 @@ const FarcasterNormalPost = () => {
       return;
     }
 
+    if (
+      farcasterStates.frameData?.isFrame &&
+      farcasterStates.frameData?.isExternalLinkError
+    ) {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+
     if (farcasterStates.frameData?.isFrame) {
       // upload to IPFS
       postFrameDataFn();
@@ -349,90 +374,184 @@ const FarcasterNormalPost = () => {
       <div
         className={`${!farcasterStates.frameData?.isFrame && "hidden"} mx-4`}
       >
-        <h2 className="text-lg mb-2"> Gate with </h2>
-        <div className="flex justify-between py-2">
-          <h2 className="text-lg mb-2"> Like </h2>
-          <Switch
-            checked={farcasterStates.frameData?.isLike}
-            onChange={() =>
-              setFarcasterStates({
-                ...farcasterStates,
-                frameData: {
-                  ...farcasterStates.frameData,
-                  isLike: !farcasterStates.frameData?.isLike,
-                },
-              })
-            }
-            className={`${
-              farcasterStates.frameData?.isLike ? "bg-[#e1f16b]" : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
-          >
-            <span
+        <div className="mb-4">
+          <div className="flex justify-between">
+            <h2 className="text-lg mb-2"> Gate with </h2>
+            <Switch
+              checked={farcasterStates.frameData?.isGateWith}
+              onChange={() =>
+                setFarcasterStates({
+                  ...farcasterStates,
+                  frameData: {
+                    ...farcasterStates.frameData,
+                    isGateWith: !farcasterStates.frameData?.isGateWith,
+                  },
+                })
+              }
               className={`${
-                farcasterStates.frameData?.isLike
-                  ? "translate-x-6"
-                  : "translate-x-1"
-              } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-            />{" "}
-          </Switch>
+                farcasterStates.frameData?.isGateWith
+                  ? "bg-[#e1f16b]"
+                  : "bg-gray-200"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
+            >
+              <span
+                className={`${
+                  farcasterStates.frameData?.isGateWith
+                    ? "translate-x-6"
+                    : "translate-x-1"
+                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              />{" "}
+            </Switch>
+          </div>
+          <div className="w-4/5 opacity-75">
+            {" "}
+            Control content access based on engagement.{" "}
+          </div>
+
+          <div
+            className={`${!farcasterStates.frameData?.isGateWith && "hidden"}`}
+          >
+            <div className="flex justify-between py-2">
+              <h2 className="text-lg mb-2"> Like </h2>
+              <Switch
+                checked={farcasterStates.frameData?.isLike}
+                onChange={() =>
+                  setFarcasterStates({
+                    ...farcasterStates,
+                    frameData: {
+                      ...farcasterStates.frameData,
+                      isLike: !farcasterStates.frameData?.isLike,
+                    },
+                  })
+                }
+                className={`${
+                  farcasterStates.frameData?.isLike
+                    ? "bg-[#e1f16b]"
+                    : "bg-gray-200"
+                } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
+              >
+                <span
+                  className={`${
+                    farcasterStates.frameData?.isLike
+                      ? "translate-x-6"
+                      : "translate-x-1"
+                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                />{" "}
+              </Switch>
+            </div>
+
+            <div className="flex justify-between py-2">
+              <h2 className="text-lg mb-2"> Recast </h2>
+              <Switch
+                checked={farcasterStates.frameData?.isRecast}
+                onChange={() =>
+                  setFarcasterStates({
+                    ...farcasterStates,
+                    frameData: {
+                      ...farcasterStates.frameData,
+                      isRecast: !farcasterStates.frameData?.isRecast,
+                    },
+                  })
+                }
+                className={`${
+                  farcasterStates.frameData?.isRecast
+                    ? "bg-[#e1f16b]"
+                    : "bg-gray-200"
+                } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
+              >
+                <span
+                  className={`${
+                    farcasterStates.frameData?.isRecast
+                      ? "translate-x-6"
+                      : "translate-x-1"
+                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                />{" "}
+              </Switch>
+            </div>
+
+            <div className="flex justify-between py-2">
+              <h2 className="text-lg mb-2"> Follow </h2>
+              <Switch
+                checked={farcasterStates.frameData?.isFollow}
+                onChange={() =>
+                  setFarcasterStates({
+                    ...farcasterStates,
+                    frameData: {
+                      ...farcasterStates.frameData,
+                      isFollow: !farcasterStates.frameData?.isFollow,
+                    },
+                  })
+                }
+                className={`${
+                  farcasterStates.frameData?.isFollow
+                    ? "bg-[#e1f16b]"
+                    : "bg-gray-200"
+                } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
+              >
+                <span
+                  className={`${
+                    farcasterStates.frameData?.isFollow
+                      ? "translate-x-6"
+                      : "translate-x-1"
+                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                />{" "}
+              </Switch>
+            </div>
+          </div>
         </div>
 
-        <div className="flex justify-between py-2">
-          <h2 className="text-lg mb-2"> Recast </h2>
-          <Switch
-            checked={farcasterStates.frameData?.isRecast}
-            onChange={() =>
-              setFarcasterStates({
-                ...farcasterStates,
-                frameData: {
-                  ...farcasterStates.frameData,
-                  isRecast: !farcasterStates.frameData?.isRecast,
-                },
-              })
-            }
-            className={`${
-              farcasterStates.frameData?.isRecast
-                ? "bg-[#e1f16b]"
-                : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
-          >
-            <span
+        <div className="mb-4">
+          <div className="flex justify-between">
+            <h2 className="text-lg mb-2"> External Link </h2>
+            <Switch
+              checked={farcasterStates.frameData?.isExternalLink}
+              onChange={() =>
+                setFarcasterStates({
+                  ...farcasterStates,
+                  frameData: {
+                    ...farcasterStates.frameData,
+                    isExternalLink: !farcasterStates.frameData?.isExternalLink,
+                  },
+                })
+              }
               className={`${
-                farcasterStates.frameData?.isRecast
-                  ? "translate-x-6"
-                  : "translate-x-1"
-              } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-            />{" "}
-          </Switch>
-        </div>
+                farcasterStates.frameData?.isExternalLink
+                  ? "bg-[#e1f16b]"
+                  : "bg-gray-200"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
+            >
+              <span
+                className={`${
+                  farcasterStates.frameData?.isExternalLink
+                    ? "translate-x-6"
+                    : "translate-x-1"
+                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              />{" "}
+            </Switch>
+          </div>
+          <div className="w-4/5 opacity-75">
+            {" "}
+            Let user know more about yur frame.{" "}
+          </div>
 
-        <div className="flex justify-between py-2">
-          <h2 className="text-lg mb-2"> Follow </h2>
-          <Switch
-            checked={farcasterStates.frameData?.isFollow}
-            onChange={() =>
-              setFarcasterStates({
-                ...farcasterStates,
-                frameData: {
-                  ...farcasterStates.frameData,
-                  isFollow: !farcasterStates.frameData?.isFollow,
-                },
-              })
-            }
+          <div
             className={`${
-              farcasterStates.frameData?.isFollow
-                ? "bg-[#e1f16b]"
-                : "bg-gray-200"
-            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
+              !farcasterStates.frameData?.isExternalLink && "hidden"
+            } mt-2`}
           >
-            <span
-              className={`${
-                farcasterStates.frameData?.isFollow
-                  ? "translate-x-6"
-                  : "translate-x-1"
-              } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-            />{" "}
-          </Switch>
+            <InputBox
+              label="External Link"
+              name="externalLink"
+              onChange={(e) => handleChange(e, "externalLink")}
+              onFocus={(e) => handleChange(e, "externalLink")}
+            />
+          </div>
+
+          {farcasterStates.frameData?.isExternalLinkError && (
+            <InputErrorMsg
+              message={farcasterStates.frameData?.isExternalLinkError}
+            />
+          )}
         </div>
 
         <div className="my-2">
@@ -467,8 +586,8 @@ const FarcasterNormalPost = () => {
               step={1}
               label="Allowed Mints"
               name="allowedMints"
-              onChange={(e) => handleChange(e)}
-              onFocus={(e) => handleChange(e)}
+              onChange={(e) => handleChange(e, "allowedMints")}
+              onFocus={(e) => handleChange(e, "allowedMints")}
               value={farcasterStates.frameData.allowedMints}
             />
           </div>
