@@ -14,6 +14,7 @@ export const postFrame = async ({
   isLike,
   isRecast,
   isFollow,
+  redirectLink,
 }) => {
   const res = await api.post(`${API}/util//create-frame-data`, {
     canvasId,
@@ -24,29 +25,7 @@ export const postFrame = async ({
     isLike,
     isRecast,
     isFollow,
-  });
-  return res.data;
-};
-
-export const updateFrame = async ({
-  frameId,
-  imageUrl,
-  tokenUri,
-  minterAddress,
-  txHash,
-  isLike,
-  isRecast,
-  isFollow,
-}) => {
-  const res = await api.put(`${API}/util/update-frame-data`, {
-    frameId,
-    imageUrl,
-    tokenUri,
-    minterAddress,
-    txHash,
-    isLike,
-    isRecast,
-    isFollow,
+    redirectLink,
   });
   return res.data;
 };
