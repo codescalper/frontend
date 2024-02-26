@@ -376,6 +376,12 @@ const useReset = () => {
 
         isTopup: false,
         isSufficientBalance: false,
+
+        isExternalLink: false,
+        externalLink: "",
+
+        isExternalLinkError: false,
+        externalLinkError: "",
       },
     });
   };
