@@ -110,9 +110,11 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
 
     console.log("slugRes", slugRes);
 
-    // toast.success("Link copied to clipboard");
-    // navigator.clipboard.writeText(slugRes?.data?.slug);
-  }
+    toast.success("Link copied to clipboard");
+    // navigator.clipboard.writeText(`http:localhost:5173/design/${slugRes?.data?.message}`);
+    const baseURL = window.location.origin;
+    navigator.clipboard.writeText(`${baseURL}/design/${slugRes?.data?.message}`);
+  };
   return (
     <>
       <Dialog
@@ -229,11 +231,7 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
             </Button>
           </div>
           <div className="ml-2">
-            <Button
-              variant="outline"
-              color=""
-              onClick={fnGenerateSlug}
-            >
+            <Button variant="outline" color="" onClick={fnGenerateSlug}>
               Copy Link
             </Button>
           </div>
