@@ -153,6 +153,11 @@ export const StickerPanel = () => {
       campaign: "$frame",
     },
     {
+      name: "Monniverse",
+      author: "monniverse",
+      campaign: "monniverse",
+    },
+    {
       name: "Degen",
       author: null,
       campaign: "degen",
