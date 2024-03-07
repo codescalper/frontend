@@ -17,6 +17,7 @@ import {
   baseGoerli,
   optimismGoerli,
   baseSepolia,
+  arbitrum,
 } from "wagmi/chains";
 import {
   coinbaseWallet,
@@ -38,7 +39,7 @@ import { publicActions } from "viem";
 
 const { chains, publicClient } = configureChains(
   ENVIRONMENT === "production"
-    ? [polygon, mainnet, base, zora, optimism]
+    ? [polygon, mainnet, base, zora, optimism, arbitrum]
     : [polygonMumbai, goerli, baseSepolia],
   [alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()]
 );

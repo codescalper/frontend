@@ -11,6 +11,7 @@ import {
 } from "../../../../../../../utils";
 import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
 import {
+  APP_ETH_ADDRESS,
   ERROR,
   FRAME_LINK,
   LOCAL_STORAGE,
@@ -24,18 +25,20 @@ import { Switch } from "@headlessui/react";
 import { ZoraDialog } from "../../zora-mint/components";
 import logoFarcaster from "../../../../../../../assets/logos/logoFarcaster.jpg";
 import {
+  deployZoraContract,
   getFrame,
   getOrCreateWallet,
   postFrame,
 } from "../../../../../../../services/apis/BE-apis";
 import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
 import Topup from "./Topup";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import WithdrawFunds from "./WithdrawFunds";
 
 const FarcasterNormalPost = () => {
   const { resetState } = useReset();
   const { address } = useAccount();
+  const { chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
 
   // farcaster states
@@ -43,6 +46,14 @@ const FarcasterNormalPost = () => {
   const [isShareSuccess, setIsShareSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [farTxHash, setFarTxHash] = useState("");
+
+  // zora contract deploy states
+  // const [isDeployingZoraContract, setIsDeployingZoraContract] = useState(false);
+  const [isDeployingZoraContractError, setIsDeployingZoraContractError] =
+    useState(false);
+  const [isDeployingZoraContractSuccess, setIsDeployingZoraContractSuccess] =
+    useState(false);
+  const [zoraContractAddress, setZoraContractAddress] = useState(null);
 
   // frame POST states
   const [isPostingFrame, setIsPostingFrame] = useState(false);
@@ -84,6 +95,11 @@ const FarcasterNormalPost = () => {
     cacheTime: 2_000,
   });
 
+  const { mutateAsync: deployZoraContractMutation } = useMutation({
+    mutationKey: "deployZoraContract",
+    mutationFn: deployZoraContract,
+  });
+
   const { mutateAsync: postFrameData } = useMutation({
     mutationKey: "postFrameData",
     mutationFn: postFrame,
@@ -93,6 +109,54 @@ const FarcasterNormalPost = () => {
     mutationKey: "shareOnFarcaster",
     mutationFn: shareOnSocials,
   });
+
+  const handleMintSettings = () => {
+    const createReferral = APP_ETH_ADDRESS;
+    const defaultAdmin = address;
+
+    let contractName = "My Lenspost Collection";
+    let symbol = "MLC";
+    let description = "This is my Lenspost Collection";
+    let allowList = [];
+    let editionSize = "0xfffffffffff"; // default open edition
+    let royaltyBps = "0"; // 1% = 100 bps
+    let animationUri = "0x0";
+    let imageUri = "0x0";
+    let fundsRecipient = address;
+    // max value for maxSalePurchasePerAddress, results in no mint limit
+    let maxSalePurchasePerAddress = "4294967295";
+    let publicSalePrice = "0";
+    let presaleStart = "0";
+    let presaleEnd = "0";
+    let publicSaleStart = "0";
+    // max value for end date, results in no end date for mint
+    let publicSaleEnd = "18446744073709551615";
+
+    const arr = [
+      contractName,
+      symbol,
+      editionSize,
+      royaltyBps,
+      fundsRecipient,
+      defaultAdmin,
+      {
+        publicSalePrice,
+        maxSalePurchasePerAddress,
+        publicSaleStart,
+        publicSaleEnd,
+        presaleStart,
+        presaleEnd,
+        presaleMerkleRoot:
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      description,
+      animationUri,
+      imageUri,
+      createReferral,
+    ];
+
+    return { args: arr };
+  };
 
   const handleChange = (e, key) => {
     const { name, value } = e.target;
@@ -135,8 +199,34 @@ const FarcasterNormalPost = () => {
     });
   };
 
-  const postFrameDataFn = async () => {
+  // deploy zora contract
+  const deployZoraContractFn = async () => {
+    console.log("Deploying Zora contract");
     setIsPostingFrame(true);
+    deployZoraContractMutation({
+      contract_type: "721",
+      canvasId: contextCanvasIdRef.current,
+      chainId: chain?.id,
+      args: handleMintSettings().args,
+    })
+      .then((res) => {
+        if (res?.status === 200) {
+          setZoraContractAddress(res?.tx);
+          setIsDeployingZoraContractSuccess(true);
+        } else if (res?.status === 400) {
+          setIsPostingFrame(false);
+          setIsDeployingZoraContractError(true);
+          toast.error(res?.message);
+        }
+      })
+      .catch((err) => {
+        setIsPostingFrame(false);
+        setIsDeployingZoraContractError(true);
+        toast.error(errorMessage(err));
+      });
+  };
+
+  const postFrameDataFn = async () => {
     postFrameData({
       canvasId: contextCanvasIdRef.current,
       owner: address,
@@ -150,6 +240,8 @@ const FarcasterNormalPost = () => {
       isRecast: farcasterStates.frameData?.isRecast,
       isFollow: farcasterStates.frameData?.isFollow,
       redirectLink: farcasterStates.frameData?.externalLink,
+      contractAddress: zoraContractAddress,
+      chainId: chain?.id,
     })
       .then((res) => {
         if (res?.status === "success") {
@@ -270,12 +362,18 @@ const FarcasterNormalPost = () => {
     }
 
     if (farcasterStates.frameData?.isFrame) {
-      // upload to IPFS
-      postFrameDataFn();
+      // deploy zora contract
+      deployZoraContractFn();
     } else {
       sharePost("farcaster");
     }
   };
+
+  useEffect(() => {
+    if (isDeployingZoraContractSuccess) {
+      postFrameDataFn();
+    }
+  }, [isDeployingZoraContractSuccess]);
 
   useEffect(() => {
     if (isPostingFrameSuccess) {
@@ -290,7 +388,7 @@ const FarcasterNormalPost = () => {
       <ZoraDialog
         title="Share on Farcaster"
         icon={logoFarcaster}
-        isError={isError || isPostingFrameError}
+        isError={isError || isPostingFrameError || isDeployingZoraContractError}
         isLoading={false}
         isCreatingSplit={null}
         isUploadingToIPFS={isPostingFrame}
@@ -531,7 +629,7 @@ const FarcasterNormalPost = () => {
           </div>
           <div className="w-4/5 opacity-75">
             {" "}
-            Let user know more about yur frame.{" "}
+            Let user know more about your frame.{" "}
           </div>
 
           <div

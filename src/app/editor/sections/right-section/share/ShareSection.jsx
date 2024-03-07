@@ -51,6 +51,10 @@ const ShareSection = () => {
       id: 10,
       name: "OP Mainnet",
     },
+    {
+      id: 42161,
+      name: "Arbitrum One",
+    }
   ];
 
   const filterChains = () => {

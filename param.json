@@ -1,20 +1,26 @@
 {
-    "canvasData": {
-        "constent": "test",
-        "id": 19792,
-        "name": "test"
-    },
-    "canvasParams": {
-        "creators": [
-            {
-                "address": "2PsV6hNEUc3rSMGqKcHTnRBemaWBQX3dYgUqVtEFxkwa",
-                "share": 50
-            },
-            {
-                "address": "4v6hZ15S7C5DK9GxDd1T5hZCKfM3Gq8JdUkQZfc5gGmp",
-                "share": 50
-            }
-        ]
-    },
-    "platform": "solana-master"
+    "contract_type": "721",
+    "canvasId": 20191,
+    "chainId": 84532,
+    "args": [
+        "My Lenspost Collection",
+        "MLC",
+        "0xfffffffffff",
+        "0",
+        "0x7d8504C239F951d944D23B7Ad9beDEDc4d4512d9",
+        "0x7d8504C239F951d944D23B7Ad9beDEDc4d4512d9",
+        {
+            "publicSalePrice": "0",
+            "maxSalePurchasePerAddress": "4294967295",
+            "publicSaleStart": "0",
+            "publicSaleEnd": "18446744073709551615",
+            "presaleStart": "0",
+            "presaleEnd": "18446744073709551615",
+            "presaleMerkleRoot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "This is my Lenspost Collection",
+        "0x0",
+        "imageUri",
+        "createReferral"
+    ]
 }

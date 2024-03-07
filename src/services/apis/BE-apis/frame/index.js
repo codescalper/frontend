@@ -15,6 +15,8 @@ export const postFrame = async ({
   isRecast,
   isFollow,
   redirectLink,
+  contractAddress,
+  chainId,
 }) => {
   const res = await api.post(`${API}/util//create-frame-data`, {
     canvasId,
@@ -26,6 +28,8 @@ export const postFrame = async ({
     isRecast,
     isFollow,
     redirectLink,
+    contractAddress,
+    chainId,
   });
   return res.data;
 };

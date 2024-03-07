@@ -10,17 +10,18 @@ import { ENVIRONMENT } from "../../../../../../../services";
  * ERC721 Testnet Goerli
  */
 
+const mainnetPrefixes = {
+  1: "eth",
+  5: "eth",
+  8453: "base",
+  7777777: "zora",
+  10: "oeth",
+  42161: "arb",
+};
+
 export const zoraURLErc721 = (contractAddress, chainId) => {
   const mainnetPrefix = () => {
-    if (chainId === 8453) {
-      return "base";
-    } else if (chainId === 1) {
-      return "eth";
-    } else if (chainId === 7777777) {
-      return "zora";
-    } else if (chainId === 10) {
-      return "oeth";
-    }
+    return mainnetPrefixes[chainId] || undefined;
   };
 
   return `https://${
