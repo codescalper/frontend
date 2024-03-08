@@ -42,14 +42,14 @@ import {
   StickerSection,
   TemplateSection,
   UploadSection,
-  MemeSection
+  MemeSection,
 } from "./sections/left-section";
 import { BgRemover } from "./sections/bottom-section";
 import { OnboardingSteps, OnboardingStepsWithShare } from "./common";
 import { SpeedDialX } from "./common/elements/SpeedDial";
 import { Tooltip } from "polotno/canvas/tooltip";
 import { useSolanaWallet } from "../../hooks/solana";
-import { LOCAL_STORAGE } from "../../data";
+import { APP_ETH_ADDRESS, LOCAL_STORAGE } from "../../data";
 import { Button } from "@material-tailwind/react";
 import { useAppAuth, useLocalStorage } from "../../hooks/app";
 import { getFarUserDetails } from "../../services/apis/BE-apis";
@@ -233,27 +233,25 @@ const Editor = () => {
   // function to add the all recipient handles / address
   const recipientDataCombiner = () => {
     const { loggedInUserAddress } = useLocalStorage();
-    // NOTE: I don't know why loggedInUserAddress is not getting from the outside of this function
 
-    // create an array of all the recipients then make it unique
-    let parentArray = [];
+    // Get unique recipients by creating a Set
+    const recipientsSet = new Set([
+      ...(referredFromRef.current.length > 0 &&
+      referredFromRef.current[0] !== APP_ETH_ADDRESS
+        ? [referredFromRef.current[0]]
+        : []), // Add owner address if canvas is owned by other user and not equal to APP_ETH_ADDRESS
+      ...recipientDataFilter().recipients, // Add handles of all the dataRefs recipients
+    ]);
 
-    // if the canvas is owned by other user
-    if (referredFromRef.current.length > 0) {
-      parentArray = [
-        loggedInUserAddress, // current recipient address
-        referredFromRef.current[0], // owner address of other created canvas
-        ...recipientDataFilter().recipients, // handles of all the dataRefs recipients
-      ];
-    } else {
-      parentArray = [
-        loggedInUserAddress, // current recipient address
-        ...recipientDataFilter().recipients, // handles of all the dataRefs recipients
-      ];
+    // Remove loggedInUserAddress if it's equal to APP_ETH_ADDRESS
+    if (loggedInUserAddress !== APP_ETH_ADDRESS) {
+      recipientsSet.add(loggedInUserAddress); // Add loggedInUserAddress if it's not equal to APP_ETH_ADDRESS
     }
 
-    // update the parentRecipientRef to the uniq values (final list for split revenue)
-    parentRecipientListRef.current = [...new Set(parentArray)];
+    // Convert the Set back to an array
+    const parentRecipientList = Array.from(recipientsSet);
+
+    parentRecipientListRef.current = parentRecipientList;
 
     return {
       recipients: parentRecipientListRef.current,
@@ -289,7 +287,7 @@ const Editor = () => {
       // save it to the backend
       if (canvasChildren?.length > 0) {
         // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
-        // console.log("parentRecipientRef", recipientDataCombiner().recipients);
+        console.log("parentRecipientRef", recipientDataCombiner().recipients);
 
         // return;
 
