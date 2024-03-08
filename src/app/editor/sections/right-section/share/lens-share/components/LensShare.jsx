@@ -174,9 +174,10 @@ const LensShare = () => {
 
   // formate date and time in ISO 8601 format for monatizationn settings
   const formatDateTimeISO8601 = (date, time) => {
-    if (!date || !time) return;
+    if (!date || !time || date === "Invalid Date" || time === "Invalid Date")
+      return;
     const dateTime = new Date(`${date} ${time}`);
-    return dateTime.toISOString();
+    return dateTime?.toISOString();
   };
 
   // format date and time in unix format for schedule post

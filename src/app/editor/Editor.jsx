@@ -287,7 +287,7 @@ const Editor = () => {
       // save it to the backend
       if (canvasChildren?.length > 0) {
         // console.log("parentRecipientObj", recipientDataFilter().recipientsData);
-        console.log("parentRecipientRef", recipientDataCombiner().recipients);
+        // console.log("parentRecipientRef", recipientDataCombiner().recipients);
 
         // return;
 
