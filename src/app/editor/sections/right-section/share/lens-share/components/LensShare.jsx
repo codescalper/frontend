@@ -155,10 +155,10 @@ const LensShare = () => {
 
   // get the list of tokens from json file
   const tokenList = () => {
-    if (ENVIRONMENT === "localhost" || ENVIRONMENT === "development") {
-      return testnetTokenAddress.tokens;
-    } else {
+    if (ENVIRONMENT === "production") {
       return mainnetTokenAddress.tokens;
+    } else {
+      return testnetTokenAddress.tokens;
     }
   };
 

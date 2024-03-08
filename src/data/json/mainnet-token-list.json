@@ -45,6 +45,14 @@
             "name": "Nature Carbon Tonne",
             "decimals": 18,
             "logoURI": "https://polygonscan.com/token/images/toucannct_32.png"
+        },
+        {
+            "chainId": 137,
+            "address": "0x3d2bD0e15829AA5C362a4144FdF4A1112fa29B5c",
+            "symbol": "BONSAI",
+            "name": "Bonsai",
+            "decimals": 18,
+            "logoURI": "https://polygonscan.com/token/images/toucannct_32.png"
         }
     ],
     "version": {
