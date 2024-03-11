@@ -206,7 +206,7 @@ const FarcasterNormalPost = () => {
     deployZoraContractMutation({
       contract_type: "721",
       canvasId: contextCanvasIdRef.current,
-      chainId: chain?.id,
+      chainId: 999999999,
       args: handleMintSettings().args,
     })
       .then((res) => {
