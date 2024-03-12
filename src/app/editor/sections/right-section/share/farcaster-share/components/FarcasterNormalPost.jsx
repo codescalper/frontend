@@ -133,7 +133,7 @@ const FarcasterNormalPost = () => {
     "0xfffffffffff",
     "0",
     address,
-    address,
+    walletData?.publicAddress,
     {
       publicSalePrice: "0",
       maxSalePurchasePerAddress: "4294967295",
