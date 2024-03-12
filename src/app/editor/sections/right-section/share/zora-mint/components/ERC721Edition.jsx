@@ -711,7 +711,10 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
     isError: isPrepareError,
   } = usePrepareContractWrite({
     abi: zoraNftCreatorV1Config.abi,
-    address: zoraNftCreatorV1Config.address[chainId],
+    address:
+      chain?.id == 8453
+        ? "0x58C3ccB2dcb9384E5AB9111CD1a5DEA916B0f33c"
+        : zoraNftCreatorV1Config.address[chainId],
     functionName: "createEditionWithReferral",
     args: handleMintSettings().args,
   });
