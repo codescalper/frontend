@@ -52,7 +52,7 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
 
   // console.log("numberOfExtraMints", numberOfExtraMints);
 
-  const payForMints = (Number("0.000067513023052397") * numberOfExtraMints)
+  const payForMints = (Number("0.000867513023052397") * numberOfExtraMints)
     .toFixed(18)
     .toString();
 
