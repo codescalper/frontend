@@ -1,5 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { shareOnSocials } from "../../../../../../../services";
+import {
+  shareOnSocials,
+  uploadUserAssetToIPFS,
+} from "../../../../../../../services";
 import { toast } from "react-toastify";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Context } from "../../../../../../../providers/context/ContextProvider";
@@ -40,6 +43,7 @@ const FarcasterNormalPost = () => {
   const { address } = useAccount();
   const { chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const { canvasBase64Ref } = useContext(Context);
 
   // farcaster states
   const [isShareLoading, setIsShareLoading] = useState(false);
@@ -110,53 +114,41 @@ const FarcasterNormalPost = () => {
     mutationFn: shareOnSocials,
   });
 
-  const handleMintSettings = () => {
-    const createReferral = APP_ETH_ADDRESS;
-    const defaultAdmin = address;
+  // upload to IPFS Mutation
+  const {
+    mutate,
+    data: uploadData,
+    isError: isUploadError,
+    error: uploadError,
+    isSuccess: isUploadSuccess,
+    isLoading: isUploading,
+  } = useMutation({
+    mutationKey: "uploadToIPFS",
+    mutationFn: uploadUserAssetToIPFS,
+  });
 
-    let contractName = "My Lenspost Collection";
-    let symbol = "MLC";
-    let description = "This is my Lenspost Collection";
-    let allowList = [];
-    let editionSize = "0xfffffffffff"; // default open edition
-    let royaltyBps = "0"; // 1% = 100 bps
-    let animationUri = "0x0";
-    let imageUri = "0x0";
-    let fundsRecipient = address;
-    // max value for maxSalePurchasePerAddress, results in no mint limit
-    let maxSalePurchasePerAddress = "4294967295";
-    let publicSalePrice = "0";
-    let presaleStart = "0";
-    let presaleEnd = "0";
-    let publicSaleStart = "0";
-    // max value for end date, results in no end date for mint
-    let publicSaleEnd = "18446744073709551615";
-
-    const arr = [
-      contractName,
-      symbol,
-      editionSize,
-      royaltyBps,
-      fundsRecipient,
-      defaultAdmin,
-      {
-        publicSalePrice,
-        maxSalePurchasePerAddress,
-        publicSaleStart,
-        publicSaleEnd,
-        presaleStart,
-        presaleEnd,
-        presaleMerkleRoot:
-          "0x0000000000000000000000000000000000000000000000000000000000000000",
-      },
-      description,
-      animationUri,
-      imageUri,
-      createReferral,
-    ];
-
-    return { args: arr };
-  };
+  const argsArr = [
+    "My Lenspost Collection",
+    "MLC",
+    "0xfffffffffff",
+    "0",
+    address,
+    address,
+    {
+      publicSalePrice: "0",
+      maxSalePurchasePerAddress: "4294967295",
+      publicSaleStart: "0",
+      publicSaleEnd: "18446744073709551615",
+      presaleStart: "0",
+      presaleEnd: "18446744073709551615",
+      presaleMerkleRoot:
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+    },
+    "This is my Lenspost Collection",
+    "0x0",
+    `ipfs://${uploadData?.message}`,
+    APP_ETH_ADDRESS,
+  ];
 
   const handleChange = (e, key) => {
     const { name, value } = e.target;
@@ -202,22 +194,16 @@ const FarcasterNormalPost = () => {
   // deploy zora contract
   const deployZoraContractFn = async () => {
     console.log("Deploying Zora contract");
-    setIsPostingFrame(true);
+
     deployZoraContractMutation({
       contract_type: "721",
       canvasId: contextCanvasIdRef.current,
       chainId: 999999999,
-      args: handleMintSettings().args,
+      args: argsArr,
     })
       .then((res) => {
-        if (res?.status === 200) {
-          setZoraContractAddress(res?.tx);
-          setIsDeployingZoraContractSuccess(true);
-        } else if (res?.status === 400) {
-          setIsPostingFrame(false);
-          setIsDeployingZoraContractError(true);
-          toast.error(res?.message);
-        }
+        setZoraContractAddress(res?.contract_address);
+        setIsDeployingZoraContractSuccess(true);
       })
       .catch((err) => {
         setIsPostingFrame(false);
@@ -362,12 +348,19 @@ const FarcasterNormalPost = () => {
     }
 
     if (farcasterStates.frameData?.isFrame) {
+      setIsPostingFrame(true);
       // deploy zora contract
-      deployZoraContractFn();
+      mutate(canvasBase64Ref.current[0]);
     } else {
       sharePost("farcaster");
     }
   };
+
+  useEffect(() => {
+    if (isUploadSuccess) {
+      deployZoraContractFn();
+    }
+  }, [isUploadSuccess]);
 
   useEffect(() => {
     if (isDeployingZoraContractSuccess) {
