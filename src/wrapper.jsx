@@ -10,6 +10,7 @@ import { TourProvider } from "@reactour/tour";
 import { OnboardingSteps } from "./app/editor/common";
 import { EVMWalletProvider } from "./providers/EVM";
 import { SolanaWalletProvider } from "./providers/solana";
+import Test from "./Test";
 
 const radius = 8;
 
@@ -70,6 +71,9 @@ export const Wrapper = () => {
                   }
                 />
                 <Route path="/ifUserEligible" element={<AuthComponent />} />
+
+                {/* remove it */}
+                <Route path="/test" element={<Test />} />
               </Routes>
               {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
             </BrowserRouter>

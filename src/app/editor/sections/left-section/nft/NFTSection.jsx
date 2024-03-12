@@ -458,20 +458,17 @@ const WalletNFT = () => {
   const isSolana = "solana";
   const isEVM = "ethereum" || "polygon" || "zora";
 
+  const chainNamrToID = {
+    ethereum: 1,
+    polygon: 137,
+    solana: 2,
+    zora: 7777777,
+    base: 8453,
+    OP: 10,
+  };
+
   const getChainId = () => {
-    if (currentTab === "ethereum") {
-      return 1;
-    } else if (currentTab === "polygon") {
-      return 137;
-    } else if (currentTab === "solana") {
-      return 2;
-    } else if (currentTab === "zora") {
-      return 7777777;
-    } else if (currentTab === "base") {
-      return 8453;
-    } else if (currentTab === "OP") {
-      return 10;
-    }
+    return chainNamrToID[currentTab];
   };
 
   const queryClient = useQueryClient();

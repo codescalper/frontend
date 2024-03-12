@@ -887,6 +887,7 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
   // mint on Zora
   useEffect(() => {
     if (createSplitData?.splitAddress) {
+      console.log("createSplitData", createSplitData);
       setTimeout(() => {
         write?.();
       }, 1000);
@@ -924,6 +925,9 @@ const ERC721Edition = ({ isOpenAction, isFarcaster, selectedChainId }) => {
         canvasId: contextCanvasIdRef.current,
         mintLink: zoraURLErc721(receipt?.logs[0]?.address, chain?.id),
         chain: chain?.name,
+        contractType: 721,
+        chainId: chain?.id,
+        hash: receipt?.logs[0]?.address,
       };
 
       storeZoraLinkMutation(paramsData)

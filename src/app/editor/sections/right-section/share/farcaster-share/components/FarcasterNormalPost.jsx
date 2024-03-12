@@ -1,5 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { shareOnSocials } from "../../../../../../../services";
+import {
+  shareOnSocials,
+  uploadUserAssetToIPFS,
+} from "../../../../../../../services";
 import { toast } from "react-toastify";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Context } from "../../../../../../../providers/context/ContextProvider";
@@ -11,6 +14,7 @@ import {
 } from "../../../../../../../utils";
 import { useLocalStorage, useReset } from "../../../../../../../hooks/app";
 import {
+  APP_ETH_ADDRESS,
   ERROR,
   FRAME_LINK,
   LOCAL_STORAGE,
@@ -24,25 +28,36 @@ import { Switch } from "@headlessui/react";
 import { ZoraDialog } from "../../zora-mint/components";
 import logoFarcaster from "../../../../../../../assets/logos/logoFarcaster.jpg";
 import {
+  deployZoraContract,
   getFrame,
   getOrCreateWallet,
   postFrame,
 } from "../../../../../../../services/apis/BE-apis";
 import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
 import Topup from "./Topup";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import WithdrawFunds from "./WithdrawFunds";
 
 const FarcasterNormalPost = () => {
   const { resetState } = useReset();
   const { address } = useAccount();
+  const { chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
+  const { canvasBase64Ref } = useContext(Context);
 
   // farcaster states
   const [isShareLoading, setIsShareLoading] = useState(false);
   const [isShareSuccess, setIsShareSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [farTxHash, setFarTxHash] = useState("");
+
+  // zora contract deploy states
+  // const [isDeployingZoraContract, setIsDeployingZoraContract] = useState(false);
+  const [isDeployingZoraContractError, setIsDeployingZoraContractError] =
+    useState(false);
+  const [isDeployingZoraContractSuccess, setIsDeployingZoraContractSuccess] =
+    useState(false);
+  const [zoraContractAddress, setZoraContractAddress] = useState(null);
 
   // frame POST states
   const [isPostingFrame, setIsPostingFrame] = useState(false);
@@ -84,6 +99,11 @@ const FarcasterNormalPost = () => {
     cacheTime: 2_000,
   });
 
+  const { mutateAsync: deployZoraContractMutation } = useMutation({
+    mutationKey: "deployZoraContract",
+    mutationFn: deployZoraContract,
+  });
+
   const { mutateAsync: postFrameData } = useMutation({
     mutationKey: "postFrameData",
     mutationFn: postFrame,
@@ -93,6 +113,42 @@ const FarcasterNormalPost = () => {
     mutationKey: "shareOnFarcaster",
     mutationFn: shareOnSocials,
   });
+
+  // upload to IPFS Mutation
+  const {
+    mutate,
+    data: uploadData,
+    isError: isUploadError,
+    error: uploadError,
+    isSuccess: isUploadSuccess,
+    isLoading: isUploading,
+  } = useMutation({
+    mutationKey: "uploadToIPFS",
+    mutationFn: uploadUserAssetToIPFS,
+  });
+
+  const argsArr = [
+    "My Lenspost Collection",
+    "MLC",
+    "0xfffffffffff",
+    "0",
+    address,
+    address,
+    {
+      publicSalePrice: "0",
+      maxSalePurchasePerAddress: "4294967295",
+      publicSaleStart: "0",
+      publicSaleEnd: "18446744073709551615",
+      presaleStart: "0",
+      presaleEnd: "18446744073709551615",
+      presaleMerkleRoot:
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+    },
+    "This is my Lenspost Collection",
+    "0x0",
+    `ipfs://${uploadData?.message}`,
+    APP_ETH_ADDRESS,
+  ];
 
   const handleChange = (e, key) => {
     const { name, value } = e.target;
@@ -135,8 +191,28 @@ const FarcasterNormalPost = () => {
     });
   };
 
+  // deploy zora contract
+  const deployZoraContractFn = async () => {
+    console.log("Deploying Zora contract");
+
+    deployZoraContractMutation({
+      contract_type: "721",
+      canvasId: contextCanvasIdRef.current,
+      chainId: 999999999,
+      args: argsArr,
+    })
+      .then((res) => {
+        setZoraContractAddress(res?.contract_address);
+        setIsDeployingZoraContractSuccess(true);
+      })
+      .catch((err) => {
+        setIsPostingFrame(false);
+        setIsDeployingZoraContractError(true);
+        toast.error(errorMessage(err));
+      });
+  };
+
   const postFrameDataFn = async () => {
-    setIsPostingFrame(true);
     postFrameData({
       canvasId: contextCanvasIdRef.current,
       owner: address,
@@ -150,6 +226,8 @@ const FarcasterNormalPost = () => {
       isRecast: farcasterStates.frameData?.isRecast,
       isFollow: farcasterStates.frameData?.isFollow,
       redirectLink: farcasterStates.frameData?.externalLink,
+      contractAddress: zoraContractAddress,
+      chainId: chain?.id,
     })
       .then((res) => {
         if (res?.status === "success") {
@@ -270,12 +348,25 @@ const FarcasterNormalPost = () => {
     }
 
     if (farcasterStates.frameData?.isFrame) {
-      // upload to IPFS
-      postFrameDataFn();
+      setIsPostingFrame(true);
+      // deploy zora contract
+      mutate(canvasBase64Ref.current[0]);
     } else {
       sharePost("farcaster");
     }
   };
+
+  useEffect(() => {
+    if (isUploadSuccess) {
+      deployZoraContractFn();
+    }
+  }, [isUploadSuccess]);
+
+  useEffect(() => {
+    if (isDeployingZoraContractSuccess) {
+      postFrameDataFn();
+    }
+  }, [isDeployingZoraContractSuccess]);
 
   useEffect(() => {
     if (isPostingFrameSuccess) {
@@ -290,7 +381,7 @@ const FarcasterNormalPost = () => {
       <ZoraDialog
         title="Share on Farcaster"
         icon={logoFarcaster}
-        isError={isError || isPostingFrameError}
+        isError={isError || isPostingFrameError || isDeployingZoraContractError}
         isLoading={false}
         isCreatingSplit={null}
         isUploadingToIPFS={isPostingFrame}
@@ -531,7 +622,7 @@ const FarcasterNormalPost = () => {
           </div>
           <div className="w-4/5 opacity-75">
             {" "}
-            Let user know more about yur frame.{" "}
+            Let user know more about your frame.{" "}
           </div>
 
           <div

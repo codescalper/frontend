@@ -1,13 +1,20 @@
-import { BaseLogo, EthLogo, ZoraLogo, OpMainnetLogo } from "../assets";
+import {
+  BaseLogo,
+  EthLogo,
+  ZoraLogo,
+  OpMainnetLogo,
+  arbitrumLogo,
+} from "../assets";
+
+const chainLogos = {
+  1: EthLogo,
+  5: EthLogo,
+  8453: BaseLogo,
+  7777777: ZoraLogo,
+  10: OpMainnetLogo,
+  42161: arbitrumLogo,
+};
 
 export const chainLogo = (chainId) => {
-  if (chainId === 1 || chainId === 5) {
-    return EthLogo;
-  } else if (chainId === 8453) {
-    return BaseLogo;
-  } else if (chainId === 7777777) {
-    return ZoraLogo;
-  } else if (chainId === 10) {
-    return OpMainnetLogo;
-  }
+  return chainLogos[chainId] || null;
 };

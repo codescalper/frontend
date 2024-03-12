@@ -6,7 +6,7 @@ import BaseLogo from "./logos/baseLogo.png";
 import OpMainnetLogo from "./logos/opMainnetLogo.webp";
 import EVMLogo from "./logos/evmLogo.png";
 
-// const zoraLogo = "https://avatars.githubusercontent.com/u/60056322?s=280&v=4"
+const arbitrumLogo = "https://icons.llamao.fi/icons/chains/rsz_arbitrum.jpg";
 
 export {
   SolanaLogo,
@@ -16,4 +16,5 @@ export {
   EthLogo,
   BaseLogo,
   OpMainnetLogo,
+  arbitrumLogo,
 };
