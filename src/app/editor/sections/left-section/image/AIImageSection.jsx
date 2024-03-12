@@ -87,6 +87,7 @@ const CompSearch = () => {
         setStStatusCode(data.status);
         if (data.status === 200) {
           setStStatusCode(200);
+          console.log("The LEXICA AI images are", data.data.images);
           setData(data.data.images);
         } else if (data.status === 429) {
           setStStatusCode(429);
@@ -286,7 +287,7 @@ const CompInstructImage = () => {
         "content-type": "application/json",
         authorization:
           "Bearer key-2ldCt5QwA0Jt9VxoHDWadZukBnQKqM9Rcj9UBZPRVR0eh8sbhLzMylCMmNreNR5GqwgsMJmoolcBGA5JBgUleuP2BqWNiYZ2",
-          // "Bearer key-4tA8akcKtGFZQwipltBWJz3CCe1Jh6u7PX59uRJY9U6wEvareOdhlhWgCiMWnZeCz9CC6GIJLaddIJGbHr5crjfz6ROXTUXY"
+        // "Bearer key-4tA8akcKtGFZQwipltBWJz3CCe1Jh6u7PX59uRJY9U6wEvareOdhlhWgCiMWnZeCz9CC6GIJLaddIJGbHr5crjfz6ROXTUXY"
       },
       body: JSON.stringify({
         // data: {
@@ -300,17 +301,20 @@ const CompInstructImage = () => {
     console.log("Calling API Start");
 
     // await fetch("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
-    await fetch("https://api.getimg.ai/v1/stable-diffusion/image-to-image", options)
+    await fetch(
+      "https://api.getimg.ai/v1/stable-diffusion/image-to-image",
+      options
+    )
       // await axios.post("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
       .then((response) => response.json())
       .then((response) => {
         console.log(" Response from Fetch ");
         console.log(response);
         // if (response.status === 200) {
-          if(!response.image){
-            setBase64ImgLink("");
-            setStDisplayMessage("It's not you, it's us. Please try again later.");
-          }
+        if (!response.image) {
+          setBase64ImgLink("");
+          setStDisplayMessage("It's not you, it's us. Please try again later.");
+        }
         setBase64ImgLink(response.image);
         // }
         // if (response.status === 500) {
@@ -363,45 +367,43 @@ const CompInstructImage = () => {
   return (
     <>
       <div className="h-full overflow-y-auto">
+        <div className="m-1 mb-2 ml-2">
+          {" "}
+          {/* <Chip color="blue" variant="ghost" value="Original Image" /> */}
+          Original Image{" "}
+        </div>
 
-          <div className="m-1 mb-2 ml-2">
-            {" "}
-            {/* <Chip color="blue" variant="ghost" value="Original Image" /> */}
-            Original Image{" "}
-          </div>
-
-          {/* <Input onChange={(e) => setStOriginalImage(e.target.value)} type="file" name="" id="" accept="image/*" /> */}
-          <div className="mb-4 rounded-md">
-            <input
-              className="mb-2 ml-2"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-            <div className="flex justify-center "> OR </div>
-            <MatButton
-              disabled={!fastPreview[0]}
-              size="sm"
-              color="deep-purple"
-              variant="outlined"
-              className="mt-4 p-2"
-              fullWidth
-              onClick={fnUseThisCanvas}
-            >
-              Use this Canvas
-            </MatButton>
-            {uploadedImg && (
-              <div className="flex justify-center">
-                <img
-                  className="m-2 rounded-md h-32 w-full object-contain"
-                  // src={`data:image/jpeg;base64, ${uploadedImg}`}
-                  src={uploadedImg}
-                  alt="Uploaded Image"
-                />
-              </div>
-            )}
-          </div>
-
+        {/* <Input onChange={(e) => setStOriginalImage(e.target.value)} type="file" name="" id="" accept="image/*" /> */}
+        <div className="mb-4 rounded-md">
+          <input
+            className="mb-2 ml-2"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+          <div className="flex justify-center "> OR </div>
+          <MatButton
+            disabled={!fastPreview[0]}
+            size="sm"
+            color="deep-purple"
+            variant="outlined"
+            className="mt-4 p-2"
+            fullWidth
+            onClick={fnUseThisCanvas}
+          >
+            Use this Canvas
+          </MatButton>
+          {uploadedImg && (
+            <div className="flex justify-center">
+              <img
+                className="m-2 rounded-md h-32 w-full object-contain"
+                // src={`data:image/jpeg;base64, ${uploadedImg}`}
+                src={uploadedImg}
+                alt="Uploaded Image"
+              />
+            </div>
+          )}
+        </div>
 
         <Textarea
           required

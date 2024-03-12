@@ -5,6 +5,7 @@ import {
   solanaAuth,
   evmAuth,
   getJSONDataForSlug,
+  getOgImageForSlug,
 } from "../services/apis/BE-apis/backendApi";
 import {
   getFromLocalStorage,
@@ -302,6 +303,41 @@ const App = () => {
   const location = useLocation();
   // const { store } = useStore();
 
+  const [imageSrc, setImageSrc] = useState(null);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const imageUrl = await getOgImageForSlug(slugId);
+        if (imageUrl) {
+          console.log("Image url from slug", imageUrl);
+          setImageSrc(imageUrl);
+          // Update OG meta tags dynamically
+          updateOgMetaTags(imageUrl);
+        } else {
+          console.error("Failed to fetch image");
+        }
+      } catch (error) {
+        console.error("Error fetching image:", error);
+      }
+    };
+
+    fetchImage();
+  }, []);
+
+  const updateOgMetaTags = (imageUrl) => {
+    const ogImageTag = document.querySelector('meta[property="og:image"]');
+    if (ogImageTag) {
+      ogImageTag.setAttribute("content", imageUrl);
+    }
+  };
+
+  function utilRestorePath(path) {
+    // Replace hyphens with slashes
+    path = path.replace(/-/g, "/");
+    return path;
+  }
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const share = queryParams.get("share");
@@ -317,8 +353,33 @@ const App = () => {
       // contextCanvasIdRef.current = slugId;
       fnLoadDataOnCanvas();
     }
+    // If the slugId is a URL, load the image on the canvas
+    if (slugId.startsWith("files") || slugId.startsWith("https://")) {
+      fnLoadImageOnCanvas();
+    }
   }, [location, navigate, slugId]);
 
+  const fnLoadImageOnCanvas = async () => {
+    const store = useStore();
+    const imageUrl = utilRestorePath(slugId) || slugId;
+    if (imageUrl) {
+      console.log("Image url from slug", imageUrl);
+      setImageSrc(imageUrl);
+      // Update OG meta tags dynamically
+      updateOgMetaTags(imageUrl);
+
+      store.activePage?.addElement({
+        type: "image",
+        src: `https://fal-cdn.batuhan-941.workers.dev/${imageUrl}.jpeg`,
+        width: store.width/2,
+        height: store.height/2,
+        x : store.width/2,
+        y: store.width/2,
+      });
+    } else {
+      console.error("Failed to fetch image");
+    }
+  };
   const fnLoadDataOnCanvas = async () => {
     const store = useStore();
     const dataForSlug = await getJSONDataForSlug(slugId);

@@ -625,3 +625,9 @@ export const getJSONDataForSlug = async (data) => {
     data: result?.data
   }
 } 
+export const getOgImageForSlug = async (data) => {
+  const result = await api.get(`${API}/util/get-slug-details?slug=${data}`);
+  return {
+    data: result?.data
+  }
+} 
