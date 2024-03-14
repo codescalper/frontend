@@ -144,7 +144,7 @@ const FarcasterNormalPost = () => {
       presaleMerkleRoot:
         "0x0000000000000000000000000000000000000000000000000000000000000000",
     },
-    "This is my Lenspost Collection",
+    postDescription,
     "0x0",
     `ipfs://${uploadData?.message}`,
     APP_ETH_ADDRESS,

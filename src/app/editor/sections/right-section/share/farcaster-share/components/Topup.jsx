@@ -43,16 +43,19 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
     cacheTime: 2_000,
   });
 
+  console.log("feeData", feeData?.formatted?.gasPrice);
+  
   const allowedMints = Number(farcasterStates.frameData?.allowedMints);
   const isSufficientBalance = farcasterStates.frameData?.isSufficientBalance;
   const isTopup = farcasterStates.frameData?.isTopup;
-
+  
   //   bcoz first 50 is free so we are subtracting 50 from total mints
   const numberOfExtraMints = allowedMints - sponsored;
-
+  
   // console.log("numberOfExtraMints", numberOfExtraMints);
-
-  const payForMints = (Number("0.000867513023052397") * numberOfExtraMints)
+  // console.log("main price", (feeData?.formatted?.gasPrice * 1000 * numberOfExtraMints).toFixed(18).toString());
+  
+  const payForMints = (Number(feeData?.formatted?.gasPrice) * 1000 * numberOfExtraMints)
     .toFixed(18)
     .toString();
 
