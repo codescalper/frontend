@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import {
+  ENVIRONMENT,
   shareOnSocials,
   uploadUserAssetToIPFS,
 } from "../../../../../../../services";
@@ -130,7 +131,7 @@ const FarcasterNormalPost = () => {
   const argsArr = [
     "My Lenspost Collection",
     "MLC",
-    "0xfffffffffff",
+    farcasterStates?.frameData?.allowedMints,
     "0",
     address,
     walletData?.publicAddress,
@@ -198,7 +199,7 @@ const FarcasterNormalPost = () => {
     deployZoraContractMutation({
       contract_type: "721",
       canvasId: contextCanvasIdRef.current,
-      chainId: chain?.id || 8453,
+      chainId: ENVIRONMENT === "production" ? chain?.id : 999999999,
       args: argsArr,
     })
       .then((res) => {
@@ -213,7 +214,7 @@ const FarcasterNormalPost = () => {
   };
 
   const postFrameDataFn = async () => {
-    postFrameData({
+    const params = {
       canvasId: contextCanvasIdRef.current,
       owner: address,
       isTopUp: farcasterStates.frameData?.isTopup,
@@ -228,7 +229,9 @@ const FarcasterNormalPost = () => {
       redirectLink: farcasterStates.frameData?.externalLink,
       contractAddress: zoraContractAddress,
       chainId: chain?.id,
-    })
+      creatorSponsored: farcasterStates.frameData?.isCreatorSponsored,
+    };
+    postFrameData(params)
       .then((res) => {
         if (res?.status === "success") {
           setFrameId(res?.frameId);
@@ -332,6 +335,7 @@ const FarcasterNormalPost = () => {
 
     if (
       farcasterStates.frameData?.isFrame &&
+      farcasterStates.frameData?.isCreatorSponsored &&
       farcasterStates.frameData?.allowedMints > walletData?.sponsored &&
       !farcasterStates.frameData?.isSufficientBalance
     ) {
@@ -645,32 +649,109 @@ const FarcasterNormalPost = () => {
           )}
         </div>
 
-        <div className="my-2">
-          <p className="text-sm">
-            {" "}
-            {walletData?.sponsored > 0
-              ? `${
-                  walletData?.sponsored
-                } mints are free. Topup with Base ETH if you want
-              to drop more than ${walletData?.sponsored} mints ${" "}`
-              : "You don't have any free mint. please Topup with Base ETH to mint"}{" "}
-          </p>
-          <p className="text-end mt-4">
-            <span>Topup account:</span>
-            <span
-              className="text-blue-500 cursor-pointer"
-              onClick={() => {
-                navigator.clipboard.writeText(walletData?.publicAddress);
-                toast.success("Copied topup account address");
-              }}
+        <div className="mb-4">
+          <div className="flex justify-between">
+            <h2 className="text-lg mb-2"> Sponsor Mints </h2>
+            <Switch
+              checked={farcasterStates.frameData?.isCreatorSponsored}
+              onChange={() =>
+                setFarcasterStates({
+                  ...farcasterStates,
+                  frameData: {
+                    ...farcasterStates.frameData,
+                    isCreatorSponsored:
+                      !farcasterStates.frameData?.isCreatorSponsored,
+                  },
+                })
+              }
+              className={`${
+                farcasterStates.frameData?.isCreatorSponsored
+                  ? "bg-[#e1f16b]"
+                  : "bg-gray-200"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#e1f16b] focus:ring-offset-2`}
             >
+              <span
+                className={`${
+                  farcasterStates.frameData?.isCreatorSponsored
+                    ? "translate-x-6"
+                    : "translate-x-1"
+                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              />{" "}
+            </Switch>
+          </div>
+          <div className="w-4/5 opacity-75">
+            {" "}
+            Let your audience mint your frame for free.{" "}
+          </div>
+        </div>
+
+        <div
+          className={`${
+            !farcasterStates.frameData?.isCreatorSponsored && "hidden"
+          } mt-2`}
+        >
+          <div className="my-2">
+            <p className="text-sm">
               {" "}
-              {addressCrop(walletData?.publicAddress)}
-            </span>
-          </p>
-          <p className="text-end">
-            <span>Topup balance:</span> {walletData?.balance} Base ETH
-          </p>
+              {walletData?.sponsored > 0
+                ? `${
+                    walletData?.sponsored
+                  } mints are free. Topup with Base ETH if you want
+              to drop more than ${walletData?.sponsored} mints ${" "}`
+                : "You don't have any free mint. please Topup with Base ETH to mint"}{" "}
+            </p>
+            <p className="text-end mt-4">
+              <span>Topup account:</span>
+              <span
+                className="text-blue-500 cursor-pointer"
+                onClick={() => {
+                  navigator.clipboard.writeText(walletData?.publicAddress);
+                  toast.success("Copied topup account address");
+                }}
+              >
+                {" "}
+                {addressCrop(walletData?.publicAddress)}
+              </span>
+            </p>
+            <p className="text-end">
+              <span>Topup balance:</span> {walletData?.balance} Base ETH
+            </p>
+            <div className="flex flex-col w-full py-2">
+              <NumberInputBox
+                min={1}
+                step={1}
+                label="Allowed Mints"
+                name="allowedMints"
+                onChange={(e) => handleChange(e, "allowedMints")}
+                onFocus={(e) => handleChange(e, "allowedMints")}
+                value={farcasterStates.frameData.allowedMints}
+              />
+            </div>
+
+            {farcasterStates.frameData?.allowedMintsIsError && (
+              <InputErrorMsg
+                message={farcasterStates.frameData?.allowedMintsError}
+              />
+            )}
+
+            {farcasterStates.frameData?.isCreatorSponsored &&
+              farcasterStates.frameData?.allowedMints >
+                walletData?.sponsored && (
+                <Topup
+                  topUpAccount={walletData?.publicAddress}
+                  balance={walletData?.balance}
+                  refetch={refetchWallet}
+                  sponsored={walletData?.sponsored}
+                />
+              )}
+          </div>
+        </div>
+
+        <div
+          className={`${
+            farcasterStates.frameData?.isCreatorSponsored && "hidden"
+          } mt-2`}
+        >
           <div className="flex flex-col w-full py-2">
             <NumberInputBox
               min={1}
@@ -688,20 +769,11 @@ const FarcasterNormalPost = () => {
               message={farcasterStates.frameData?.allowedMintsError}
             />
           )}
-
-          {farcasterStates.frameData?.allowedMints > walletData?.sponsored && (
-            <Topup
-              topUpAccount={walletData?.publicAddress}
-              balance={walletData?.balance}
-              refetch={refetchWallet}
-              sponsored={walletData?.sponsored}
-            />
-          )}
-
-          {walletData?.balance > 0 && (
-            <WithdrawFunds refetchWallet={refetchWallet} />
-          )}
         </div>
+
+        {walletData?.balance > 0 && (
+          <WithdrawFunds refetchWallet={refetchWallet} />
+        )}
       </div>
 
       <div className="flex flex-col bg-white shadow-2xl rounded-lg rounded-r-none">
