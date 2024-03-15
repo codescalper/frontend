@@ -36,28 +36,35 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
   const {
     data: feeData,
     isError: isFeeError,
+    error: feeError,
     isLoading: isFeeLoading,
   } = useFeeData({
     chainId: network?.id,
     formatUnits: "ether",
-    cacheTime: 2_000,
   });
 
-  console.log("feeData", feeData?.formatted?.gasPrice);
-  
+  // console.log(
+  //   "feeData",
+  //   Number(feeData?.formatted?.gasPrice).toFixed(18).toString()
+  // );
+
   const allowedMints = Number(farcasterStates.frameData?.allowedMints);
   const isSufficientBalance = farcasterStates.frameData?.isSufficientBalance;
   const isTopup = farcasterStates.frameData?.isTopup;
-  
-  //   bcoz first 50 is free so we are subtracting 50 from total mints
+  const gasPrice = feeData
+    ? Number(feeData?.formatted?.gasPrice)
+    : 0.000000000001000254;
+
+  //   bcoz first 10 is free so we are subtracting 10 from total mints
   const numberOfExtraMints = allowedMints - sponsored;
-  
+
   // console.log("numberOfExtraMints", numberOfExtraMints);
-  // console.log("main price", (feeData?.formatted?.gasPrice * 1000 * numberOfExtraMints).toFixed(18).toString());
-  
-  const payForMints = (Number(feeData?.formatted?.gasPrice) * 1000 * numberOfExtraMints)
+
+  const payForMints = (gasPrice * 1000 * numberOfExtraMints)
     .toFixed(18)
     .toString();
+
+  // console.log("payForMints", payForMints);
 
   const { config } = usePrepareSendTransaction({
     to: topUpAccount, // users wallet
