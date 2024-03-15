@@ -74,6 +74,7 @@ export const Wrapper = () => {
 
                 {/* remove it */}
                 <Route path="/test" element={<Test />} />
+                <Route path="/design/:slugId" element={<App />} />
               </Routes>
               {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
             </BrowserRouter>
