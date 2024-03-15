@@ -199,7 +199,7 @@ const FarcasterNormalPost = () => {
     deployZoraContractMutation({
       contract_type: "721",
       canvasId: contextCanvasIdRef.current,
-      chainId: ENVIRONMENT === "production" ? chain?.id : 999999999,
+      chainId: ENVIRONMENT === "production" ? chain?.id : 999999999, // 999999999 - zora sepolia
       args: argsArr,
     })
       .then((res) => {
