@@ -21,3 +21,4 @@ export * from "./jsConfettiFn";
 export * from "./stringify";
 export * from "./chainLogo";
 export * from "./eventTracks";
+export * from "./consoleLogonlyDev";

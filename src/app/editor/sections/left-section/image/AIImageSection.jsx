@@ -17,20 +17,28 @@ import { getCrop } from "polotno/utils/image";
 import { AIIcon } from "../../../../../assets/assets";
 import axios from "axios";
 import FormData from "form-data";
-import { CustomImageComponent, MessageComponent } from "../../../common";
+import {
+  CustomImageComponent,
+  LoadingAnimatedComponent,
+  MessageComponent,
+} from "../../../common";
 import {
   Textarea,
   Button as MatButton,
   Input,
   Chip,
 } from "@material-tailwind/react";
-import { base64Stripper, firstLetterCapital } from "../../../../../utils";
+import {
+  base64Stripper,
+  consoleLogonlyDev,
+  firstLetterCapital,
+} from "../../../../../utils";
 import Lottie from "lottie-react";
 import animationData from "../../../../../assets/lottie/loaders/aiGeneration.json";
 import { useStore } from "../../../../../hooks/polotno";
 import { Context } from "../../../../../providers/context";
 import { Tab, Tabs, TabsHeader, TabsBody } from "@material-tailwind/react";
-import { FAL_API_KEY } from "../../../../../services";
+import { getFalAiImage } from "../../../../../services";
 // Tab1 - Search Tab
 
 const RANDOM_QUERIES = [
@@ -74,7 +82,7 @@ const CompSearch = () => {
     };
   }, [query]);
 
-  const fnGenerateImages = () => {
+  const fnGenerateImages = async () => {
     if (!delayedQuery) {
       console.log("No Query");
       return;
@@ -83,24 +91,17 @@ const CompSearch = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await axios.post(
-          `https://fal.run/fal-ai/fast-sdxl`,
-          {
-            prompt: delayedQuery,
-          },
-          {
-            headers: {
-              Authorization: `Key ${FAL_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        setIsLoading(true);
+        const response = await getFalAiImage(delayedQuery);
+        consoleLogonlyDev("response", response);
         setStStatusCode(response.status);
         if (response.status === 200) {
+          setIsLoading(false);
           setStStatusCode(200);
           setData(response.data);
           console.log(response.data);
         } else if (data.status === 429) {
+          setIsLoading(false);
           setStStatusCode(429);
         }
       } catch (e) {
@@ -108,6 +109,7 @@ const CompSearch = () => {
         console.log(e);
         // setError(e);
         setError(e.message);
+        setIsLoading(false);
         setStStatusCode(429);
       }
       setIsLoading(false);
@@ -168,8 +170,9 @@ const CompSearch = () => {
           );
         })}
       </div>
+      {isLoading && <LoadingAnimatedComponent />}
 
-      {stStatusCode === 200 && (
+      {!isLoading && stStatusCode === 200 && (
         <>
           {data?.images.map((val, key) => (
             <CustomImageComponent key={key} preview={val.url} />

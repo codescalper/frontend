@@ -71,10 +71,10 @@ export const Wrapper = () => {
                   }
                 />
                 <Route path="/ifUserEligible" element={<AuthComponent />} />
+                {/* <Route path="/design/:slugId" element={<App />} /> */}
+                Replace this
+                {/* https://staging-lenspost.vercel.app/?slug=image-data-slug */}
 
-                {/* remove it */}
-                <Route path="/test" element={<Test />} />
-                <Route path="/design/:slugId" element={<App />} />
               </Routes>
               {ENVIRONMENT === "localhost" && <ReactQueryDevtools />}
             </BrowserRouter>

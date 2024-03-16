@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from "polotno";
 import { Toolbar } from "polotno/toolbar/toolbar";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
@@ -12,6 +12,8 @@ import { Workspace } from "polotno/canvas/workspace";
 import { useAccount } from "wagmi";
 import {
   ENVIRONMENT,
+  apiGetJSONDataForSlug,
+  apiGetOgImageForSlug,
   checkDispatcher,
   createCanvas,
   getProfileData,
@@ -27,6 +29,7 @@ import {
   wait,
   getFromLocalStorage,
   saveToLocalStorage,
+  consoleLogonlyDev,
 } from "../../utils";
 import { useTour } from "@reactour/tour";
 import FcIdea from "@meronex/icons/fc/FcIdea";
@@ -53,6 +56,7 @@ import { APP_ETH_ADDRESS, LOCAL_STORAGE } from "../../data";
 import { Button } from "@material-tailwind/react";
 import { useAppAuth, useLocalStorage } from "../../hooks/app";
 import { getFarUserDetails } from "../../services/apis/BE-apis";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // enable animations
 unstable_setAnimationsEnabled(true);
@@ -109,6 +113,11 @@ const Editor = () => {
     farcasterStates,
     setFarcasterStates,
   } = useContext(Context);
+
+  // Slug implementation - Imports : // ?slug=test-slug-id
+  const navigate = useNavigate();
+  const location = useLocation(); //To get the URL location
+  const queryParams = new URLSearchParams(location.search); //to Check A URL search string, beginning with a ?slugId
 
   const handleDrop = (ev) => {
     // Do not load the upload dropzone content directly to canvas
@@ -335,6 +344,69 @@ const Editor = () => {
       }
     }, 3000);
   };
+
+  // ------ Testing Share Canvas Start --------
+
+  // Get the value of the "?slugId=" query param
+  const slugId = queryParams.get("slugId");
+
+  // Function to update the meta tags with the image URL
+  const fnUpdateOgMetaTags = (imageUrl) => {
+    const ogImageTag = document.querySelector('meta[property="og:image"]');
+    if (ogImageTag) {
+      ogImageTag.setAttribute("content", imageUrl);
+    }
+  };
+
+  // Function to load the data on the canvas
+  const fnLoadDataOnCanvas = async () => {
+    const dataForSlug = await apiGetJSONDataForSlug(slugId);
+    consoleLogonlyDev("dataForSlug", dataForSlug?.data);
+
+    // Load the data on Canvas
+    store.loadJSON(dataForSlug?.data?.data);
+
+    // Update the meta tag in case there is any change in the image
+    const ogImageLink = dataForSlug?.data?.image;
+    let metaTag = document.querySelector('meta[property="og:image"]');
+    if (!metaTag) {
+      // If the meta tag doesn't exist, create it
+      metaTag = document.createElement("meta");
+      metaTag.setAttribute("property", "og:image");
+      document.getElementsByTagName("head")[0].appendChild(metaTag);
+    }
+    // Set or update the content of the meta tag
+    metaTag.setAttribute("content", ogImageLink);
+  };
+
+  // Effect to check with the slugId and fetch the image changes
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const imageUrl = await apiGetOgImageForSlug(slugId);
+        if (imageUrl) {
+          consoleLogonlyDev("Image url from slug", imageUrl);
+
+          // Update OG meta tags dynamically
+          fnUpdateOgMetaTags(imageUrl);
+        } else {
+          consoleLogonlyDev("Failed to fetch image", imageUrl);
+        }
+      } catch (error) {
+        consoleLogonlyDev("Error fetching image:", error);
+      }
+    };
+
+    fetchImage();
+  }, []);
+
+  useEffect(() => {
+    if (slugId) {
+      fnLoadDataOnCanvas();
+    }
+  }, [location, navigate, slugId]);
+
+  // -------- Testing Share Canvas End ----------
 
   useEffect(() => {
     // request saving operation on any changes

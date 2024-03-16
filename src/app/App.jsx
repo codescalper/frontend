@@ -4,8 +4,6 @@ import {
   refreshNFT,
   solanaAuth,
   evmAuth,
-  apiGetOgImageForSlug,
-  apiGetJSONDataForSlug,
 } from "../services/apis/BE-apis/backendApi";
 import {
   getFromLocalStorage,
@@ -14,7 +12,7 @@ import {
 } from "../utils/localStorage";
 import { ToastContainer, toast } from "react-toastify";
 import { Context } from "../providers/context/ContextProvider";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTour } from "@reactour/tour";
 
 import Editor from "./editor/Editor";
@@ -245,83 +243,6 @@ const App = () => {
         setText("");
       });
   };
-  // ------ Testing Share Canvas Start --------
-
-  const { slugId } = useParams();
-  const location = useLocation();
-  const store = useStore();
-  const [imageSrc, setImageSrc] = useState(null);
-  // Move these to Top when merging -- TODO: While Merging 
-
-  const fnUpdateOgMetaTags = (imageUrl) => {
-    const ogImageTag = document.querySelector('meta[property="og:image"]');
-    if (ogImageTag) {
-      ogImageTag.setAttribute("content", imageUrl);
-    }
-  };
-
-  const fnLoadDataOnCanvas = async () => {
-    const dataForSlug = await apiGetJSONDataForSlug(slugId);
-    console.log("dataForSlug", dataForSlug?.data);
-
-    // Load the data on Canvas
-    store.loadJSON(dataForSlug?.data?.data);
-
-    const ogImageLink = dataForSlug?.data?.image;
-    let metaTag = document.querySelector('meta[property="og:image"]');
-    if (!metaTag) {
-      // If the meta tag doesn't exist, create it
-      metaTag = document.createElement("meta");
-      metaTag.setAttribute("property", "og:image");
-      document.getElementsByTagName("head")[0].appendChild(metaTag);
-    }
-    // Set or update the content of the meta tag
-    metaTag.setAttribute("content", ogImageLink);
-  };
-
-  // Effect to check with the slugId and fetch the image changes
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        const imageUrl = await apiGetOgImageForSlug(slugId);
-        if (imageUrl) {
-          console.log("Image url from slug", imageUrl);
-          setImageSrc(imageUrl);
-          // Update OG meta tags dynamically
-          fnUpdateOgMetaTags(imageUrl);
-        } else {
-          console.error("Failed to fetch image");
-        }
-      } catch (error) {
-        console.error("Error fetching image:", error);
-      }
-    };
-
-    fetchImage();
-  }, []);
-
-  // Effect to navigate to '/design/:slugId' without the 'share' query parameter if the user is eligible
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const share = queryParams.get("share");
-
-    if (isUserEligible()) {
-      if (share === "true" && slugId) {
-        // Redirect to '/design/:slugId' without the 'share' query parameter
-        navigate(`/design/${slugId}`, { replace: true });
-      }
-    }
-    // if(!isUserEligible()){
-    // Navigate to '/ifUserEligible' and redirect back - Work in Progress
-    // navigate("/ifUserEligible");
-    // }
-
-    if (slugId) {
-      fnLoadDataOnCanvas();
-    }
-  }, [location, navigate, slugId]);
-
-  // -------- Testing Share Canvas End ----------
 
   // update nfts for EVM + Solana
   const { mutate: updateNft } = useMutation({

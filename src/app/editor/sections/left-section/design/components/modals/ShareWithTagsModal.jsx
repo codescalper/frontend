@@ -119,7 +119,7 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
     // navigator.clipboard.writeText(`http:localhost:5173/design/${slugRes?.data?.message}`);
     const baseURL = window.location.origin;
     navigator.clipboard.writeText(
-      `${baseURL}/design/${slugRes?.data?.message}`
+      `${baseURL}/?slugId=${slugRes?.data?.message}`
     );
     setLoading(false);
     handler();
