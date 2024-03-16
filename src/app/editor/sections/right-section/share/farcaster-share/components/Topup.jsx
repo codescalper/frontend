@@ -136,22 +136,22 @@ const Topup = ({ topUpAccount, refetch, balance, sponsored }) => {
     }
   }, [isError, isTxError]);
 
-  if (chain?.id !== network?.id) {
-    return (
-      <Card className="my-2">
-        <List>
-          <ListItem
-            className="flex justify-between items-center gap-2"
-            onClick={() => switchNetwork(network?.id)}
-          >
-            <Typography variant="h6" color="blue-gray">
-              Please switch to {network?.name} network
-            </Typography>
-          </ListItem>
-        </List>
-      </Card>
-    );
-  }
+  // if (chain?.id !== network?.id) {
+  //   return (
+  //     <Card className="my-2">
+  //       <List>
+  //         <ListItem
+  //           className="flex justify-between items-center gap-2"
+  //           onClick={() => switchNetwork(network?.id)}
+  //         >
+  //           <Typography variant="h6" color="blue-gray">
+  //             Please switch to {network?.name} network
+  //           </Typography>
+  //         </ListItem>
+  //       </List>
+  //     </Card>
+  //   );
+  // }
 
   if (isFeeLoading) {
     return (

@@ -5,32 +5,8 @@ export const getFrame = async (frameId) => {
   return res.data;
 };
 
-export const postFrame = async ({
-  canvasId,
-  owner,
-  isTopUp,
-  allowedMints,
-  metadata,
-  isLike,
-  isRecast,
-  isFollow,
-  redirectLink,
-  contractAddress,
-  chainId,
-}) => {
-  const res = await api.post(`${API}/util//create-frame-data`, {
-    canvasId,
-    owner,
-    isTopUp,
-    allowedMints,
-    metadata,
-    isLike,
-    isRecast,
-    isFollow,
-    redirectLink,
-    contractAddress,
-    chainId,
-  });
+export const postFrame = async (params) => {
+  const res = await api.post(`${API}/util//create-frame-data`, params);
   return res.data;
 };
 

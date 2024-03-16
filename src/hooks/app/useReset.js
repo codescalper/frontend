@@ -374,6 +374,8 @@ const useReset = () => {
         allowedMintsIsError: false,
         allowedMintsError: "",
 
+        isCreatorSponsored: false,
+
         isTopup: false,
         isSufficientBalance: false,
 
