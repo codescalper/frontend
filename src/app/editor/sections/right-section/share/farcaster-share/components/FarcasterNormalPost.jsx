@@ -21,7 +21,7 @@ import {
   LOCAL_STORAGE,
   URL_REGEX,
 } from "../../../../../../../data";
-import { Button } from "@material-tailwind/react";
+import { Button, Spinner } from "@material-tailwind/react";
 import { EVMWallets } from "../../../../top-section/auth/wallets";
 import FarcasterAuth from "./FarcasterAuth";
 import FarcasterChannel from "./FarcasterChannel";
@@ -36,7 +36,7 @@ import {
 } from "../../../../../../../services/apis/BE-apis";
 import { InputBox, InputErrorMsg, NumberInputBox } from "../../../../../common";
 import Topup from "./Topup";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import WithdrawFunds from "./WithdrawFunds";
 
 const FarcasterNormalPost = () => {
@@ -44,7 +44,8 @@ const FarcasterNormalPost = () => {
   const { address } = useAccount();
   const { chain } = useNetwork();
   const getEVMAuth = getFromLocalStorage(LOCAL_STORAGE.evmAuth);
-  const { canvasBase64Ref } = useContext(Context);
+  const { switchNetwork, isLoading: isLoadingSwitchNetwork } =
+    useSwitchNetwork();
 
   // farcaster states
   const [isShareLoading, setIsShareLoading] = useState(false);
@@ -70,6 +71,7 @@ const FarcasterNormalPost = () => {
     postName,
     postDescription,
     contextCanvasIdRef,
+    canvasBase64Ref,
     setFarcasterStates,
     farcasterStates, // don't remove this
     lensAuthState, // don't remove this
@@ -128,9 +130,11 @@ const FarcasterNormalPost = () => {
     mutationFn: uploadUserAssetToIPFS,
   });
 
+  const chainId = ENVIRONMENT === "production" ? 8453 : 999999999; // 999999999 - zora sepolia
+
   const argsArr = [
-    "My Lenspost Collection",
-    "MLC",
+    postName,
+    postName?.split(" ")[0].toUpperCase(),
     farcasterStates?.frameData?.allowedMints,
     "0",
     address,
@@ -199,7 +203,7 @@ const FarcasterNormalPost = () => {
     deployZoraContractMutation({
       contract_type: "721",
       canvasId: contextCanvasIdRef.current,
-      chainId: ENVIRONMENT === "production" ? chain?.id : 999999999, // 999999999 - zora sepolia
+      chainId: chainId,
       args: argsArr,
     })
       .then((res) => {
@@ -228,7 +232,7 @@ const FarcasterNormalPost = () => {
       isFollow: farcasterStates.frameData?.isFollow,
       redirectLink: farcasterStates.frameData?.externalLink,
       contractAddress: zoraContractAddress,
-      chainId: chain?.id,
+      chainId: chainId,
       creatorSponsored: farcasterStates.frameData?.isCreatorSponsored,
     };
     postFrameData(params)
@@ -781,6 +785,19 @@ const FarcasterNormalPost = () => {
           <EVMWallets title="Login with EVM" className="mx-2" />
         ) : !isFarcasterAuth ? (
           <FarcasterAuth />
+        ) : farcasterStates?.frameData?.isFrame && chain.id != chainId ? (
+          <div className="mx-2 outline-none">
+            <Button
+              className="w-full outline-none flex justify-center items-center gap-2"
+              disabled={isLoadingSwitchNetwork}
+              onClick={() => switchNetwork(chainId)}
+              color="red"
+            >
+              {isLoadingSwitchNetwork ? "Switching" : "Switch"} to{" "}
+              {chain.id != chainId ? "base" : "a suported"} Network{" "}
+              {isLoadingSwitchNetwork && <Spinner />}
+            </Button>
+          </div>
         ) : (
           <div className="mx-2 my-2 outline-none">
             <Button
