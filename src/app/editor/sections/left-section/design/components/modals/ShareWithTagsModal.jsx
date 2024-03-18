@@ -15,6 +15,7 @@ import React, { useContext, useState } from "react";
 import { Context } from "../../../../../../../providers/context";
 import { toast } from "react-toastify";
 import {
+  apiGenerateShareSlug,
   changeCanvasVisibility,
   tokengateCanvasById,
   updateCanvas,
@@ -99,6 +100,29 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
       setLoading(false);
       toast.error(errorMessage(error));
     }
+    setLoading(false);
+
+    handler();
+  };
+
+  // Function to Generate Slug
+  const fnGenerateSlug = async () => {
+    setLoading(true);
+    console.log("fnGenerateSlug");
+
+    console.log("canvasId", modal?.canvasId);
+    const slugRes = await apiGenerateShareSlug(modal?.canvasId);
+
+    console.log("slugRes", slugRes);
+
+    toast.success("Link copied to clipboard");
+    // navigator.clipboard.writeText(`http:localhost:5173/design/${slugRes?.data?.message}`);
+    const baseURL = window.location.origin;
+    navigator.clipboard.writeText(
+      `${baseURL}/?slugId=${slugRes?.data?.message}`
+    );
+    setLoading(false);
+    handler();
   };
 
   return (
@@ -205,7 +229,7 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
             <Button
               variant="filled"
               disabled={loading || (switchState && modal?.isError)}
-              loading={true}
+              loading={loading}
               // color="blue"
               // onClick={() => setOpen(false)}
               onClick={handleSubmit}
@@ -213,7 +237,16 @@ const ShareWithTagsModal = ({ displayImg, canvasId, isPublic }) => {
             >
               {/* {switchState ? "Tokengate and Make Public" : " Make Public"} */}
               {modal?.isPublic ? "Make Private" : "Make Public"}
-              {loading && <Spinner color="black" className="h-5" />}
+            </Button>
+          </div>{" "}
+          <div className="ml-2">
+            <Button
+              variant="outline"
+              color=""
+              onClick={fnGenerateSlug}
+              loading={loading}
+            >
+              Copy Link
             </Button>
           </div>
         </DialogFooter>
