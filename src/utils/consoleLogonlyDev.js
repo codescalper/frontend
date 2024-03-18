@@ -1,5 +1,7 @@
+import { ENVIRONMENT } from "../services";
+
 export const consoleLogonlyDev = (msg) => {
-  if (process?.env?.NODE_ENV && process?.env?.NODE_ENV === "development") {
+  if (ENVIRONMENT === "development" || ENVIRONMENT === "localhost") {
     console.log(msg);
   }
 };
