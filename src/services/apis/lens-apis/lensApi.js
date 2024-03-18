@@ -1,9 +1,7 @@
-import {
-  gql,
-} from "@apollo/client";
+import { gql } from "@apollo/client";
 import { utils, ethers } from "ethers";
 import omitDeep from "omit-deep";
-import LENS_HUB_ABI from "../../../../ABI.json";
+import LENS_HUB_ABI from "../../../data/json/ABI.json";
 import request from "graphql-request";
 import { ENVIRONMENT } from "../../env/env";
 
@@ -26,7 +24,6 @@ const API_URL =
     ? "https://api-v2.lens.dev" // mainnet
     : "https://api-v2-mumbai-live.lens.dev"; // mumbai
 
-
 export const challenge = gql`
   query Challenge($signedBy: EvmAddress!, $for: ProfileId) {
     challenge(request: { signedBy: $signedBy, for: $for }) {
@@ -35,7 +32,6 @@ export const challenge = gql`
     }
   }
 `;
-
 
 export const getProfileManaged = gql`
   query ProfilesManaged($for: EvmAddress!) {
