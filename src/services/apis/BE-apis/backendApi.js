@@ -283,7 +283,7 @@ export const updateCanvas = async ({
   isPublic,
   assetsRecipientElementData,
   preview,
-  tags
+  tags,
 }) => {
   const result = await api.put(`${API}/user/canvas/update`, {
     canvasData: {
@@ -292,7 +292,7 @@ export const updateCanvas = async ({
       isPublic: isPublic,
       referredFrom: referredFrom,
       assetsRecipientElementData: assetsRecipientElementData,
-      tags: tags
+      tags: tags,
     },
     preview: preview,
   });
@@ -592,23 +592,43 @@ export const getRewardTimeline = async () => {
 // Update User Profile
 
 export const updateUserProfile = async (data) => {
-
   const result = await api.post(`${API}/user/update`, data);
 
   return {
     data: result?.data,
   };
-}
+};
 
 // Claim Reward
 
 export const claimReward = async (data) => {
-
   const result = await api.post(`${API}/user/loyalty/claim-reward`, data);
 
   return {
     data: result?.data,
   };
-}
+};
 
+export const apiGenerateShareSlug = async (data) => {
+  const result = await api.post(
+    `${API}/user/canvas/generate-share-slug?canvasId=${data}`
+  );
+  return {
+    data: result?.data,
+  };
+};
 
+export const apiGetJSONDataForSlug = async (data) => {
+  const result = await api.get(
+    `${API}/user/canvas/get-shared-canvas?slug=${data}`
+  );
+  return {
+    data: result?.data,
+  };
+};
+export const apiGetOgImageForSlug = async (data) => {
+  const result = await api.get(`${API}/util/get-slug-details?slug=${data}`);
+  return {
+    data: result?.data,
+  };
+};

@@ -32,6 +32,7 @@ import { ExplorerDialog } from "./editor/sections/right-section/share/components
 import { ENVIRONMENT } from "../services";
 import { SolanaWalletErrorContext } from "../providers/solana/SolanaWalletProvider";
 import { useLogout } from "../hooks/app";
+import { useStore } from "../hooks/polotno";
 
 const App = () => {
   const { setSteps, setIsOpen, setCurrentStep } = useTour();

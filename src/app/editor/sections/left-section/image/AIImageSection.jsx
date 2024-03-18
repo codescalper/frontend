@@ -17,19 +17,28 @@ import { getCrop } from "polotno/utils/image";
 import { AIIcon } from "../../../../../assets/assets";
 import axios from "axios";
 import FormData from "form-data";
-import { CustomImageComponent, MessageComponent } from "../../../common";
+import {
+  CustomImageComponent,
+  LoadingAnimatedComponent,
+  MessageComponent,
+} from "../../../common";
 import {
   Textarea,
   Button as MatButton,
   Input,
   Chip,
 } from "@material-tailwind/react";
-import { base64Stripper, firstLetterCapital } from "../../../../../utils";
+import {
+  base64Stripper,
+  consoleLogonlyDev,
+  firstLetterCapital,
+} from "../../../../../utils";
 import Lottie from "lottie-react";
 import animationData from "../../../../../assets/lottie/loaders/aiGeneration.json";
 import { useStore } from "../../../../../hooks/polotno";
 import { Context } from "../../../../../providers/context";
 import { Tab, Tabs, TabsHeader, TabsBody } from "@material-tailwind/react";
+import { getFalAiImage } from "../../../../../services";
 // Tab1 - Search Tab
 
 const RANDOM_QUERIES = [
@@ -73,22 +82,26 @@ const CompSearch = () => {
     };
   }, [query]);
 
-  const fnGenerateImages = () => {
+  const fnGenerateImages = async () => {
     if (!delayedQuery) {
+      console.log("No Query");
       return;
     }
     async function load() {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await axios.get(
-          `https://lexica.art/api/v1/search?q=${delayedQuery}`
-        );
-        setStStatusCode(data.status);
-        if (data.status === 200) {
+        setIsLoading(true);
+        const response = await getFalAiImage(delayedQuery);
+        consoleLogonlyDev("response", response);
+        setStStatusCode(response.status);
+        if (response.status === 200) {
+          setIsLoading(false);
           setStStatusCode(200);
-          setData(data.data.images);
+          setData(response.data);
+          console.log(response.data);
         } else if (data.status === 429) {
+          setIsLoading(false);
           setStStatusCode(429);
         }
       } catch (e) {
@@ -96,12 +109,14 @@ const CompSearch = () => {
         console.log(e);
         // setError(e);
         setError(e.message);
+        setIsLoading(false);
         setStStatusCode(429);
       }
       setIsLoading(false);
     }
     load();
   };
+
   useEffect(() => {
     fnGenerateImages();
   }, [delayedQuery]);
@@ -155,49 +170,16 @@ const CompSearch = () => {
           );
         })}
       </div>
+      {isLoading && <LoadingAnimatedComponent />}
 
-      {stStatusCode === 200 && (
-        <ImagesGrid
-          shadowEnabled={false}
-          images={data}
-          // Different URLs for Preview and Canvas (srcSmall and src)
-          getPreview={(item) => item.srcSmall}
-          isLoading={isLoading}
-          error={error}
-          onSelect={async (item, pos, element) => {
-            if (element && element.type === "svg" && element.contentEditable) {
-              element.set({ maskSrc: item.src });
-              return;
-            }
-
-            const { width, height } = await getImageSize(item.src);
-
-            if (
-              element &&
-              element.type === "image" &&
-              element.contentEditable
-            ) {
-              const crop = getCrop(element, {
-                width,
-                height,
-              });
-              element.set({ src: item.src, ...crop });
-              return;
-            }
-            const x = (pos?.x || store.width / 2) - width / 2;
-            const y = (pos?.y || store.height / 2) - height / 2;
-            store.activePage?.addElement({
-              type: "image",
-              src: item.src,
-              width,
-              height,
-              x,
-              y,
-            });
-          }}
-          rowsNumber={2}
-        />
+      {!isLoading && stStatusCode === 200 && (
+        <>
+          {data?.images.map((val, key) => (
+            <CustomImageComponent key={key} preview={val.url} />
+          ))}
+        </>
       )}
+
       {stStatusCode === 429 && (
         // <div className="mt-4 p-2 text-orange-600 bg-orange-100 rounded-md">
         //   You are Rate limited for now, Please check back after 60s
@@ -286,7 +268,7 @@ const CompInstructImage = () => {
         "content-type": "application/json",
         authorization:
           "Bearer key-2ldCt5QwA0Jt9VxoHDWadZukBnQKqM9Rcj9UBZPRVR0eh8sbhLzMylCMmNreNR5GqwgsMJmoolcBGA5JBgUleuP2BqWNiYZ2",
-          // "Bearer key-4tA8akcKtGFZQwipltBWJz3CCe1Jh6u7PX59uRJY9U6wEvareOdhlhWgCiMWnZeCz9CC6GIJLaddIJGbHr5crjfz6ROXTUXY"
+        // "Bearer key-4tA8akcKtGFZQwipltBWJz3CCe1Jh6u7PX59uRJY9U6wEvareOdhlhWgCiMWnZeCz9CC6GIJLaddIJGbHr5crjfz6ROXTUXY"
       },
       body: JSON.stringify({
         // data: {
@@ -300,17 +282,20 @@ const CompInstructImage = () => {
     console.log("Calling API Start");
 
     // await fetch("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
-    await fetch("https://api.getimg.ai/v1/stable-diffusion/image-to-image", options)
+    await fetch(
+      "https://api.getimg.ai/v1/stable-diffusion/image-to-image",
+      options
+    )
       // await axios.post("https://api.getimg.ai/v1/stable-diffusion/instruct", options)
       .then((response) => response.json())
       .then((response) => {
         console.log(" Response from Fetch ");
         console.log(response);
         // if (response.status === 200) {
-          if(!response.image){
-            setBase64ImgLink("");
-            setStDisplayMessage("It's not you, it's us. Please try again later.");
-          }
+        if (!response.image) {
+          setBase64ImgLink("");
+          setStDisplayMessage("It's not you, it's us. Please try again later.");
+        }
         setBase64ImgLink(response.image);
         // }
         // if (response.status === 500) {
@@ -363,45 +348,43 @@ const CompInstructImage = () => {
   return (
     <>
       <div className="h-full overflow-y-auto">
+        <div className="m-1 mb-2 ml-2">
+          {" "}
+          {/* <Chip color="blue" variant="ghost" value="Original Image" /> */}
+          Original Image{" "}
+        </div>
 
-          <div className="m-1 mb-2 ml-2">
-            {" "}
-            {/* <Chip color="blue" variant="ghost" value="Original Image" /> */}
-            Original Image{" "}
-          </div>
-
-          {/* <Input onChange={(e) => setStOriginalImage(e.target.value)} type="file" name="" id="" accept="image/*" /> */}
-          <div className="mb-4 rounded-md">
-            <input
-              className="mb-2 ml-2"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-            <div className="flex justify-center "> OR </div>
-            <MatButton
-              disabled={!fastPreview[0]}
-              size="sm"
-              color="deep-purple"
-              variant="outlined"
-              className="mt-4 p-2"
-              fullWidth
-              onClick={fnUseThisCanvas}
-            >
-              Use this Canvas
-            </MatButton>
-            {uploadedImg && (
-              <div className="flex justify-center">
-                <img
-                  className="m-2 rounded-md h-32 w-full object-contain"
-                  // src={`data:image/jpeg;base64, ${uploadedImg}`}
-                  src={uploadedImg}
-                  alt="Uploaded Image"
-                />
-              </div>
-            )}
-          </div>
-
+        {/* <Input onChange={(e) => setStOriginalImage(e.target.value)} type="file" name="" id="" accept="image/*" /> */}
+        <div className="mb-4 rounded-md">
+          <input
+            className="mb-2 ml-2"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+          <div className="flex justify-center "> OR </div>
+          <MatButton
+            disabled={!fastPreview[0]}
+            size="sm"
+            color="deep-purple"
+            variant="outlined"
+            className="mt-4 p-2"
+            fullWidth
+            onClick={fnUseThisCanvas}
+          >
+            Use this Canvas
+          </MatButton>
+          {uploadedImg && (
+            <div className="flex justify-center">
+              <img
+                className="m-2 rounded-md h-32 w-full object-contain"
+                // src={`data:image/jpeg;base64, ${uploadedImg}`}
+                src={uploadedImg}
+                alt="Uploaded Image"
+              />
+            </div>
+          )}
+        </div>
 
         <Textarea
           required

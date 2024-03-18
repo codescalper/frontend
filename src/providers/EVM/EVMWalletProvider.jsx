@@ -4,7 +4,7 @@ import {
   RainbowKitProvider,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { configureChains, createConfig, sepolia, WagmiConfig } from "wagmi";
 import {
   polygon,
   mainnet,
@@ -40,7 +40,7 @@ import { publicActions } from "viem";
 const { chains, publicClient } = configureChains(
   ENVIRONMENT === "production"
     ? [polygon, mainnet, base, zora, optimism, arbitrum]
-    : [polygonMumbai, goerli, baseSepolia],
+    : [polygonMumbai, sepolia, baseSepolia],
   [alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()]
 );
 
